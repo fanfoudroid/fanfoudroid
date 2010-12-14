@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <drawable name="label_color">#FF6BB324</drawable>
+  <drawable name="status_color">#FFFF0000</drawable>
+  <drawable name="tweet_user_color">#FF52991F</drawable>
+  <drawable name="tweet_color">#FF000000</drawable>  
+  <drawable name="tweet_meta_color">#FF999999</drawable>
+</resources>

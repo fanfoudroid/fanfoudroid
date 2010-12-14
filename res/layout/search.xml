@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"  
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:background="@drawable/search_background"
+  android:paddingTop="11px"
+  android:paddingBottom="7px"                        
+  android:paddingLeft="7px"
+  android:paddingRight="9px"          
+  >
+  
+    <!-- Main content area. -->
+    <com.ch_linghu.android.fanfoudroid.MyListView
+    android:id="@+id/tweet_list"
+    android:layout_width="fill_parent"
+    android:layout_height="0px"
+    android:layout_weight="1"
+    android:paddingLeft="2px"
+    android:paddingRight="3px"    
+    android:fadingEdge="none"
+    android:cacheColorHint="#00000000"
+    android:scrollbars="none"
+    android:listSelector="@drawable/list_selector"
+    />    	    
+    
+    <TextView
+    android:id="@+id/progress_text"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textSize="13px"
+    android:singleLine="true"
+    android:textColor="@drawable/status_color"
+    />
+    
+</LinearLayout>
