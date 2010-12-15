@@ -330,14 +330,14 @@ public class TwitterApi {
     return json;
   }
 
-  public JSONArray getTimelineSinceId(long sinceId) throws IOException,
+  public JSONArray getTimelineSinceId(String sinceId) throws IOException,
       AuthException, ApiException {
     Log.i(TAG, "Requesting friends timeline since id.");
 
     String url = FRIENDS_TIMELINE_URL + "?format=html&count="
         + URLEncoder.encode(RETRIEVE_LIMIT + "", HTTP.UTF_8);
 
-    if (sinceId > 0) {
+    if (sinceId != null) {
       url += "&since_id=" + URLEncoder.encode(sinceId + "", HTTP.UTF_8);
     }
 
@@ -464,13 +464,13 @@ public class TwitterApi {
     return json;
   }
 
-  public JSONArray getDmsSinceId(long sinceId, boolean isSent)
+  public JSONArray getDmsSinceId(String sinceId, boolean isSent)
       throws IOException, AuthException, ApiException {
     Log.i(TAG, "Requesting DMs since id.");
 
     String url = isSent ? DIRECT_MESSAGES_SENT_URL : DIRECT_MESSAGES_URL;
 
-    if (sinceId > 0) {
+    if (sinceId != null) {
       url += "?since_id=" + URLEncoder.encode(sinceId + "", HTTP.UTF_8);
     }
 

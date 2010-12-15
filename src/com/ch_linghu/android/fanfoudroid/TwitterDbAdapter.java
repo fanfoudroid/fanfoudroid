@@ -268,18 +268,18 @@ public class TwitterDbAdapter {
     mDb.update(DM_TABLE, values, null, null);
   }
 
-  public long fetchMaxId() {
-    Cursor mCursor = mDb.rawQuery("SELECT MAX(" + KEY_ID + ") FROM "
-        + TWEET_TABLE, null);
+  public String fetchMaxId() {
+    Cursor mCursor = mDb.rawQuery("SELECT " + KEY_ID + " FROM "
+        + TWEET_TABLE + " ORDER BY " + KEY_CREATED_AT + " DESC LIMIT 1", null);
 
-    long result = 0;
+    String result = null;
 
     if (mCursor == null) {
       return result;
     }
 
     mCursor.moveToFirst();
-    result = mCursor.getLong(0);
+    result = mCursor.getString(0);
     mCursor.close();
 
     return result;
@@ -302,18 +302,19 @@ public class TwitterDbAdapter {
     return result;
   }
 
-  public long fetchMaxDmId(boolean isSent) {
-    Cursor mCursor = mDb.rawQuery("SELECT MAX(" + KEY_ID + ") FROM " + DM_TABLE
-        + " WHERE " + KEY_IS_SENT + " = ?", new String[] { isSent ? "1" : "0" });
+  public String fetchMaxDmId(boolean isSent) {
+    Cursor mCursor = mDb.rawQuery("SELECT " + KEY_ID + " FROM " + DM_TABLE
+        + " ORDER BY " + KEY_CREATED_AT + " DESC"
+        + " WHERE " + KEY_IS_SENT + " = ?  LIMIT 1", new String[] { isSent ? "1" : "0" });
 
-    long result = 0;
+    String result = null;
 
     if (mCursor == null) {
       return result;
     }
 
     mCursor.moveToFirst();
-    result = mCursor.getLong(0);
+    result = mCursor.getString(0);
     mCursor.close();
 
     return result;

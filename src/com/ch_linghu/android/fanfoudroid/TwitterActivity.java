@@ -617,7 +617,7 @@ public class TwitterActivity extends BaseActivity {
     public RetrieveResult doInBackground(Void... params) {
       JSONArray jsonArray;
 
-      long maxId = getDb().fetchMaxId();
+      String maxId = getDb().fetchMaxId();
 
       try {
         jsonArray = getApi().getTimelineSinceId(maxId);

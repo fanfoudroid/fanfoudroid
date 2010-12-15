@@ -300,7 +300,7 @@ public class DmActivity extends BaseActivity {
       TwitterApi api = getApi();
       ImageManager imageManager = getImageManager();
 
-      long maxId = db.fetchMaxDmId(false);
+      String maxId = db.fetchMaxDmId(false);
 
       HashSet<String> imageUrls = new HashSet<String>();
 

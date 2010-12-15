@@ -295,7 +295,7 @@ public class TwitterService extends Service {
   private class RetrieveTask extends UserTask<Void, Void, RetrieveResult> {
     @Override
     public RetrieveResult doInBackground(Void... params) {
-      long maxId = getDb().fetchMaxId();
+      String maxId = getDb().fetchMaxId();
       Log.i(TAG, "Max id is:" + maxId);
 
       JSONArray jsonArray;
