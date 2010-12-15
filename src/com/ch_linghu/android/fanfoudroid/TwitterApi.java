@@ -68,7 +68,7 @@ public class TwitterApi {
   private static final String FRIENDS_TIMELINE_URL = "http://api.fanfou.com/statuses/friends_timeline.json";
   private static final String DIRECT_MESSAGES_URL = "http://api.fanfou.com/direct_messages.json";
   private static final String DIRECT_MESSAGES_SENT_URL = "http://api.fanfou.com/direct_messages/sent.json";
-  private static final String DIRECT_MESSAGES_DESTROY_URL = "http://api.fanfou.com/direct_messages/destroy/%d.json";
+  private static final String DIRECT_MESSAGES_DESTROY_URL = "http://api.fanfou.com/direct_messages/destroy/%s.json";
   private static final String DIRECT_MESSAGES_NEW_URL = "http://api.fanfou.com/direct_messages/new.json";
   private static final String FOLLOWERS_IDS_URL = "http://api.fanfou.com/followers/ids.json";
   private static final String USER_TIMELINE_URL = "http://api.fanfou.com/statuses/user_timeline.json";
@@ -394,7 +394,7 @@ public class TwitterApi {
     return json;
   }
 
-  public JSONObject destroyDirectMessage(long id) throws IOException,
+  public JSONObject destroyDirectMessage(String id) throws IOException,
       AuthException, ApiException {
     Log.i(TAG, "Deleting direct message: " + id);
 

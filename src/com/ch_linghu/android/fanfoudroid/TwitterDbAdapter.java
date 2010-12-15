@@ -252,8 +252,9 @@ public class TwitterDbAdapter {
     return mDb.delete(FOLLOWER_TABLE, null, null) > 0;
   }
 
-  public boolean deleteDm(long id) {
-    return mDb.delete(DM_TABLE, KEY_ID + "=" + id, null) > 0;
+  public boolean deleteDm(String id) {
+    return mDb.delete(DM_TABLE, String.format("%s = '%s'", KEY_ID, id), null) > 0;
+    
   }
 
   public void markAllTweetsRead() {
@@ -304,8 +305,8 @@ public class TwitterDbAdapter {
 
   public String fetchMaxDmId(boolean isSent) {
     Cursor mCursor = mDb.rawQuery("SELECT " + KEY_ID + " FROM " + DM_TABLE
-        + " ORDER BY " + KEY_CREATED_AT + " DESC"
-        + " WHERE " + KEY_IS_SENT + " = ?  LIMIT 1", new String[] { isSent ? "1" : "0" });
+        + " WHERE " + KEY_IS_SENT + " = ? "
+        + " ORDER BY " + KEY_CREATED_AT + " DESC   LIMIT 1", new String[] { isSent ? "1" : "0" });
 
     String result = null;
 

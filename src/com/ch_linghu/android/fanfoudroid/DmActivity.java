@@ -54,7 +54,7 @@ public class DmActivity extends BaseActivity {
 
   // Tasks.
   private UserTask<Void, Void, TaskResult> mRetrieveTask;
-  private UserTask<Long, Void, TaskResult> mDeleteTask;
+  private UserTask<String, Void, TaskResult> mDeleteTask;
   private UserTask<Void, Void, TaskResult> mSendTask;
 
   // Refresh data at startup if last refresh was this long ago or greater.
@@ -688,7 +688,7 @@ public class DmActivity extends BaseActivity {
       return true;
     case CONTEXT_DELETE_ID:
       int idIndex = cursor.getColumnIndexOrThrow(TwitterDbAdapter.KEY_ID);
-      long id = cursor.getLong(idIndex);
+      String id = cursor.getString(idIndex);
       doDestroy(id);
 
       return true;
@@ -697,26 +697,26 @@ public class DmActivity extends BaseActivity {
     }
   }
 
-  private void doDestroy(long id) {
+  private void doDestroy(String id) {
     Log.i(TAG, "Attempting delete.");
 
     if (mDeleteTask != null
         && mDeleteTask.getStatus() == UserTask.Status.RUNNING) {
       Log.w(TAG, "Already deleting.");
     } else {
-      mDeleteTask = new DeleteTask().execute(new Long[] { id });
+      mDeleteTask = new DeleteTask().execute(new String[] { id });
     }
   }
 
-  private class DeleteTask extends UserTask<Long, Void, TaskResult> {
+  private class DeleteTask extends UserTask<String, Void, TaskResult> {
     @Override
     public void onPreExecute() {
       updateProgress("Deleting...");
     }
 
     @Override
-    public TaskResult doInBackground(Long... params) {
-      Long id = params[0];
+    public TaskResult doInBackground(String... params) {
+      String id = params[0];
 
       try {
         JSONObject json = getApi().destroyDirectMessage(id);

@@ -334,9 +334,10 @@ public class TwitterActivity extends BaseActivity {
     menu.add(0, CONTEXT_MORE_ID, 0, user);
     menu.add(0, CONTEXT_REPLY_ID, 0, R.string.reply);
     menu.add(0, CONTEXT_RETWEET_ID, 0, R.string.retweet);
+    menu.add(0, CONTEXT_DM_ID, 0, R.string.dm);
 
-    MenuItem item = menu.add(0, CONTEXT_DM_ID, 0, R.string.dm);
-    item.setEnabled(getDb().isFollower(userId));
+    //MenuItem item = menu.add(0, CONTEXT_DM_ID, 0, R.string.dm);
+    //item.setEnabled(getDb().isFollower(userId));
   }
 
   @Override
@@ -382,7 +383,7 @@ public class TwitterActivity extends BaseActivity {
       return true;
     case CONTEXT_DM_ID:
       String user = cursor.getString(cursor
-          .getColumnIndexOrThrow(TwitterDbAdapter.KEY_USER));
+          .getColumnIndexOrThrow(TwitterDbAdapter.KEY_USER_ID));
       launchActivity(DmActivity.createIntent(user));
       return true;
     default:
@@ -528,7 +529,7 @@ public class TwitterActivity extends BaseActivity {
           }
         }
 
-        getDb().createTweet(tweet, false);
+        //getDb().createTweet(tweet, false);
       } catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
         return SendResult.IO_ERROR;
@@ -574,6 +575,7 @@ public class TwitterActivity extends BaseActivity {
     mTweetEdit.setText("");
     updateProgress("");
     enableEntry();
+    doRetrieve();
     draw();
     goTop();
   }
