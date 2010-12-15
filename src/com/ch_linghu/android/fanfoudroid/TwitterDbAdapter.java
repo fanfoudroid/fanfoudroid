@@ -19,6 +19,7 @@ package com.ch_linghu.android.fanfoudroid;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -126,7 +127,7 @@ public class TwitterDbAdapter {
   }
 
   public final static DateFormat DB_DATE_FORMATTER = new SimpleDateFormat(
-      "yyyy-MM-dd'T'HH:mm:ss.SSS");
+      "yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US);
 
   // TODO: move all these to the model.
   public long createTweet(Tweet tweet, boolean isUnread) {

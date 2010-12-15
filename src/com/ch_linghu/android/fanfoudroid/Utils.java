@@ -26,6 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,15 +61,17 @@ public class Utils {
   public static String decodeTwitterJson(String s) {
     return s.replace("&lt;", "<").replace("&gt;", ">");
   }
-
+  
+//Wed Dec 15 02:53:36 +0000 2010
   public static final DateFormat TWITTER_DATE_FORMATTER = new SimpleDateFormat(
-      "E MMM d HH:mm:ss Z yyyy");
+      "E MMM d HH:mm:ss Z yyyy", Locale.US);
 
   public static final DateFormat TWITTER_SEARCH_API_DATE_FORMATTER = new SimpleDateFormat(
-      "E, d MMM yyyy HH:mm:ss Z");
+      "E, d MMM yyyy HH:mm:ss Z", Locale.US);
 
   public static final Date parseDateTime(String dateString) {
     try {
+    	Log.d(TAG, String.format("in parseDateTime, dateString=%s", dateString));
       return TWITTER_DATE_FORMATTER.parse(dateString);
     } catch (ParseException e) {
       Log.w(TAG, "Could not parse Twitter date string: " + dateString);
@@ -80,7 +83,7 @@ public class Utils {
     try {
       return TWITTER_SEARCH_API_DATE_FORMATTER.parse(dateString);
     } catch (ParseException e) {
-      Log.w(TAG, "Could not parse Twitter date string: " + dateString);
+      Log.w(TAG, "Could not parse Twitter search date string: " + dateString);
       return null;
     }
   }
