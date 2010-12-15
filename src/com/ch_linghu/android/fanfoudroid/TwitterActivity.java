@@ -300,13 +300,8 @@ public class TwitterActivity extends BaseActivity {
   private void setupState() {
     Cursor cursor;
 
-    if (isReplies()) {
-      cursor = getDb().fetchReplies();
-      setTitle("@" + getApi().getUsername());
-    } else {
-      cursor = getDb().fetchAllTweets();
-      setTitle(R.string.app_name);
-    }
+	cursor = getDb().fetchAllTweets();
+	setTitle(R.string.app_name);
 
     startManagingCursor(cursor);
 
@@ -331,7 +326,7 @@ public class TwitterActivity extends BaseActivity {
     String user = cursor.getString(cursor
         .getColumnIndexOrThrow(TwitterDbAdapter.KEY_USER));
 
-    menu.add(0, CONTEXT_MORE_ID, 0, user);
+    menu.add(0, CONTEXT_MORE_ID, 0, "@"+user);
     menu.add(0, CONTEXT_REPLY_ID, 0, R.string.reply);
     menu.add(0, CONTEXT_RETWEET_ID, 0, R.string.retweet);
     menu.add(0, CONTEXT_DM_ID, 0, R.string.dm);
@@ -747,11 +742,11 @@ public class TwitterActivity extends BaseActivity {
     item = menu.add(0, OPTIONS_MENU_ID_DM, 0, R.string.dm);
     item.setIcon(android.R.drawable.ic_menu_send);
 
-    /*
-    item = menu.add(0, OPTIONS_MENU_ID_TOGGLE_REPLIES, 0,
+    
+    item = menu.add(0, OPTIONS_MENU_ID_REPLIES, 0,
         R.string.show_at_replies);
     item.setIcon(android.R.drawable.ic_menu_zoom);
-    */
+    
 
     return super.onCreateOptionsMenu(menu);
   }
@@ -793,9 +788,7 @@ public class TwitterActivity extends BaseActivity {
       doRetrieve();
       return true;
     case OPTIONS_MENU_ID_REPLIES:
-      Intent repliesIntent = new Intent(this, TwitterActivity.class);
-      repliesIntent.putExtra(INTENT_MODE, MODE_REPLIES);
-      startActivity(repliesIntent);
+      launchActivity(MentionActivity.createIntent(this));
       return true;
     case OPTIONS_MENU_ID_DM:
       launchActivity(DmActivity.createIntent());

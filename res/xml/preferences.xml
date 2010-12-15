@@ -10,16 +10,30 @@
             android:summary="@string/pref_check_updates_summary"
             />  
 
-<!--  Take out for now. May not be worth it. -->
-<!-- 
+
+   <CheckBoxPreference  
+            android:key="timeline_only"
+            android:dependency="check_updates"  
+            android:defaultValue="false"
+            android:title="@string/timeline_only_title"
+            android:summary="@string/timeline_only_summary"
+            />  
+
    <CheckBoxPreference  
             android:key="replies_only"
             android:dependency="check_updates"  
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:title="@string/replies_only_title"
             android:summary="@string/replies_only_summary"
             />  
- -->
+   <CheckBoxPreference  
+            android:key="dm_only"
+            android:dependency="check_updates"  
+            android:defaultValue="true"
+            android:title="@string/dm_only_title"
+            android:summary="@string/dm_only_summary"
+            />  
+
  
    <ListPreference  
             android:key="check_update_interval"

@@ -2,70 +2,77 @@
 <resources>
     <string name="app_name">安能饭否</string>
     
-    <string name="direct_messages">Direct Messages</string>
+    <string name="direct_messages">私信</string>
+    <string name="mentions">提到我的</string>
     <string name="post_picture">Post picture</string>
     
-    <string name="username_label">Username:</string>    
-    <string name="password_label">Password:</string>
-    <string name="signin">Sign-In!</string>
+    <string name="username_label">用户名:</string>    
+    <string name="password_label">密码:</string>
+    <string name="signin">登录</string>
     
-    <string name="signout">Sign out</string>
-    <string name="refresh">Refresh</string>
-    <string name="preferences">Preferences</string>
-    <string name="settings">Settings</string>
-    <string name="about">About</string>
-    <string name="replies">\@Replies</string>
-    <string name="dm">DM</string>
-    <string name="tweets">Tweets</string>
-    <string name="show_at_replies">Show @replies</string>
+    <string name="signout">注销</string>
+    <string name="refresh">刷新</string>
+    <string name="preferences">选项</string>
+    <string name="settings">设置</string>
+    <string name="about">关于</string>
+    <string name="replies">提到我的</string>
+    <string name="dm">私信</string>
+    <string name="tweets">消息</string>
+    <string name="show_at_replies">提到我的</string>
     <string name="show_all">Show all</string>
-    <string name="follow">Follow</string>
-    <string name="unfollow">Unfollow</string>
+    <string name="follow">跟随</string>
+    <string name="unfollow">取消跟随</string>
     <string name="friendship">Friendship</string>
-    <string name="cancel">Cancel</string>
-    <string name="search">Search</string>
+    <string name="cancel">取消</string>
+    <string name="search">搜索</string>
 
-    <string name="replies_only_title">Only @replies?</string>
-    <string name="replies_only_summary">Notify only of @replies</string>
+    <string name="timeline_only_title">消息</string>
+    <string name="timeline_only_summary">提示好友消息</string>
+    <string name="replies_only_title">回复</string>
+    <string name="replies_only_summary">提示提到我的回复</string>
+    <string name="dm_only_title">私信</string>
+    <string name="dm_only_summary">提示私信</string>
 
-    <string name="pref_check_updates_title">Enable notifications?</string>
-    <string name="pref_check_updates_summary">Check for new tweets and DMs when application is not running</string>
+    <string name="pref_check_updates_title">设置后台提醒</string>
+    <string name="pref_check_updates_summary">选中可以在后台提醒新发言、提到我的和私信</string>
 
-    <string name="pref_check_updates_interval_title">Update check interval</string>
-    <string name="pref_check_updates_interval_summary">Minutes between checks for new tweets</string>
+    <string name="pref_check_updates_interval_title">检查频率</string>
+    <string name="pref_check_updates_interval_summary">两次检查的间隔分钟数</string>
         
-    <string name="pref_check_updates_interval_dialog_title">Interval in minutes:</string>
+    <string name="pref_check_updates_interval_dialog_title">间隔分钟数:</string>
     
     <string name="pref_check_updates_interval_default">60</string>
     
-    <string name="new_twitter_updates">New Twitter updates</string>
-    <string name="x_new_tweets">{0} new tweets</string>
-    <string name="new_twitter_dms">New Twitter DMs</string>    
-    <string name="x_new_dms">{0} new DMs</string>    
+    <string name="new_twitter_updates">新消息</string>
+    <string name="x_new_tweets">{0} 条新消息</string>
+    <string name="new_mention_updates">新提到我的消息</string>
+    <string name="x_new_mentions">{0} 条新提到我的消息</string>
+    <string name="new_twitter_dms">新私信</string>    
+    <string name="x_new_dms">{0} 条新私信</string>    
     
-    <string name="reply">Reply</string>
-    <string name="retweet">Retweet</string>
-    <string name="delete">Delete</string>
+    <string name="reply">回复</string>
+    <string name="retweet">热饭</string>
+    <string name="delete">删除</string>
                 
-    <string name="vibrate_title">Vibrate?</string>
-    <string name="vibrate_summary">Vibrate the phone when notified of new tweets</string>
+    <string name="vibrate_title">振动</string>
+    <string name="vibrate_summary">有新消息提示时手机振动</string>
 
-    <string name="pref_ringtone_title">Choose notification ringtone</string>
+    <string name="pref_ringtone_title">选择提示铃音</string>
     <string name="pref_ringtone_summary"></string>
     
-    <string name="about_title">About Twitta</string>
+    <string name="about_title">关于 安能饭否</string>
     <string name="about_message">
-    We put the twee in Twitter
-    \n\nTwitta is not endorsed by Twitter.
+    安能饭否 v0.1alpha
+    \n\n安能饭否修改自开源项目twitta。遵循Twitta项目的开源协议。
     \n\nTwitta is open sourced under the Apache 2.0 license. 
     \n\nPlease visit the project page at http://code.google.com/p/twitta/ to contribute code or report issues.
     </string>
 
     <string name="cool">Cool</string>
     
-    <string name="preferences_notifications">Notifications</string>
+    <string name="preferences_notifications">提示</string>
     
-    <string name="search_label">Twitta</string>
-    <string name="search_hint">Search Twitter</string>
+    <string name="search_label">安能饭否</string>
+    <string name="search_hint">搜索饭否</string>
     
 </resources>

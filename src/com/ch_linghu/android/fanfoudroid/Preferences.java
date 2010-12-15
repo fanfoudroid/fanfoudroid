@@ -23,7 +23,9 @@ public class Preferences {
   public static final String CHECK_UPDATE_INTERVAL_KEY =
       "check_update_interval";
   public static final String VIBRATE_KEY = "vibrate";
+  public static final String TIMELINE_ONLY_KEY = "timeline_only";
   public static final String REPLIES_ONLY_KEY = "replies_only";
+  public static final String DM_ONLY_KEY = "dm_only";
   
   public static String RINGTONE_KEY = "ringtone";
   public static final String RINGTONE_DEFAULT_KEY =
