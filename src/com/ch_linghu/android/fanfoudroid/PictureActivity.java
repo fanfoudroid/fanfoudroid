@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -28,6 +29,8 @@ import com.google.android.photostream.UserTask;
 public class PictureActivity extends BaseActivity {
 
   private static final String TAG = "PictureActivity";
+  
+  private static final String LAUNCH_ACTION = "android.intent.action.SEND";
 
   private ImageView mPreview;
   private TweetEdit mTweetEdit;
@@ -78,25 +81,12 @@ public class PictureActivity extends BaseActivity {
 
     mFile = null;
 
-    if (Intent.ACTION_SEND.equals(intent.getAction()) && extras != null
-        && extras.containsKey(Intent.EXTRA_STREAM)) {
-      mImageUri = (Uri) extras.getParcelable(Intent.EXTRA_STREAM);
-      if (mImageUri != null) {
-        Cursor cursor = getContentResolver().query(mImageUri, null, null, null,
-            null);
-
-        if (cursor.moveToFirst()) {
-          String filename = cursor.getString(cursor
-              .getColumnIndexOrThrow(ImageColumns.DATA));
-
-          mFile = new File(filename);
-        }
-
-        cursor.close();
-
-        mPreview.setImageBitmap(createThumbnailBitmap(mImageUri,
+    if (Intent.ACTION_SEND.equals(intent.getAction()) && extras != null) {
+      mImageUri = (Uri) extras.getParcelable("uri");
+      String filename = extras.getString("filename");
+      mFile = new File(filename);
+      mPreview.setImageBitmap(createThumbnailBitmap(mImageUri,
             MAX_BITMAP_SIZE));
-      }
     }
 
     if (mFile == null) {

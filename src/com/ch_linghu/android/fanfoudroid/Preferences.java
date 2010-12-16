@@ -39,4 +39,6 @@ public class Preferences {
   public static final String TWITTER_ACTIVITY_STATE_KEY =
       "twitter_activity_state";
   
+  public static final String RT_PREFIX_KEY = "rt_prefix";
+  
 }

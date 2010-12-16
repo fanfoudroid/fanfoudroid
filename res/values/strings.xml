@@ -25,6 +25,9 @@
     <string name="friendship">Friendship</string>
     <string name="cancel">取消</string>
     <string name="search">搜索</string>
+    <string name="photo">拍照上传</string>
+    <string name="image_capture">拍摄</string>
+    <string name="photo_library">从图库中选择</string>
 
     <string name="timeline_only_title">消息</string>
     <string name="timeline_only_summary">提示好友消息</string>
@@ -43,6 +46,10 @@
     
     <string name="pref_check_updates_interval_default">60</string>
     
+    <string name="pref_rt_prefix_title">转发前缀</string>
+    <string name="pref_rt_prefix_summary">转发消息时的前缀</string>
+    <string name="pref_rt_prefix_default">热饭</string>
+    
     <string name="new_twitter_updates">新消息</string>
     <string name="x_new_tweets">{0} 条新消息</string>
     <string name="new_mention_updates">新提到我的消息</string>
@@ -60,17 +67,20 @@
     <string name="pref_ringtone_title">选择提示铃音</string>
     <string name="pref_ringtone_summary"></string>
     
-    <string name="about_title">关于 安能饭否</string>
+    <string name="about_title">安能饭否</string>
     <string name="about_message">
-    安能饭否 v0.1alpha
+    安能饭否
+    \n作者：令狐虫(ch.linghu@gmail.com)
+    
     \n\n安能饭否修改自开源项目twitta。遵循Twitta项目的开源协议。
     \n\nTwitta is open sourced under the Apache 2.0 license. 
     \n\nPlease visit the project page at http://code.google.com/p/twitta/ to contribute code or report issues.
     </string>
 
-    <string name="cool">Cool</string>
+    <string name="cool">了解</string>
     
-    <string name="preferences_notifications">提示</string>
+    <string name="preferences_notifications">后台提示</string>
+    <string name="preferences_misc">杂项</string>
     
     <string name="search_label">安能饭否</string>
     <string name="search_hint">搜索饭否</string>

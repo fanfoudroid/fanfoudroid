@@ -640,8 +640,10 @@ public class DmActivity extends BaseActivity {
     item = menu.add(0, OPTIONS_MENU_ID_TWEETS, 0, R.string.tweets);
     item.setIcon(android.R.drawable.ic_menu_view);
 
-    item = menu.add(0, OPTIONS_MENU_ID_REPLIES, 0, R.string.tweets);
-    item.setIcon(android.R.drawable.ic_menu_view);
+    item = menu.add(0, OPTIONS_MENU_ID_REPLIES, 0,
+            R.string.show_at_replies);
+        item.setIcon(android.R.drawable.ic_menu_revert);
+        
 
     return super.onCreateOptionsMenu(menu);
   }

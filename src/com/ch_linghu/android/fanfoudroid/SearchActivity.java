@@ -200,7 +200,7 @@ public class SearchActivity extends BaseActivity implements MyListView.OnNeedMor
 
         try {
           JSONObject jsonObject = jsonArray.getJSONObject(i);
-          tweet = Tweet.createFromSearchApi(jsonObject);
+          tweet = Tweet.create(jsonObject);
           mTweets.add(tweet);
           imageUrls.add(tweet.profileImageUrl);
         } catch (JSONException e) {

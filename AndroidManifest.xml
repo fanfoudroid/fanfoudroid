@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      android:versionCode="20101215"
-      android:versionName="0.1alpha" package="com.ch_linghu.android.fanfoudroid">
+      android:versionCode="20101216"
+      android:versionName="0.2alpha" package="com.ch_linghu.android.fanfoudroid">
     <uses-sdk android:minSdkVersion="3" />
           
     <application
@@ -108,5 +108,7 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>    
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    
+	<uses-permission android:name="android.permission.CAMERA"/>
+	<uses-feature android:name="android.hardware.camera" />  
+	<uses-feature android:name="android.hardware.camera.autofocus" />  
 </manifest>

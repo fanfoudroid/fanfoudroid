@@ -133,7 +133,6 @@ public class Utils {
         final int end) {
 
 		String name = s.subSequence(start+1, end).toString().trim();
-		Log.d("UTILS", String.format("IN MatchFilter, name=%s***", name));
 		boolean result = _userLinkMapping.containsKey(name);
 		return result;
     }
@@ -145,7 +144,6 @@ public class Utils {
 	public String transformUrl(Matcher match, String url) {
 		// TODO Auto-generated method stub
 		String name = url.subSequence(1, url.length()).toString().trim();
-		Log.d("UTILS", String.format("IN TransformFilter, name=%s***", name));
 		return _userLinkMapping.get(name);
 	}
 };
@@ -163,7 +161,8 @@ public class Utils {
       new Linkify.TransformFilter() {
     @Override
     public final String transformUrl(Matcher match, String url) {
-      return "%23" + url;
+      String result = url.substring(1, url.length()-1);
+      return "%23" + result + "%23";
     }
   };
 

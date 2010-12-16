@@ -367,7 +367,8 @@ public class TwitterActivity extends BaseActivity {
     case CONTEXT_RETWEET_ID:
       _reply_id = cursor.getString(
 	          cursor.getColumnIndexOrThrow(TwitterDbAdapter.KEY_ID));
-      String retweet = " 热饭 @"
+      String prefix = mPreferences.getString(Preferences.RT_PREFIX_KEY, getString(R.string.pref_rt_prefix_default));
+      String retweet = " " + prefix + " @"
           + cursor.getString(cursor
               .getColumnIndexOrThrow(TwitterDbAdapter.KEY_USER))
           + " "
@@ -738,15 +739,14 @@ public class TwitterActivity extends BaseActivity {
   public boolean onCreateOptionsMenu(Menu menu) {
     MenuItem item = menu.add(0, OPTIONS_MENU_ID_REFRESH, 0, R.string.refresh);
     item.setIcon(R.drawable.refresh);
-
-    item = menu.add(0, OPTIONS_MENU_ID_DM, 0, R.string.dm);
-    item.setIcon(android.R.drawable.ic_menu_send);
-
     
     item = menu.add(0, OPTIONS_MENU_ID_REPLIES, 0,
         R.string.show_at_replies);
-    item.setIcon(android.R.drawable.ic_menu_zoom);
+    item.setIcon(android.R.drawable.ic_menu_revert);
     
+    item = menu.add(0, OPTIONS_MENU_ID_DM, 0, R.string.dm);
+    item.setIcon(android.R.drawable.ic_menu_send);
+
 
     return super.onCreateOptionsMenu(menu);
   }

@@ -1,14 +1,20 @@
 package com.ch_linghu.android.fanfoudroid;
 
+import java.io.File;
+
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 
 /**
  * A BaseActivity has common routines and variables for an Activity
@@ -115,11 +121,19 @@ public class BaseActivity extends Activity {
   protected static final int OPTIONS_MENU_ID_FOLLOW = 9;
   protected static final int OPTIONS_MENU_ID_UNFOLLOW = 10;
   protected static final int OPTIONS_MENU_ID_SEARCH = 11;
-
+  protected static final int OPTIONS_MENU_ID_IMAGE_CAPTURE = 12;
+  protected static final int OPTIONS_MENU_ID_PHOTO_LIBRARY = 13;
+  
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     super.onCreateOptionsMenu(menu);
 
+    SubMenu submenu = menu.addSubMenu(R.string.photo);
+    submenu.setIcon(android.R.drawable.ic_menu_gallery);
+    
+    submenu.add(0, OPTIONS_MENU_ID_IMAGE_CAPTURE, 0, R.string.image_capture);
+    submenu.add(0, OPTIONS_MENU_ID_PHOTO_LIBRARY, 0, R.string.photo_library);
+    
     MenuItem item = menu.add(0, OPTIONS_MENU_ID_SEARCH, 0, R.string.search);
     item.setIcon(android.R.drawable.ic_search_category_default);
     item.setAlphabeticShortcut(SearchManager.MENU_KEY);
@@ -138,10 +152,34 @@ public class BaseActivity extends Activity {
 
   private static final int REQUEST_CODE_LAUNCH_ACTIVITY = 0;
   private static final int REQUEST_CODE_PREFERENCES = 1;
+  private static final int REQUEST_IMAGE_CAPTURE = 2;
+  private static final int REQUEST_PHOTO_LIBRARY = 3;
 
+  private File mImageFile;
+  private Uri mImageUri;
+  
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
+    case OPTIONS_MENU_ID_IMAGE_CAPTURE:
+    {
+        try {  
+        	mImageFile = new File(Environment.getExternalStorageDirectory(), "upload.jpg");
+        	mImageUri = Uri.fromFile(mImageFile);
+            Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); 
+            i.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
+            startActivityForResult(i, REQUEST_IMAGE_CAPTURE);  
+        } catch (Exception e) {  
+            Log.e(TAG, e.getMessage());  
+        }  
+        return true;
+    }
+    case OPTIONS_MENU_ID_PHOTO_LIBRARY:
+    {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+    	return true;
+    }
     case OPTIONS_MENU_ID_LOGOUT:
       logout();
       return true;
@@ -176,6 +214,15 @@ public class BaseActivity extends Activity {
     } else if (requestCode == REQUEST_CODE_LAUNCH_ACTIVITY && resultCode == RESULT_LOGOUT) {
       Log.i(TAG, "Result logout.");
       handleLoggedOut();
+    } else if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK){
+    	Intent i = new Intent(Intent.ACTION_SEND);
+    	Bundle bundle = new Bundle();
+    	bundle.putParcelable("uri", mImageUri);
+    	bundle.putString("filename", mImageFile.getPath());
+    	
+    	i.setClass(this, PictureActivity.class);
+    	i.putExtras(bundle);
+        startActivity(i);  
     }
   }
 

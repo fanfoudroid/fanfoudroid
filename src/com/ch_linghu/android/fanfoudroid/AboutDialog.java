@@ -18,6 +18,9 @@ package com.ch_linghu.android.fanfoudroid;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -25,11 +28,20 @@ public class AboutDialog {
 
   static void show(Activity activity) {
     View view = LayoutInflater.from(activity).inflate(R.layout.about, null);
-    
+
+    ComponentName comp = new ComponentName(activity, activity.getClass());
+    PackageInfo pinfo = null;
+	try {
+		pinfo = activity.getPackageManager().getPackageInfo(comp.getPackageName(), 0);
+	} catch (NameNotFoundException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+    String title = String.format("%s ver.%s", activity.getString(R.string.about_title), pinfo.versionName);
     AlertDialog.Builder builder = new AlertDialog.Builder(activity);
     builder.setView(view);
     builder.setCancelable(true);
-    builder.setTitle(R.string.about_title);
+    builder.setTitle(title);
     builder.setPositiveButton(R.string.cool, null);
     builder.create().show();
   }  

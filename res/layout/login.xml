@@ -59,8 +59,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:textColor="@drawable/tweet_color"
-    android:autoLink="web"        
-    android:text="New to Twitter? Create an account at https://twitter.com/signup"
+    android:text="请注意：登录使用的是用户名而不是Email。用户名请参考网页版饭否“我的空间”网址中， http://fanfou.com/ 后面的部分"
     />    
     <TextView
     android:id="@+id/progress_text"

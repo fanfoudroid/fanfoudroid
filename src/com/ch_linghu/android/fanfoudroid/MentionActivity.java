@@ -570,7 +570,7 @@ public class MentionActivity extends BaseActivity {
     mTweetEdit.setText("");
     updateProgress("");
     enableEntry();
-    doRetrieve();
+    //doRetrieve();
     draw();
     goTop();
   }

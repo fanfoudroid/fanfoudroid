@@ -64,6 +64,9 @@ public class TwitterApi {
 	private static final String TAG = "TwitterApi";
 
 	private static final String UPDATE_URL = "http://api.fanfou.com/statuses/update.json";
+	private static final String FAVORITES_URL = "http://api.fanfou.com/favorites.json";
+	private static final String ADD_FAV_URL = "http://api.fanfou.com/favorites/create/%s.json";
+	private static final String DEL_FAV_URL = "http://api.fanfou.com/favorites/destroy/%s.json";
 	private static final String VERIFY_CREDENTIALS_URL = "http://api.fanfou.com/account/verify_credentials.json";
 	private static final String FRIENDS_TIMELINE_URL = "http://api.fanfou.com/statuses/friends_timeline.json";
 	private static final String REPLIES_URL = "http://api.fanfou.com/statuses/replies.json";
@@ -76,11 +79,13 @@ public class TwitterApi {
 	private static final String FRIENDSHIPS_EXISTS_URL = "http://api.fanfou.com/friendships/exists.json";
 	private static final String FRIENDSHIPS_CREATE_URL = "http://api.fanfou.com/friendships/create/%s.json";
 	private static final String FRIENDSHIPS_DESTROY_URL = "http://api.fanfou.com/friendships/destroy/%s.json";
-	private static final String SEARCH_URL = "http://api.fanfou.com/search.json";
+	private static final String SEARCH_URL = "http://api.fanfou.com/search/public_timeline.json";
 
 	private static final String UPLOAD_AND_POST_URL = "http://api.fanfou.com/photos/upload.json";
 
 	private static final String TWITTER_HOST = "api.fanfou.com";
+	
+	private static final String FANFOU_SOURCE = "fanfoudroid";
 
 	private DefaultHttpClient mClient;
 	private AuthScope mAuthScope;
@@ -158,15 +163,14 @@ public class TwitterApi {
 			throw new IOException("Invalid URL.");
 		}
 
-		DefaultHttpClient client = new DefaultHttpClient();
+		//DefaultHttpClient client = new DefaultHttpClient();
 		HttpPost post = new HttpPost(uri);
 		MultipartEntity entity = new MultipartEntity();
-		entity.addPart("username", new StringBody(mUsername));
-		entity.addPart("password", new StringBody(mPassword));
+		entity.addPart("source", new StringBody(FANFOU_SOURCE));
 		// Don't try this. Server does not appear to support chunking.
 		// entity.addPart("media", new InputStreamBody(imageStream, "media"));
-		entity.addPart("media", new FileBody(file));
-		entity.addPart("message", new StringBody(message));
+		entity.addPart("photo", new FileBody(file));
+		entity.addPart("status", new StringBody(message));
 		post.setEntity(entity);
 
 		HttpConnectionParams.setConnectionTimeout(post.getParams(),
@@ -176,7 +180,7 @@ public class TwitterApi {
 		HttpResponse response;
 
 		try {
-			response = client.execute(post);
+			response = mClient.execute(post);
 		} catch (ClientProtocolException e) {
 			Log.e(TAG, e.getMessage(), e);
 			throw new IOException("HTTP protocol error.");
@@ -189,47 +193,6 @@ public class TwitterApi {
 					.e(TAG, Utils.stringifyStream(response.getEntity()
 							.getContent()));
 			throw new IOException("Non OK response code: " + statusCode);
-		}
-
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		DocumentBuilder db;
-		Document doc;
-
-		try {
-			db = dbf.newDocumentBuilder();
-			doc = db.parse(response.getEntity().getContent());
-		} catch (ParserConfigurationException e) {
-			throw new IOException("Could not parse response.");
-		} catch (IllegalStateException e) {
-			throw new IOException("Could not parse response.");
-		} catch (SAXException e) {
-			throw new IOException("Could not parse response.");
-		}
-
-		Element root = doc.getDocumentElement();
-		root.normalize();
-
-		if (!"rsp".equals(root.getTagName())) {
-			throw new IOException("Could not parse response.");
-		}
-
-		String stat = root.getAttribute("stat");
-
-		if ("fail".equals(stat)) {
-			NodeList list = root.getChildNodes();
-
-			for (int i = 0; i < list.getLength(); i++) {
-				if (list.item(i).getNodeName().equals("err")) {
-					Node err = list.item(i);
-					String code = err.getAttributes().getNamedItem("code")
-							.getNodeValue();
-					String msg = err.getAttributes().getNamedItem("msg")
-							.getNodeValue();
-					throw new ApiException(Integer.parseInt(code), msg);
-				}
-			}
-
-			throw new IOException("Could not parse error response.");
 		}
 	}
 
@@ -502,7 +465,7 @@ public class TwitterApi {
 
 		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("status", status));
-		params.add(new BasicNameValuePair("source", "fanfoudroid"));
+		params.add(new BasicNameValuePair("source", FANFOU_SOURCE));
 		if (reply_to != null && !reply_to.equals("")) {
 			params
 					.add(new BasicNameValuePair("in_reply_to_status_id",
@@ -657,7 +620,7 @@ public class TwitterApi {
 	public JSONArray search(String query, int page) throws IOException,
 			AuthException, ApiException {
 		Log.i(TAG, "Searching.");
-
+		
 		String url = SEARCH_URL + "?q=" + URLEncoder.encode(query, HTTP.UTF_8)
 				+ "&page=" + URLEncoder.encode(page + "", HTTP.UTF_8);
 
@@ -665,8 +628,7 @@ public class TwitterApi {
 		JSONArray json = null;
 
 		try {
-			JSONObject object = new JSONObject(Utils.stringifyStream(data));
-			json = object.getJSONArray("results");
+			json = new JSONArray(Utils.stringifyStream(data));
 		} catch (JSONException e) {
 			Log.e(TAG, e.getMessage(), e);
 			throw new IOException("Could not parse JSON.");
