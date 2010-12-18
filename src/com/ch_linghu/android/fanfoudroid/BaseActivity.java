@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -166,9 +167,9 @@ public class BaseActivity extends Activity {
         try {  
         	mImageFile = new File(Environment.getExternalStorageDirectory(), "upload.jpg");
         	mImageUri = Uri.fromFile(mImageFile);
-            Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); 
-            i.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
-            startActivityForResult(i, REQUEST_IMAGE_CAPTURE);  
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); 
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
+            startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);  
         } catch (Exception e) {  
             Log.e(TAG, e.getMessage());  
         }  
@@ -178,6 +179,7 @@ public class BaseActivity extends Activity {
     {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
+        startActivityForResult(intent, REQUEST_PHOTO_LIBRARY);  
     	return true;
     }
     case OPTIONS_MENU_ID_LOGOUT:
@@ -205,6 +207,15 @@ public class BaseActivity extends Activity {
     startActivityForResult(intent, REQUEST_CODE_LAUNCH_ACTIVITY);
   }
 
+  private String getRealPathFromURI(Uri contentUri) {
+          String[] proj = { MediaStore.Images.Media.DATA };
+          Cursor cursor = managedQuery(contentUri, proj, null, null, null);
+          int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+          cursor.moveToFirst();
+          return cursor.getString(column_index);
+      }
+
+
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
@@ -215,14 +226,26 @@ public class BaseActivity extends Activity {
       Log.i(TAG, "Result logout.");
       handleLoggedOut();
     } else if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK){
-    	Intent i = new Intent(Intent.ACTION_SEND);
+    	Intent intent = new Intent(Intent.ACTION_SEND);
     	Bundle bundle = new Bundle();
     	bundle.putParcelable("uri", mImageUri);
     	bundle.putString("filename", mImageFile.getPath());
     	
-    	i.setClass(this, PictureActivity.class);
-    	i.putExtras(bundle);
-        startActivity(i);  
+    	intent.setClass(this, PictureActivity.class);
+    	intent.putExtras(bundle);
+        startActivity(intent);  
+    } else if (requestCode == REQUEST_PHOTO_LIBRARY && resultCode == RESULT_OK){
+    	mImageUri = data.getData();
+    	mImageFile = new File(getRealPathFromURI(mImageUri));
+
+    	Intent intent = new Intent(Intent.ACTION_SEND);
+    	Bundle bundle = new Bundle();
+    	bundle.putParcelable("uri", mImageUri);
+    	bundle.putString("filename", mImageFile.getPath());
+    	
+    	intent.setClass(this, PictureActivity.class);
+    	intent.putExtras(bundle);
+        startActivity(intent);  	
     }
   }
 

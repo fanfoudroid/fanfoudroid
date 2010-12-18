@@ -139,7 +139,7 @@ public class TwitterService extends Service {
 
 		if (count == 1) {
 			title = latestTweet.screenName;
-			text = latestTweet.text;
+			text = latestTweet.text.replaceAll("<.*?>", "");
 		} else {
 			title = getString(R.string.new_twitter_updates);
 			text = getString(R.string.x_new_tweets);
@@ -184,7 +184,7 @@ public class TwitterService extends Service {
 
 		if (count == 1) {
 			title = latestTweet.screenName;
-			text = latestTweet.text;
+			text = latestTweet.text.replaceAll("<.*?>", "");
 		} else {
 			title = getString(R.string.new_mention_updates);
 			text = getString(R.string.x_new_mentions);
@@ -273,7 +273,7 @@ public class TwitterService extends Service {
 
 		if (count == 1) {
 			title = latest.screenName;
-			text = latest.text;
+			text = latest.text.replaceAll("<.*?>", "");
 		} else {
 			title = getString(R.string.new_twitter_dms);
 			text = getString(R.string.x_new_dms);
