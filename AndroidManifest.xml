@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      android:versionCode="20101218"
-      android:versionName="0.3beta" package="com.ch_linghu.android.fanfoudroid">
+      package="com.ch_linghu.android.fanfoudroid" android:versionName="0.4beta" android:versionCode="20101229">
     <uses-sdk android:minSdkVersion="3" />
           
     <application

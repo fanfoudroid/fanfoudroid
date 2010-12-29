@@ -17,6 +17,8 @@
     <string name="about">关于</string>
     <string name="replies">提到我的</string>
     <string name="dm">私信</string>
+    <string name="add_fav">收藏</string>
+    <string name="del_fav">取消收藏</string>
     <string name="tweets">消息</string>
     <string name="show_at_replies">提到我的</string>
     <string name="show_all">Show all</string>

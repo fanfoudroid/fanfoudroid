@@ -174,7 +174,7 @@ public class TwitterDbAdapter {
 
     return mDb.insert(TWEET_TABLE, null, initialValues);
   }
-
+  
   public long createMention(Tweet tweet, boolean isUnread) {
 	    ContentValues initialValues = new ContentValues();
 	    initialValues.put(KEY_ID, tweet.id);
@@ -194,6 +194,31 @@ public class TwitterDbAdapter {
 
 	    return mDb.insert(MENTION_TABLE, null, initialValues);
 	  }
+  
+  public long updateTweet(Tweet tweet){
+	  String id = tweet.id;
+
+	    ContentValues initialValues = new ContentValues();
+	    initialValues.put(KEY_ID, tweet.id);
+	    initialValues.put(KEY_USER, tweet.screenName);
+	    initialValues.put(KEY_TEXT, tweet.text);
+	    initialValues.put(KEY_PROFILE_IMAGE_URL, tweet.profileImageUrl);
+	    initialValues.put(KEY_FAVORITED, tweet.favorited);
+	    initialValues.put(KEY_IN_REPLY_TO_STATUS_ID, tweet.inReplyToStatusId);
+	    initialValues.put(KEY_IN_REPLY_TO_USER_ID, tweet.inReplyToUserId);
+	    initialValues.put(KEY_IN_REPLY_TO_SCREEN_NAME, tweet.inReplyToScreenName);
+	    initialValues.put(KEY_IS_REPLY, tweet.isReply());
+	    initialValues
+	        .put(KEY_CREATED_AT, DB_DATE_FORMATTER.format(tweet.createdAt));
+	    initialValues.put(KEY_SOURCE, tweet.source);
+	    initialValues.put(KEY_USER_ID, tweet.userId);
+	  
+	  int result1 = mDb.update(TWEET_TABLE, initialValues, KEY_ID+"=?", new String[]{id});
+	  int result2 = mDb.update(MENTION_TABLE, initialValues, KEY_ID+"=?", new String[]{id});
+	  
+	  return result1 > result2 ? result1 : result2;
+  }
+
   
   public long createDm(Dm dm, boolean isUnread) {
     ContentValues initialValues = new ContentValues();

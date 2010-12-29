@@ -486,6 +486,50 @@ public class TwitterApi {
 
 		return json;
 	}
+	
+	public JSONObject addFavorite(String id)
+			throws IOException, AuthException, ApiException{
+		Log.i(TAG, "Add favorite.");
+		String url = String.format(ADD_FAV_URL, id);
+
+		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("source", FANFOU_SOURCE));
+		InputStream data = requestData(url, METHOD_POST, params);
+		JSONObject json = null;
+
+		try {
+			json = new JSONObject(Utils.stringifyStream(data));
+		} catch (JSONException e) {
+			Log.e(TAG, e.getMessage(), e);
+			throw new IOException("Could not parse JSON.");
+		} finally {
+			data.close();
+		}
+
+		return json;
+	}
+
+	public JSONObject delFavorite(String id)
+			throws IOException, AuthException, ApiException{
+		Log.i(TAG, "delete favorite.");
+		String url = String.format(DEL_FAV_URL, id);
+	
+		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("source", FANFOU_SOURCE));
+		InputStream data = requestData(url, METHOD_POST, params);
+		JSONObject json = null;
+	
+		try {
+			json = new JSONObject(Utils.stringifyStream(data));
+		} catch (JSONException e) {
+			Log.e(TAG, e.getMessage(), e);
+			throw new IOException("Could not parse JSON.");
+		} finally {
+			data.close();
+		}
+	
+		return json;
+	}
 
 	public JSONArray getDmsSinceId(String sinceId, boolean isSent)
 			throws IOException, AuthException, ApiException {

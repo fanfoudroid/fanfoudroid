@@ -77,6 +77,7 @@ public class TwitterActivity extends BaseActivity {
   private UserTask<Void, Void, RetrieveResult> mRetrieveTask;
   private UserTask<String, Void, SendResult> mSendTask;
   private UserTask<Void, Void, RetrieveResult> mFollowersRetrieveTask;
+  private UserTask<String, Void, SendResult> mFavTask;
 
   // Refresh data at startup if last refresh was this long ago or greater.
   private static final long REFRESH_THRESHOLD = 5 * 60 * 1000;
@@ -261,6 +262,9 @@ public class TwitterActivity extends BaseActivity {
     } else if (mSendTask != null
         && mSendTask.getStatus() == UserTask.Status.RUNNING) {
       outState.putBoolean(SIS_RUNNING_KEY, true);
+    } else if (mFavTask != null
+    	&& mFavTask.getStatus() == UserTask.Status.RUNNING) {
+      outState.putBoolean(SIS_RUNNING_KEY, true);    	
     }
   }
 
@@ -286,6 +290,11 @@ public class TwitterActivity extends BaseActivity {
       mRetrieveTask.cancel(true);
     }
 
+    if (mFavTask != null
+            && mFavTask.getStatus() == UserTask.Status.RUNNING) {
+          mFavTask.cancel(true);
+    }
+    
     // Don't need to cancel FollowersTask (assuming it ends properly).
 
     super.onDestroy();
@@ -309,10 +318,12 @@ public class TwitterActivity extends BaseActivity {
     mTweetList.setAdapter(mTweetAdapter);
   }
 
-  private static final int CONTEXT_MORE_ID = 3;
   private static final int CONTEXT_REPLY_ID = 0;
   private static final int CONTEXT_RETWEET_ID = 1;
   private static final int CONTEXT_DM_ID = 2;
+  private static final int CONTEXT_MORE_ID = 3;
+  private static final int CONTEXT_ADD_FAV_ID = 4;
+  private static final int CONTEXT_DEL_FAV_ID = 5;
 
   @Override
   public void onCreateContextMenu(ContextMenu menu, View v,
@@ -330,6 +341,15 @@ public class TwitterActivity extends BaseActivity {
     menu.add(0, CONTEXT_REPLY_ID, 0, R.string.reply);
     menu.add(0, CONTEXT_RETWEET_ID, 0, R.string.retweet);
     menu.add(0, CONTEXT_DM_ID, 0, R.string.dm);
+    
+    String favorited = cursor.getString(cursor
+            .getColumnIndexOrThrow(TwitterDbAdapter.KEY_FAVORITED));
+    if (favorited.equals("true")){
+    	menu.add(0, CONTEXT_DEL_FAV_ID, 0, R.string.del_fav);
+    }else{
+    	menu.add(0, CONTEXT_ADD_FAV_ID, 0, R.string.add_fav);    	
+    }
+    
 
     //MenuItem item = menu.add(0, CONTEXT_DM_ID, 0, R.string.dm);
     //item.setEnabled(getDb().isFollower(userId));
@@ -382,6 +402,20 @@ public class TwitterActivity extends BaseActivity {
           .getColumnIndexOrThrow(TwitterDbAdapter.KEY_USER_ID));
       launchActivity(DmActivity.createIntent(user));
       return true;
+    case CONTEXT_ADD_FAV_ID:
+    {
+    	String id = cursor.getString(cursor
+    	     .getColumnIndexOrThrow(TwitterDbAdapter.KEY_ID));
+    	doFavorite("add", id);
+    }
+    	return true;
+    case CONTEXT_DEL_FAV_ID:
+    {
+    	String id = cursor.getString(cursor
+       	     .getColumnIndexOrThrow(TwitterDbAdapter.KEY_ID));
+       	doFavorite("del", id);
+    }
+    	return true;
     default:
       return super.onContextItemSelected(item);
     }
@@ -509,12 +543,22 @@ public class TwitterActivity extends BaseActivity {
       }
     }
   }
+  
+  private void doFavorite(String action, String id) {	  
+    if (mFavTask != null && mFavTask.getStatus() == UserTask.Status.RUNNING) {
+        Log.w(TAG, "FavTask still running");
+      } else {
+    	  if (!id.isEmpty()){
+    		  mFavTask = new FavTask().execute(action, id);
+    	  }
+      }
+  }
 
   private enum SendResult {
     OK, IO_ERROR, AUTH_ERROR, CANCELLED
   }
 
-  private class SendTask extends UserTask<String, Void, SendResult> {
+  private class FavTask extends UserTask<String, Void, SendResult> {
     @Override
     public void onPreExecute() {
       onSendBegin();
@@ -523,9 +567,15 @@ public class TwitterActivity extends BaseActivity {
     @Override
     public SendResult doInBackground(String... params) {
       try {
-    	String _reply_to = params[0];
-        String status = mTweetEdit.getText().toString();
-        JSONObject jsonObject = getApi().update(status, _reply_to);
+    	String action = params[0];
+    	String id = params[1];
+    	JSONObject jsonObject = null;
+    	if (action.equals("add")){
+    		jsonObject = getApi().addFavorite(id);
+    	}else{
+    		jsonObject = getApi().delFavorite(id);
+    	}
+    	
         Tweet tweet = Tweet.create(jsonObject);
 
         if (!Utils.isEmpty(tweet.profileImageUrl)) {
@@ -537,7 +587,7 @@ public class TwitterActivity extends BaseActivity {
           }
         }
 
-        //getDb().createTweet(tweet, false);
+        getDb().updateTweet(tweet);
       } catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
         return SendResult.IO_ERROR;
@@ -574,6 +624,66 @@ public class TwitterActivity extends BaseActivity {
     }
   }
 
+  private class SendTask extends UserTask<String, Void, SendResult> {
+	    @Override
+	    public void onPreExecute() {
+	      onSendBegin();
+	    }
+
+	    @Override
+	    public SendResult doInBackground(String... params) {
+	      try {
+	    	String _reply_to = params[0];
+	        String status = mTweetEdit.getText().toString();
+	        JSONObject jsonObject = getApi().update(status, _reply_to);
+	        Tweet tweet = Tweet.create(jsonObject);
+
+	        if (!Utils.isEmpty(tweet.profileImageUrl)) {
+	          // Fetch image to cache.
+	          try {
+	            getImageManager().put(tweet.profileImageUrl);
+	          } catch (IOException e) {
+	            Log.e(TAG, e.getMessage(), e);
+	          }
+	        }
+
+	        //getDb().createTweet(tweet, false);
+	      } catch (IOException e) {
+	        Log.e(TAG, e.getMessage(), e);
+	        return SendResult.IO_ERROR;
+	      } catch (AuthException e) {
+	        Log.i(TAG, "Invalid authorization.");
+	        return SendResult.AUTH_ERROR;
+	      } catch (JSONException e) {
+	        Log.w(TAG, "Could not parse JSON after sending update.");
+	        return SendResult.IO_ERROR;
+	      } catch (ApiException e) {
+	        Log.e(TAG, e.getMessage(), e);
+	        return SendResult.IO_ERROR;
+	      }
+
+	      return SendResult.OK;
+	    }
+
+	    @Override
+	    public void onPostExecute(SendResult result) {
+	      if (isCancelled()) {
+	        // Canceled doesn't really mean "canceled" in this task.
+	        // We want the request to complete, but don't want to update the
+	        // activity (it's probably dead).
+	        return;
+	      }
+
+	      if (result == SendResult.AUTH_ERROR) {
+	        logout();
+	      } else if (result == SendResult.OK) {
+	        onSendSuccess();
+	      } else if (result == SendResult.IO_ERROR) {
+	        onSendFailure();
+	      }
+	    }
+	  }
+  
   private void onSendBegin() {
     disableEntry();
     updateProgress("Updating status...");
