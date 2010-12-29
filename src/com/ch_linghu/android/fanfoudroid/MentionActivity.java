@@ -548,7 +548,7 @@ public class MentionActivity extends BaseActivity {
 	    if (mFavTask != null && mFavTask.getStatus() == UserTask.Status.RUNNING) {
 	        Log.w(TAG, "FavTask still running");
 	      } else {
-	    	  if (!id.isEmpty()){
+	    	  if (!Utils.isEmpty(id)){
 	    		  mFavTask = new FavTask().execute(action, id);
 	    	  }
 	      }
