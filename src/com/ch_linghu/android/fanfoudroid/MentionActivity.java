@@ -326,7 +326,7 @@ public class MentionActivity extends BaseActivity {
     String user = cursor.getString(cursor
         .getColumnIndexOrThrow(TwitterDbAdapter.KEY_USER));
 
-    menu.add(0, CONTEXT_MORE_ID, 0, "@" + user);
+    menu.add(0, CONTEXT_MORE_ID, 0, user+" 的空间");
     menu.add(0, CONTEXT_REPLY_ID, 0, R.string.reply);
     menu.add(0, CONTEXT_RETWEET_ID, 0, R.string.retweet);
     menu.add(0, CONTEXT_DM_ID, 0, R.string.dm);
