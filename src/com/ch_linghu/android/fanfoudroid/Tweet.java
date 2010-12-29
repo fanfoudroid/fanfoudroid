@@ -90,10 +90,10 @@ public class Tweet extends Message {
     builder.append("发送自 ");
     builder.append(source);
     
-    if (!replyTo.isEmpty()){
-    	builder.append(" 回复 ");
-    	builder.append(replyTo);
-    }
+//	if (!replyTo.isEmpty()) {
+//		builder.append(" 回复 ");
+//		builder.append(replyTo);
+//	}
 
     return builder.toString();
   }
