@@ -57,6 +57,7 @@
 		android:layout_gravity="top|right"
 		android:layout_width="16px"
 		android:layout_height="16px"
+		android:visibility="invisible"
 		android:src="@android:drawable/star_off"
 	/>
 </FrameLayout>
