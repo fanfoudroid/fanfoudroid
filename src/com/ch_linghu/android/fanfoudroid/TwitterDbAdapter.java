@@ -35,6 +35,10 @@ public class TwitterDbAdapter {
   public static final String KEY_ID = "_id";
   public static final String KEY_USER = "user";
   public static final String KEY_TEXT = "text";
+  public static final String KEY_FAVORITED = "favorited";
+  public static final String KEY_IN_REPLY_TO_STATUS_ID = "in_reply_to_status_id";
+  public static final String KEY_IN_REPLY_TO_USER_ID = "in_reply_to_user_id";
+  public static final String KEY_IN_REPLY_TO_SCREEN_NAME = "in_reply_to_screen_name";
   public static final String KEY_PROFILE_IMAGE_URL = "profile_image_url";
   public static final String KEY_IS_UNREAD = "is_unread";
   public static final String KEY_CREATED_AT = "created_at";
@@ -45,6 +49,8 @@ public class TwitterDbAdapter {
 
   public static final String[] TWEET_COLUMNS = new String[] { KEY_ID, KEY_USER,
       KEY_TEXT, KEY_PROFILE_IMAGE_URL, KEY_IS_UNREAD, KEY_CREATED_AT,
+      KEY_FAVORITED, KEY_IN_REPLY_TO_STATUS_ID, KEY_IN_REPLY_TO_USER_ID,
+      KEY_IN_REPLY_TO_SCREEN_NAME,
       KEY_SOURCE, KEY_USER_ID, KEY_IS_REPLY };
 
   public static final String[] DM_COLUMNS = new String[] { KEY_ID, KEY_USER,
@@ -63,7 +69,7 @@ public class TwitterDbAdapter {
   private static final String DM_TABLE = "dms";
   private static final String FOLLOWER_TABLE = "followers";
 
-  private static final int DATABASE_VERSION = 1;
+  private static final int DATABASE_VERSION = 2;
 
   // NOTE: the twitter ID is used as the row ID.
   // Furthermore, if a row already exists, an insert will replace
@@ -74,6 +80,10 @@ public class TwitterDbAdapter {
       + " text not null, " + KEY_TEXT + " text not null, "
       + KEY_PROFILE_IMAGE_URL + " text not null, " + KEY_IS_UNREAD
       + " boolean not null, " + KEY_CREATED_AT + " date not null, "
+      + KEY_FAVORITED + " text, "
+      + KEY_IN_REPLY_TO_STATUS_ID + " text, "
+      + KEY_IN_REPLY_TO_USER_ID + " text, "
+      + KEY_IN_REPLY_TO_SCREEN_NAME + " text, "
       + KEY_SOURCE + " text not null, " + KEY_USER_ID + " text, " + KEY_IS_REPLY + " boolean not null)";
 
   private static final String MENTION_TABLE_CREATE = "create table "
@@ -82,6 +92,10 @@ public class TwitterDbAdapter {
       + " text not null, " + KEY_TEXT + " text not null, "
       + KEY_PROFILE_IMAGE_URL + " text not null, " + KEY_IS_UNREAD
       + " boolean not null, " + KEY_CREATED_AT + " date not null, "
+      + KEY_FAVORITED + " text, "
+      + KEY_IN_REPLY_TO_STATUS_ID + " text, "
+      + KEY_IN_REPLY_TO_USER_ID + " text, "
+      + KEY_IN_REPLY_TO_SCREEN_NAME + " text, "
       + KEY_SOURCE + " text not null, " + KEY_USER_ID + " text, " + KEY_IS_REPLY + " boolean not null)";
 
   private static final String DM_TABLE_CREATE = "create table " + DM_TABLE
@@ -147,6 +161,10 @@ public class TwitterDbAdapter {
     initialValues.put(KEY_USER, tweet.screenName);
     initialValues.put(KEY_TEXT, tweet.text);
     initialValues.put(KEY_PROFILE_IMAGE_URL, tweet.profileImageUrl);
+    initialValues.put(KEY_FAVORITED, tweet.favorited);
+    initialValues.put(KEY_IN_REPLY_TO_STATUS_ID, tweet.inReplyToStatusId);
+    initialValues.put(KEY_IN_REPLY_TO_USER_ID, tweet.inReplyToUserId);
+    initialValues.put(KEY_IN_REPLY_TO_SCREEN_NAME, tweet.inReplyToScreenName);
     initialValues.put(KEY_IS_UNREAD, isUnread);
     initialValues.put(KEY_IS_REPLY, tweet.isReply());
     initialValues
@@ -163,6 +181,10 @@ public class TwitterDbAdapter {
 	    initialValues.put(KEY_USER, tweet.screenName);
 	    initialValues.put(KEY_TEXT, tweet.text);
 	    initialValues.put(KEY_PROFILE_IMAGE_URL, tweet.profileImageUrl);
+	    initialValues.put(KEY_FAVORITED, tweet.favorited);
+	    initialValues.put(KEY_IN_REPLY_TO_STATUS_ID, tweet.inReplyToStatusId);
+	    initialValues.put(KEY_IN_REPLY_TO_USER_ID, tweet.inReplyToUserId);
+	    initialValues.put(KEY_IN_REPLY_TO_SCREEN_NAME, tweet.inReplyToScreenName);
 	    initialValues.put(KEY_IS_UNREAD, isUnread);
 	    initialValues.put(KEY_IS_REPLY, tweet.isReply());
 	    initialValues

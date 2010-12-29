@@ -44,11 +44,16 @@ public class Tweet extends Message {
     tweet.id = jsonObject.getString("id") + "";
     tweet.text = Utils.decodeTwitterJson(jsonObject.getString("text"));
     tweet.createdAt = Utils.parseDateTime(jsonObject.getString("created_at"));
-
+    tweet.favorited = jsonObject.getString("favorited");
+    tweet.inReplyToStatusId = jsonObject.getString("in_reply_to_status_id");
+    tweet.inReplyToUserId = jsonObject.getString("in_reply_to_user_id");
+    tweet.inReplyToScreenName = jsonObject.getString("in_reply_to_screen_name");
+    
     JSONObject user = jsonObject.getJSONObject("user");
     tweet.screenName = Utils.decodeTwitterJson(user.getString("screen_name"));
     tweet.profileImageUrl = user.getString("profile_image_url");
     tweet.userId = user.getString("id");
+    
     tweet.source = Utils.decodeTwitterJson(jsonObject.getString("source")).
         replaceAll("\\<.*?>", "");
 
@@ -61,6 +66,10 @@ public class Tweet extends Message {
     tweet.id = jsonObject.getString("id") + "";
     tweet.text = Utils.decodeTwitterJson(jsonObject.getString("text"));
     tweet.createdAt = Utils.parseSearchApiDateTime(jsonObject.getString("created_at"));
+    tweet.favorited = jsonObject.getString("favorited");
+    tweet.inReplyToStatusId = jsonObject.getString("in_reply_to_status_id");
+    tweet.inReplyToUserId = jsonObject.getString("in_reply_to_user_id");
+    tweet.inReplyToScreenName = jsonObject.getString("in_reply_to_screen_name");
 
     tweet.screenName = Utils.decodeTwitterJson(jsonObject.getString("from_user"));
     tweet.profileImageUrl = jsonObject.getString("profile_image_url");
@@ -72,7 +81,7 @@ public class Tweet extends Message {
   }
 
   public static String buildMetaText(StringBuilder builder,
-      Date createdAt, String source) {
+      Date createdAt, String source, String replyTo) {
     builder.setLength(0);
 
     builder.append(Utils.getRelativeDate(createdAt));
@@ -80,6 +89,11 @@ public class Tweet extends Message {
 
     builder.append("发送自 ");
     builder.append(source);
+    
+    if (!replyTo.isEmpty()){
+    	builder.append(" 回复 ");
+    	builder.append(replyTo);
+    }
 
     return builder.toString();
   }

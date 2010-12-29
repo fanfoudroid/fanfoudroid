@@ -730,7 +730,7 @@ public class UserActivity extends BaseActivity implements MyListView.OnNeedMoreL
       Utils.setTweetText(holder.tweetText, tweet.text);
 
       holder.metaText.setText(Tweet.buildMetaText(mMetaBuilder,
-          tweet.createdAt, tweet.source));
+          tweet.createdAt, tweet.source, tweet.inReplyToScreenName));
 
       return view;
     }

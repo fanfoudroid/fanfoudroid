@@ -27,7 +27,7 @@ public final class R {
         public static final int heart_background_selector=0x7f02000a;
         public static final int ic_menu_zoom_out=0x7f02000b;
         public static final int icon=0x7f02000c;
-        public static final int label_color=0x7f020018;
+        public static final int label_color=0x7f020019;
         public static final int list_selector=0x7f02000d;
         public static final int list_selector_selected=0x7f02000e;
         public static final int login_background=0x7f02000f;
@@ -38,24 +38,26 @@ public final class R {
         public static final int send=0x7f020014;
         public static final int send_focus=0x7f020015;
         public static final int send_pressed=0x7f020016;
-        public static final int status_color=0x7f020019;
-        public static final int tweet_color=0x7f02001b;
-        public static final int tweet_meta_color=0x7f02001c;
-        public static final int tweet_user_color=0x7f02001a;
-        public static final int user_background=0x7f020017;
+        public static final int status_color=0x7f02001a;
+        public static final int thread_background=0x7f020017;
+        public static final int tweet_color=0x7f02001c;
+        public static final int tweet_meta_color=0x7f02001d;
+        public static final int tweet_user_color=0x7f02001b;
+        public static final int user_background=0x7f020018;
     }
     public static final class id {
         public static final int chars_text=0x7f080001;
-        public static final int follow_button=0x7f08000f;
+        public static final int follow_button=0x7f080010;
         public static final int password_edit=0x7f080007;
         public static final int preview=0x7f080009;
         public static final int profile_image=0x7f08000a;
         public static final int progress_text=0x7f080005;
-        public static final int realname_text=0x7f08000e;
+        public static final int realname_text=0x7f08000f;
         public static final int send_button=0x7f080003;
         public static final int signin_button=0x7f080008;
         public static final int to_edit=0x7f080000;
         public static final int tweet_edit=0x7f080002;
+        public static final int tweet_fav=0x7f08000e;
         public static final int tweet_list=0x7f080004;
         public static final int tweet_meta_text=0x7f08000d;
         public static final int tweet_text=0x7f08000c;
@@ -70,10 +72,11 @@ public final class R {
         public static final int main=0x7f030004;
         public static final int picture=0x7f030005;
         public static final int search=0x7f030006;
-        public static final int tweet=0x7f030007;
-        public static final int uniform_tweet=0x7f030008;
-        public static final int user=0x7f030009;
-        public static final int user_tweet=0x7f03000a;
+        public static final int thread=0x7f030007;
+        public static final int tweet=0x7f030008;
+        public static final int uniform_tweet=0x7f030009;
+        public static final int user=0x7f03000a;
+        public static final int user_tweet=0x7f03000b;
     }
     public static final class string {
         public static final int about=0x7f06000b;

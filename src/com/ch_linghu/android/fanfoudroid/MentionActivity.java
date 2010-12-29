@@ -367,7 +367,8 @@ public class MentionActivity extends BaseActivity {
     case CONTEXT_RETWEET_ID:
       _reply_id = cursor.getString(
 	          cursor.getColumnIndexOrThrow(TwitterDbAdapter.KEY_ID));
-      String retweet = " 热饭 @"
+      String prefix = mPreferences.getString(Preferences.RT_PREFIX_KEY, getString(R.string.pref_rt_prefix_default));
+      String retweet = " " + prefix + " @"
           + cursor.getString(cursor
               .getColumnIndexOrThrow(TwitterDbAdapter.KEY_USER))
           + " "
@@ -400,6 +401,8 @@ public class MentionActivity extends BaseActivity {
       mCreatedAtColumn = cursor
           .getColumnIndexOrThrow(TwitterDbAdapter.KEY_CREATED_AT);
       mSourceColumn = cursor.getColumnIndexOrThrow(TwitterDbAdapter.KEY_SOURCE);
+      mInReplyToScreenName = cursor.getColumnIndexOrThrow(TwitterDbAdapter.KEY_IN_REPLY_TO_SCREEN_NAME);
+      mFavorited = cursor.getColumnIndexOrThrow(TwitterDbAdapter.KEY_FAVORITED);
 
       mMetaBuilder = new StringBuilder();
     }
@@ -411,6 +414,8 @@ public class MentionActivity extends BaseActivity {
     private int mProfileImageUrlColumn;
     private int mCreatedAtColumn;
     private int mSourceColumn;
+    private int mInReplyToScreenName;
+    private int mFavorited;
 
     private StringBuilder mMetaBuilder;
 
@@ -423,6 +428,7 @@ public class MentionActivity extends BaseActivity {
       holder.tweetText = (TextView) view.findViewById(R.id.tweet_text);
       holder.profileImage = (ImageView) view.findViewById(R.id.profile_image);
       holder.metaText = (TextView) view.findViewById(R.id.tweet_meta_text);
+      holder.fav = (ImageView) view.findViewById(R.id.tweet_fav);
       view.setTag(holder);
 
       return view;
@@ -433,6 +439,7 @@ public class MentionActivity extends BaseActivity {
       public TextView tweetText;
       public ImageView profileImage;
       public TextView metaText;
+      public ImageView fav;
     }
 
     @Override
@@ -449,11 +456,17 @@ public class MentionActivity extends BaseActivity {
             profileImageUrl));
       }
 
+      if (cursor.getString(mFavorited).equals("true")){
+        	holder.fav.setVisibility(View.VISIBLE);
+        }else{
+        	holder.fav.setVisibility(View.INVISIBLE);    	
+        }
+      
       try {
         Date createdAt = TwitterDbAdapter.DB_DATE_FORMATTER.parse(cursor
             .getString(mCreatedAtColumn));
         holder.metaText.setText(Tweet.buildMetaText(mMetaBuilder, createdAt,
-            cursor.getString(mSourceColumn)));
+            cursor.getString(mSourceColumn), cursor.getString(mInReplyToScreenName)));
       } catch (ParseException e) {
         Log.w(TAG, "Invalid created at data.");
       }
