@@ -2,7 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.ch_linghu.android.fanfoudroid" android:versionName="0.4.1beta" android:versionCode="20101230">
     <uses-sdk android:minSdkVersion="3" />
+	<!-- 
 	<supports-screens android:anyDensity="true"/>
+	-->
 	          
     <application
         android:name="TwitterApplication"    
