@@ -236,7 +236,15 @@ public class BaseActivity extends Activity {
         startActivity(intent);  
     } else if (requestCode == REQUEST_PHOTO_LIBRARY && resultCode == RESULT_OK){
     	mImageUri = data.getData();
-    	mImageFile = new File(getRealPathFromURI(mImageUri));
+    	if (mImageUri.getScheme().equals("content")){
+        	String filePath = getRealPathFromURI(mImageUri);
+        	mImageFile = new File(filePath);    	
+    	}else{
+    		//suppose that we got a file:// URI, convert it to content:// URI
+    		String filePath = mImageUri.getPath();
+    		mImageFile = new File(filePath);
+    		mImageUri = Uri.fromFile(mImageFile);
+    	}
 
     	Intent intent = new Intent(Intent.ACTION_SEND);
     	Bundle bundle = new Bundle();
