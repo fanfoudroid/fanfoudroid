@@ -10,18 +10,18 @@
     <!-- profile image -->
 	<ImageView
 	  android:id="@+id/profile_image"
-	  android:layout_marginTop="2px"
-	  android:layout_marginLeft="2px"
-	  android:layout_marginBottom="2px"
-	  android:layout_marginRight="7px"
-	  android:layout_width="48px"
-	  android:layout_height="48px"
+	  android:layout_marginTop="2dp"
+	  android:layout_marginLeft="2dp"
+	  android:layout_marginBottom="2dp"
+	  android:layout_marginRight="7dp"
+	  android:layout_width="48dp"
+	  android:layout_height="48dp"
 	/>
 	
 	
 	<LinearLayout 
 	  android:orientation="vertical"
-	  android:layout_width="wrap_content"
+	  android:layout_width="fill_parent"
 	  android:layout_height="wrap_content"
 	>
 	
@@ -35,14 +35,15 @@
 			  android:id="@+id/tweet_user_text" 
 			  android:layout_width="fill_parent"
 			  android:layout_height="wrap_content"
+			  android:layout_weight="1"
 			  style="@style/LinkText.Bold.Big"
 			/>
 			<!-- favorited icon -->
 			<ImageView
 				android:id="@+id/tweet_fav"
-				android:layout_gravity="top|right"
-				android:layout_width="16px"
-				android:layout_height="16px"
+				android:layout_gravity="right"
+				android:layout_width="16dp"
+				android:layout_height="16dp"
 				android:visibility="invisible"
 				android:src="@android:drawable/star_off"
 			/>

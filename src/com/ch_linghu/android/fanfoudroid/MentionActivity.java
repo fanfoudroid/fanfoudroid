@@ -85,11 +85,8 @@ public class MentionActivity extends WithHeaderActivity implements Refreshable {
   // Refresh followers if last refresh was this long ago or greater.
   private static final long FOLLOWERS_REFRESH_THRESHOLD = 12 * 60 * 60 * 1000;
 
-  private static final String LAUNCH_ACTION = "com.ch_linghu.android.fanfoudroid.REPLIES";
-  private static final String NEW_TWEET_ACTION = "com.ch_linghu.android.fanfoudroid.NEW";
-
-  private static final String EXTRA_TEXT = "text";
-  
+  private static final String LAUNCH_ACTION = "com.ch_linghu.android.fanfoudroid.TWEETS";
+    
   static final int DIALOG_WRITE_ID = 0;
   
   public static Intent createIntent(Context context) {
@@ -314,18 +311,25 @@ public class MentionActivity extends WithHeaderActivity implements Refreshable {
 
       return true;
     case CONTEXT_REPLY_ID:
+    {
       int userIndex = cursor.getColumnIndexOrThrow(TwitterDbAdapter.KEY_USER);
       _reply_id = cursor.getString(
     		  cursor.getColumnIndexOrThrow(TwitterDbAdapter.KEY_ID));
       // TODO: this isn't quite perfect. It leaves extra empty spaces if you
       // perform the reply action again.
-      String replyTo = "@" + cursor.getString(userIndex);
-      String text = mTweetEdit.getText();
-      text = replyTo + " " + text.replace(replyTo, "");
-      mTweetEdit.setTextAndFocus(text, false);
+      String replyTo = "@" + cursor.getString(userIndex) + " ";
+      //String text = mTweetEdit.getText();
+      //text = replyTo + " " + text.replace(replyTo, "");
+      //mTweetEdit.setTextAndFocus(text, false);
+      Intent intent = new Intent(WriteActivity.NEW_TWEET_ACTION, null, this, WriteActivity.class);
+      intent.putExtra(WriteActivity.EXTRA_TEXT, replyTo);
+      intent.putExtra(WriteActivity.REPLY_ID, _reply_id);
+      startActivity(intent);
 
       return true;
+    }
     case CONTEXT_RETWEET_ID:
+    {
       _reply_id = cursor.getString(
 	          cursor.getColumnIndexOrThrow(TwitterDbAdapter.KEY_ID));
       String prefix = mPreferences.getString(Preferences.RT_PREFIX_KEY, getString(R.string.pref_rt_prefix_default));
@@ -335,9 +339,13 @@ public class MentionActivity extends WithHeaderActivity implements Refreshable {
           + " "
           + cursor.getString(cursor
               .getColumnIndexOrThrow(TwitterDbAdapter.KEY_TEXT)).replaceAll("<.*?>", "");
-      mTweetEdit.setTextAndFocus(retweet, true);
+      Intent intent = new Intent(WriteActivity.NEW_TWEET_ACTION, null, this, WriteActivity.class);
+      intent.putExtra(WriteActivity.EXTRA_TEXT, retweet);
+      intent.putExtra(WriteActivity.REPLY_ID, _reply_id);
+      startActivity(intent);
 
-      return true;
+      return true; 
+    }
     case CONTEXT_DM_ID:
       String user = cursor.getString(cursor
           .getColumnIndexOrThrow(TwitterDbAdapter.KEY_USER_ID));
@@ -551,14 +559,17 @@ public class MentionActivity extends WithHeaderActivity implements Refreshable {
         onSendFailure();
       }
     }
+
+    private void onSendSuccess() {
+  	  //updateProgress(getString(R.string.refreshing));
+  	  mTweetAdapter.notifyDataSetChanged();
+  	  mTweetAdapter.refresh();
+    }
+    private void onSendFailure() {
+        //updateProgress(getString(R.string.refreshing));
+    }
   }
   
-  private void onSendSuccess() {
-    //updateProgress(getString(R.string.refreshing));
-  }
-  private void onSendFailure() {
-    //updateProgress(getString(R.string.refreshing));
-  }
 
   public void doRetrieve() {
     Log.i(TAG, "Attempting retrieve.");

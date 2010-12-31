@@ -26,6 +26,10 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="image/*" />                
             </intent-filter>
+            <intent-filter>
+				<action android:name="com.ch_linghu.android.fanfoudroid.NEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
         <activity android:name="PictureActivity"
                   android:windowSoftInputMode="adjustResize|stateHidden"  
@@ -48,10 +52,6 @@
                 <action android:name="com.ch_linghu.android.fanfoudroid.TWEETS" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>                                                            
-            <intent-filter>
-                <action android:name="com.ch_linghu.android.fanfoudroid.NEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>                                                           
         </activity>
         <!--  TODO: why need stateHidden on the magic? -->
         <activity android:name="MentionActivity"

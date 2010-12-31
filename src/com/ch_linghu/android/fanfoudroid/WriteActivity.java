@@ -49,12 +49,14 @@ import com.google.android.photostream.UserTask;
 
 public class WriteActivity extends WithHeaderActivity {
 
+	public static final String NEW_TWEET_ACTION = "com.ch_linghu.android.fanfoudroid.NEW";
+	public static final String EXTRA_TEXT = "text";
+	public static final String REPLY_ID = "reply_id"; 
+
 	private static final String TAG = "WriteActivity";
 	private static final String SIS_RUNNING_KEY = "running";
-	private static final String NEW_TWEET_ACTION = "com.ch_linghu.android.fanfoudroid.NEW";
-	private static final String EXTRA_TEXT = "text";
 	private static final String PREFS_NAME = "com.ch_linghu.android.fanfoudroid";
-
+	
 	// View
 	private TweetEdit mTweetEdit;
 	private EditText mTweetEditText;
@@ -193,6 +195,8 @@ public class WriteActivity extends WithHeaderActivity {
 		String action = intent.getAction();
 		Bundle extras = intent.getExtras();
 
+		_reply_id = null;
+		
 		// View
 		mProgressText = (TextView) findViewById(R.id.progress_text);
 		mTweetEditText = (EditText) findViewById(R.id.tweet_edit);
@@ -231,6 +235,7 @@ public class WriteActivity extends WithHeaderActivity {
 
 		if (NEW_TWEET_ACTION.equals(action)) {
 			mTweetEdit.setText(intent.getStringExtra(EXTRA_TEXT));
+			_reply_id = intent.getStringExtra(REPLY_ID);
 		}
 
 		mSendButton = (Button) findViewById(R.id.send_button);
