@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
+import android.view.Window;
 
 /**
  * A BaseActivity has common routines and variables for an Activity
@@ -38,6 +39,10 @@ public class BaseActivity extends Activity {
     mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
     manageUpdateChecks();
+    
+    // No Titlebar
+	requestWindowFeature(Window.FEATURE_NO_TITLE);
+	requestWindowFeature(Window.FEATURE_PROGRESS);
   }
 
   protected void handleLoggedOut() {
@@ -159,27 +164,35 @@ public class BaseActivity extends Activity {
   private File mImageFile;
   private Uri mImageUri;
   
+  protected void openImageCaptureMenu() {
+	  try {  
+		// TODO: API < 1.6, images size too small
+      	mImageFile = new File(Environment.getExternalStorageDirectory(), "upload.jpg");
+      	mImageUri = Uri.fromFile(mImageFile);
+          Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); 
+          intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
+          startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);  
+      } catch (Exception e) {  
+          Log.e(TAG, e.getMessage());  
+      }  
+  }
+  
+  protected void openPhotoLibraryMenu() {
+	  Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+      intent.setType("image/*");
+      startActivityForResult(intent, REQUEST_PHOTO_LIBRARY); 
+  }
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
     case OPTIONS_MENU_ID_IMAGE_CAPTURE:
     {
-        try {  
-        	mImageFile = new File(Environment.getExternalStorageDirectory(), "upload.jpg");
-        	mImageUri = Uri.fromFile(mImageFile);
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); 
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
-            startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);  
-        } catch (Exception e) {  
-            Log.e(TAG, e.getMessage());  
-        }  
+    	openImageCaptureMenu();
         return true;
     }
     case OPTIONS_MENU_ID_PHOTO_LIBRARY:
     {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/*");
-        startActivityForResult(intent, REQUEST_PHOTO_LIBRARY);  
+    	openPhotoLibraryMenu();
     	return true;
     }
     case OPTIONS_MENU_ID_LOGOUT:
@@ -231,7 +244,7 @@ public class BaseActivity extends Activity {
     	bundle.putParcelable("uri", mImageUri);
     	bundle.putString("filename", mImageFile.getPath());
     	
-    	intent.setClass(this, PictureActivity.class);
+    	intent.setClass(this, WriteActivity.class);
     	intent.putExtras(bundle);
         startActivity(intent);  
     } else if (requestCode == REQUEST_PHOTO_LIBRARY && resultCode == RESULT_OK){
@@ -251,7 +264,8 @@ public class BaseActivity extends Activity {
     	bundle.putParcelable("uri", mImageUri);
     	bundle.putString("filename", mImageFile.getPath());
     	
-    	intent.setClass(this, PictureActivity.class);
+//    	intent.setClass(this, PictureActivity.class);
+    	intent.setClass(this, WriteActivity.class);
     	intent.putExtras(bundle);
         startActivity(intent);  	
     }

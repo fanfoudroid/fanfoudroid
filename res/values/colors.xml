@@ -5,4 +5,15 @@
   <drawable name="tweet_user_color">#FF52991F</drawable>
   <drawable name="tweet_color">#FF000000</drawable>  
   <drawable name="tweet_meta_color">#FF999999</drawable>
+  
+  <color name="opaque_red">#f00</color>
+  <color name="translucent_red">#80ff0000</color>
+  <color name="link_color">#FF0066CC</color>  
+  
+  <color name="status_background">#FFA</color>
+  <color name="status_text">#000</color>
+  
+  <color name="simiple_button_color">#FFF</color>
+  
+  <color name="body_background">#FFF</color>
 </resources>

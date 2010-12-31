@@ -31,31 +31,27 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
-import android.view.KeyEvent;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.CursorAdapter;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.ch_linghu.android.fanfoudroid.TwitterApi.ApiException;
 import com.ch_linghu.android.fanfoudroid.TwitterApi.AuthException;
 import com.google.android.photostream.UserTask;
 
-public class TwitterActivity extends BaseActivity {
+public class TwitterActivity extends WithHeaderActivity implements Refreshable {
   private static final String TAG = "TwitterActivity";
 
   // Views.
@@ -75,7 +71,7 @@ public class TwitterActivity extends BaseActivity {
 
   // Tasks.
   private UserTask<Void, Void, RetrieveResult> mRetrieveTask;
-  private UserTask<String, Void, SendResult> mSendTask;
+  
   private UserTask<Void, Void, RetrieveResult> mFollowersRetrieveTask;
   private UserTask<String, Void, SendResult> mFavTask;
 
@@ -90,37 +86,7 @@ public class TwitterActivity extends BaseActivity {
 
   private static final String EXTRA_TEXT = "text";
   
-  
-  private String _reply_id;
-
-  private class MyTextWatcher implements TextWatcher{
-
-	private TwitterActivity _activity;
-	MyTextWatcher(TwitterActivity activity){
-		_activity = activity;
-	}
-	@Override
-	public void afterTextChanged(Editable s) {
-		// TODO Auto-generated method stub
-		if (s.length() == 0){
-			_activity._reply_id = null;
-		}
-	}
-
-	@Override
-	public void beforeTextChanged(CharSequence s, int start, int count,
-			int after) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onTextChanged(CharSequence s, int start, int before, int count) {
-		// TODO Auto-generated method stub
-		
-	}
-	  
-  }
+  static final int DIALOG_WRITE_ID = 0;
   
   public static Intent createIntent(Context context) {
     Intent intent = new Intent(LAUNCH_ACTION);
@@ -136,12 +102,6 @@ public class TwitterActivity extends BaseActivity {
     return intent;
   }
 
-  public static Intent createNewTweetIntent(String text) {
-    Intent intent = new Intent(NEW_TWEET_ACTION);
-    intent.putExtra(EXTRA_TEXT, text);
-
-    return intent;
-  }
 
   private boolean isReplies() {
     return mState == STATE_REPLIES;
@@ -158,35 +118,19 @@ public class TwitterActivity extends BaseActivity {
     }
 
     setContentView(R.layout.main);
-
-    Intent intent = getIntent();
-    String action = intent.getAction();
+    initHeader(HEADER_STYLE_HOME, this);
 
     mState = mPreferences.getInt(
         Preferences.TWITTER_ACTIVITY_STATE_KEY, STATE_ALL);
 
     mTweetList = (ListView) findViewById(R.id.tweet_list);
 
-    mTweetEdit = new TweetEdit((EditText) findViewById(R.id.tweet_edit),
-        (TextView) findViewById(R.id.chars_text));
-    mTweetEdit.setOnKeyListener(tweetEnterHandler);
-    mTweetEdit.addTextChangedListener(new MyTextWatcher(TwitterActivity.this));
+
+//  });
     
-
-    if (NEW_TWEET_ACTION.equals(action)) {
-      mTweetEdit.setText(intent.getStringExtra(EXTRA_TEXT));
-    }
-
+    // 提示栏
     mProgressText = (TextView) findViewById(R.id.progress_text);
-
-    mSendButton = (ImageButton) findViewById(R.id.send_button);
-    mSendButton.setOnClickListener(new View.OnClickListener() {
-      public void onClick(View v) {
-        doSend(TwitterActivity.this._reply_id);
-        TwitterActivity.this._reply_id = null;
-      }
-    });
-
+   
     // Mark all as read.
     getDb().markAllTweetsRead();
 
@@ -259,9 +203,6 @@ public class TwitterActivity extends BaseActivity {
     if (mRetrieveTask != null
         && mRetrieveTask.getStatus() == UserTask.Status.RUNNING) {
       outState.putBoolean(SIS_RUNNING_KEY, true);
-    } else if (mSendTask != null
-        && mSendTask.getStatus() == UserTask.Status.RUNNING) {
-      outState.putBoolean(SIS_RUNNING_KEY, true);
     } else if (mFavTask != null
     	&& mFavTask.getStatus() == UserTask.Status.RUNNING) {
       outState.putBoolean(SIS_RUNNING_KEY, true);    	
@@ -278,12 +219,6 @@ public class TwitterActivity extends BaseActivity {
   @Override
   protected void onDestroy() {
     Log.i(TAG, "onDestroy.");
-
-    if (mSendTask != null && mSendTask.getStatus() == UserTask.Status.RUNNING) {
-      // Doesn't really cancel execution (we let it continue running).
-      // See the SendTask code for more details.
-      mSendTask.cancel(true);
-    }
 
     if (mRetrieveTask != null
         && mRetrieveTask.getStatus() == UserTask.Status.RUNNING) {
@@ -318,12 +253,15 @@ public class TwitterActivity extends BaseActivity {
     mTweetList.setAdapter(mTweetAdapter);
   }
 
-  private static final int CONTEXT_REPLY_ID = 0;
-  private static final int CONTEXT_RETWEET_ID = 1;
-  private static final int CONTEXT_DM_ID = 2;
-  private static final int CONTEXT_MORE_ID = 3;
-  private static final int CONTEXT_ADD_FAV_ID = 4;
-  private static final int CONTEXT_DEL_FAV_ID = 5;
+  private static final int CONTEXT_REPLY_ID   = Menu.FIRST + 1;
+//  private static final int CONTEXT_AT_ID 	  = Menu.FIRST + 2;
+  private static final int CONTEXT_RETWEET_ID = Menu.FIRST + 3;
+  private static final int CONTEXT_DM_ID 	  = Menu.FIRST + 4;
+  private static final int CONTEXT_MORE_ID 	  = Menu.FIRST + 5;
+  private static final int CONTEXT_ADD_FAV_ID = Menu.FIRST + 6;
+  private static final int CONTEXT_DEL_FAV_ID = Menu.FIRST + 7;
+  
+  private String _reply_id;
 
   @Override
   public void onCreateContextMenu(ContextMenu menu, View v,
@@ -500,7 +438,7 @@ public class TwitterActivity extends BaseActivity {
         Date createdAt = TwitterDbAdapter.DB_DATE_FORMATTER.parse(cursor
             .getString(mCreatedAtColumn));
         holder.metaText.setText(Tweet.buildMetaText(mMetaBuilder, createdAt,
-            cursor.getString(mSourceColumn), cursor.getColumnName(mInReplyToScreenName)));
+            cursor.getString(mSourceColumn), cursor.getString(mInReplyToScreenName)));
       } catch (ParseException e) {
         Log.w(TAG, "Invalid created at data.");
       }
@@ -532,18 +470,6 @@ public class TwitterActivity extends BaseActivity {
 
   // Actions.
 
-  private void doSend(String _reply_to) {
-    if (mSendTask != null && mSendTask.getStatus() == UserTask.Status.RUNNING) {
-      Log.w(TAG, "Already sending.");
-    } else {
-      String status = mTweetEdit.getText().toString();
-
-      if (!Utils.isEmpty(status)) {
-        mSendTask = new SendTask().execute(_reply_to);
-      }
-    }
-  }
-  
   private void doFavorite(String action, String id) {	  
     if (mFavTask != null && mFavTask.getStatus() == UserTask.Status.RUNNING) {
         Log.w(TAG, "FavTask still running");
@@ -561,7 +487,7 @@ public class TwitterActivity extends BaseActivity {
   private class FavTask extends UserTask<String, Void, SendResult> {
     @Override
     public void onPreExecute() {
-      onSendBegin();
+      //onSendBegin();
     }
 
     @Override
@@ -623,88 +549,19 @@ public class TwitterActivity extends BaseActivity {
       }
     }
   }
-
-  private class SendTask extends UserTask<String, Void, SendResult> {
-	    @Override
-	    public void onPreExecute() {
-	      onSendBegin();
-	    }
-
-	    @Override
-	    public SendResult doInBackground(String... params) {
-	      try {
-	    	String _reply_to = params[0];
-	        String status = mTweetEdit.getText().toString();
-	        JSONObject jsonObject = getApi().update(status, _reply_to);
-	        Tweet tweet = Tweet.create(jsonObject);
-
-	        if (!Utils.isEmpty(tweet.profileImageUrl)) {
-	          // Fetch image to cache.
-	          try {
-	            getImageManager().put(tweet.profileImageUrl);
-	          } catch (IOException e) {
-	            Log.e(TAG, e.getMessage(), e);
-	          }
-	        }
-
-	        //getDb().createTweet(tweet, false);
-	      } catch (IOException e) {
-	        Log.e(TAG, e.getMessage(), e);
-	        return SendResult.IO_ERROR;
-	      } catch (AuthException e) {
-	        Log.i(TAG, "Invalid authorization.");
-	        return SendResult.AUTH_ERROR;
-	      } catch (JSONException e) {
-	        Log.w(TAG, "Could not parse JSON after sending update.");
-	        return SendResult.IO_ERROR;
-	      } catch (ApiException e) {
-	        Log.e(TAG, e.getMessage(), e);
-	        return SendResult.IO_ERROR;
-	      }
-
-	      return SendResult.OK;
-	    }
-
-	    @Override
-	    public void onPostExecute(SendResult result) {
-	      if (isCancelled()) {
-	        // Canceled doesn't really mean "canceled" in this task.
-	        // We want the request to complete, but don't want to update the
-	        // activity (it's probably dead).
-	        return;
-	      }
-
-	      if (result == SendResult.AUTH_ERROR) {
-	        logout();
-	      } else if (result == SendResult.OK) {
-	        onSendSuccess();
-	      } else if (result == SendResult.IO_ERROR) {
-	        onSendFailure();
-	      }
-	    }
-	  }
   
-  private void onSendBegin() {
-    disableEntry();
-    updateProgress("Updating status...");
-  }
-
   private void onSendSuccess() {
-    mTweetEdit.setText("");
-    updateProgress("");
-    enableEntry();
-    doRetrieve();
-    draw();
-    goTop();
+    //updateProgress(getString(R.string.refreshing));
   }
-
   private void onSendFailure() {
-    updateProgress("Unable to update status");
-    enableEntry();
+    //updateProgress(getString(R.string.refreshing));
   }
 
-  private void doRetrieve() {
+  public void doRetrieve() {
     Log.i(TAG, "Attempting retrieve.");
+    
+    // 旋转刷新按钮
+	animRotate(refreshButton);
 
     if (mRetrieveTask != null
         && mRetrieveTask.getStatus() == UserTask.Status.RUNNING) {
@@ -715,7 +572,7 @@ public class TwitterActivity extends BaseActivity {
   }
 
   private void onRetrieveBegin() {
-    updateProgress("Refreshing...");
+    updateProgress(getString(R.string.refreshing));
   }
 
   private enum RetrieveResult {
@@ -818,6 +675,7 @@ public class TwitterActivity extends BaseActivity {
         // Do nothing.
       }
 
+      refreshButton.clearAnimation();
       updateProgress("");
     }
   }
@@ -925,18 +783,6 @@ public class TwitterActivity extends BaseActivity {
 
   // Various handlers.
 
-  private View.OnKeyListener tweetEnterHandler = new View.OnKeyListener() {
-    public boolean onKey(View v, int keyCode, KeyEvent event) {
-      if (keyCode == KeyEvent.KEYCODE_ENTER
-          || keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
-        if (event.getAction() == KeyEvent.ACTION_UP) {
-          TwitterActivity t = (TwitterActivity)(v.getContext());
-          doSend(t._reply_id);
-        }
-        return true;
-      }
-      return false;
-    }
-  };
+ 
 
 }

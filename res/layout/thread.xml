@@ -3,26 +3,23 @@
   android:orientation="vertical"
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
-  android:background="@color/body_background"
+  android:background="@drawable/user_background"
   >
-  
-    <!-- Header -->
-    <include android:id="@+id/header" layout="@layout/header" />
-    
     <!-- Main content area. -->
     <com.ch_linghu.android.fanfoudroid.MyListView
     android:id="@+id/tweet_list"
     android:layout_width="fill_parent"
-    android:layout_height="0px"
-    android:layout_weight="1"
+    android:layout_height="fill_parent"
+    android:layout_weight="1"    
+    android:paddingLeft="9px"
+    android:paddingRight="12px"    
+    android:paddingBottom="3px"    
+    android:fadingEdge="none"
     android:cacheColorHint="#00000000"
-    android:fadeScrollbars="true"
-    android:divider="#FFCCCCCC"
-    android:dividerHeight="1dip"
-    android:fastScrollEnabled="true"
-    />                
+    android:scrollbars="none"
+    android:listSelector="@drawable/list_selector"
+    />          
 
-    <!-- 提示框 -->
     <TextView
     android:id="@+id/progress_text"
     android:layout_width="fill_parent"
@@ -33,8 +30,6 @@
     android:textSize="13px"
     android:singleLine="true"
     android:textColor="@drawable/status_color"
-    android:visibility="gone"
     />
-    
     
 </LinearLayout>

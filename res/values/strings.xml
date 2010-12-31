@@ -22,8 +22,8 @@
     <string name="tweets">消息</string>
     <string name="show_at_replies">提到我的</string>
     <string name="show_all">Show all</string>
-    <string name="follow">跟随</string>
-    <string name="unfollow">取消跟随</string>
+    <string name="follow">关注此人</string>
+    <string name="unfollow">取消关注</string>
     <string name="friendship">Friendship</string>
     <string name="cancel">取消</string>
     <string name="search">搜索</string>
@@ -72,12 +72,15 @@
     <string name="about_title">安能饭否</string>
     <string name="about_message">
     安能饭否
-    \n作者：令狐虫(ch.linghu@gmail.com)
-    
-    \n\n安能饭否修改自开源项目twitta。遵循Twitta项目的开源协议。
-    \n\nhttp://code.google.com/p/fanfoudroid/
-    \n\nTwitta is open sourced under the Apache 2.0 license. 
-    \n\nPlease visit the project page at http://code.google.com/p/twitta/ to contribute code or report issues.
+    \n作者：
+    \n  令狐虫(ch.linghu@gmail.com)
+    \n  三日坊主(lds2012@gmail.com)
+    \n
+    \n安能饭否修改自开源项目twitta。遵循Twitta项目的开源协议。
+    \n项目主页：http://code.google.com/p/fanfoudroid/
+    \n
+    \nTwitta is open sourced under the Apache 2.0 license. 
+    \nPlease visit the project page at http://code.google.com/p/twitta/ to contribute code or report issues.
     </string>
 
     <string name="cool">了解</string>
@@ -87,5 +90,28 @@
     
     <string name="search_label">安能饭否</string>
     <string name="search_hint">搜索饭否</string>
+
+    <string name="refreshing">正在刷新...</string>
+    <string name="updateing_status">正在发送...</string>
+    <string name="update_status_success">发送成功.</string>
+    <string name="unable_to_update_status">无法发送信息...</string>
+    <string name="get_more">读取更多...</string>
     
+    <string name="write_status">撰写信息</string>
+    <string name="send">发送</string>
+    <string name="choose_images">插入图片</string>
+    <string name="go_back">返回</string>
+    <string name="send_in_background">后台发送</string>
+    <string name="take_a_picture">相机拍摄</string>
+    <string name="choose_a_picture">手机相册</string>
+    <string name="insert_picture">插入图片</string>
+    
+    <string name="you_can_type">可以输入</string>
+    <string name="words">字</string>
+    
+    <string name="This_person_has_protected_their_updates">该用户只向关注他/她的人公开消息。</string>
+    <string name="following">正在关注</string>
+    <string name="unfollowing">取消关注</string>
+    
+    <string name="timeout">网络超时.</string>    
 </resources>

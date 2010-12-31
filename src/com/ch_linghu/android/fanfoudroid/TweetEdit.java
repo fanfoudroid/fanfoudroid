@@ -1,5 +1,6 @@
 package com.ch_linghu.android.fanfoudroid;
 
+import android.graphics.Color;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Selection;
@@ -11,10 +12,13 @@ import android.widget.TextView;
 public class TweetEdit {
   private EditText mEditText;
   private TextView mCharsRemainText;
+  private int originTextColor;
   
   TweetEdit(EditText editText, TextView charsRemainText) {
     mEditText = editText;
     mCharsRemainText = charsRemainText;
+    
+    originTextColor = mCharsRemainText.getTextColors().getDefaultColor();
     
     mEditText.addTextChangedListener(mTextWatcher);
     mEditText.setFilters(new InputFilter[] { new InputFilter.LengthFilter(
@@ -58,6 +62,11 @@ public class TweetEdit {
 
   public void updateCharsRemain() {
     int remaining = MAX_TWEET_LENGTH - mEditText.length();
+    if (remaining < 0 ) {
+    	mCharsRemainText.setTextColor(Color.RED);
+    } else {
+    	mCharsRemainText.setTextColor(originTextColor);
+    }
     mCharsRemainText.setText(remaining + "");
   }
 

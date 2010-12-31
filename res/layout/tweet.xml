@@ -1,40 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" 
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:layout_weight="1"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+  android:orientation="horizontal"
+  android:layout_width="fill_parent"
+  android:layout_height="wrap_content"
+  android:padding="5dp"
 >
-	<LinearLayout 
-	  android:orientation="horizontal"
-	  android:layout_width="fill_parent"
-	  android:layout_height="wrap_content"
-	>
-	
+
+    <!-- profile image -->
 	<ImageView
 	  android:id="@+id/profile_image"
 	  android:layout_marginTop="2px"
 	  android:layout_marginLeft="2px"
 	  android:layout_marginBottom="2px"
-	  android:layout_marginRight="4px"
+	  android:layout_marginRight="7px"
 	  android:layout_width="48px"
 	  android:layout_height="48px"
 	/>
 	
+	
+	<LinearLayout 
+	  android:orientation="vertical"
+	  android:layout_width="wrap_content"
+	  android:layout_height="wrap_content"
+	>
+	
 		<LinearLayout 
-		  android:orientation="vertical"
-		  android:layout_width="wrap_content"
-		  android:layout_height="wrap_content"
-		>
-		
-		<TextView
-		  android:id="@+id/tweet_user_text" 
+		  android:orientation="horizontal"
 		  android:layout_width="fill_parent"
 		  android:layout_height="wrap_content"
-		  android:textColor="@drawable/tweet_user_color"
-		/>
-		
+		>
+		    <!-- user name -->
+			<TextView
+			  android:id="@+id/tweet_user_text" 
+			  android:layout_width="fill_parent"
+			  android:layout_height="wrap_content"
+			  style="@style/LinkText.Bold.Big"
+			/>
+			<!-- favorited icon -->
+			<ImageView
+				android:id="@+id/tweet_fav"
+				android:layout_gravity="top|right"
+				android:layout_width="16px"
+				android:layout_height="16px"
+				android:visibility="invisible"
+				android:src="@android:drawable/star_off"
+			/>
+		</LinearLayout>		
+		<!-- Tweet context -->
 		<com.ch_linghu.android.fanfoudroid.MyTextView
 		  android:id="@+id/tweet_text" 
 		  android:layout_width="fill_parent"
@@ -50,14 +63,7 @@
 		  android:textStyle="italic"
 		  android:textSize="12sp"
 		/>
-		</LinearLayout>
+		
 	</LinearLayout>
-	<ImageView
-		android:id="@+id/tweet_fav"
-		android:layout_gravity="top|right"
-		android:layout_width="16px"
-		android:layout_height="16px"
-		android:visibility="invisible"
-		android:src="@android:drawable/star_off"
-	/>
-</FrameLayout>
+
+</LinearLayout>

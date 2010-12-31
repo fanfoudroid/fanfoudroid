@@ -97,7 +97,7 @@ public class TwitterApi {
 	private static final String METHOD_POST = "POST";
 	private static final String METHOD_DELETE = "DELETE";
 
-	public static final int RETRIEVE_LIMIT = 50;
+	public static final int RETRIEVE_LIMIT = 20;
 
 	public class AuthException extends Exception {
 		private static final long serialVersionUID = 1703735789572778599L;
@@ -155,6 +155,7 @@ public class TwitterApi {
 	public void postTwitPic(File file, String message) throws IOException,
 			AuthException, ApiException {
 		URI uri;
+		Log.i(TAG, "Updating status WITH a picture.");
 
 		try {
 			uri = new URI(UPLOAD_AND_POST_URL);
@@ -584,8 +585,10 @@ public class TwitterApi {
 
 		String url = USER_TIMELINE_URL + "?screen_name="
 				+ URLEncoder.encode(user, HTTP.UTF_8) + "&page="
-				+ URLEncoder.encode(page + "", HTTP.UTF_8) + "&format=html";
-
+				+ URLEncoder.encode(page + "", HTTP.UTF_8) + "&format=html"
+				+ "&count=" + URLEncoder.encode(RETRIEVE_LIMIT + "");
+		
+		
 		InputStream data = requestData(url, METHOD_GET, null);
 		JSONArray json = null;
 

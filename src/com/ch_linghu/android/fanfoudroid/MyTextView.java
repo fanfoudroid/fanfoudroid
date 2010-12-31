@@ -1,6 +1,7 @@
 package com.ch_linghu.android.fanfoudroid;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.text.Layout;
 import android.text.Spannable;
@@ -17,12 +18,20 @@ public class MyTextView extends TextView {
     super(context);
 
     setLinksClickable(false);
+    
+    Resources res = getResources();
+    int color = res.getColor(R.color.link_color);
+    setLinkTextColor(color);
   }
 
   public MyTextView(Context context, AttributeSet attrs) {
     super(context, attrs);
 
     setLinksClickable(false);
+    
+    Resources res = getResources();
+    int color = res.getColor(R.color.link_color);
+    setLinkTextColor(color);
   }
 
   private URLSpan mCurrentLink;

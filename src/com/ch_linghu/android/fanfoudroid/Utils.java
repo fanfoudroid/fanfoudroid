@@ -183,7 +183,7 @@ public class Utils {
 	  Matcher m = p.matcher(text);
 	  while(m.find()){
 		  _userLinkMapping.put(m.group(2), m.group(1));
-		  Log.d("UTILS", String.format("Found mapping! %s=%s", m.group(2), m.group(1)));
+		  Log.d(TAG, String.format("Found mapping! %s=%s", m.group(2), m.group(1)));
 	  }
 	  return text.replaceAll("<.*?>", "");
   }

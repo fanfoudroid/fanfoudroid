@@ -340,7 +340,7 @@ public class SearchActivity extends BaseActivity implements MyListView.OnNeedMor
   }
 
   private void launchNewTweetActivity(String text) {
-    launchActivity(TwitterActivity.createNewTweetIntent(text));
+    launchActivity(WriteActivity.createNewTweetIntent(text));
   }
 
   @Override

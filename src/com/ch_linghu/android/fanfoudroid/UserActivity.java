@@ -1,6 +1,7 @@
 package com.ch_linghu.android.fanfoudroid;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
@@ -18,22 +19,23 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.Toast;
 
 import com.ch_linghu.android.fanfoudroid.TwitterApi.ApiException;
 import com.ch_linghu.android.fanfoudroid.TwitterApi.AuthException;
 import com.google.android.photostream.UserTask;
 
-public class UserActivity extends BaseActivity implements MyListView.OnNeedMoreListener {
+public class UserActivity extends WithHeaderActivity implements MyListView.OnNeedMoreListener {
 
   private static final String TAG = "UserActivity";
 
@@ -101,15 +103,27 @@ public class UserActivity extends BaseActivity implements MyListView.OnNeedMoreL
       return;
     }
 
+    // set UI
     setContentView(R.layout.user);
+    initHeader(HEADER_STYLE_HOME, this);
 
+    // user name
     mMe = TwitterApplication.mApi.getUsername();
-    mTweetList = (MyListView) findViewById(R.id.tweet_list);
+    
+    // 提示框
     mProgressText = (TextView) findViewById(R.id.progress_text);
-    mUserText = (TextView) findViewById(R.id.tweet_user_text);
-    mNameText = (TextView) findViewById(R.id.realname_text);
+    
+    // Add Header to ListView
+    mTweetList 	  = (MyListView) findViewById(R.id.tweet_list);
+    View header = View.inflate(this, R.layout.user_header, null);
+    mTweetList.addHeaderView(header);
+    
+    // 用户栏（用户名/头像）
+    mUserText 	  = (TextView) findViewById(R.id.tweet_user_text);
+    mNameText 	  = (TextView) findViewById(R.id.realname_text);
     mProfileImage = (ImageView) findViewById(R.id.profile_image);
-
+    
+    // follow button
     mFollowButton = (Button) findViewById(R.id.follow_button);
     mFollowButton.setOnClickListener(new OnClickListener() {
       public void onClick(View v) {
@@ -127,7 +141,7 @@ public class UserActivity extends BaseActivity implements MyListView.OnNeedMoreL
     }
 
     setTitle("@" + mUsername);
-    mUserText.setText(mUsername);
+    mUserText.setText("@" + mUsername);
 
     mTweets = new ArrayList<Tweet>();
     mAdapter = new TweetAdapter(this);
@@ -243,8 +257,12 @@ public class UserActivity extends BaseActivity implements MyListView.OnNeedMoreL
     OK, IO_ERROR, AUTH_ERROR, CANCELLED
   }
 
-  private void doRetrieve() {
+
+  public void doRetrieve() {
     Log.i(TAG, "Attempting retrieve.");
+    
+    // 旋转刷新按钮
+	animRotate(refreshButton);
 
     if (mRetrieveTask != null
         && mRetrieveTask.getStatus() == UserTask.Status.RUNNING) {
@@ -266,11 +284,12 @@ public class UserActivity extends BaseActivity implements MyListView.OnNeedMoreL
   }
 
   private void onRetrieveBegin() {
-    updateProgress("Refreshing...");
+    updateProgress(getString(R.string.refreshing));
   }
 
   private void onLoadMoreBegin() {
-    updateProgress("Getting more...");
+    updateProgress(getString(R.string.get_more));
+    animRotate(refreshButton);
   }
 
   private class RetrieveTask extends UserTask<Void, Void, TaskResult> {
@@ -290,6 +309,11 @@ public class UserActivity extends BaseActivity implements MyListView.OnNeedMoreL
 
       try {
         jsonArray = api.getUserTimeline(mUsername, mNextPage);
+        
+      } catch (SocketTimeoutException e) {
+    	Log.e(TAG, e.getMessage(), e);
+    	Toast.makeText(getApplicationContext(), getString(R.string.timeout), Toast.LENGTH_SHORT).show();
+    	return TaskResult.IO_ERROR;
       } catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
@@ -299,7 +323,7 @@ public class UserActivity extends BaseActivity implements MyListView.OnNeedMoreL
       } catch (ApiException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
-      }
+      } 
 
       for (int i = 0; i < jsonArray.length(); ++i) {
         if (isCancelled()) {
@@ -377,10 +401,11 @@ public class UserActivity extends BaseActivity implements MyListView.OnNeedMoreL
     @Override
     public void onPostExecute(TaskResult result) {
       if (result == TaskResult.AUTH_ERROR) {
-        updateProgress("This person has protected their updates");
+        updateProgress(getString(R.string.This_person_has_protected_their_updates));
 
         return;
       } else if (result == TaskResult.OK) {
+    	refreshButton.clearAnimation();
         draw();
       } else {
         // Do nothing.
@@ -406,7 +431,12 @@ public class UserActivity extends BaseActivity implements MyListView.OnNeedMoreL
 
       try {
         jsonArray = api.getUserTimeline(mUsername, mNextPage);
-      } catch (IOException e) {
+      } catch (SocketTimeoutException e) {
+    	Log.e(TAG, e.getMessage(), e);
+    	Toast.makeText(getApplicationContext(), getString(R.string.timeout), Toast.LENGTH_SHORT).show();
+    	return TaskResult.IO_ERROR;
+      }
+      catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
       } catch (AuthException e) {
@@ -457,6 +487,7 @@ public class UserActivity extends BaseActivity implements MyListView.OnNeedMoreL
       if (result == TaskResult.AUTH_ERROR) {
         logout();
       } else if (result == TaskResult.OK) {
+    	refreshButton.clearAnimation();
         draw();
       } else {
         // Do nothing.
@@ -479,9 +510,9 @@ public class UserActivity extends BaseActivity implements MyListView.OnNeedMoreL
       mFollowButton.setEnabled(false);
 
       if (mIsDestroy) {
-        updateProgress("Unfollowing...");
+        updateProgress(getString(R.string.unfollowing) + "...");
       } else {
-        updateProgress("Following...");
+        updateProgress(getString(R.string.following) + "...");
       }
     }
 
@@ -626,7 +657,7 @@ public class UserActivity extends BaseActivity implements MyListView.OnNeedMoreL
       launchNewTweetActivity(replyTo);
       return true;
     case CONTEXT_RETWEET_ID:
-      String retweet = "热饭 @" + tweet.screenName + " " + tweet.text;
+      String retweet = getString(R.string.pref_rt_prefix_default)+ " @" + tweet.screenName + " " + tweet.text;
       launchNewTweetActivity(retweet);
       return true;
     case CONTEXT_DM_ID:
@@ -638,7 +669,7 @@ public class UserActivity extends BaseActivity implements MyListView.OnNeedMoreL
   }
 
   private void launchNewTweetActivity(String text) {
-    launchActivity(TwitterActivity.createNewTweetIntent(text));
+    launchActivity(WriteActivity.createNewTweetIntent(text));
   }
 
 
@@ -761,5 +792,7 @@ public class UserActivity extends BaseActivity implements MyListView.OnNeedMoreL
   private synchronized void setProfileBitmap(Bitmap bitmap) {
     mProfileBitmap = bitmap;
   }
+  
+ 
 
 }
