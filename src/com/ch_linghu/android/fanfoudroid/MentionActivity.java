@@ -31,28 +31,22 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
-import android.view.KeyEvent;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.CursorAdapter;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 
-import com.ch_linghu.android.fanfoudroid.TwitterApi.ApiException;
-import com.ch_linghu.android.fanfoudroid.TwitterApi.AuthException;
 import com.google.android.photostream.UserTask;
 
 public class MentionActivity extends WithHeaderActivity implements Refreshable {
@@ -528,13 +522,10 @@ public class MentionActivity extends WithHeaderActivity implements Refreshable {
       } catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
         return SendResult.IO_ERROR;
-      } catch (AuthException e) {
-        Log.i(TAG, "Invalid authorization.");
-        return SendResult.AUTH_ERROR;
       } catch (JSONException e) {
         Log.w(TAG, "Could not parse JSON after sending update.");
         return SendResult.IO_ERROR;
-      } catch (ApiException e) {
+      } catch (FanfouException e) {
         Log.e(TAG, e.getMessage(), e);
         return SendResult.IO_ERROR;
       }
@@ -610,15 +601,13 @@ public class MentionActivity extends WithHeaderActivity implements Refreshable {
 
       String maxId = getDb().fetchMaxMentionId();
 
+      //TODO: 此部分多次重复
       try {
         jsonArray = getApi().getMentionSinceId(maxId);
       } catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
         return RetrieveResult.IO_ERROR;
-      } catch (AuthException e) {
-        Log.i(TAG, "Invalid authorization.");
-        return RetrieveResult.AUTH_ERROR;
-      } catch (ApiException e) {
+      } catch (FanfouException e) {
         Log.e(TAG, e.getMessage(), e);
         return RetrieveResult.IO_ERROR;
       }
@@ -703,10 +692,7 @@ public class MentionActivity extends WithHeaderActivity implements Refreshable {
       } catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
         return RetrieveResult.IO_ERROR;
-      } catch (AuthException e) {
-        Log.i(TAG, "Invalid authorization.");
-        return RetrieveResult.AUTH_ERROR;
-      } catch (ApiException e) {
+      } catch (FanfouException e) {
         Log.e(TAG, e.getMessage(), e);
         return RetrieveResult.IO_ERROR;
       }

@@ -16,13 +16,14 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
@@ -30,10 +31,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 
-import com.ch_linghu.android.fanfoudroid.TwitterApi.ApiException;
-import com.ch_linghu.android.fanfoudroid.TwitterApi.AuthException;
 import com.google.android.photostream.UserTask;
 
 public class DmActivity extends BaseActivity {
@@ -309,10 +307,7 @@ public class DmActivity extends BaseActivity {
       } catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
-      } catch (AuthException e) {
-        Log.i(TAG, "Invalid authorization.");
-        return TaskResult.AUTH_ERROR;
-      } catch (ApiException e) {
+      } catch (FanfouException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
       }
@@ -347,10 +342,7 @@ public class DmActivity extends BaseActivity {
       } catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
-      } catch (AuthException e) {
-        Log.i(TAG, "Invalid authorization.");
-        return TaskResult.AUTH_ERROR;
-      } catch (ApiException e) {
+      } catch (FanfouException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
       }
@@ -533,13 +525,10 @@ public class DmActivity extends BaseActivity {
       } catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
-      } catch (AuthException e) {
-        Log.i(TAG, "Invalid authorization.");
-        return TaskResult.AUTH_ERROR;
       } catch (JSONException e) {
         Log.w(TAG, "Could not parse JSON after sending update.");
         return TaskResult.IO_ERROR;
-      } catch (ApiException e) {
+      } catch (FanfouException e) {
         Log.i(TAG, e.getMessage());
         // TODO: check is this is actually the case.
         return TaskResult.NOT_FOLLOWED_ERROR;
@@ -733,13 +722,10 @@ public class DmActivity extends BaseActivity {
       } catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
-      } catch (AuthException e) {
-        Log.i(TAG, "Invalid authorization.");
-        return TaskResult.AUTH_ERROR;
       } catch (JSONException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
-      } catch (ApiException e) {
+      } catch (FanfouException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
       }

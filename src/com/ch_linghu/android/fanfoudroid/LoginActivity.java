@@ -30,8 +30,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.ch_linghu.android.fanfoudroid.TwitterApi.ApiException;
-import com.ch_linghu.android.fanfoudroid.TwitterApi.AuthException;
 import com.google.android.photostream.UserTask;
 
 public class LoginActivity extends Activity {
@@ -170,7 +168,7 @@ public class LoginActivity extends Activity {
     editor.putString(Preferences.PASSWORD_KEY, password);
     editor.commit();
 
-    TwitterApplication.mApi.setCredentials(username, password);
+    TwitterApplication.mApi.getHttp().setCredentials(username, password);
 
     Intent intent = getIntent().getParcelableExtra(Intent.EXTRA_INTENT);
     String action = intent.getAction();
@@ -214,10 +212,7 @@ public class LoginActivity extends Activity {
         Log.e(TAG, e.getMessage(), e);
         publishProgress("Network or connection error");
         return false;
-      } catch (AuthException e) {
-        publishProgress("Invalid username or password");
-        return false;
-      } catch (ApiException e) {
+      } catch (FanfouException e) {
         Log.e(TAG, e.getMessage(), e);
         publishProgress("Network or connection error");
         return false;

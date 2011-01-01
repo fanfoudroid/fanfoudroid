@@ -6,6 +6,7 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 public class TwitterApplication extends Application {
   
@@ -18,11 +19,11 @@ public class TwitterApplication extends Application {
   @Override
   public void onCreate() {
     super.onCreate();
+    Log.i(TAG, "Application onCreate.");
 
     mImageManager = new ImageManager(this);
     mDb = new TwitterDbAdapter(this);
     mDb.open();
-    mApi = new TwitterApi();
     
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);        
 
@@ -30,7 +31,7 @@ public class TwitterApplication extends Application {
     String password = preferences.getString(Preferences.PASSWORD_KEY, "");
     
     if (TwitterApi.isValidCredentials(username, password)) {
-      mApi.setCredentials(username, password);
+      mApi = new TwitterApi(username, password);
     }
   }
 

@@ -4,14 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore.Images.ImageColumns;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -22,8 +19,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.ch_linghu.android.fanfoudroid.TwitterApi.ApiException;
-import com.ch_linghu.android.fanfoudroid.TwitterApi.AuthException;
 import com.google.android.photostream.UserTask;
 
 public class PictureActivity extends BaseActivity {
@@ -168,10 +163,7 @@ public class PictureActivity extends BaseActivity {
       } catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
-      } catch (AuthException e) {
-        Log.i(TAG, "Invalid authorization.");
-        return TaskResult.AUTH_ERROR;
-      } catch (ApiException e) {
+      } catch (FanfouException e) {
         Log.e(TAG, e.getMessage(), e);
         apiErrorMessage = e.getMessage();
         return TaskResult.API_ERROR;
