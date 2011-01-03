@@ -1,17 +1,17 @@
-package com.ch_linghu.android.fanfoudroid;
+package tk.sandin.android.fanfoudroid.http;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthSchemeRegistry;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -25,10 +25,16 @@ import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.auth.BasicSchemeFactory;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.protocol.HTTP;
 
+import tk.sandin.android.fanfoudroid.weibo.Weibo;
+import tk.sandin.android.fanfoudroid.weibo.WeiboException;
 import android.util.Log;
+
+import com.ch_linghu.android.fanfoudroid.Configuration;
+import com.ch_linghu.android.fanfoudroid.Utils;
 
 public class HttpClient {
 	
@@ -52,8 +58,10 @@ public class HttpClient {
 	private DefaultHttpClient mClient;
 	private AuthScope mAuthScope;
 
-	private String mUsername;
+	private String mUserId;
 	private String mPassword;
+	
+	private static boolean isAuthenticationEnabled = false;
 
 	private static final String METHOD_GET = "GET";
 	private static final String METHOD_POST = "POST";
@@ -87,11 +95,15 @@ public class HttpClient {
 	}
 
 	public boolean isLoggedIn() {
-		return isValidCredentials(mUsername, mPassword);
+		return isValidCredentials(mUserId, mPassword);
 	}
 
-	public String getUsername() {
-		return mUsername;
+	public String getUserId() {
+		return mUserId;
+	}
+	
+	public String getPassword() {
+		return mPassword;
 	}
 
 	private void prepareHttpClient() {
@@ -106,26 +118,62 @@ public class HttpClient {
 	}
 
 	public void setCredentials(String username, String password) {
-		mUsername = username;
+		mUserId = username;
 		mPassword = password;
 		mClient.getCredentialsProvider().setCredentials(mAuthScope,
 				new UsernamePasswordCredentials(username, password));
+		isAuthenticationEnabled = true;
 		Log.i("LDS", mClient.toString() );
 	}
 	
-	public InputStream post(String url, ArrayList<NameValuePair> params) 
-			throws WeiboException, IOException {
+	public Response post(String url, ArrayList<BasicNameValuePair> params) 
+			throws WeiboException {
 		return httpRequest(url, params, false, METHOD_POST);
 	}
 	
-	public InputStream get(String url) 
-			throws WeiboException, IOException {
+	 public Response post(String url, ArrayList<BasicNameValuePair> postParams,
+             boolean authenticated) throws WeiboException {
+		 if (null == postParams) {
+			 postParams = new ArrayList<BasicNameValuePair>();
+		 }
+		 
+		 postParams.add(new BasicNameValuePair("source", Weibo.CONSUMER_KEY));
+		 
+		 return httpRequest(url, postParams, authenticated, METHOD_POST);
+	 }
+ 
+	public Response post(String url, boolean authenticated) throws WeiboException {
+        return httpRequest(url, null, authenticated, METHOD_POST);
+    }
+
+    public Response post(String url) throws
+            WeiboException {
+        return httpRequest(url, null, false, METHOD_POST);
+    }
+
+	public Response get(String url, ArrayList<BasicNameValuePair> params, boolean authenticated) 
+			throws WeiboException {
+		return httpRequest(url, params, authenticated, METHOD_GET);
+	}
+	
+	public Response get(String url, ArrayList<BasicNameValuePair> params) 
+			throws WeiboException {
+		return httpRequest(url, params, false, METHOD_GET);
+	}
+	
+	public Response get(String url) 
+			throws WeiboException {
 		return httpRequest(url, null, false, METHOD_GET);
 	}
+	
+	public Response get(String url,  boolean authenticated) 
+			throws WeiboException {
+		return httpRequest(url, null, authenticated, METHOD_GET);
+	}
 
-    public InputStream httpRequest(String url, ArrayList<NameValuePair> postParams,
+    public Response httpRequest(String url, ArrayList<BasicNameValuePair> postParams,
             boolean authenticated, String httpMethod) 
-    			throws WeiboException, IOException {
+    			throws WeiboException {
 		Log.i(TAG, "Sending " + httpMethod + " request to " + url);
 
 		URI uri;
@@ -147,18 +195,26 @@ public class HttpClient {
 			// thread/e178b1d3d63d8e3b
 			post.getParams().setBooleanParameter(
 					"http.protocol.expect-continue", false);
-			post.setEntity(new UrlEncodedFormEntity(postParams, HTTP.UTF_8));
-			method = post;
+			try {
+				post.setEntity(new UrlEncodedFormEntity(postParams, HTTP.UTF_8));
+				method = post;
+			} catch (IOException ioe) {
+				throw new WeiboException(ioe.getMessage(), ioe);
+			}
 
 			// log post data
 			if (DEBUG) {
-				log("POST INPUT : " + postParams.toString());
-				HttpEntity entity = post.getEntity();
-				BufferedReader in = new BufferedReader(new InputStreamReader(
-						entity.getContent()));
-				String line;
-				while ((line = in.readLine()) != null) {
-					log("POST ENTITY : " + line);
+				try {
+					log("POST INPUT : " + postParams.toString());
+					HttpEntity entity = post.getEntity();
+					BufferedReader in = new BufferedReader(new InputStreamReader(
+							entity.getContent()));
+					String line;
+					while ((line = in.readLine()) != null) {
+						log("POST ENTITY : " + line);
+					}
+				} catch (IOException ioe) {
+					throw new WeiboException(ioe.getMessage(), ioe);
 				}
 			}
 
@@ -173,20 +229,25 @@ public class HttpClient {
 		HttpConnectionParams
 				.setSoTimeout(method.getParams(), SOCKET_TIMEOUT_MS);
 
-		HttpResponse response;
-
+		HttpResponse response = null;
+		Response res = null;
+		
 		try {
 			response = mClient.execute(method);
+			res = new Response(response);
+			
 		} catch (ClientProtocolException e) {
 			Log.e(TAG, e.getMessage(), e);
-			throw new IOException("HTTP protocol error.");
+            throw new WeiboException(e.getMessage(), e);
+		} catch (IOException ioe) {
+            throw new WeiboException(ioe.getMessage(), ioe);
 		}
-		
-		int statusCode = response.getStatusLine().getStatusCode();
-		InputStream response_content = response.getEntity().getContent();
 
+		int statusCode = response.getStatusLine().getStatusCode();
+		
 		// DEBUG MODE
 		if (DEBUG) {
+			
 			//TODO: request headers is null
 			// log request URI and header 
 			log("[" + method.getMethod() + "] " + method.getURI());
@@ -216,14 +277,13 @@ public class HttpClient {
 		}
 
 		if (statusCode != OK) {
-			String msg = Utils.stringifyStream(response.getEntity().getContent());
+			String msg = getCause(statusCode) + "\n" + res.asString();
 			Log.e(TAG, msg);
 			
-			//TODO: uncomment
-//			throw new Exception(statusCode, getCause(statusCode) + "\n" + msg);
+			throw new WeiboException(msg, statusCode);
 		}
 		
-		return response_content;
+		return res;
 	}
 	
     private static String getCause(int statusCode){
@@ -260,12 +320,40 @@ public class HttpClient {
         }
         return statusCode + ":" + cause;
     }
+    
+    public boolean isAuthenticationEnabled(){
+        return isAuthenticationEnabled;
+    }
 
 	public static void log(String msg){
 		if (DEBUG) {
 			Log.i(TAG,msg);
 		}
 	}
+	
+	public static String encode(String value) throws WeiboException {
+		try {
+			return URLEncoder.encode(value, HTTP.UTF_8);
+		} catch (UnsupportedEncodingException e_e) {
+			throw new WeiboException(e_e.getMessage(), e_e);
+		}
+	}
+	
+	public static String encodeParameters(ArrayList<BasicNameValuePair> params) throws WeiboException {
+        StringBuffer buf = new StringBuffer();
+        for (int j = 0; j < params.size(); j++) {
+            if (j != 0) { buf.append("&"); }
+            try {
+                buf.append(URLEncoder.encode(params.get(j).getName(), "UTF-8"))
+                        .append("=").append(URLEncoder.encode(params.get(j).getValue(), "UTF-8"));
+            } catch (java.io.UnsupportedEncodingException neverHappen) {
+            	throw new WeiboException(neverHappen.getMessage(), neverHappen);
+            }
+        }
+        return buf.toString();
+	}
+	
+	
 
 
 }

@@ -179,7 +179,7 @@ public class SearchActivity extends BaseActivity implements MyListView.OnNeedMor
       } catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
         return RetrieveResult.IO_ERROR;
-      } catch (FanfouException e) {
+      } catch (WeiboException e) {
         Log.e(TAG, e.getMessage(), e);
         return RetrieveResult.IO_ERROR;
       }

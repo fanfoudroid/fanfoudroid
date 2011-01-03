@@ -315,7 +315,7 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
       } catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
-      } catch (FanfouException e) {
+      } catch (WeiboException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
       } 
@@ -373,7 +373,7 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
       } catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
-      } catch (FanfouException e) {
+      } catch (WeiboException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
       }
@@ -431,7 +431,7 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
       catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
-      } catch (FanfouException e) {
+      } catch (WeiboException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
       }
@@ -522,7 +522,7 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
       } catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
-      } catch (FanfouException e) {
+      } catch (WeiboException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
       }

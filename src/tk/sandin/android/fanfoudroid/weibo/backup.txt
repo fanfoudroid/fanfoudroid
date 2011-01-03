@@ -1,0 +1,2199 @@
+
+
+    /**
+     * @deprecated 饭否没有评论功能
+     * @param comment the comment text
+     * @param id status id
+     * @param cid reply comment id, can be null
+     * @return the comment object
+     * @throws WeiboException
+     */
+    public Comment updateComment(String comment, String id, String cid) throws WeiboException {
+        PostParameter[] params = null;
+        if (cid == null)
+            params = new PostParameter[] {
+                new PostParameter("comment", comment),
+                new PostParameter("id", id)
+            };
+        else
+            params = new PostParameter[] {
+                new PostParameter("comment", comment),
+                new PostParameter("cid", cid),
+                new PostParameter("id", id)
+            };
+//      return new Comment(http.post(getBaseURL() + "statuses/comment.xml", params, true), this);
+        return new Comment(http.post(getBaseURL() + "statuses/comment.json", params, true));
+    }
+    /**
+     * upload the user's status.
+     * The text will be trimed if the length of the text is exceeding 160 characters.
+     * The image suport.
+     * <br>发布照片  http://api.fanfou.com/photos/upload.[json|xml]
+     *
+     * @param status the text of your status update
+     * @return the latest status
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.1
+     */
+    public Status uploadStatus(String status,ImageItem item) throws WeiboException {
+        return new Status(
+                http.multPartURL(getBaseURL() + "photos/upload.json",
+                new PostParameter[]{new PostParameter("status", status), new PostParameter("source", source)},
+                item, true)
+                );
+        /*return new Status(http.multPartURL(getBaseURL() + "statuses/upload.xml",
+                new PostParameter[]{new PostParameter("status", status), new PostParameter("source", source)},item, true), this);*/
+    }
+    
+    /**
+     * upload the photo.
+     * The text will be trimed if the length of the text is exceeding 160 characters.
+     * The image suport.
+     * <br>上传照片  http://api.fanfou.com/photos/upload.[json|xml]
+     *
+     * @param status the text of your status update
+     * @return the latest status
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.1
+     */
+    public Status uploadPhoto(String status,FileInputStream file) throws WeiboException, IOException, Exception {
+        
+        // read file to a byte array
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        int ch;
+        while((ch = file.read()) != -1 ) {
+            b.write(ch);
+        }
+        file.close();
+        byte[] bytes = b.toByteArray();
+        
+        // create ImageItem from byte array
+        // <input type="file" name="photo" value="" />
+        ImageItem imageitem = new ImageItem("photo", bytes);
+        
+        return new Status(
+                http.multPartURL(getBaseURL() + "photos/upload.json",
+                new PostParameter[]{new PostParameter("status", status), new PostParameter("source", source)},
+                imageitem, true)
+                );
+        /*return new Status(http.multPartURL(getBaseURL() + "statuses/upload.xml",
+                new PostParameter[]{new PostParameter("status", status), new PostParameter("source", source)},item, true), this);*/
+    }
+
+    public Status uploadStatus(String status,File file) throws WeiboException {
+        return new Status(http.multPartURL("pic",getBaseURL() + "photos/upload.json",
+                new PostParameter[]{new PostParameter("status", status), new PostParameter("source", source)},file, true));
+        /*return new Status(http.multPartURL(getBaseURL() + "statuses/upload.xml",
+                new PostParameter[]{new PostParameter("status", status), new PostParameter("source", source)},item, true), this);*/
+    }
+
+    /**
+     * Updates the user's status.
+     * The text will be trimed if the length of the text is exceeding 160 characters.
+     * <br>发布消息  http://api.fanfou.com/statuses/update.[json|xml] 
+     *
+     * @param status    the text of your status update
+     * @param latitude  The location's latitude that this tweet refers to.
+     * @param longitude The location's longitude that this tweet refers to.
+     * @return the latest status
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Statuses/update">statuses/update </a>
+     * @since Weibo4J 2.0.10
+     */
+    public Status updateStatus(String status, double latitude, double longitude) throws WeiboException, JSONException {
+       /* return new Status(http.post(getBaseURL() + "statuses/update.xml",
+                new PostParameter[]{
+                        new PostParameter("status", status),
+                        new PostParameter("lat", latitude),
+                        new PostParameter("long", longitude)},
+                        true), this);*/
+        return new Status(http.post(getBaseURL() + "statuses/update.json",
+                new PostParameter[]{new PostParameter("status", status),
+                        new PostParameter("location", latitude + "," + longitude)},
+                        true));
+    }
+
+    /**
+     * Updates the user's status.
+     * The text will be trimed if the length of the text is exceeding 160 characters.
+     * <br>This method calls http://api.t.sina.com.cn/statuses/update.format
+     *
+     * @param status            the text of your status update
+     * @param inReplyToStatusId The ID of an existing status that the status to be posted is in reply to.  This implicitly sets the in_reply_to_user_id attribute of the resulting status to the user ID of the message being replied to.  Invalid/missing status IDs will be ignored.
+     * @return the latest status
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Statuses/update">statuses/update </a>
+     * @deprecated Use updateStatus(String status, long inReplyToStatusId) instead
+     */
+    public Status update(String status, String inReplyToStatusId) throws WeiboException {
+        return updateStatus(status, inReplyToStatusId);
+    }
+
+    /**
+     * Updates the user's status.
+     * 如果要使用inreplyToStatusId, 那么该status就必须得是@别人的.
+     * The text will be trimed if the length of the text is exceeding 160 characters.
+     * <br>发布消息  http://api.fanfou.com/statuses/update.[json|xml] 
+     *
+     * @param status            the text of your status update
+     * @param inReplyToStatusId The ID of an existing status that the status to be posted is in reply to.  This implicitly sets the in_reply_to_user_id attribute of the resulting status to the user ID of the message being replied to.  Invalid/missing status IDs will be ignored.
+     * @return the latest status
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.1
+     */
+    public Status updateStatus(String status, String inReplyToStatusId) throws WeiboException {
+         return new Status(http.post(getBaseURL() + "statuses/update.json",
+                 new PostParameter[]{new PostParameter("status", status), new PostParameter("in_reply_to_status_id", String.valueOf(inReplyToStatusId)), new PostParameter("source", source)}, true));
+       /* return new Status(http.post(getBaseURL() + "statuses/update.xml",
+                new PostParameter[]{new PostParameter("status", status), new PostParameter("in_reply_to_status_id", String.valueOf(inReplyToStatusId)), new PostParameter("source", source)}, true), this);*/
+    }
+
+    /**
+     * Updates the user's status.
+     * The text will be trimed if the length of the text is exceeding 160 characters.
+     * <br>发布消息  http://api.fanfou.com/statuses/update.[json|xml] 
+     *
+     * @param status            the text of your status update
+     * @param inReplyToStatusId The ID of an existing status that the status to be posted is in reply to.  This implicitly sets the in_reply_to_user_id attribute of the resulting status to the user ID of the message being replied to.  Invalid/missing status IDs will be ignored.
+     * @param latitude          The location's latitude that this tweet refers to.
+     * @param longitude         The location's longitude that this tweet refers to.
+     * @return the latest status
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.10
+     */
+    public Status updateStatus(String status, String inReplyToStatusId
+            , double latitude, double longitude) throws WeiboException {
+        /*return new Status(http.post(getBaseURL() + "statuses/update.xml",
+                new PostParameter[]{new PostParameter("status", status),
+                        new PostParameter("lat", latitude),
+                        new PostParameter("long", longitude),
+                        new PostParameter("in_reply_to_status_id",
+                                String.valueOf(inReplyToStatusId)),
+                        new PostParameter("source", source)}, true), this);*/
+        return new Status(http.post(getBaseURL() + "statuses/update.json",
+                new PostParameter[]{new PostParameter("status", status),
+                        new PostParameter("lat", latitude),
+                        new PostParameter("long", longitude),
+                        new PostParameter("in_reply_to_status_id",
+                                String.valueOf(inReplyToStatusId)),
+                        new PostParameter("source", source)}, true));
+    }
+
+    /**
+     * Destroys the status specified by the required ID parameter.  The authenticating user must be the author of the specified status.
+     * <br>删除消息  http://api.fanfou.com/statuses/destroy.[json|xml] 
+     *
+     * @param statusId The ID of the status to destroy.
+     * @return the deleted status
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since 1.0.5
+     */
+    public Status destroyStatus(String statusId) throws WeiboException {
+        /*return new Status(http.post(getBaseURL() + "statuses/destroy/" + statusId + ".xml",
+                new PostParameter[0], true), this);*/
+        return new Status(http.post(getBaseURL() + "statuses/destroy/" + statusId + ".json",
+                new PostParameter[0], true));
+    }
+
+    /**
+     * Destroys the status specified by the required ID parameter.  The authenticating user must be the author of the specified status.
+     * <br>This method calls http://api.t.sina.com.cn/statuses/comment_destroy/id.format
+     *
+     * @param statusId The ID of the status to destroy.
+     * @return the deleted status
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since 1.0.5
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Statuses/comment_destroy">statuses/comment_destroy </a>
+     */
+    public Comment destroyComment(long commentId) throws WeiboException {
+        return new Comment(http.delete(getBaseURL() + "statuses/comment_destroy/" + commentId + ".json?source=" + CONSUMER_KEY,
+                true));
+        /*return new Comment(http.delete(getBaseURL() + "statuses/comment_destroy/" + commentId + ".xml?source=" + CONSUMER_KEY,
+                true), this);*/
+    }
+
+
+    /**
+     * Retweets a tweet. Requires the id parameter of the tweet you are retweeting. Returns the original tweet with retweet details embedded.
+     * @param statusId The ID of the status to retweet.
+     * @return the retweeted status
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.10
+     */
+    public Status retweetStatus(long statusId) throws WeiboException {
+        /*return new Status(http.post(getBaseURL() + "statuses/retweet/" + statusId + ".xml",
+                new PostParameter[0], true), this);*/
+        return new Status(http.post(getBaseURL() + "statuses/retweet/" + statusId + ".json",
+                new PostParameter[0], true));
+    }
+
+    /**
+     * Returns up to 100 of the first retweets of a given tweet.
+     * @param statusId The numerical ID of the tweet you want the retweets of.
+     * @return the retweets of a given tweet
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.10
+     */
+    public List<RetweetDetails> getRetweets(long statusId) throws WeiboException {
+       /* return RetweetDetails.createRetweetDetails(get(getBaseURL()
+                + "statuses/retweets/" + statusId + ".xml", true), this);*/
+         return RetweetDetails.createRetweetDetails(get(getBaseURL()
+                 + "statuses/retweets/" + statusId + ".json", true));
+    }
+
+    /**
+     * Returns extended information of a given user, specified by ID or screen name as per the required id parameter below.  This information includes design settings, so third party developers can theme their widgets according to a given user's preferences.
+     * <br>This method calls http://api.t.sina.com.cn/users/show.format
+     * @param id the ID or screen name of the user for whom to request the detail
+     * @return User
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Users/show">users/show </a>
+     * @deprecated use showUser(id) instead
+     */
+    public User getUserDetail(String id) throws WeiboException {
+        return showUser(id);
+    }
+
+    /**
+     * Returns extended information of a given user, specified by ID or screen name as per the required id parameter below.  This information includes design settings, so third party developers can theme their widgets according to a given user's preferences.
+     * <br>This method calls http://api.t.sina.com.cn/users/show.format
+     *
+     * @param id the ID of the user for whom to request the detail
+     * @return User
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Users/show">users/show </a>
+     * @since Weibo4J 2.0.9
+     */
+    public User showUser(String id) throws WeiboException {
+       /* return new User(get(getBaseURL() + "users/show/" + id + ".xml"
+                , http.isAuthenticationEnabled()), this);*/
+//       return new User(get(getBaseURL() + "users/show/" +  id + ".json" 
+//                 , http.isAuthenticationEnabled()).asJSONObject());
+         return new User(get(getBaseURL() + "users/show.json" 
+                 , new PostParameter[]{
+                    new PostParameter("id", id)
+                 }, http.isAuthenticationEnabled()).asJSONObject());
+    }
+
+    /* User Methods */
+
+    /**
+     * Returns the specified user's friends, each with current status inline.
+     * <br>This method calls http://api.t.sina.com.cn/statuses/friends.format
+     *
+     * @return the list of friends
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Statuses/friends">statuses/friends </a>
+     * @deprecated use getFriendsStatues() instead
+     */
+    public List<User> getFriends() throws WeiboException {
+        return getFriendsStatuses();
+    }
+
+    /**
+     * Returns the specified user's friends, each with current status inline.
+     * <br>This method calls http://api.t.sina.com.cn/statuses/friends.format
+     *
+     * @return the list of friends
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Statuses/friends">statuses/friends </a>
+     * @since Weibo4J 2.0.9
+     */
+    public List<User> getFriendsStatuses() throws WeiboException {
+//        return User.constructUsers(get(getBaseURL() + "statuses/friends.xml", true), this);
+        return User.constructResult(get(getBaseURL() + "users/friends.json", true));
+    }
+
+    /**
+     * Returns the specified user's friends, each with current status inline.
+     * <br>This method calls http://api.t.sina.com.cn/statuses/friends.format
+     *
+     * @param paging controls pagination
+     * @return the list of friends
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.1
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Statuses/friends">statuses/friends </a>
+     * @deprecated Use getFriendsStatuses(Paging paging) instead
+     */
+    public List<User> getFriends(Paging paging) throws WeiboException {
+        return getFriendsStatuses(paging);
+    }
+
+    /**
+     * Returns the specified user's friends, each with current status inline.
+     * <br>This method calls http://api.t.sina.com.cn/statuses/friends.format
+     *
+     * @param paging controls pagination
+     * @return the list of friends
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.9
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Statuses/friends">statuses/friends </a>
+     */
+    public List<User> getFriendsStatuses(Paging paging) throws WeiboException {
+        /*return User.constructUsers(get(getBaseURL() + "statuses/friends.xml", null,
+                paging, true), this);*/
+        return User.constructUsers(get(getBaseURL() + "users/friends.json", null,
+                paging, true));
+    }
+
+    /**
+     * Returns the specified user's friends, each with current status inline.
+     * <br>This method calls http://api.t.sina.com.cn/statuses/friends.format
+     *
+     * @param page number of page
+     * @return the list of friends
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @deprecated Use getFriendsStatuses(Paging paging) instead
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Statuses/friends">statuses/friends </a>
+     */
+    public List<User> getFriends(int page) throws WeiboException {
+        return getFriendsStatuses(new Paging(page));
+    }
+
+    /**
+     * Returns the user's friends, each with current status inline.
+     * <br>This method calls http://api.t.sina.com.cn/statuses/friends.format
+     *
+     * @param id the ID or screen name of the user for whom to request a list of friends
+     * @return the list of friends
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Statuses/friends">statuses/friends </a>
+     * @deprecated use getFriendsStatuses(id) instead
+     */
+    public List<User> getFriends(String id) throws WeiboException {
+        return getFriendsStatuses(id);
+    }
+
+    /**
+     * Returns the user's friends, each with current status inline.
+     * <br>This method calls http://api.t.sina.com.cn/statuses/friends.format
+     *
+     * @param id the ID or screen name of the user for whom to request a list of friends
+     * @return the list of friends
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Statuses/friends">statuses/friends </a>
+     * @since Weibo4J 2.0.9
+     */
+    public List<User> getFriendsStatuses(String id) throws WeiboException {
+        /*return User.constructUsers(get(getBaseURL() + "statuses/friends/" + id + ".xml"
+                , false), this);*/
+        return User.constructUsers(get(getBaseURL() + "users/friends.json", 
+                new PostParameter[] {new PostParameter("id", id)}
+                , false));
+    }
+
+    /**
+     * Returns the user's friends, each with current status inline.
+     * <br>This method calls http://api.t.sina.com.cn/statuses/friends.format
+     *
+     * @param id the ID or screen name of the user for whom to request a list of friends
+     * @param paging controls pagination
+     * @return the list of friends
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.1
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Statuses/friends">statuses/friends </a>
+     * @deprecated use getFriendsStatuses(id,paging) instead
+     */
+    public List<User> getFriends(String id, Paging paging) throws WeiboException {
+        return getFriendsStatuses(id, paging);
+    }
+
+    /**
+     * Returns the user's friends, each with current status inline.
+     * <br>This method calls http://api.t.sina.com.cn/statuses/friends.format
+     *
+     * @param id the ID or screen name of the user for whom to request a list of friends
+     * @param paging controls pagination (饭否API 默认返回 100 条/页)
+     * @return the list of friends
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.9
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Statuses/friends">statuses/friends </a>
+     */
+    public List<User> getFriendsStatuses(String id, Paging paging) throws WeiboException {
+       /* return User.constructUsers(get(getBaseURL() + "statuses/friends/" + id + ".xml"
+                , null, paging, false), this);*/
+        return User.constructUsers(get(getBaseURL() + "users/friends.json", 
+                new PostParameter[] {new PostParameter("id", id)}, paging
+                , false));
+    }
+
+    /**
+     * Returns the user's friends, each with current status inline.
+     * <br>This method calls http://api.t.sina.com.cn/statuses/friends.format
+     *
+     * @param id   the ID or screen name of the user for whom to request a list of friends
+     * @param page the number of page
+     * @return List
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @deprecated Use getFriendsStatuses(String id, Paging paging) instead
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Statuses/friends">statuses/friends </a>
+     */
+    public List<User> getFriends(String id, int page) throws WeiboException {
+        return getFriendsStatuses(id, new Paging(page));
+    }
+
+    /**
+     * Returns the authenticating user's followers, each with current status inline. They are ordered by the order in which they joined Weibo (this is going to be changed).
+     * <br>This method calls http://api.t.sina.com.cn/statuses/followers.format
+     *
+     * @return List
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Statuses/followers">statuses/followers </a>
+     * @deprecated use getFollowersStatuses() instead
+     */
+    public List<User> getFollowers() throws WeiboException {
+        return getFollowersStatuses();
+    }
+
+    /**
+     * Returns the authenticating user's followers, each with current status inline. They are ordered by the order in which they joined Weibo (this is going to be changed).
+     * <br>This method calls http://api.t.sina.com.cn/statuses/followers.format
+     *
+     * @return List
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Statuses/followers">statuses/followers </a>
+     * @since Weibo4J 2.0.9
+     */
+    public List<User> getFollowersStatuses() throws WeiboException {
+//        return User.constructUsers(get(getBaseURL() + "statuses/followers.xml", true), this);
+        return User.constructResult(get(getBaseURL() + "statuses/followers.json", true));
+    }
+
+    /**
+     * Returns the authenticating user's followers, each with current status inline. They are ordered by the order in which they joined Weibo (this is going to be changed).
+     * <br>This method calls http://api.t.sina.com.cn/statuses/followers.format
+     *
+     * @param paging controls pagination
+     * @return List
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.1
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Statuses/followers">statuses/followers </a>
+     * @deprecated use getFollowersStatuses(paging)
+     */
+    public List<User> getFollowers(Paging paging) throws WeiboException {
+        return getFollowersStatuses(paging);
+    }
+
+    /**
+     * Returns the authenticating user's followers, each with current status inline. They are ordered by the order in which they joined Weibo (this is going to be changed).
+     * <br>This method calls http://api.t.sina.com.cn/statuses/followers.format
+     *
+     * @param paging controls pagination
+     * @return List
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.9
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Statuses/followers">statuses/followers </a>
+     */
+    public List<User> getFollowersStatuses(Paging paging) throws WeiboException {
+        /*return User.constructUsers(get(getBaseURL() + "statuses/followers.xml", null
+                , paging, true), this);*/
+        return User.constructUsers(get(getBaseURL() + "statuses/followers.json", null
+                , paging, true));
+    }
+
+    /**
+     * Returns the authenticating user's followers, each with current status inline. They are ordered by the order in which they joined Weibo (this is going to be changed).
+     * <br>This method calls http://api.t.sina.com.cn/statuses/followers.format
+     *
+     * @param page Retrieves the next 100 followers.
+     * @return List
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 1.1.0
+     * @deprecated Use getFollowersStatuses(Paging paging) instead
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Statuses/followers">statuses/followers </a>
+     */
+    public List<User> getFollowers(int page) throws WeiboException {
+        return getFollowersStatuses(new Paging(page));
+    }
+
+    /**
+     * Returns the authenticating user's followers, each with current status inline. They are ordered by the order in which they joined Weibo (this is going to be changed).
+     * <br>This method calls http://api.t.sina.com.cn/statuses/followers.format
+     *
+     * @param id The ID or screen name of the user for whom to request a list of followers.
+     * @return List
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 1.1.0
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Statuses/followers">statuses/followers </a>
+     * @deprecated use getFollowersStatuses(id) instead
+     */
+    public List<User> getFollowers(String id) throws WeiboException {
+        return getFollowersStatuses(id);
+    }
+
+    /**
+     * Returns the authenticating user's followers, each with current status inline. They are ordered by the order in which they joined Weibo (this is going to be changed).
+     * <br>This method calls http://api.t.sina.com.cn/statuses/followers.format
+     *
+     * @param id The ID (not screen name) of the user for whom to request a list of followers.
+     * @return List
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.9
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Statuses/followers">statuses/followers </a>
+     */
+    public List<User> getFollowersStatuses(String id) throws WeiboException {
+//        return User.constructUsers(get(getBaseURL() + "statuses/followers/" + id + ".xml", true), this);
+         return User.constructUsers(get(getBaseURL() + "statuses/followers/" + id + ".json", true));
+    }
+
+    /**
+     * Returns the authenticating user's followers, each with current status inline. They are ordered by the order in which they joined Weibo (this is going to be changed).
+     * <br>This method calls http://api.t.sina.com.cn/statuses/followers.format
+     *
+     * @param id   The ID or screen name of the user for whom to request a list of followers.
+     * @param paging controls pagination
+     * @return List
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.1
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Statuses/followers">statuses/followers </a>
+     * @deprecated use getFollowersStatuses(id) instead
+     */
+    public List<User> getFollowers(String id, Paging paging) throws WeiboException {
+        return getFollowersStatuses(id, paging);
+    }
+
+    /**
+     * Returns the authenticating user's followers, each with current status inline. They are ordered by the order in which they joined Weibo (this is going to be changed).
+     * <br>This method calls http://api.t.sina.com.cn/statuses/followers.format
+     *
+     * @param id   The ID or screen name of the user for whom to request a list of followers.
+     * @param paging controls pagination
+     * @return List
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.9
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Statuses/followers">statuses/followers </a>
+     */
+    public List<User> getFollowersStatuses(String id, Paging paging) throws WeiboException {
+        /*return User.constructUsers(get(getBaseURL() + "statuses/followers/" + id +
+                ".xml", null, paging, true), this);*/
+        return User.constructUsers(get(getBaseURL() + "statuses/followers/" + id +
+                ".json", null, paging, true));
+    }
+
+    /**
+     * Returns the authenticating user's followers, each with current status inline. They are ordered by the order in which they joined Weibo (this is going to be changed).
+     * <br>This method calls http://api.t.sina.com.cn/statuses/followers.format
+     *
+     * @param id   The ID or screen name of the user for whom to request a list of followers.
+     * @param page Retrieves the next 100 followers.
+     * @return List
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 1.1.0
+     * @deprecated Use getFollowersStatuses(String id, Paging paging) instead
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Statuses/followers">statuses/followers </a>
+     */
+    public List<User> getFollowers(String id, int page) throws WeiboException {
+        return getFollowersStatuses(id, new Paging(page));
+    }
+
+    /**
+     * Returns a list of the users currently featured on the site with their current statuses inline.
+     *
+     * @return List of User
+     * @throws WeiboException when Weibo service or network is unavailable
+     */
+    public List<User> getFeatured() throws WeiboException {
+//        return User.constructUsers(get(getBaseURL() + "statuses/featured.xml", true), this);
+        return User.constructUsers(get(getBaseURL() + "statuses/featured.json", true));
+    }
+
+    /**
+     * Returns a list of the direct messages sent to the authenticating user.
+     * <br>This method calls http://api.t.sina.com.cn/direct_messages.format
+     *
+     * @return List
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Direct_messages">direct_messages </a>
+     */
+    public List<DirectMessage> getDirectMessages() throws WeiboException {
+
+        return DirectMessage.constructDirectMessages(get(getBaseURL() + "direct_messages.json", true));
+    }
+
+    /**
+     * Returns a list of the direct messages sent to the authenticating user.
+     * <br>This method calls http://api.t.sina.com.cn/direct_messages.format
+     *
+     * @param paging controls pagination
+     * @return List
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Direct_messages">direct_messages </a>
+     */
+    public List<DirectMessage> getDirectMessages(Paging paging) throws WeiboException {
+        /*return DirectMessage.constructDirectMessages(get(getBaseURL()
+                + "direct_messages.xml", null, paging, true), this);*/
+        return DirectMessage.constructDirectMessages(get(getBaseURL()
+                + "direct_messages.json", null, paging, true));
+    }
+
+    /**
+     * Returns a list of the direct messages sent to the authenticating user.
+     * <br>This method calls http://api.t.sina.com.cn/direct_messages.format
+     *
+     * @param page the number of page
+     * @return List
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @deprecated Use getDirectMessages(Paging paging) instead
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Direct_messages">direct_messages </a>
+     */
+    public List<DirectMessage> getDirectMessagesByPage(int page) throws WeiboException {
+        return getDirectMessages(new Paging(page));
+    }
+
+    /**
+     * Returns a list of the direct messages sent to the authenticating user.
+     * <br>This method calls http://api.t.sina.com.cn/direct_messages.format
+     *
+     * @param page    the number of page
+     * @param sinceId Returns only direct messages with an ID greater than (that is, more recent than) the specified ID.
+     * @return List
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.0
+     * @deprecated Use getDirectMessages(Paging paging) instead
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Direct_messages">direct_messages </a>
+     */
+    public List<DirectMessage> getDirectMessages(int page
+            , int sinceId) throws WeiboException {
+        return getDirectMessages(new Paging(page).sinceId(sinceId));
+    }
+
+    /**
+     * Returns a list of the direct messages sent to the authenticating user.
+     * <br>This method calls http://api.t.sina.com.cn/direct_messages.format
+     *
+     * @param sinceId Returns only direct messages with an ID greater than (that is, more recent than) the specified ID.
+     * @return list of direct messages
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @deprecated Use getDirectMessages(Paging paging) instead
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Direct_messages">direct_messages </a>
+     */
+    public List<DirectMessage> getDirectMessages(int sinceId) throws WeiboException {
+        return getDirectMessages(new Paging((long)sinceId));
+    }
+
+    /**
+     * Returns a list of the direct messages sent to the authenticating user.
+     * <br>This method calls http://api.t.sina.com.cn/direct_messages.format
+     *
+     * @param since narrows the resulting list of direct messages to just those sent after the specified HTTP-formatted date
+     * @return list of direct messages
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @deprecated Use getDirectMessages(Paging paging) instead
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Direct_messages">direct_messages </a>
+     */
+    public List<DirectMessage> getDirectMessages(Date since) throws
+            WeiboException {
+        return DirectMessage.constructDirectMessages(get(getBaseURL() +
+                "direct_messages.xml", "since", format.format(since), true), this);
+    }
+
+    /**
+     * Returns a list of the direct messages sent by the authenticating user.
+     * <br>This method calls http://api.t.sina.com.cn/direct_messages/sent.format
+     *
+     * @return List
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Direct_messages/sent">发送私信 </a>
+     */
+    public List<DirectMessage> getSentDirectMessages() throws
+            WeiboException {
+        /*return DirectMessage.constructDirectMessages(get(getBaseURL() +
+                "direct_messages/sent.xml", new PostParameter[0], true), this);*/
+         return DirectMessage.constructDirectMessages(get(getBaseURL() +
+                 "direct_messages/sent.json", new PostParameter[0], true));
+    }
+
+    /**
+     * Returns a list of the direct messages sent by the authenticating user.
+     * <br>This method calls http://api.t.sina.com.cn/direct_messages/sent.format
+     *
+     * @param paging controls pagination
+     * @return List 默认返回20条, 一次最多返回60条 
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.1
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Direct_messages/sent">发送私信 </a>
+     */
+    public List<DirectMessage> getSentDirectMessages(Paging paging) throws
+            WeiboException {
+       /* return DirectMessage.constructDirectMessages(get(getBaseURL() +
+                "direct_messages/sent.xml", new PostParameter[0],paging, true), this);*/
+         return DirectMessage.constructDirectMessages(get(getBaseURL() +
+                 "direct_messages/sent.json", new PostParameter[0],paging, true));
+    }
+
+    /**
+     * Returns a list of the direct messages sent by the authenticating user.
+     * <br>This method calls http://api.t.sina.com.cn/direct_messages/sent.format
+     *
+     * @param since narrows the resulting list of direct messages to just those sent after the specified HTTP-formatted date
+     * @return List
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @deprecated using long sinceId is suggested.
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Direct_messages/sent">发送私信 </a>
+     */
+    public List<DirectMessage> getSentDirectMessages(Date since) throws
+            WeiboException {
+        return DirectMessage.constructDirectMessages(get(getBaseURL() +
+                "direct_messages/sent.xml", "since", format.format(since), true), this);
+    }
+
+    /**
+     * Returns a list of the direct messages sent by the authenticating user.
+     * <br>This method calls http://api.t.sina.com.cn/direct_messages/sent.format
+     *
+     * @param sinceId returns only sent direct messages with an ID greater than (that is, more recent than) the specified ID
+     * @return List
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @deprecated Use getSentDirectMessages(Paging paging) instead
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Direct_messages/sent">发送私信 </a>
+     */
+    public List<DirectMessage> getSentDirectMessages(int sinceId) throws
+            WeiboException {
+        return getSentDirectMessages(new Paging((long)sinceId));
+    }
+
+    /**
+     * Returns a list of the direct messages sent by the authenticating user.
+     * <br>This method calls http://api.t.sina.com.cn/direct_messages/sent.format
+     *
+     * @param sinceId returns only sent direct messages with an ID greater than (that is, more recent than) the specified ID
+     * @param page Retrieves the 20 next most recent direct messages.
+     * @return List
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.0
+     * @deprecated Use getSentDirectMessages(Paging paging) instead
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Direct_messages/sent">发送私信 </a>
+     */
+    public List<DirectMessage> getSentDirectMessages(int page
+            , int sinceId) throws WeiboException {
+        return getSentDirectMessages(new Paging(page, (long)sinceId));
+    }
+
+    /**
+     * Sends a new direct message to the specified user from the authenticating user.  Requires both the user and text parameters below.
+     * The text will be trimed if the length of the text is exceeding 140 characters.
+     * <br>This method calls http://api.t.sina.com.cn/direct_messages/new.format
+     *
+     * @note 通过客户端只能给互相关注的人发私信
+     * @param id   the ID of the user to whom send the direct message
+     * @param text String
+     * @return DirectMessage
+     * @throws WeiboException when Weibo service or network is unavailable
+       @see <a href="http://open.t.sina.com.cn/wiki/index.php/Direct_messages/new">发送私信 </a>
+     */
+    public DirectMessage sendDirectMessage(String id, String text) throws WeiboException {
+        /*return new DirectMessage(http.post(getBaseURL() + "direct_messages/new.xml",
+                new PostParameter[]{new PostParameter("user", id),
+                        new PostParameter("text", text)}, true), this);*/
+        return new DirectMessage(http.post(getBaseURL() + "direct_messages/new.json",
+                new PostParameter[]{new PostParameter("user", id),
+                        new PostParameter("text", text),new PostParameter("source", source)}, true).asJSONObject());
+    }
+
+    public DirectMessage sendDirectMessage(String id, String text, String in_reply_to_id)
+                                    throws WeiboException {
+        /*return new DirectMessage(http.post(getBaseURL() + "direct_messages/new.xml",
+                new PostParameter[]{new PostParameter("user", id),
+                        new PostParameter("text", text)}, true), this);*/
+        return new DirectMessage(http.post(getBaseURL() + "direct_messages/new.json",
+                new PostParameter[]{
+                        new PostParameter("user", id),
+                        new PostParameter("text", text),
+                        new PostParameter("in_reply_to_id", in_reply_to_id),
+                        new PostParameter("source", source)},
+                true).asJSONObject());
+    }
+    /**
+     * Destroys the direct message specified in the required ID parameter.  The authenticating user must be the recipient of the specified direct message.
+     * <br>This method calls http://api.t.sina.com.cn/direct_messages/destroy/id.format
+     *
+     * @param id the ID of the direct message to destroy
+     * @return the deleted direct message
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Direct_messages/destroy">Weibo API Wiki / Weibo REST API Method: direct_messages destroy</a>
+     * @deprecated Use destroyDirectMessage(int id) instead
+     */
+    public DirectMessage deleteDirectMessage(String id) throws
+            WeiboException {
+        return destroyDirectMessage(id);
+    }
+
+    /**
+     * Destroys the direct message specified in the required ID parameter.  The authenticating user must be the recipient of the specified direct message.
+     * <br>This method calls http://api.t.sina.com.cn/direct_messages/destroy/id.format
+     *
+     * @param id the ID of the direct message to destroy
+     * @return the deleted direct message
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Direct_messages/destroy">Weibo API Wiki / Weibo REST API Method: direct_messages destroy</a>
+     * @since Weibo4J 2.0.1
+     */
+    public DirectMessage destroyDirectMessage(String id) throws
+            WeiboException {
+        /*return new DirectMessage(http.post(getBaseURL() +
+                "direct_messages/destroy/" + id + ".xml", new PostParameter[0], true), this);*/
+        return new DirectMessage(http.post(getBaseURL() +
+                "direct_messages/destroy/" + id + ".json", new PostParameter[0], true).asJSONObject());
+    }
+
+    /**
+     * Befriends the user specified in the ID parameter as the authenticating user.  Returns the befriended user in the requested format when successful.  Returns a string describing the failure condition when unsuccessful.
+     *
+     * @param id the ID or screen name of the user to be befriended
+     * @return the befriended user
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @deprecated Use createFriendship(String id) instead
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Friendships/create">friendships/create </a>
+     */
+
+    public User create(String id) throws WeiboException {
+        return createFriendship(id);
+    }
+
+    /**
+     * Befriends the user specified in the ID parameter as the authenticating user.  Returns the befriended user in the requested format when successful.  Returns a string describing the failure condition when unsuccessful.
+     *
+     * @param id the ID or screen name of the user to be befriended
+     * @return the befriended user
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.1
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Friendships/create">friendships/create </a>
+     */
+    public User createFriendship(String id) throws WeiboException {
+//        return new User(http.post(getBaseURL() + "friendships/create/" + id + ".xml", new PostParameter[0], true), this);
+         return new User(http.post(getBaseURL() + "friendships/create/" + id + ".json", new PostParameter[0], true).asJSONObject());
+    }
+
+    /**
+     * Befriends the user specified in the ID parameter as the authenticating user.  Returns the befriended user in the requested format when successful.  Returns a string describing the failure condition when unsuccessful.
+     *
+     * @param id the ID or screen name of the user to be befriended
+     * @param follow Enable notifications for the target user in addition to becoming friends.
+     * @return the befriended user
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.2
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Friendships/create">friendships/create </a>
+     */
+    public User createFriendship(String id, boolean follow) throws WeiboException {
+        /*return new User(http.post(getBaseURL() + "friendships/create/" + id + ".xml"
+                , new PostParameter[]{new PostParameter("follow"
+                        , String.valueOf(follow))}, true)
+                , this);*/
+         return new User(http.post(getBaseURL() + "friendships/create/" + id + ".json"
+                 , new PostParameter[]{new PostParameter("follow"
+                         , String.valueOf(follow))}, true).asJSONObject()
+                 );
+    }
+
+    /**
+     * Discontinues friendship with the user specified in the ID parameter as the authenticating user.  Returns the un-friended user in the requested format when successful.  Returns a string describing the failure condition when unsuccessful.
+     *
+     * @param id the ID or screen name of the user for whom to request a list of friends
+     * @return User
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @deprecated Use destroyFriendship(String id) instead
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Friendships/destroy">friendships/destroy </a>
+     */
+    public User destroy(String id) throws WeiboException {
+        return destroyFriendship(id);
+    }
+
+    /**
+     * Discontinues friendship with the user specified in the ID parameter as the authenticating user.  Returns the un-friended user in the requested format when successful.  Returns a string describing the failure condition when unsuccessful.
+     *
+     * @param id the ID or screen name of the user for whom to request a list of friends
+     * @return User
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.1
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Friendships/destroy">friendships/destroy </a>
+     */
+    public User destroyFriendship(String id) throws WeiboException {
+//        return new User(http.post(getBaseURL() + "friendships/destroy/" + id + ".xml", new PostParameter[0], true), this);
+         return new User(http.post(getBaseURL() + "friendships/destroy/" + id + ".json", new PostParameter[0], true).asJSONObject());
+    }
+
+    /**
+     * Tests if a friendship exists between two users.
+     *
+     * @param userA The ID or screen_name of the first user to test friendship for.
+     * @param userB The ID or screen_name of the second user to test friendship for.
+     * @return if a friendship exists between two users.
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @deprecated Use friendshipExists(String userA, String userB)
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Friendships/exists">friendships/exists </a>
+     */
+    public boolean exists(String userA, String userB) throws WeiboException {
+        return existsFriendship(userA, userB);
+    }
+    /**
+     * Tests if a friendship exists between two users.
+     *
+     * @param userA The ID or screen_name of the first user to test friendship for.
+     * @param userB The ID or screen_name of the second user to test friendship for.
+     * @return if a friendship exists between two users.
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.1
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Friendships/exists">friendships/exists </a>
+     */
+    public boolean existsFriendship(String userA, String userB) throws WeiboException {
+        return -1 != get(getBaseURL() + "friendships/exists.json", "user_a", userA, "user_b", userB, true).
+                asString().indexOf("true");
+    }
+
+    /**
+     * Returns an array of numeric IDs for every user the authenticating user is following.
+     * @return an array of numeric IDs for every user the authenticating user is following
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.0
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Friends/ids">friends/ids</a>
+     */
+    public IDs getFriendsIDs() throws WeiboException {
+        return getFriendsIDs(-1l);
+    }
+
+    /**
+     * Returns an array of numeric IDs for every user the authenticating user is following.
+     * @param paging Specifies the page number of the results beginning at 1. A single page contains 5000 ids. This is recommended for users with large ID lists. If not provided all ids are returned.
+     * @return an array of numeric IDs for every user the authenticating user is following
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.1
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Friends/ids">friends/ids</a>
+     * @deprecated use getFriendsIDs(long cursor) instead
+     */
+    public IDs getFriendsIDs(Paging paging) throws WeiboException {
+        return new IDs(get(getBaseURL() + "friends/ids.xml", null, paging, true));
+    }
+
+    /**
+     * Returns an array of numeric IDs for every user the authenticating user is following.
+     * @param cursor  Specifies the page number of the results beginning at 1. A single page contains 5000 ids. This is recommended for users with large ID lists. If not provided all ids are returned.
+     * @return an array of numeric IDs for every user the authenticating user is following
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.10
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Friends/ids">friends/ids</a>
+     */
+    public IDs getFriendsIDs(long cursor) throws WeiboException {
+        return new IDs(get(getBaseURL() + "friends/ids.xml?cursor=" + cursor, true));
+    }
+
+    /**
+     * Returns an array of numeric IDs for every user the specified user is following.<br>
+     * all IDs are attempted to be returned, but large sets of IDs will likely fail with timeout errors.
+     * @param userId Specfies the ID of the user for whom to return the friends list.
+     * @return an array of numeric IDs for every user the specified user is following
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.0
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Friends/ids">friends/ids</a>
+     */
+    public IDs getFriendsIDs(int userId) throws WeiboException {
+        return getFriendsIDs(userId, -1l);
+    }
+
+    /**
+     * Returns an array of numeric IDs for every user the specified user is following.
+     * @param userId Specifies the ID of the user for whom to return the friends list.
+     * @param paging Specifies the page number of the results beginning at 1. A single page contains 5000 ids. This is recommended for users with large ID lists. If not provided all ids are returned.
+     * @return an array of numeric IDs for every user the specified user is following
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.1
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Friends/ids">friends/ids</a>
+     * @deprecated use getFriendsIDs(int userId, long cursor) instead
+     */
+    public IDs getFriendsIDs(int userId, Paging paging) throws WeiboException {
+        return new IDs(get(getBaseURL() + "friends/ids.xml?user_id=" + userId, null
+                , paging, true));
+    }
+
+    /**
+     * Returns an array of numeric IDs for every user the specified user is following.
+     * @param userId Specifies the ID of the user for whom to return the friends list.
+     * @param cursor  Specifies the page number of the results beginning at 1. A single page contains 5000 ids. This is recommended for users with large ID lists. If not provided all ids are returned.
+     * @return an array of numeric IDs for every user the specified user is following
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.10
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Friends/ids">friends/ids</a>
+     */
+    public IDs getFriendsIDs(int userId, long cursor) throws WeiboException {
+        /*return new IDs(get(getBaseURL() + "friends/ids.xml?user_id=" + userId +
+                "&cursor=" + cursor, true));*/
+        return new IDs(get(getBaseURL() + "friends/ids.json?user_id=" + userId +
+                "&cursor=" + cursor, true),this);
+    }
+
+    /**
+     * Returns an array of numeric IDs for every user the specified user is following.
+     * @param screenName Specfies the screen name of the user for whom to return the friends list.
+     * @return an array of numeric IDs for every user the specified user is following
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.0
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Friends/ids">friends/ids</a>
+     */
+    public IDs getFriendsIDs(String screenName) throws WeiboException {
+        return getFriendsIDs(screenName, -1l);
+    }
+
+    /**
+     * Returns an array of numeric IDs for every user the specified user is following.
+     * @param screenName Specfies the screen name of the user for whom to return the friends list.
+     * @param paging Specifies the page number of the results beginning at 1. A single page contains 5000 ids. This is recommended for users with large ID lists. If not provided all ids are returned.
+     * @return an array of numeric IDs for every user the specified user is following
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.1
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Friends/ids">friends/ids</a>
+     * @deprecated use getFriendsIDs(String screenName, long cursor) instead
+     */
+    public IDs getFriendsIDs(String screenName, Paging paging) throws WeiboException {
+        return new IDs(get(getBaseURL() + "friends/ids.xml?screen_name=" + screenName
+                , null, paging, true));
+    }
+
+    /**
+     * Returns an array of numeric IDs for every user the specified user is following.
+     * @param screenName Specfies the screen name of the user for whom to return the friends list.
+     * @param cursor  Specifies the page number of the results beginning at 1. A single page contains 5000 ids. This is recommended for users with large ID lists. If not provided all ids are returned.
+     * @return an array of numeric IDs for every user the specified user is following
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.10
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Friends/ids">friends/ids</a>
+     */
+    public IDs getFriendsIDs(String screenName, long cursor) throws WeiboException {
+       /* return new IDs(get(getBaseURL() + "friends/ids.xml?screen_name=" + screenName
+                + "&cursor=" + cursor, true));*/
+         return new IDs(get(getBaseURL() + "friends/ids.json?screen_name=" + screenName
+                 + "&cursor=" + cursor, true),this);
+    }
+
+    /**
+     * Returns an array of numeric IDs for every user the specified user is followed by.
+     * @return The ID or screen_name of the user to retrieve the friends ID list for.
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.0
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Followers/ids">followers/ids </a>
+     */
+    public IDs getFollowersIDs() throws WeiboException {
+        return getFollowersIDs(-1l);
+    }
+
+    /**
+     * Returns an array of numeric IDs for every user the specified user is followed by.
+     * @return The ID or screen_name of the user to retrieve the friends ID list for.
+     * @param paging Specifies the page number of the results beginning at 1. A single page contains 5000 ids. This is recommended for users with large ID lists. If not provided all ids are returned.
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.1
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Followers/ids">followers/ids </a>
+     * @deprecated use getFollowersIDs(long cursor) instead
+     */
+    public IDs getFollowersIDs(Paging paging) throws WeiboException {
+        return new IDs(get(getBaseURL() + "followers/ids.xml", null, paging
+                , true));
+    }
+
+    /**
+     * Returns an array of numeric IDs for every user the specified user is followed by.
+     * @return The ID or screen_name of the user to retrieve the friends ID list for.
+     * @param cursor  Specifies the page number of the results beginning at 1. A single page contains 5000 ids. This is recommended for users with large ID lists. If not provided all ids are returned.
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.10
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Followers/ids">followers/ids </a>
+     */
+    public IDs getFollowersIDs(long cursor) throws WeiboException {
+        /*return new IDs(get(getBaseURL() + "followers/ids.xml?cursor=" + cursor
+                , true));*/
+        return new IDs(get(getBaseURL() + "followers/ids.json?cursor=" + cursor
+                , true),this);
+    }
+
+    /**
+     * Returns an array of numeric IDs for every user the specified user is followed by.
+     * @param userId Specfies the ID of the user for whom to return the followers list.
+     * @return The ID or screen_name of the user to retrieve the friends ID list for.
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.0
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Followers/ids">followers/ids </a>
+     */
+    public IDs getFollowersIDs(int userId) throws WeiboException {
+        return getFollowersIDs(userId, -1l);
+    }
+
+    /**
+     * Returns an array of numeric IDs for every user the specified user is followed by.
+     * @param userId Specfies the ID of the user for whom to return the followers list.
+     * @param paging Specifies the page number of the results beginning at 1. A single page contains 5000 ids. This is recommended for users with large ID lists. If not provided all ids are returned.
+     * @return The ID or screen_name of the user to retrieve the friends ID list for.
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.1
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Followers/ids">followers/ids </a>
+     * @deprecated use getFollowersIDs(int userId, long cursor) instead
+     */
+    public IDs getFollowersIDs(int userId, Paging paging) throws WeiboException {
+        return new IDs(get(getBaseURL() + "followers/ids.xml?user_id=" + userId, null
+                , paging, true));
+    }
+
+    /**
+     * Returns an array of numeric IDs for every user the specified user is followed by.
+     * @param userId Specifies the ID of the user for whom to return the followers list.
+     * @param cursor  Specifies the page number of the results beginning at 1. A single page contains 5000 ids. This is recommended for users with large ID lists. If not provided all ids are returned.
+     * @return The ID or screen_name of the user to retrieve the friends ID list for.
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.10
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Followers/ids">followers/ids </a>
+     */
+    public IDs getFollowersIDs(int userId, long cursor) throws WeiboException {
+        return new IDs(get(getBaseURL() + "followers/ids.xml?user_id=" + userId
+                + "&cursor=" + cursor, true));
+    }
+
+    /**
+     * Returns an array of numeric IDs for every user the specified user is followed by.
+     * @param screenName Specfies the screen name of the user for whom to return the followers list.
+     * @return The ID or screen_name of the user to retrieve the friends ID list for.
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.0
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Followers/ids">followers/ids </a>
+     */
+    public IDs getFollowersIDs(String screenName) throws WeiboException {
+        return getFollowersIDs(screenName, -1l);
+    }
+
+    /**
+     * Returns an array of numeric IDs for every user the specified user is followed by.
+     * @param screenName Specfies the screen name of the user for whom to return the followers list.
+     * @param paging Specifies the page number of the results beginning at 1. A single page contains 5000 ids. This is recommended for users with large ID lists. If not provided all ids are returned.
+     * @return The ID or screen_name of the user to retrieve the friends ID list for.
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.1
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Followers/ids">followers/ids </a>
+     * @deprecated use getFollowersIDs(String screenName, long cursor) instead
+     */
+    public IDs getFollowersIDs(String screenName, Paging paging) throws WeiboException {
+        return new IDs(get(getBaseURL() + "followers/ids.xml?screen_name="
+                + screenName, null, paging, true));
+    }
+
+    /**
+     * Returns an array of numeric IDs for every user the specified user is followed by.
+     * @param screenName Specfies the screen name of the user for whom to return the followers list.
+     * @param cursor  Specifies the page number of the results beginning at 1. A single page contains 5000 ids. This is recommended for users with large ID lists. If not provided all ids are returned.
+     * @return The ID or screen_name of the user to retrieve the friends ID list for.
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.10
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Followers/ids">followers/ids </a>
+     */
+    public IDs getFollowersIDs(String screenName, long cursor) throws WeiboException {
+       /* return new IDs(get(getBaseURL() + "followers/ids.xml?screen_name="
+                + screenName + "&cursor=" + cursor, true));*/
+         return new IDs(get(getBaseURL() + "followers/ids.json?screen_name="
+                 + screenName + "&cursor=" + cursor, true),this);
+    }
+
+    /**
+     * Returns an HTTP 200 OK response code and a representation of the requesting user if authentication was successful; returns a 401 status code and an error message if not.  Use this method to test if supplied user credentials are valid.
+     * 注意： 如果使用 错误的用户名/密码 多次登录后，饭否会锁住帐号，必须去fandou.com登录（输入验证码）
+     * 
+     * 登录成功返回 200 code
+     * 登录失败返回 401 code
+     * 使用WeiboException的getStatusCode取得code
+     *
+     * @return user
+     * @since Weibo4J 2.0.0
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Account/verify_credentials">account/verify_credentials </a>
+     */
+    public User verifyCredentials() throws WeiboException {
+        /*return new User(get(getBaseURL() + "account/verify_credentials.xml"
+                , true), this);*/
+        return new User(get(getBaseURL() + "account/verify_credentials.json"
+                , true).asJSONObject());
+    }
+
+    /**
+     * Updates the location
+     *
+     * @param location the current location of the user
+     * @return the updated user
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 1.0.4
+     * @deprecated Use updateProfile(String name, String email, String url, String location, String description) instead
+     */
+    public User updateLocation(String location) throws WeiboException {
+        return new User(http.post(getBaseURL() + "account/update_location.xml", new PostParameter[]{new PostParameter("location", location)}, true), this);
+    }
+
+    /**
+     * Sets values that users are able to set under the "Account" tab of their settings page. Only the parameters specified(non-null) will be updated.
+     *
+     * @param name Optional. Maximum of 20 characters.
+     * @param email Optional. Maximum of 40 characters. Must be a valid email address.
+     * @param url Optional. Maximum of 100 characters. Will be prepended with "http://" if not present.
+     * @param location Optional. Maximum of 30 characters. The contents are not normalized or geocoded in any way.
+     * @param description Optional. Maximum of 160 characters.
+     * @return the updated user
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.2
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Account/update_profile">account/update_profile </a>
+     */
+    public User updateProfile(String name, String email, String url
+            , String location, String description) throws WeiboException {
+        List<PostParameter> profile = new ArrayList<PostParameter>(5);
+        addParameterToList(profile, "name", name);
+        addParameterToList(profile, "email", email);
+        addParameterToList(profile, "url", url);
+        addParameterToList(profile, "location", location);
+        addParameterToList(profile, "description", description);
+        /*return new User(http.post(getBaseURL() + "account/update_profile.xml"
+                , profile.toArray(new PostParameter[profile.size()]), true), this);*/
+        return new User(http.post(getBaseURL() + "account/update_profile.json"
+                , profile.toArray(new PostParameter[profile.size()]), true).asJSONObject());
+    }
+
+    /**
+     * @param image
+     * @return
+     * @throws WeiboException
+     */
+    public User updateProfileImage(File image)throws WeiboException {
+        return new User(http.multPartURL("image",getBaseURL() + "account/update_profile_image.json",
+                null,image, true).asJSONObject());
+    }
+
+    /**
+     * Returns the remaining number of API requests available to the requesting user before the API limit is reached for the current hour. Calls to rate_limit_status do not count against the rate limit.  If authentication credentials are provided, the rate limit status for the authenticating user is returned.  Otherwise, the rate limit status for the requester's IP address is returned.<br>
+     *
+     * @return the rate limit status
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 1.1.4
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Account/rate_limit_status">account/rate_limit_status </a>
+     */
+    public RateLimitStatus rateLimitStatus() throws WeiboException {
+//        return new RateLimitStatus(http.get(getBaseURL() + "account/rate_limit_status.xml", null != getUserId() && null != getPassword()));
+         return new RateLimitStatus(http.get(getBaseURL() + "account/rate_limit_status.json", true),this);
+    }
+
+    public final static Device IM = new Device("im");
+    public final static Device SMS = new Device("sms");
+    public final static Device NONE = new Device("none");
+
+    static class Device {
+        final String DEVICE;
+
+        public Device(String device) {
+            DEVICE = device;
+        }
+    }
+
+    /**
+     * Sets which device Weibo delivers updates to for the authenticating user.  Sending none as the device parameter will disable IM or SMS updates.
+     *
+     * @param device new Delivery device. Must be one of: IM, SMS, NONE.
+     * @return the updated user
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 1.0.4
+     */
+    public User updateDeliverlyDevice(Device device) throws WeiboException {
+//        return new User(http.post(getBaseURL() + "account/update_delivery_device.xml", new PostParameter[]{new PostParameter("device", device.DEVICE)}, true), this);
+        return new User(http.post(getBaseURL() + "account/update_delivery_device.json", new PostParameter[]{new PostParameter("device", device.DEVICE)}, true).asJSONObject());
+    }
+
+
+    /**
+     * Sets one or more hex values that control the color scheme of the authenticating user's profile page on sina.com.cn.  These values are also returned in the getUserDetail() method.
+     * @param profileBackgroundColor optional, can be null
+     * @param profileTextColor optional, can be null
+     * @param profileLinkColor optional, can be null
+     * @param profileSidebarFillColor optional, can be null
+     * @param profileSidebarBorderColor optional, can be null
+     * @return the updated user
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.0
+     */
+    public User updateProfileColors(
+            String profileBackgroundColor,
+            String profileTextColor,
+            String profileLinkColor,
+            String profileSidebarFillColor,
+            String profileSidebarBorderColor)
+            throws WeiboException {
+        List<PostParameter> colors = new ArrayList<PostParameter>(5);
+        addParameterToList(colors, "profile_background_color"
+                , profileBackgroundColor);
+        addParameterToList(colors, "profile_text_color"
+                , profileTextColor);
+        addParameterToList(colors, "profile_link_color"
+                , profileLinkColor);
+        addParameterToList(colors, "profile_sidebar_fill_color"
+                , profileSidebarFillColor);
+        addParameterToList(colors, "profile_sidebar_border_color"
+                , profileSidebarBorderColor);
+        /*return new User(http.post(getBaseURL() +
+                "account/update_profile_colors.xml",
+                colors.toArray(new PostParameter[colors.size()]), true), this);*/
+        return new User(http.post(getBaseURL() +
+                "account/update_profile_colors.json",
+                colors.toArray(new PostParameter[colors.size()]), true).asJSONObject());
+    }
+
+    private void addParameterToList(List<PostParameter> colors,
+                                      String paramName, String color) {
+        if(null != color){
+            colors.add(new PostParameter(paramName,color));
+        }
+    }
+
+    /**
+     * Returns the 20 most recent favorite statuses for the authenticating user or user specified by the ID parameter in the requested format.
+     * @return List<Status>
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Favorites">favorites </a>
+     * @deprecated Use getFavorited() instead
+     */
+    public List<Status> favorites() throws WeiboException {
+        return getFavorites();
+    }
+
+    /**
+     * Returns the 20 most recent favorite statuses for the authenticating user or user specified by the ID parameter in the requested format.
+     * @return List<Status>
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Favorites">favorites </a>
+     * @since Weibo4J 2.0.1
+     */
+    public List<Status> getFavorites() throws WeiboException {
+//        return Status.constructStatuses(get(getBaseURL() + "favorites.xml", new PostParameter[0], true), this);
+        return Status.constructStatuses(get(getBaseURL() + "favorites.json", new PostParameter[0], true));
+    }
+    
+    public List<Status> getFavorites(Paging paging) throws WeiboException {
+//      return Status.constructStatuses(get(getBaseURL() + "favorites/" + id + ".xml", "page", String.valueOf(page), true), this);
+    return Status.constructStatuses(get(getBaseURL() + "favorites.json", new PostParameter[0], paging, true));
+  }
+
+    /**
+     * Returns the 20 most recent favorite statuses for the authenticating user or user specified by the ID parameter in the requested format.
+     * @param page the number of page
+     * @return List<Status>
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Favorites">favorites </a>
+     * @deprecated Use getFavorites(int page) instead
+     */
+    public List<Status> favorites(int page) throws WeiboException {
+        return getFavorites(page);
+    }
+
+    /**
+     * Returns the 20 most recent favorite statuses for the authenticating user or user specified by the ID parameter in the requested format.
+     *
+     * @param page the number of page
+     * @return List<Status>
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Favorites">favorites </a>
+     * @since Weibo4J 2.0.1
+     */
+    public List<Status> getFavorites(int page) throws WeiboException {
+//        return Status.constructStatuses(get(getBaseURL() + "favorites.xml", "page", String.valueOf(page), true), this);
+        return Status.constructStatuses(get(getBaseURL() + "favorites.json", "page", String.valueOf(page), true));
+    }
+
+    /**
+     * Returns the 20 most recent favorite statuses for the authenticating user or user specified by the ID parameter in the requested format.
+     *
+     * @param id the ID or screen name of the user for whom to request a list of favorite statuses
+     * @return List<Status>
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Favorites">favorites </a>
+     * @deprecated Use getFavorites(String id) instead
+     */
+    public List<Status> favorites(String id) throws WeiboException {
+        return getFavorites(id);
+    }
+
+    /**
+     * Returns the 20 most recent favorite statuses for the authenticating user or user specified by the ID parameter in the requested format.
+     *
+     * @param id the ID or screen name of the user for whom to request a list of favorite statuses
+     * @return List<Status>
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Favorites">favorites </a>
+     * @since Weibo4J 2.0.1
+     */
+    public List<Status> getFavorites(String id) throws WeiboException {
+//        return Status.constructStatuses(get(getBaseURL() + "favorites/" + id + ".xml", new PostParameter[0], true), this);
+         return Status.constructStatuses(get(getBaseURL() + "favorites/" + id + ".json", new PostParameter[0], true));
+    }
+
+    /**
+     * Returns the 20 most recent favorite statuses for the authenticating user or user specified by the ID parameter in the requested format.
+     *
+     * @param id   the ID or screen name of the user for whom to request a list of favorite statuses
+     * @param page the number of page
+     * @return List<Status>
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @deprecated Use getFavorites(String id, int page) instead
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Favorites">favorites </a>
+     */
+    public List<Status> favorites(String id, int page) throws WeiboException {
+        return getFavorites(id, page);
+    }
+
+    /**
+     * Returns the 20 most recent favorite statuses for the authenticating user or user specified by the ID parameter in the requested format.
+     *
+     * @param id   the ID or screen name of the user for whom to request a list of favorite statuses
+     * @param page the number of page
+     * @return List<Status>
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.1
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Favorites">favorites </a>
+     */
+    public List<Status> getFavorites(String id, int page) throws WeiboException {
+//        return Status.constructStatuses(get(getBaseURL() + "favorites/" + id + ".xml", "page", String.valueOf(page), true), this);
+        return Status.constructStatuses(get(getBaseURL() + "favorites/" + id + ".json", "page", String.valueOf(page), true));
+    }
+    
+    public List<Status> getFavorites(String id, Paging paging) throws WeiboException {
+//        return Status.constructStatuses(get(getBaseURL() + "favorites/" + id + ".xml", "page", String.valueOf(page), true), this);
+        return Status.constructStatuses(get(getBaseURL() + "favorites/" + id + ".json", null, paging, true));
+    }
+
+    /**
+     * Favorites the status specified in the ID parameter as the authenticating user.  Returns the favorite status when successful.
+     *
+     * @param id the ID of the status to favorite
+     * @return Status
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Favorites/create">favorites/create </a>
+     */
+    public Status createFavorite(String id) throws WeiboException {
+//        return new Status(http.post(getBaseURL() + "favorites/create/" + id + ".xml", true), this);
+        return new Status(http.post(getBaseURL() + "favorites/create/" + id + ".json", true));
+    }
+
+    /**
+     * Un-favorites the status specified in the ID parameter as the authenticating user.  Returns the un-favorited status in the requested format when successful.
+     *
+     * @param id the ID of the status to un-favorite
+     * @return Status
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Favorites/destroy">favorites/destroy </a>
+     */
+    public Status destroyFavorite(String id) throws WeiboException {
+//        return new Status(http.post(getBaseURL() + "favorites/destroy/" + id + ".xml", true), this);
+        return new Status(http.post(getBaseURL() + "favorites/destroy/" + id + ".json", true));
+    }
+
+    /**
+     * Enables notifications for updates from the specified user to the authenticating user.  Returns the specified user when successful.
+     *
+     * @param id String
+     * @return User
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @deprecated Use enableNotification(String id) instead
+     */
+    public User follow(String id) throws WeiboException {
+        return enableNotification(id);
+    }
+
+    /**
+     * Enables notifications for updates from the specified user to the authenticating user.  Returns the specified user when successful.
+     * @param id String
+     * @return User
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.1
+     * @deprecated 饭否该功能暂时关闭
+     * @todo 等待该功能开放
+     */
+    public User enableNotification(String id) throws WeiboException {
+//        return new User(http.post(getBaseURL() + "notifications/follow/" + id + ".xml", true), this);
+        return new User(http.post(getBaseURL() + "notifications/follow/" + id + ".json", true).asJSONObject());
+    }
+
+    /**
+     * Disables notifications for updates from the specified user to the authenticating user.  Returns the specified user when successful.
+     * @param id String
+     * @return User
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @deprecated Use disableNotification(String id) instead
+     */
+    public User leave(String id) throws WeiboException {
+        return disableNotification(id);
+    }
+
+    /**
+     * Disables notifications for updates from the specified user to the authenticating user.  Returns the specified user when successful.
+     * @param id String
+     * @return User
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @deprecated 饭否该功能暂时关闭
+     * @since Weibo4J 2.0.1
+     */
+    public User disableNotification(String id) throws WeiboException {
+//        return new User(http.post(getBaseURL() + "notifications/leave/" + id + ".xml", true), this);
+        return new User(http.post(getBaseURL() + "notifications/leave/" + id + ".json", true).asJSONObject());
+    }
+
+    /* Block Methods */
+
+    /**
+     * Blocks the user specified in the ID parameter as the authenticating user.  Returns the blocked user in the requested format when successful.
+     * @param id the ID or screen_name of the user to block
+     * @return the blocked user
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 1.0.4
+     * @deprecated Use createBlock(String id) instead
+     */
+    public User block(String id) throws WeiboException {
+        return new User(http.post(getBaseURL() + "blocks/create/" + id + ".xml", true), this);
+    }
+
+    /**
+     * Blocks the user specified in the ID parameter as the authenticating user.  Returns the blocked user in the requested format when successful.
+     * @param id the ID or screen_name of the user to block
+     * @return the blocked user
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.1
+     */
+    public User createBlock(String id) throws WeiboException {
+//        return new User(http.post(getBaseURL() + "blocks/create/" + id + ".xml", true), this);
+        return new User(http.post(getBaseURL() + "blocks/create/" + id + ".json", true).asJSONObject());
+    }
+
+
+    /**
+     * Un-blocks the user specified in the ID parameter as the authenticating user.  Returns the un-blocked user in the requested format when successful.
+     * @param id the ID or screen_name of the user to block
+     * @return the unblocked user
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 1.0.4
+     * @deprecated Use destroyBlock(String id) instead
+     */
+    public User unblock(String id) throws WeiboException {
+        return new User(http.post(getBaseURL() + "blocks/destroy/" + id + ".xml", true), this);
+    }
+
+    /**
+     * Un-blocks the user specified in the ID parameter as the authenticating user.  Returns the un-blocked user in the requested format when successful.
+     * @param id the ID or screen_name of the user to block
+     * @return the unblocked user
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.1
+     */
+    public User destroyBlock(String id) throws WeiboException {
+//        return new User(http.post(getBaseURL() + "blocks/destroy/" + id + ".xml", true), this);
+        return new User(http.post(getBaseURL() + "blocks/destroy/" + id + ".json", true).asJSONObject());
+    }
+
+
+    /**
+     * Tests if a friendship exists between two users.
+     * @param id The ID or screen_name of the potentially blocked user.
+     * @return  if the authenticating user is blocking a target user
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.4
+     */
+    public boolean existsBlock(String id) throws WeiboException {
+        try{
+            return -1 == get(getBaseURL() + "blocks/exists/" + id + ".json", true).
+                    asString().indexOf("<error>You are not blocking this user.</error>");
+        }catch(WeiboException te){
+            if(te.getStatusCode() == 404){
+                return false;
+            }
+            throw te;
+        }
+    }
+
+    /**
+     * Returns a list of user objects that the authenticating user is blocking.
+     * @return a list of user objects that the authenticating user
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.4
+     */
+    public List<User> getBlockingUsers() throws
+            WeiboException {
+        /*return User.constructUsers(get(getBaseURL() +
+                "blocks/blocking.xml", true), this);*/
+        return User.constructUsers(get(getBaseURL() +
+                "blocks/blocking.json", true));
+    }
+
+    /**
+     * Returns a list of user objects that the authenticating user is blocking.
+     * @param page the number of page
+     * @return a list of user objects that the authenticating user
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.4
+     */
+    public List<User> getBlockingUsers(int page) throws
+            WeiboException {
+        /*return User.constructUsers(get(getBaseURL() +
+                "blocks/blocking.xml?page=" + page, true), this);*/
+        return User.constructUsers(get(getBaseURL() +
+                "blocks/blocking.json?page=" + page, true));
+    }
+
+    /**
+     * Returns an array of numeric user ids the authenticating user is blocking.
+     * @return Returns an array of numeric user ids the authenticating user is blocking.
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.4
+     */
+    public IDs getBlockingUsersIDs() throws WeiboException {
+//        return new IDs(get(getBaseURL() + "blocks/blocking/ids.xml", true));
+        return new IDs(get(getBaseURL() + "blocks/blocking/ids.json", true),this);
+    }
+
+    /* Saved Searches Methods */
+    /**
+     * Returns the authenticated user's saved search queries.
+     * @return Returns an array of numeric user ids the authenticating user is blocking.
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.8
+     */
+    public List<SavedSearch> getSavedSearches() throws WeiboException {
+        return SavedSearch.constructSavedSearches(get(getBaseURL() + "saved_searches.json", true));
+    }
+
+    /**
+     * Retrieve the data for a saved search owned by the authenticating user specified by the given id.
+     * @param id The id of the saved search to be retrieved.
+     * @return the data for a saved search
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.8
+     */
+    public SavedSearch showSavedSearch(int id) throws WeiboException {
+        return new SavedSearch(get(getBaseURL() + "saved_searches/show/" + id
+                + ".json", true));
+    }
+
+    /**
+     * Retrieve the data for a saved search owned by the authenticating user specified by the given id.
+     * @return the data for a created saved search
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.8
+     */
+    public SavedSearch createSavedSearch(String query) throws WeiboException {
+        return new SavedSearch(http.post(getBaseURL() + "saved_searches/create.json"
+                , new PostParameter[]{new PostParameter("query", query)}, true));
+    }
+
+    /**
+     * Destroys a saved search for the authenticated user. The search specified by id must be owned by the authenticating user.
+     * @param id The id of the saved search to be deleted.
+     * @return the data for a destroyed saved search
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.8
+     */
+    public SavedSearch destroySavedSearch(int id) throws WeiboException {
+        return new SavedSearch(http.post(getBaseURL() + "saved_searches/destroy/" + id
+                + ".json", true));
+    }
+
+    /**
+     * 获取list接口
+     * @param uid       User ID or screen_name
+     * @param listId    The ID or slug of ListObject
+     * @param auth      if true, the request will be sent with BASIC authentication header
+     * @return
+     * @throws WeiboException
+     */
+    public ListObject getList(String uid, String listId, boolean auth) throws WeiboException {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getBaseURL()).append(uid).append("/lists/").append(listId).append(".xml").append("?source=").append(CONSUMER_KEY);
+        String httpMethod = "GET";
+        String url = sb.toString();
+        //
+        Response res = http.httpRequest(url, null, auth, httpMethod);
+        return new ListObject(res, this);
+    }
+
+    /**
+     * 获取ListObject的feed列表
+     * @param uid       User ID or screen_name
+     * @param listId    The ID or slug of ListObject
+     * @param auth      if true, the request will be sent with BASIC authentication header
+     * @return
+     * @throws WeiboException
+     */
+    public List<Status> getListStatuses(String uid, String listId, boolean auth) throws WeiboException {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getBaseURL()).append(uid).append("/lists/").append(listId).append("/statuses.xml").append("?source=").append(CONSUMER_KEY);
+        String httpMethod = "GET";
+        String url = sb.toString();
+        //
+        return Status.constructStatuses(http.httpRequest(url, null, auth, httpMethod), this);
+    }
+
+    /**
+     * 获取用户创建的ListObject列表接口
+     * @param uid       User ID or screen_name
+     * @param auth      if true, the request will be sent with BASIC authentication header
+     * @return
+     * @throws WeiboException
+     */
+    public ListObjectWapper getUserLists(String uid, boolean auth) throws WeiboException {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getBaseURL()).append(uid).append("/lists.xml").append("?source=").append(CONSUMER_KEY);
+        String httpMethod = "GET";
+        String url = sb.toString();
+        //
+        Response res = http.httpRequest(url, null, auth, httpMethod);
+        return ListObject.constructListObjects(res, this);
+    }
+
+    /**
+     * 获取用户订阅的ListObject列表接口
+     * @param uid       User ID or screen_name
+     * @param auth      if true, the request will be sent with BASIC authentication header
+     * @return
+     * @throws WeiboException
+     */
+    public ListObjectWapper getUserSubscriberLists(String uid, boolean auth) throws WeiboException {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getBaseURL()).append(uid).append("/lists/subscriptions.xml").append("?source=").append(CONSUMER_KEY);
+        String httpMethod = "GET";
+        String url = sb.toString();
+        //
+        Response res = http.httpRequest(url, null, auth, httpMethod);
+        return ListObject.constructListObjects(res, this);
+    }
+
+    /**
+     * 获取用户被加入的ListObject列表接口
+     * @param uid       User ID or screen_name
+     * @param auth      if true, the request will be sent with BASIC authentication header
+     * @return
+     * @throws WeiboException
+     */
+    public ListObjectWapper getUserListedLists(String uid, boolean auth) throws WeiboException {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getBaseURL()).append(uid).append("/lists/memberships.xml").append("?source=").append(CONSUMER_KEY);
+        String httpMethod = "GET";
+        String url = sb.toString();
+        //
+        Response res = http.httpRequest(url, null, auth, httpMethod);
+        return ListObject.constructListObjects(res, this);
+    }
+
+    /**
+     * 获取用户ListObject统计
+     * @param uid       用户ID 或者 screen_name
+     * @param auth      if true, the request will be sent with BASIC authentication header
+     * @return      ListUserCount对象
+     * @throws WeiboException
+     */
+    public ListUserCount getListUserCount(String uid, boolean auth) throws WeiboException {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getBaseURL()).append(String.valueOf(uid)).append("/lists").append("/counts.xml").append("?source=").append(CONSUMER_KEY);
+        String httpMethod = "GET";
+        String url = sb.toString();
+        //
+        Response res = http.httpRequest(url, null, auth, httpMethod);
+        return new ListUserCount(res);
+    }
+
+    /**
+     * 获取ListObject成员列表
+     * @param uid       User ID or screen_name
+     * @param listId    The ID or slug of ListObject
+     * @param auth      if true, the request will be sent with BASIC authentication header
+     * @return
+     * @throws WeiboException
+     */
+    public UserWapper getListMembers(String uid, String listId, boolean auth) throws WeiboException {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getBaseURL()).append(uid).append("/").append(listId).append("/members.xml").append("?source=").append(CONSUMER_KEY);
+        String httpMethod = "GET";
+        String url = sb.toString();
+        //
+        return User.constructWapperUsers(http.httpRequest(url, null, auth, httpMethod), this);
+    }
+
+    /**
+     * 获取ListObject订阅用户列表
+     * @param uid       User ID or screen_name
+     * @param listId    The ID or slug of ListObject
+     * @param auth      if true, the request will be sent with BASIC authentication header
+     * @return
+     * @throws WeiboException
+     */
+    public UserWapper getListSubscribers(String uid, String listId, boolean auth) throws WeiboException {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getBaseURL()).append(uid).append("/").append(listId).append("/subscribers.xml").append("?source=").append(CONSUMER_KEY);
+        String httpMethod = "GET";
+        String url = sb.toString();
+        //
+        return User.constructWapperUsers(http.httpRequest(url, null, auth, httpMethod), this);
+    }
+
+    /**
+     * 创建ListObject接口
+     * @param uid       User ID or screen_name
+     * @param name      The name of ListObject
+     * @param mode      The mode of ListObject, 'public' or 'private'
+     * @param description   The description of ListObject
+     * @param auth      if true, the request will be sent with BASIC authentication header
+     * @return
+     * @throws WeiboException
+     */
+    public ListObject insertList(String uid, String name, boolean mode, String description, boolean auth)
+            throws WeiboException {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getBaseURL()).append(uid).append("/lists.xml");
+        List<PostParameter> postParams = new LinkedList<PostParameter>();
+        postParams.add(new PostParameter("name", name));
+        postParams.add(new PostParameter("description", description));
+        postParams.add(new PostParameter("mode", mode ? "public" : "private"));
+        postParams.add(new PostParameter("source", CONSUMER_KEY));
+        PostParameter[] params = new PostParameter[postParams.size()];
+        int index = 0;
+        for (PostParameter postParam : postParams) {
+            params[index++] = postParam;
+        }
+        String httpMethod = "POST";
+        //
+        String url = sb.toString();
+        //
+        Response res = http.httpRequest(url, params, auth, httpMethod);
+        return new ListObject(res, this);
+    }
+
+    /**
+     * 更新list接口
+     * @param uid       User ID or screen_name
+     * @param listId    The ID or slug of ListObject
+     * @param name      The name of ListObject
+     * @param mode      The mode of ListObject, 'public' or 'private'
+     * @param description   The description of ListObject
+     * @param auth      if true, the request will be sent with BASIC authentication header
+     * @return
+     * @throws WeiboException
+     */
+    public ListObject updateList(String uid, String listId, String name, boolean mode, String description,
+            boolean auth) throws WeiboException {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getBaseURL()).append(uid).append("/lists/").append(listId).append(".xml");
+        List<PostParameter> postParams = new LinkedList<PostParameter>();
+        postParams.add(new PostParameter("name", name));
+        postParams.add(new PostParameter("mode", mode ? "public" : "private"));
+        postParams.add(new PostParameter("description", description));
+        postParams.add(new PostParameter("source", CONSUMER_KEY));
+        PostParameter[] params = new PostParameter[postParams.size()];
+        int index = 0;
+        for (PostParameter postParam : postParams) {
+            params[index++] = postParam;
+        }
+        String httpMethod = "POST";
+        //
+        String url = sb.toString();
+        //
+        Response res = http.httpRequest(url, params, auth, httpMethod);
+        return new ListObject(res, this);
+    }
+
+    /**
+     * 删除list接口
+     * @param uid       User ID or screen_name
+     * @param listId    The ID or slug of ListObject
+     * @param auth      if true, the request will be sent with BASIC authentication header
+     * @return
+     * @throws WeiboException
+     */
+    public ListObject removeList(String uid, String listId, boolean auth) throws WeiboException {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getBaseURL()).append(uid).append("/lists/").append(listId).append(".xml").append("?source=").append(CONSUMER_KEY);
+        String url = sb.toString();
+        String httpMethod = "DELETE";
+        //
+        Response res = http.httpRequest(url, null, auth, httpMethod);
+        return new ListObject(res, this);
+    }
+
+    /**
+     * 添加list成员接口
+     * @param uid       User ID or screen_name
+     * @param listId    The ID or slug of ListObject
+     * @param targetUid Target user ID or screen_name
+     * @param auth      if true, the request will be sent with BASIC authentication header
+     * @return
+     * @throws WeiboException
+     */
+    public ListObject addListMember(String uid, String listId, String targetUid, boolean auth) throws WeiboException {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getBaseURL()).append(uid).append("/").append(listId).append("/members.xml");
+        String url = sb.toString();
+        //
+        List<PostParameter> postParams = new LinkedList<PostParameter>();
+        postParams.add(new PostParameter("id", String.valueOf(targetUid)));
+        postParams.add(new PostParameter("source", CONSUMER_KEY));
+        PostParameter[] params = new PostParameter[postParams.size()];
+        int index = 0;
+        for (PostParameter postParam : postParams) {
+            params[index++] = postParam;
+        }
+        String httpMethod = "POST";
+        //
+        Response res = http.httpRequest(url, params, auth, httpMethod);
+        return new ListObject(res, this);
+    }
+
+    /**
+     * 删除list成员接口
+     * @param uid       User ID or screen_name
+     * @param listId    The ID or slug of ListObject
+     * @param targetUid Target user ID or screen_name
+     * @param auth      if true, the request will be sent with BASIC authentication header
+     * @return
+     * @throws WeiboException
+     */
+    public ListObject removeListMember(String uid, String listId, String targetUid, boolean auth) throws WeiboException {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getBaseURL()).append(uid).append("/").append(listId).append("/members.xml").append("?source=").append(CONSUMER_KEY).append("&id=").append(String.valueOf(targetUid));
+        String url = sb.toString();
+        String httpMethod = "DELETE";
+        //
+        Response res = http.httpRequest(url, null, auth, httpMethod);
+        return new ListObject(res, this);
+    }
+
+    /**
+     * 订阅list接口
+     * @param uid       User ID or screen_name
+     * @param listId    The ID or slug of ListObject
+     * @param auth      if true, the request will be sent with BASIC authentication header
+     * @return
+     * @throws WeiboException
+     */
+    public ListObject addListSubscriber(String uid, String listId, boolean auth) throws WeiboException {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getBaseURL()).append(uid).append("/").append(listId).append("/subscribers.xml");
+        String url = sb.toString();
+        //
+        List<PostParameter> postParams = new LinkedList<PostParameter>();
+        postParams.add(new PostParameter("source", CONSUMER_KEY));
+        PostParameter[] params = new PostParameter[postParams.size()];
+        int index = 0;
+        for (PostParameter postParam : postParams) {
+            params[index++] = postParam;
+        }
+        String httpMethod = "POST";
+        //
+        Response res = http.httpRequest(url, params, auth, httpMethod);
+        return new ListObject(res, this);
+    }
+
+    /**
+     * 取消订阅list接口
+     * @param uid       User ID or screen_name
+     * @param listId    The ID or slug of ListObject
+     * @param auth      if true, the request will be sent with BASIC authentication header
+     * @return
+     * @throws WeiboException
+     */
+    public ListObject removeListSubscriber(String uid, String listId, boolean auth)
+            throws WeiboException {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getBaseURL()).append(uid).append("/").append(listId).append("/subscribers.xml").append("?source=").append(CONSUMER_KEY);
+        String url = sb.toString();
+        //
+        String httpMethod = "DELETE";
+        //
+        Response res = http.httpRequest(url, null, auth, httpMethod);
+        return new ListObject(res, this);
+    }
+
+    /**
+     * 判断是否是list成员
+     * @param uid       User ID or screen_name
+     * @param listId    The ID or slug of ListObject
+     * @param targetUid Target user ID or screen_name
+     * @param auth      if true, the request will be sent with BASIC authentication header
+     * @return
+     * @throws WeiboException
+     */
+    public boolean isListMember(String uid, String listId, String targetUid, boolean auth)
+            throws WeiboException {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getBaseURL()).append(uid).append("/").append(listId).append("/members/").append(targetUid)
+                .append(".xml").append("?source=").append(CONSUMER_KEY);
+        String url = sb.toString();
+        //
+        String httpMethod = "GET";
+        //
+        Document doc = http.httpRequest(url, null, auth, httpMethod).asDocument();
+        Element root = doc.getDocumentElement();
+        return "true".equals(root.getTextContent());
+    }
+
+    /**
+     * 判断是否是订阅list
+     * @param uid       User ID or screen_name
+     * @param listId    The ID or slug of ListObject
+     * @param targetUid Target user ID or screen_name
+     * @param auth      if true, the request will be sent with BASIC authentication header
+     * @return
+     * @throws WeiboException
+     */
+    public boolean isListSubscriber(String uid, String listId, String targetUid, boolean auth)
+            throws WeiboException {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getBaseURL()).append(uid).append("/").append(listId).append("/subscribers/").append(targetUid)
+                .append(".xml").append("?source=").append(CONSUMER_KEY);
+        String url = sb.toString();
+        //
+        String httpMethod = "GET";
+        //
+        Document doc = http.httpRequest(url, null, auth, httpMethod).asDocument();
+        Element root = doc.getDocumentElement();
+        return "true".equals(root.getTextContent());
+    }
+
+    
+
+    /**
+     * Returns to the designated status's latest n comments
+     * @param id specifies the ID of status
+     * @return a list of comments objects
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.10
+     */
+    public List<Comment> getComments(String id) throws WeiboException {
+        return Comment.constructComments(get(getBaseURL() + "statuses/comments.json?id="+id, true));
+    }
+
+    /**
+     * Returns in chronological order to send and receive the latest n the comments section
+     * @return a list of comments objects
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.10
+     */
+    public List<Comment> getCommentsTimeline() throws WeiboException {
+        return Comment.constructComments(get(getBaseURL() + "statuses/comments_timeline.json", true));
+    }
+
+    /**
+     * Returns the current user's comments
+     * @return a list of comments objects
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.10
+     */
+    public List<Comment> getCommentsByMe() throws WeiboException {
+        return Comment.constructComments(get(getBaseURL() + "statuses/comments_by_me.json", true));
+    }
+
+    /**
+     * Returns the number of comments, the number of repost
+     * @param ids ids a string, separated by commas
+     * @return a list of counts objects
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.10
+     */
+    public List<Count> getCounts(String ids) throws WeiboException{
+        return Count.constructCounts(get(getBaseURL() + "statuses/counts.json?ids="+ids, true));
+    }
+
+    /**
+     * Returns the number of the current user does not read messages
+     * @return count objects
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @throws JSONException
+     * @since Weibo4J 2.0.10
+     */
+    public Count getUnread() throws WeiboException, JSONException {
+        return new Count(get(getBaseURL() + "statuses/unread.json", true).asJSONObject());
+    }
+
+    /**
+     * Return a status of repost
+     * @param to_user_name repost status's user name
+     * @param repost_status_id repost status id 
+     * @param repost_status_text repost status text 
+     * @param new_status the new status text 
+     * @return a single status
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.10
+     */
+    public Status repost(String to_user_name, String repost_status_id, 
+                String repost_status_text, String new_status) throws WeiboException {
+        StringBuilder sb = new StringBuilder();
+        sb.append(new_status);
+        sb.append(" ");
+        sb.append("转：@");
+        sb.append(to_user_name);
+        sb.append(" ");
+        sb.append(repost_status_text);
+        sb.append(" ");
+        String message = sb.toString();
+        return new Status(http.post(getBaseURL() + "statuses/update.json",
+                new PostParameter[]{new PostParameter("repost_status_id", repost_status_id),
+                                    new PostParameter("status", message)}, true));
+    }
+    
+    public Status repost(String repost_status_id, String new_status) throws WeiboException {
+        Status repost_to = showStatus(repost_status_id);
+        String to_user_name = repost_to.getUser().getName();
+        String repost_status_text = repost_to.getText();
+        
+        return repost(to_user_name, repost_status_id, repost_status_text, new_status);
+    }
+
+    /**
+     * Return a status of reply
+     * @param sid id specifies the ID of status
+     * @param cid id specifies the ID of comment
+     * @param comment a single comment
+     * @return  a single status
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.10
+     */
+    public Status reply(String sid,String cid,String comment) throws WeiboException {
+        return new Status(http.post(getBaseURL() + "statuses/reply.json",
+                new PostParameter[]{new PostParameter("id", sid),
+                                    new PostParameter("cid", cid),
+                                    new PostParameter("comment", comment)}, true));
+    }
+
+    /**
+     * Return your relationship with the details of a user
+     * @param target_id id of the befriended user
+     * @return jsonObject
+     * @throws WeiboException when Weibo service or network is unavailable
+     */
+    public JSONObject showFriendships(String target_id) throws WeiboException {
+        return get(getBaseURL() + "friendships/show.json?target_id="+target_id, true).asJSONObject();
+    }
+
+    /**
+     * Return the details of the relationship between two users
+     * @param target_id id of the befriended user
+     * @return jsonObject
+     * @throws WeiboException when Weibo service or network is unavailable
+     */
+    public JSONObject showFriendships(String source_id,String target_id) throws WeiboException {
+        return get(getBaseURL() + "friendships/show.json?target_id="+target_id+"&source_id"+source_id, true).asJSONObject();
+    }
+
+    /**
+     * Return infomation of current user
+     * @return a user's object
+     * @throws WeiboException when Weibo service or network is unavailable
+     */
+    public User endSession() throws WeiboException {
+        return new User(get(getBaseURL() + "account/end_session.json", true).asJSONObject());
+    }
+
+    /**
+     *  Return infomation of current user
+     * @param ip a specified ip(Only open to invited partners)
+     * @param args User Information args[2]:nickname,args[3]:gender,args[4],password,args[5]:email
+     * @return jsonObject
+     * @throws WeiboException when Weibo service or network is unavailable
+     */
+    public JSONObject register(String ip,String ...args) throws WeiboException {
+        return http.post(getBaseURL() + "account/register.json",
+                new PostParameter[]{new PostParameter("nick", args[2]),
+                                    new PostParameter("gender", args[3]),
+                                    new PostParameter("password", args[4]),
+                                    new PostParameter("email", args[5]),
+                                    new PostParameter("ip", ip)}, true).asJSONObject();
+    }
+    

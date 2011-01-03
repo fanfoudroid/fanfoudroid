@@ -307,7 +307,7 @@ public class DmActivity extends BaseActivity {
       } catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
-      } catch (FanfouException e) {
+      } catch (WeiboException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
       }
@@ -342,7 +342,7 @@ public class DmActivity extends BaseActivity {
       } catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
-      } catch (FanfouException e) {
+      } catch (WeiboException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
       }
@@ -528,7 +528,7 @@ public class DmActivity extends BaseActivity {
       } catch (JSONException e) {
         Log.w(TAG, "Could not parse JSON after sending update.");
         return TaskResult.IO_ERROR;
-      } catch (FanfouException e) {
+      } catch (WeiboException e) {
         Log.i(TAG, e.getMessage());
         // TODO: check is this is actually the case.
         return TaskResult.NOT_FOLLOWED_ERROR;
@@ -725,7 +725,7 @@ public class DmActivity extends BaseActivity {
       } catch (JSONException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
-      } catch (FanfouException e) {
+      } catch (WeiboException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
       }

@@ -432,7 +432,7 @@ public class WriteActivity extends WithHeaderActivity {
 			} catch (JSONException e) {
 				Log.w(TAG, "Could not parse JSON after sending update.");
 				return SendResult.IO_ERROR;
-			} catch (FanfouException e) {
+			} catch (WeiboException e) {
 				Log.e(TAG, e.getMessage(), e);
 				return SendResult.IO_ERROR;
 			}

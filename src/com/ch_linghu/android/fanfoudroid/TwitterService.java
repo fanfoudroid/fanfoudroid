@@ -362,7 +362,7 @@ public class TwitterService extends Service {
 				} catch (IOException e) {
 					Log.e(TAG, e.getMessage(), e);
 					return RetrieveResult.IO_ERROR;
-				} catch (FanfouException e) {
+				} catch (WeiboException e) {
 					Log.e(TAG, e.getMessage(), e);
 					return RetrieveResult.IO_ERROR;
 				}
@@ -401,7 +401,7 @@ public class TwitterService extends Service {
 				} catch (IOException e) {
 					Log.e(TAG, e.getMessage(), e);
 					return RetrieveResult.IO_ERROR;
-				} catch (FanfouException e) {
+				} catch (WeiboException e) {
 					Log.e(TAG, e.getMessage(), e);
 					return RetrieveResult.IO_ERROR;
 				}
@@ -440,7 +440,7 @@ public class TwitterService extends Service {
 				} catch (IOException e) {
 					Log.e(TAG, e.getMessage(), e);
 					return RetrieveResult.IO_ERROR;
-				} catch (FanfouException e) {
+				} catch (WeiboException e) {
 					Log.e(TAG, e.getMessage(), e);
 					return RetrieveResult.IO_ERROR;
 				}

@@ -212,7 +212,7 @@ public class LoginActivity extends Activity {
         Log.e(TAG, e.getMessage(), e);
         publishProgress("Network or connection error");
         return false;
-      } catch (FanfouException e) {
+      } catch (WeiboException e) {
         Log.e(TAG, e.getMessage(), e);
         publishProgress("Network or connection error");
         return false;

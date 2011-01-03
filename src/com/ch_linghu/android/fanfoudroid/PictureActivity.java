@@ -163,7 +163,7 @@ public class PictureActivity extends BaseActivity {
       } catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
-      } catch (FanfouException e) {
+      } catch (WeiboException e) {
         Log.e(TAG, e.getMessage(), e);
         apiErrorMessage = e.getMessage();
         return TaskResult.API_ERROR;

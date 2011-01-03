@@ -93,7 +93,7 @@ public class TwitterApi {
 	}
 	
 	public void login(String username, String password) throws IOException,
-	FanfouException {
+	WeiboException {
 Log.i(TAG, "Login attempt for " + username);
 http.setCredentials(username, password);
 InputStream data = http.get(VERIFY_CREDENTIALS_URL);
@@ -105,7 +105,7 @@ http.setCredentials("", "");
 }
 	
 	public void postTwitPic(File file, String message) throws IOException,
-			FanfouException {
+			WeiboException {
 		URI uri;
 		Log.i(TAG, "Updating status WITH a picture.");
 
@@ -155,7 +155,7 @@ http.setCredentials("", "");
 	//---------------------------------------------------------------
 	
 	public User showUser(String id) throws IOException,
-			FanfouException, JSONException {
+			WeiboException, JSONException {
 		Log.i(TAG, "Requesting friends timeline.");
 		
 		String url = USER_SHOW_URL;
@@ -193,12 +193,12 @@ http.setCredentials("", "");
 		return User.create(json);
 	}
 	
-	public User showUser() throws IOException, FanfouException, JSONException {
+	public User showUser() throws IOException, WeiboException, JSONException {
 		return showUser(null);
 	}
 
 
-	public JSONArray getTimeline() throws IOException, FanfouException {
+	public JSONArray getTimeline() throws IOException, WeiboException {
 		Log.i(TAG, "Requesting friends timeline.");
 
 		String url = FRIENDS_TIMELINE_URL + "?format=html&count="
@@ -220,7 +220,7 @@ http.setCredentials("", "");
 	}
 
 	public JSONArray getTimelineSinceId(String sinceId) throws IOException,
-			FanfouException {
+			WeiboException {
 		Log.i(TAG, "Requesting friends timeline since id.");
 
 		String url = FRIENDS_TIMELINE_URL + "?format=html&count="
@@ -245,7 +245,7 @@ http.setCredentials("", "");
 		return json;
 	}
 
-	public JSONArray getMention() throws IOException, FanfouException {
+	public JSONArray getMention() throws IOException, WeiboException {
 		Log.i(TAG, "Requesting friends timeline.");
 
 		String url = REPLIES_URL + "?format=html&count="
@@ -267,7 +267,7 @@ http.setCredentials("", "");
 	}
 
 	public JSONArray getMentionSinceId(String sinceId) throws IOException,
-			FanfouException {
+			WeiboException {
 		Log.i(TAG, "Requesting friends timeline since id.");
 
 		String url = REPLIES_URL + "?format=html&count="
@@ -292,7 +292,7 @@ http.setCredentials("", "");
 		return json;
 	}
 
-	public JSONArray getDirectMessages() throws IOException, FanfouException{
+	public JSONArray getDirectMessages() throws IOException, WeiboException{
 		Log.i(TAG, "Requesting direct messages.");
 
 		InputStream data = http.get(DIRECT_MESSAGES_URL);
@@ -310,7 +310,7 @@ http.setCredentials("", "");
 		return json;
 	}
 
-	public JSONArray getDirectMessagesSent() throws IOException, FanfouException {
+	public JSONArray getDirectMessagesSent() throws IOException, WeiboException {
 		Log.i(TAG, "Requesting sent direct messages.");
 
 		InputStream data = http.get(DIRECT_MESSAGES_SENT_URL);
@@ -329,7 +329,7 @@ http.setCredentials("", "");
 	}
 
 	public JSONObject destroyDirectMessage(String id) throws IOException,
-			FanfouException {
+			WeiboException {
 		Log.i(TAG, "Deleting direct message: " + id);
 
 		String url = String.format(DIRECT_MESSAGES_DESTROY_URL, id);
@@ -350,7 +350,7 @@ http.setCredentials("", "");
 	}
 
 	public JSONObject sendDirectMessage(String user, String text)
-			throws IOException, FanfouException{
+			throws IOException, WeiboException{
 		Log.i(TAG, "Sending dm.");
 
 		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -373,7 +373,7 @@ http.setCredentials("", "");
 	}
 
 	public JSONObject update(String status, String reply_to)
-			throws IOException, FanfouException {
+			throws IOException, WeiboException {
 		Log.i(TAG, "Updating status.");
 
 		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -401,13 +401,13 @@ http.setCredentials("", "");
 	}
 	
 	public JSONObject update(String status)
-			throws IOException, FanfouException {
+			throws IOException, WeiboException {
 		return update(status, "");
 	}
 	
 	
 	public JSONObject destroyStatus(String statusId) 
-			throws IOException, FanfouException {
+			throws IOException, WeiboException {
 		Log.i(TAG, "Destory Status , id = " + statusId);
 		String url = String.format(DESTROY_STATUS_URL, statusId);
 		
@@ -429,7 +429,7 @@ http.setCredentials("", "");
 	}
 	
 	public JSONObject addFavorite(String id)
-			throws IOException, FanfouException {
+			throws IOException, WeiboException {
 		Log.i(TAG, "Add favorite.");
 		String url = String.format(ADD_FAV_URL, id);
 
@@ -451,7 +451,7 @@ http.setCredentials("", "");
 	}
 
 	public JSONObject delFavorite(String id)
-			throws IOException, FanfouException {
+			throws IOException, WeiboException {
 		Log.i(TAG, "delete favorite.");
 		String url = String.format(DEL_FAV_URL, id);
 	
@@ -473,7 +473,7 @@ http.setCredentials("", "");
 	}
 
 	public JSONArray getDmsSinceId(String sinceId, boolean isSent)
-			throws IOException, FanfouException {
+			throws IOException, WeiboException {
 		Log.i(TAG, "Requesting DMs since id.");
 
 		String url = isSent ? DIRECT_MESSAGES_SENT_URL : DIRECT_MESSAGES_URL;
@@ -498,7 +498,7 @@ http.setCredentials("", "");
 	}
 
 	public ArrayList<String> getFollowersIds() throws IOException,
-			FanfouException {
+			WeiboException {
 		Log.i(TAG, "Requesting followers ids.");
 
 		InputStream data = http.get(FOLLOWERS_IDS_URL);
@@ -520,7 +520,7 @@ http.setCredentials("", "");
 	}
 
 	public JSONArray getUserTimeline(String user, int page) throws IOException,
-			FanfouException {
+			WeiboException {
 		Log.i(TAG, "Requesting user timeline.");
 
 		String url = USER_TIMELINE_URL + "?screen_name="
@@ -545,7 +545,7 @@ http.setCredentials("", "");
 	}
 
 	public boolean isFollows(String a, String b) throws IOException,
-			FanfouException {
+			WeiboException {
 		Log.i(TAG, "Check follows.");
 
 		String url = FRIENDSHIPS_EXISTS_URL + "?user_a="
@@ -562,7 +562,7 @@ http.setCredentials("", "");
 	}
 
 	public JSONObject createFriendship(String id) throws IOException,
-			FanfouException {
+			WeiboException {
 		Log.i(TAG, "Following: " + id);
 
 		String url = String.format(FRIENDSHIPS_CREATE_URL, id);
@@ -583,7 +583,7 @@ http.setCredentials("", "");
 	}
 
 	public JSONObject destroyFriendship(String id) throws IOException,
-			FanfouException {
+			WeiboException {
 		Log.i(TAG, "Unfollowing: " + id);
 
 		String url = String.format(FRIENDSHIPS_DESTROY_URL, id);
@@ -604,7 +604,7 @@ http.setCredentials("", "");
 	}
 
 	public JSONArray search(String query, int page) throws IOException,
-			FanfouException{
+			WeiboException{
 		Log.i(TAG, "Searching.");
 		
 		String url = SEARCH_URL + "?q=" + URLEncoder.encode(query, HTTP.UTF_8)
