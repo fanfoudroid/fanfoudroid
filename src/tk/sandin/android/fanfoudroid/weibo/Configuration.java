@@ -48,7 +48,7 @@ public class Configuration {
         defaultProperty = new Properties();
 //        defaultProperty.setProperty("fanfoudroid.debug", "false");
         defaultProperty.setProperty("fanfoudroid.debug", "true");
-        defaultProperty.setProperty("fanfoudroid.source", Weibo.CONSUMER_KEY);
+        defaultProperty.setProperty("fanfoudroid.source", "fanfoudroid");
         //defaultProperty.setProperty("fanfoudroid.clientVersion","");
         defaultProperty.setProperty("fanfoudroid.clientURL", "http://sandin.tk/fanfoudroid.xml");
         defaultProperty.setProperty("fanfoudroid.http.userAgent", "fanfoudroid 1.0");

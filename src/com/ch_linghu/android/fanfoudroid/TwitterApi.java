@@ -93,16 +93,16 @@ public class TwitterApi {
 	}
 	
 	public void login(String username, String password) throws IOException,
-	WeiboException {
-Log.i(TAG, "Login attempt for " + username);
-http.setCredentials(username, password);
-InputStream data = http.get(VERIFY_CREDENTIALS_URL);
-data.close();
-}
+			WeiboException {
+		Log.i(TAG, "Login attempt for " + username);
+		http.setCredentials(username, password);
+		InputStream data = http.get(VERIFY_CREDENTIALS_URL);
+		data.close();
+	}
 
-public void logout() {
-http.setCredentials("", "");
-}
+	public void logout() {
+		http.setCredentials("", "");
+	}
 	
 	public void postTwitPic(File file, String message) throws IOException,
 			WeiboException {
@@ -116,8 +116,9 @@ http.setCredentials("", "");
 			throw new IOException("Invalid URL.");
 		}
 		
-		/*
+		
 
+		/*
 		//DefaultHttpClient client = new DefaultHttpClient();
 		HttpPost post = new HttpPost(uri);
 		MultipartEntity entity = new MultipartEntity();
@@ -149,8 +150,8 @@ http.setCredentials("", "");
 							.getContent()));
 			throw new IOException("Non OK response code: " + statusCode);
 		}
-		
 		*/
+		
 	}
 	//---------------------------------------------------------------
 	
@@ -385,7 +386,6 @@ http.setCredentials("", "");
 		}
 
 		InputStream data = http.post(UPDATE_URL, params);
-		Log.i("LDS", data.toString());
 		JSONObject json = null;
 
 		try {

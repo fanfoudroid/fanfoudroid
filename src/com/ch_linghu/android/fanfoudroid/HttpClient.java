@@ -110,7 +110,6 @@ public class HttpClient {
 		mPassword = password;
 		mClient.getCredentialsProvider().setCredentials(mAuthScope,
 				new UsernamePasswordCredentials(username, password));
-		Log.i("LDS", mClient.toString() );
 	}
 	
 	public InputStream post(String url, ArrayList<NameValuePair> params) 

@@ -24,177 +24,7 @@
 //      return new Comment(http.post(getBaseURL() + "statuses/comment.xml", params, true), this);
         return new Comment(http.post(getBaseURL() + "statuses/comment.json", params, true));
     }
-    /**
-     * upload the user's status.
-     * The text will be trimed if the length of the text is exceeding 160 characters.
-     * The image suport.
-     * <br>发布照片  http://api.fanfou.com/photos/upload.[json|xml]
-     *
-     * @param status the text of your status update
-     * @return the latest status
-     * @throws WeiboException when Weibo service or network is unavailable
-     * @since Weibo4J 2.0.1
-     */
-    public Status uploadStatus(String status,ImageItem item) throws WeiboException {
-        return new Status(
-                http.multPartURL(getBaseURL() + "photos/upload.json",
-                new PostParameter[]{new PostParameter("status", status), new PostParameter("source", source)},
-                item, true)
-                );
-        /*return new Status(http.multPartURL(getBaseURL() + "statuses/upload.xml",
-                new PostParameter[]{new PostParameter("status", status), new PostParameter("source", source)},item, true), this);*/
-    }
     
-    /**
-     * upload the photo.
-     * The text will be trimed if the length of the text is exceeding 160 characters.
-     * The image suport.
-     * <br>上传照片  http://api.fanfou.com/photos/upload.[json|xml]
-     *
-     * @param status the text of your status update
-     * @return the latest status
-     * @throws WeiboException when Weibo service or network is unavailable
-     * @since Weibo4J 2.0.1
-     */
-    public Status uploadPhoto(String status,FileInputStream file) throws WeiboException, IOException, Exception {
-        
-        // read file to a byte array
-        ByteArrayOutputStream b = new ByteArrayOutputStream();
-        int ch;
-        while((ch = file.read()) != -1 ) {
-            b.write(ch);
-        }
-        file.close();
-        byte[] bytes = b.toByteArray();
-        
-        // create ImageItem from byte array
-        // <input type="file" name="photo" value="" />
-        ImageItem imageitem = new ImageItem("photo", bytes);
-        
-        return new Status(
-                http.multPartURL(getBaseURL() + "photos/upload.json",
-                new PostParameter[]{new PostParameter("status", status), new PostParameter("source", source)},
-                imageitem, true)
-                );
-        /*return new Status(http.multPartURL(getBaseURL() + "statuses/upload.xml",
-                new PostParameter[]{new PostParameter("status", status), new PostParameter("source", source)},item, true), this);*/
-    }
-
-    public Status uploadStatus(String status,File file) throws WeiboException {
-        return new Status(http.multPartURL("pic",getBaseURL() + "photos/upload.json",
-                new PostParameter[]{new PostParameter("status", status), new PostParameter("source", source)},file, true));
-        /*return new Status(http.multPartURL(getBaseURL() + "statuses/upload.xml",
-                new PostParameter[]{new PostParameter("status", status), new PostParameter("source", source)},item, true), this);*/
-    }
-
-    /**
-     * Updates the user's status.
-     * The text will be trimed if the length of the text is exceeding 160 characters.
-     * <br>发布消息  http://api.fanfou.com/statuses/update.[json|xml] 
-     *
-     * @param status    the text of your status update
-     * @param latitude  The location's latitude that this tweet refers to.
-     * @param longitude The location's longitude that this tweet refers to.
-     * @return the latest status
-     * @throws WeiboException when Weibo service or network is unavailable
-     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Statuses/update">statuses/update </a>
-     * @since Weibo4J 2.0.10
-     */
-    public Status updateStatus(String status, double latitude, double longitude) throws WeiboException, JSONException {
-       /* return new Status(http.post(getBaseURL() + "statuses/update.xml",
-                new PostParameter[]{
-                        new PostParameter("status", status),
-                        new PostParameter("lat", latitude),
-                        new PostParameter("long", longitude)},
-                        true), this);*/
-        return new Status(http.post(getBaseURL() + "statuses/update.json",
-                new PostParameter[]{new PostParameter("status", status),
-                        new PostParameter("location", latitude + "," + longitude)},
-                        true));
-    }
-
-    /**
-     * Updates the user's status.
-     * The text will be trimed if the length of the text is exceeding 160 characters.
-     * <br>This method calls http://api.t.sina.com.cn/statuses/update.format
-     *
-     * @param status            the text of your status update
-     * @param inReplyToStatusId The ID of an existing status that the status to be posted is in reply to.  This implicitly sets the in_reply_to_user_id attribute of the resulting status to the user ID of the message being replied to.  Invalid/missing status IDs will be ignored.
-     * @return the latest status
-     * @throws WeiboException when Weibo service or network is unavailable
-     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Statuses/update">statuses/update </a>
-     * @deprecated Use updateStatus(String status, long inReplyToStatusId) instead
-     */
-    public Status update(String status, String inReplyToStatusId) throws WeiboException {
-        return updateStatus(status, inReplyToStatusId);
-    }
-
-    /**
-     * Updates the user's status.
-     * 如果要使用inreplyToStatusId, 那么该status就必须得是@别人的.
-     * The text will be trimed if the length of the text is exceeding 160 characters.
-     * <br>发布消息  http://api.fanfou.com/statuses/update.[json|xml] 
-     *
-     * @param status            the text of your status update
-     * @param inReplyToStatusId The ID of an existing status that the status to be posted is in reply to.  This implicitly sets the in_reply_to_user_id attribute of the resulting status to the user ID of the message being replied to.  Invalid/missing status IDs will be ignored.
-     * @return the latest status
-     * @throws WeiboException when Weibo service or network is unavailable
-     * @since Weibo4J 2.0.1
-     */
-    public Status updateStatus(String status, String inReplyToStatusId) throws WeiboException {
-         return new Status(http.post(getBaseURL() + "statuses/update.json",
-                 new PostParameter[]{new PostParameter("status", status), new PostParameter("in_reply_to_status_id", String.valueOf(inReplyToStatusId)), new PostParameter("source", source)}, true));
-       /* return new Status(http.post(getBaseURL() + "statuses/update.xml",
-                new PostParameter[]{new PostParameter("status", status), new PostParameter("in_reply_to_status_id", String.valueOf(inReplyToStatusId)), new PostParameter("source", source)}, true), this);*/
-    }
-
-    /**
-     * Updates the user's status.
-     * The text will be trimed if the length of the text is exceeding 160 characters.
-     * <br>发布消息  http://api.fanfou.com/statuses/update.[json|xml] 
-     *
-     * @param status            the text of your status update
-     * @param inReplyToStatusId The ID of an existing status that the status to be posted is in reply to.  This implicitly sets the in_reply_to_user_id attribute of the resulting status to the user ID of the message being replied to.  Invalid/missing status IDs will be ignored.
-     * @param latitude          The location's latitude that this tweet refers to.
-     * @param longitude         The location's longitude that this tweet refers to.
-     * @return the latest status
-     * @throws WeiboException when Weibo service or network is unavailable
-     * @since Weibo4J 2.0.10
-     */
-    public Status updateStatus(String status, String inReplyToStatusId
-            , double latitude, double longitude) throws WeiboException {
-        /*return new Status(http.post(getBaseURL() + "statuses/update.xml",
-                new PostParameter[]{new PostParameter("status", status),
-                        new PostParameter("lat", latitude),
-                        new PostParameter("long", longitude),
-                        new PostParameter("in_reply_to_status_id",
-                                String.valueOf(inReplyToStatusId)),
-                        new PostParameter("source", source)}, true), this);*/
-        return new Status(http.post(getBaseURL() + "statuses/update.json",
-                new PostParameter[]{new PostParameter("status", status),
-                        new PostParameter("lat", latitude),
-                        new PostParameter("long", longitude),
-                        new PostParameter("in_reply_to_status_id",
-                                String.valueOf(inReplyToStatusId)),
-                        new PostParameter("source", source)}, true));
-    }
-
-    /**
-     * Destroys the status specified by the required ID parameter.  The authenticating user must be the author of the specified status.
-     * <br>删除消息  http://api.fanfou.com/statuses/destroy.[json|xml] 
-     *
-     * @param statusId The ID of the status to destroy.
-     * @return the deleted status
-     * @throws WeiboException when Weibo service or network is unavailable
-     * @since 1.0.5
-     */
-    public Status destroyStatus(String statusId) throws WeiboException {
-        /*return new Status(http.post(getBaseURL() + "statuses/destroy/" + statusId + ".xml",
-                new PostParameter[0], true), this);*/
-        return new Status(http.post(getBaseURL() + "statuses/destroy/" + statusId + ".json",
-                new PostParameter[0], true));
-    }
-
     /**
      * Destroys the status specified by the required ID parameter.  The authenticating user must be the author of the specified status.
      * <br>This method calls http://api.t.sina.com.cn/statuses/comment_destroy/id.format
@@ -202,6 +32,7 @@
      * @param statusId The ID of the status to destroy.
      * @return the deleted status
      * @throws WeiboException when Weibo service or network is unavailable
+     * @deprecated 饭否没有评论功能
      * @since 1.0.5
      * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Statuses/comment_destroy">statuses/comment_destroy </a>
      */
@@ -211,73 +42,10 @@
         /*return new Comment(http.delete(getBaseURL() + "statuses/comment_destroy/" + commentId + ".xml?source=" + CONSUMER_KEY,
                 true), this);*/
     }
-
-
-    /**
-     * Retweets a tweet. Requires the id parameter of the tweet you are retweeting. Returns the original tweet with retweet details embedded.
-     * @param statusId The ID of the status to retweet.
-     * @return the retweeted status
-     * @throws WeiboException when Weibo service or network is unavailable
-     * @since Weibo4J 2.0.10
-     */
-    public Status retweetStatus(long statusId) throws WeiboException {
-        /*return new Status(http.post(getBaseURL() + "statuses/retweet/" + statusId + ".xml",
-                new PostParameter[0], true), this);*/
-        return new Status(http.post(getBaseURL() + "statuses/retweet/" + statusId + ".json",
-                new PostParameter[0], true));
-    }
-
-    /**
-     * Returns up to 100 of the first retweets of a given tweet.
-     * @param statusId The numerical ID of the tweet you want the retweets of.
-     * @return the retweets of a given tweet
-     * @throws WeiboException when Weibo service or network is unavailable
-     * @since Weibo4J 2.0.10
-     */
-    public List<RetweetDetails> getRetweets(long statusId) throws WeiboException {
-       /* return RetweetDetails.createRetweetDetails(get(getBaseURL()
-                + "statuses/retweets/" + statusId + ".xml", true), this);*/
-         return RetweetDetails.createRetweetDetails(get(getBaseURL()
-                 + "statuses/retweets/" + statusId + ".json", true));
-    }
-
-    /**
-     * Returns extended information of a given user, specified by ID or screen name as per the required id parameter below.  This information includes design settings, so third party developers can theme their widgets according to a given user's preferences.
-     * <br>This method calls http://api.t.sina.com.cn/users/show.format
-     * @param id the ID or screen name of the user for whom to request the detail
-     * @return User
-     * @throws WeiboException when Weibo service or network is unavailable
-     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Users/show">users/show </a>
-     * @deprecated use showUser(id) instead
-     */
-    public User getUserDetail(String id) throws WeiboException {
-        return showUser(id);
-    }
-
-    /**
-     * Returns extended information of a given user, specified by ID or screen name as per the required id parameter below.  This information includes design settings, so third party developers can theme their widgets according to a given user's preferences.
-     * <br>This method calls http://api.t.sina.com.cn/users/show.format
-     *
-     * @param id the ID of the user for whom to request the detail
-     * @return User
-     * @throws WeiboException when Weibo service or network is unavailable
-     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Users/show">users/show </a>
-     * @since Weibo4J 2.0.9
-     */
-    public User showUser(String id) throws WeiboException {
-       /* return new User(get(getBaseURL() + "users/show/" + id + ".xml"
-                , http.isAuthenticationEnabled()), this);*/
-//       return new User(get(getBaseURL() + "users/show/" +  id + ".json" 
-//                 , http.isAuthenticationEnabled()).asJSONObject());
-         return new User(get(getBaseURL() + "users/show.json" 
-                 , new PostParameter[]{
-                    new PostParameter("id", id)
-                 }, http.isAuthenticationEnabled()).asJSONObject());
-    }
-
-    /* User Methods */
-
-    /**
+    
+    /*********************************************/
+    
+     /**
      * Returns the specified user's friends, each with current status inline.
      * <br>This method calls http://api.t.sina.com.cn/statuses/friends.format
      *
@@ -431,6 +199,56 @@
     public List<User> getFriends(String id, int page) throws WeiboException {
         return getFriendsStatuses(id, new Paging(page));
     }
+    
+    /***************************** deprecated ******************************/
+
+
+    /**
+     * Retweets a tweet. Requires the id parameter of the tweet you are retweeting. Returns the original tweet with retweet details embedded.
+     * @param statusId The ID of the status to retweet.
+     * @return the retweeted status
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.10
+     */
+    public Status retweetStatus(long statusId) throws WeiboException {
+        /*return new Status(http.post(getBaseURL() + "statuses/retweet/" + statusId + ".xml",
+                new PostParameter[0], true), this);*/
+        return new Status(http.post(getBaseURL() + "statuses/retweet/" + statusId + ".json",
+                new PostParameter[0], true));
+    }
+
+    /**
+     * Returns up to 100 of the first retweets of a given tweet.
+     * @param statusId The numerical ID of the tweet you want the retweets of.
+     * @return the retweets of a given tweet
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.10
+     */
+    public List<RetweetDetails> getRetweets(long statusId) throws WeiboException {
+       /* return RetweetDetails.createRetweetDetails(get(getBaseURL()
+                + "statuses/retweets/" + statusId + ".xml", true), this);*/
+         return RetweetDetails.createRetweetDetails(get(getBaseURL()
+                 + "statuses/retweets/" + statusId + ".json", true));
+    }
+
+    /**
+     * Returns extended information of a given user, specified by ID or screen name as per the required id parameter below.  This information includes design settings, so third party developers can theme their widgets according to a given user's preferences.
+     * <br>This method calls http://api.t.sina.com.cn/users/show.format
+     * @param id the ID or screen name of the user for whom to request the detail
+     * @return User
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Users/show">users/show </a>
+     * @deprecated use showUser(id) instead
+     */
+    public User getUserDetail(String id) throws WeiboException {
+        return showUser(id);
+    }
+
+ 
+
+    /* User Methods */
+
+   
 
     /**
      * Returns the authenticating user's followers, each with current status inline. They are ordered by the order in which they joined Weibo (this is going to be changed).
@@ -2102,39 +1920,7 @@
         return new Count(get(getBaseURL() + "statuses/unread.json", true).asJSONObject());
     }
 
-    /**
-     * Return a status of repost
-     * @param to_user_name repost status's user name
-     * @param repost_status_id repost status id 
-     * @param repost_status_text repost status text 
-     * @param new_status the new status text 
-     * @return a single status
-     * @throws WeiboException when Weibo service or network is unavailable
-     * @since Weibo4J 2.0.10
-     */
-    public Status repost(String to_user_name, String repost_status_id, 
-                String repost_status_text, String new_status) throws WeiboException {
-        StringBuilder sb = new StringBuilder();
-        sb.append(new_status);
-        sb.append(" ");
-        sb.append("转：@");
-        sb.append(to_user_name);
-        sb.append(" ");
-        sb.append(repost_status_text);
-        sb.append(" ");
-        String message = sb.toString();
-        return new Status(http.post(getBaseURL() + "statuses/update.json",
-                new PostParameter[]{new PostParameter("repost_status_id", repost_status_id),
-                                    new PostParameter("status", message)}, true));
-    }
     
-    public Status repost(String repost_status_id, String new_status) throws WeiboException {
-        Status repost_to = showStatus(repost_status_id);
-        String to_user_name = repost_to.getUser().getName();
-        String repost_status_text = repost_to.getText();
-        
-        return repost(to_user_name, repost_status_id, repost_status_text, new_status);
-    }
 
     /**
      * Return a status of reply

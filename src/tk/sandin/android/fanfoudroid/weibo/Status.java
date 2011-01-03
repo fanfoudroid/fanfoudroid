@@ -102,7 +102,7 @@ public class Status extends WeiboResponse implements java.io.Serializable {
 			}
 			if(!json.isNull("user"))
 				user = new User(json.getJSONObject("user"));
-			inReplyToScreenName=json.getString("inReplyToScreenName");
+				inReplyToScreenName=json.getString("in_reply_to_screen_name");
 			if(!json.isNull("retweetDetails")){
 				retweetDetails = new RetweetDetails(json.getJSONObject("retweetDetails"));
 			}

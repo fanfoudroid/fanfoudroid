@@ -1,6 +1,7 @@
 package tk.sandin.android.fanfoudroid.http;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
@@ -9,25 +10,35 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
+import javax.net.ssl.SSLHandshakeException;
+
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.NoHttpResponseException;
 import org.apache.http.auth.AuthSchemeRegistry;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.auth.BasicSchemeFactory;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HTTP;
+import org.apache.http.protocol.HttpContext;
 
 import tk.sandin.android.fanfoudroid.weibo.Weibo;
 import tk.sandin.android.fanfoudroid.weibo.WeiboException;
@@ -63,14 +74,16 @@ public class HttpClient {
 	
 	private static boolean isAuthenticationEnabled = false;
 
-	private static final String METHOD_GET = "GET";
-	private static final String METHOD_POST = "POST";
-	private static final String METHOD_DELETE = "DELETE";
+	public static final String METHOD_GET = "GET";
+	public static final String METHOD_POST = "POST";
+	public static final String METHOD_DELETE = "DELETE";
 
 	private static final int CONNECTION_TIMEOUT_MS = 30 * 1000;
 	private static final int SOCKET_TIMEOUT_MS = 30 * 1000;
 	
 	public static final int RETRIEVE_LIMIT = 20;
+	
+	public static final int RETRIED_TIME = 3;
 
 
 	public HttpClient(String user_id, String password) {
@@ -123,7 +136,16 @@ public class HttpClient {
 		mClient.getCredentialsProvider().setCredentials(mAuthScope,
 				new UsernamePasswordCredentials(username, password));
 		isAuthenticationEnabled = true;
-		Log.i("LDS", mClient.toString() );
+	}
+	
+	public Response post(String url, ArrayList<BasicNameValuePair> postParams,
+            boolean authenticated) throws WeiboException {
+		 if (null == postParams) {
+			 postParams = new ArrayList<BasicNameValuePair>();
+		 }
+		 
+		 postParams.add(new BasicNameValuePair("source", Weibo.CONSUMER_KEY));
+		 return httpRequest(url, postParams, authenticated, METHOD_POST);
 	}
 	
 	public Response post(String url, ArrayList<BasicNameValuePair> params) 
@@ -131,25 +153,21 @@ public class HttpClient {
 		return httpRequest(url, params, false, METHOD_POST);
 	}
 	
-	 public Response post(String url, ArrayList<BasicNameValuePair> postParams,
-             boolean authenticated) throws WeiboException {
-		 if (null == postParams) {
-			 postParams = new ArrayList<BasicNameValuePair>();
-		 }
-		 
-		 postParams.add(new BasicNameValuePair("source", Weibo.CONSUMER_KEY));
-		 
-		 return httpRequest(url, postParams, authenticated, METHOD_POST);
-	 }
- 
 	public Response post(String url, boolean authenticated) throws WeiboException {
         return httpRequest(url, null, authenticated, METHOD_POST);
     }
 
-    public Response post(String url) throws
-            WeiboException {
+    public Response post(String url) throws WeiboException {
         return httpRequest(url, null, false, METHOD_POST);
     }
+    
+    public Response post(String url, File file) throws WeiboException {
+    	return httpRequest(url, null, file, false, METHOD_POST);
+    }
+    
+    public Response post(String url, File file, boolean authenticate) throws WeiboException {
+    	return httpRequest(url, null, file, authenticate, METHOD_POST);
+}
 
 	public Response get(String url, ArrayList<BasicNameValuePair> params, boolean authenticated) 
 			throws WeiboException {
@@ -171,7 +189,12 @@ public class HttpClient {
 		return httpRequest(url, null, authenticated, METHOD_GET);
 	}
 
-    public Response httpRequest(String url, ArrayList<BasicNameValuePair> postParams,
+	public Response httpRequest(String url, ArrayList<BasicNameValuePair> postParams,
+	        boolean authenticated, String httpMethod) throws WeiboException {
+		 return httpRequest(url, postParams, null, authenticated, httpMethod);
+	}
+	 
+    public Response httpRequest(String url, ArrayList<BasicNameValuePair> postParams, File file,
             boolean authenticated, String httpMethod) 
     			throws WeiboException {
 		Log.i(TAG, "Sending " + httpMethod + " request to " + url);
@@ -186,6 +209,7 @@ public class HttpClient {
 		}
 
 		HttpUriRequest method;
+		log("----------------- HTTP Request Start ----------------------");
 		log("[Request]");
 
 		if (METHOD_POST.equals(httpMethod)) {
@@ -196,14 +220,24 @@ public class HttpClient {
 			post.getParams().setBooleanParameter(
 					"http.protocol.expect-continue", false);
 			try {
-				post.setEntity(new UrlEncodedFormEntity(postParams, HTTP.UTF_8));
+				// Has a file
+				if (null != file) {
+					MultipartEntity entity = new MultipartEntity();
+					// Don't try this. Server does not appear to support chunking.
+					// entity.addPart("media", new InputStreamBody(imageStream, "media"));
+					entity.addPart("photo", new FileBody(file));
+					post.setEntity(entity);
+				} else {
+					post.setEntity(new UrlEncodedFormEntity(postParams, HTTP.UTF_8));
+				}
+
 				method = post;
 			} catch (IOException ioe) {
 				throw new WeiboException(ioe.getMessage(), ioe);
 			}
 
 			// log post data
-			if (DEBUG) {
+			if (DEBUG && file == null) {
 				try {
 					log("POST INPUT : " + postParams.toString());
 					HttpEntity entity = post.getEntity();
@@ -228,6 +262,7 @@ public class HttpClient {
 				CONNECTION_TIMEOUT_MS);
 		HttpConnectionParams
 				.setSoTimeout(method.getParams(), SOCKET_TIMEOUT_MS);
+		mClient.setHttpRequestRetryHandler(requestRetryHandler);
 
 		HttpResponse response = null;
 		Response res = null;
@@ -235,7 +270,6 @@ public class HttpClient {
 		try {
 			response = mClient.execute(method);
 			res = new Response(response);
-			
 		} catch (ClientProtocolException e) {
 			Log.e(TAG, e.getMessage(), e);
             throw new WeiboException(e.getMessage(), e);
@@ -265,15 +299,9 @@ public class HttpClient {
 	
 			// log responseContent
 			log("StatusCode : " + statusCode);
-			/*
-			BufferedReader content = new BufferedReader(new InputStreamReader(
-					 response_content. ));
-			String line;
-			while ((line = content.readLine()) != null) {
-				log("ResponseContent : " + line);
-			}
-			*/
-			log("------------------------------------------");
+			log("Response : " + res.asString());
+			
+			log("----------------- HTTP Request END ----------------------");
 		}
 
 		if (statusCode != OK) {
@@ -285,6 +313,41 @@ public class HttpClient {
 		
 		return res;
 	}
+    
+    
+/*
+	//DefaultHttpClient client = new DefaultHttpClient();
+	HttpPost post = new HttpPost(uri);
+	MultipartEntity entity = new MultipartEntity();
+	entity.addPart("source", new StringBody(FANFOU_SOURCE));
+	// Don't try this. Server does not appear to support chunking.
+	// entity.addPart("media", new InputStreamBody(imageStream, "media"));
+	entity.addPart("photo", new FileBody(file));
+	entity.addPart("status", new StringBody(message));
+	post.setEntity(entity);
+
+	HttpConnectionParams.setConnectionTimeout(post.getParams(),
+			CONNECTION_TIMEOUT_MS);
+	HttpConnectionParams.setSoTimeout(post.getParams(), SOCKET_TIMEOUT_MS);
+
+	HttpResponse response;
+
+	try {
+		response = mClient.execute(post);
+	} catch (ClientProtocolException e) {
+		Log.e(TAG, e.getMessage(), e);
+		throw new IOException("HTTP protocol error.");
+	}
+
+	int statusCode = response.getStatusLine().getStatusCode();
+
+	if (statusCode != 200) {
+		Log
+				.e(TAG, Utils.stringifyStream(response.getEntity()
+						.getContent()));
+		throw new IOException("Non OK response code: " + statusCode);
+	}
+	*/
 	
     private static String getCause(int statusCode){
         String cause = null;
@@ -327,7 +390,7 @@ public class HttpClient {
 
 	public static void log(String msg){
 		if (DEBUG) {
-			Log.i(TAG,msg);
+			Log.d(TAG,msg);
 		}
 	}
 	
@@ -353,6 +416,33 @@ public class HttpClient {
         return buf.toString();
 	}
 	
+	
+	// 异常自动恢复处理, 使用HttpRequestRetryHandler接口实现请求的异常恢复
+	private static HttpRequestRetryHandler requestRetryHandler = new HttpRequestRetryHandler() {
+	   // 自定义的恢复策略
+	   public boolean retryRequest(IOException exception, int executionCount, HttpContext context) {
+	    // 设置恢复策略，在发生异常时候将自动重试3次
+	    if (executionCount >= RETRIED_TIME) {
+	     // Do not retry if over max retry count
+	     return false;
+	    }
+	    if (exception instanceof NoHttpResponseException) {
+	     // Retry if the server dropped connection on us
+	     return true;
+	    }
+	    if (exception instanceof SSLHandshakeException) {
+	     // Do not retry on SSL handshake exception
+	     return false;
+	    }
+	    HttpRequest request = (HttpRequest) context.getAttribute(ExecutionContext.HTTP_REQUEST);
+	    boolean idempotent = (request instanceof HttpEntityEnclosingRequest);
+	    if (!idempotent) {
+	     // Retry if the request is considered idempotent
+	     return true;
+	    }
+	    return false;
+	   }
+	};
 	
 
 

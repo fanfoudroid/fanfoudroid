@@ -41,8 +41,7 @@ public class Response {
                 @Override
                 protected DocumentBuilder initialValue() {
                     try {
-                        return
-                                DocumentBuilderFactory.newInstance()
+                        return DocumentBuilderFactory.newInstance()
                                         .newDocumentBuilder();
                     } catch (ParserConfigurationException ex) {
                         throw new ExceptionInInitializerError(ex);
@@ -89,11 +88,14 @@ public class Response {
     }
 
     public String getResponseHeader(String name) {
-    	if (response != null)
-    		return response.getHeaders(name)[0].getValue();
-//    		return con.getHeaderField(name);
-    	else
-    		return null;
+    	if (response != null) {
+    		Header[] header = response.getHeaders(name);
+    		if (header.length > 0) {
+    			return header[0].getValue();
+    		}
+    	}
+   		return null;
+//    	return con.getHeaderField(name);
     }
 
     /**
@@ -135,7 +137,7 @@ public class Response {
                 }
                 this.responseAsString = buf.toString();
                     this.responseAsString = unescape(responseAsString);
-                log(responseAsString);
+//              log(responseAsString);
                 stream.close();
                 streamConsumed = true;
             } catch (NullPointerException npe) {
