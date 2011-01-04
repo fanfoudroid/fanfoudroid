@@ -203,7 +203,7 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 	protected void onRestoreInstanceState(Bundle bundle) {
 		super.onRestoreInstanceState(bundle);
 
-		mTweetEdit.updateCharsRemain();
+		//mTweetEdit.updateCharsRemain();
 	}
 
 	@Override
@@ -232,23 +232,34 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 
 	private String _reply_id;
 
+	protected String getContextItemUser(int position){
+		Cursor cursor = (Cursor) mTweetAdapter.getItem(position);
+		String user = cursor.getString(cursor
+				.getColumnIndexOrThrow(TwitterDbAdapter.KEY_USER));	
+		return user;
+	}
+
+	protected String getContextItemFavorited(int position){
+		Cursor cursor = (Cursor) mTweetAdapter.getItem(position);
+		String favorited = cursor.getString(cursor
+				.getColumnIndexOrThrow(TwitterDbAdapter.KEY_FAVORITED));
+		return favorited;
+	}
+
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 
 		AdapterView.AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-		Cursor cursor = (Cursor) mTweetAdapter.getItem(info.position);
-		String user = cursor.getString(cursor
-				.getColumnIndexOrThrow(TwitterDbAdapter.KEY_USER));
+		String user = getContextItemUser(info.position);
 
 		menu.add(0, CONTEXT_MORE_ID, 0, user + " 的空间");
 		menu.add(0, CONTEXT_REPLY_ID, 0, R.string.reply);
 		menu.add(0, CONTEXT_RETWEET_ID, 0, R.string.retweet);
 		menu.add(0, CONTEXT_DM_ID, 0, R.string.dm);
 
-		String favorited = cursor.getString(cursor
-				.getColumnIndexOrThrow(TwitterDbAdapter.KEY_FAVORITED));
+		String favorited = getContextItemFavorited(info.position);
 		if (favorited.equals("true")) {
 			menu.add(0, CONTEXT_DEL_FAV_ID, 0, R.string.del_fav);
 		} else {
@@ -379,23 +390,27 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 		public TweetAdapter(Context context, Cursor cursor) {
 			super(context, cursor);
 
-			mInflater = LayoutInflater.from(context);
-
-			mUserTextColumn = cursor
-					.getColumnIndexOrThrow(TwitterDbAdapter.KEY_USER);
-			mTextColumn = cursor
-					.getColumnIndexOrThrow(TwitterDbAdapter.KEY_TEXT);
-			mProfileImageUrlColumn = cursor
-					.getColumnIndexOrThrow(TwitterDbAdapter.KEY_PROFILE_IMAGE_URL);
-			mCreatedAtColumn = cursor
-					.getColumnIndexOrThrow(TwitterDbAdapter.KEY_CREATED_AT);
-			mSourceColumn = cursor
-					.getColumnIndexOrThrow(TwitterDbAdapter.KEY_SOURCE);
-			mInReplyToScreenName = cursor
-					.getColumnIndexOrThrow(TwitterDbAdapter.KEY_IN_REPLY_TO_SCREEN_NAME);
-			mFavorited = cursor
-					.getColumnIndexOrThrow(TwitterDbAdapter.KEY_FAVORITED);
-
+			if (context != null)
+			{
+				mInflater = LayoutInflater.from(context);
+			}
+			
+			if (cursor != null){
+				mUserTextColumn = cursor
+						.getColumnIndexOrThrow(TwitterDbAdapter.KEY_USER);
+				mTextColumn = cursor
+						.getColumnIndexOrThrow(TwitterDbAdapter.KEY_TEXT);
+				mProfileImageUrlColumn = cursor
+						.getColumnIndexOrThrow(TwitterDbAdapter.KEY_PROFILE_IMAGE_URL);
+				mCreatedAtColumn = cursor
+						.getColumnIndexOrThrow(TwitterDbAdapter.KEY_CREATED_AT);
+				mSourceColumn = cursor
+						.getColumnIndexOrThrow(TwitterDbAdapter.KEY_SOURCE);
+				mInReplyToScreenName = cursor
+						.getColumnIndexOrThrow(TwitterDbAdapter.KEY_IN_REPLY_TO_SCREEN_NAME);
+				mFavorited = cursor
+						.getColumnIndexOrThrow(TwitterDbAdapter.KEY_FAVORITED);
+			}
 			mMetaBuilder = new StringBuilder();
 		}
 
@@ -564,8 +579,7 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 
 		private void onSendSuccess() {
 			// updateProgress(getString(R.string.refreshing));
-			mTweetAdapter.notifyDataSetChanged();
-			mTweetAdapter.refresh();
+			adapterRefresh();
 		}
 
 		private void onSendFailure() {
@@ -573,6 +587,11 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 		}
 	}
 
+	protected void adapterRefresh(){
+		mTweetAdapter.notifyDataSetChanged();
+		mTweetAdapter.refresh();
+	}
+	
 	public void doRetrieve() {
 		Log.i(TAG, "Attempting retrieve.");
 
