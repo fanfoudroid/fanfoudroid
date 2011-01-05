@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
@@ -62,13 +63,7 @@ public class SearchActivity extends TwitterListBaseActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (!getApi().isLoggedIn()) {
-			Log.i(TAG, "Not logged in.");
-			handleLoggedOut();
-			return;
-		}
-
-		setContentView(R.layout.search);
+		//setContentView(R.layout.search);
 
 		Intent intent = getIntent();
 		// Assume it's SEARCH.
@@ -81,12 +76,6 @@ public class SearchActivity extends TwitterListBaseActivity implements
 
 		setTitle(mSearchQuery);
 
-		mTweets = new ArrayList<Tweet>();
-		mTweetList = (MyListView) findViewById(R.id.tweet_list);
-		mAdapter = new TweetArrayAdapter(this, mImageCache);
-		mTweetList.setAdapter(mAdapter);
-		registerForContextMenu(mTweetList);
-		mTweetList.setOnNeedMoreListener(this);
 
 		mProgressText = (TextView) findViewById(R.id.progress_text);
 
@@ -278,64 +267,6 @@ public class SearchActivity extends TwitterListBaseActivity implements
 	}
 
 	@Override
-	protected String getContextItemUser(int position) {
-		Tweet tweet = (Tweet) mAdapter.getItem(position);
-		String user = tweet.userId;
-		return user;
-	}
-
-	@Override
-	protected String getContextItemFavorited(int position) {
-		Tweet tweet = (Tweet) mAdapter.getItem(position);
-		String favorited = tweet.favorited;
-		return favorited;
-	}
-
-	@Override
-	public boolean onContextItemSelected(MenuItem item) {
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
-				.getMenuInfo();
-		Tweet tweet = (Tweet) mAdapter.getItem(info.position);
-
-		if (tweet == null) {
-			Log.w(TAG, "Selected item not available.");
-			return super.onContextItemSelected(item);
-		}
-
-		switch (item.getItemId()) {
-		case CONTEXT_MORE_ID: {
-			launchActivity(UserActivity.createIntent(tweet.screenName));
-			return true;
-		}
-		case CONTEXT_REPLY_ID: {
-			String replyTo = "@" + tweet.screenName + " ";
-			String reply_id = tweet.id;
-			launchNewTweetActivity(replyTo, reply_id);
-			return true;
-		}
-		case CONTEXT_RETWEET_ID: {
-			String prefix = mPreferences.getString(Preferences.RT_PREFIX_KEY,
-					getString(R.string.pref_rt_prefix_default));
-			String retweet = " " + prefix + " @" + tweet.screenName + " "
-					+ tweet.text;
-			String reply_id = tweet.id;
-			launchNewTweetActivity(retweet, reply_id);
-			return true;
-		}
-		default:
-			return super.onContextItemSelected(item);
-		}
-	}
-
-	private void launchNewTweetActivity(String text, String reply_id) {
-		Intent intent = new Intent(WriteActivity.NEW_TWEET_ACTION, null, this,
-				WriteActivity.class);
-		intent.putExtra(WriteActivity.EXTRA_TEXT, text);
-		intent.putExtra(WriteActivity.REPLY_ID, reply_id);
-		startActivity(intent);
-	}
-
-	@Override
 	public void needMore() {
 		if (!isLastPage()) {
 			doSearch();
@@ -371,44 +302,50 @@ public class SearchActivity extends TwitterListBaseActivity implements
 	}
 
 	@Override
-	protected void addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
-		// TODO Auto-generated method stub
-		// Nothing todo because SearchAcvitity use its own Adapter
-	}
-
-	@Override
-	protected String fetchMaxId() {
-		// TODO Auto-generated method stub
-		// Nothing todo because SearchAcvitity use its own Adapter
-		return null;
-	}
-
-	@Override
-	protected Cursor fetchMessages() {
-		// TODO Auto-generated method stub
-		// Nothing todo because SearchAcvitity use its own Adapter
-		return null;
-	}
-
-	@Override
 	protected String getActivityTitle() {
-		// TODO Auto-generated method stub
-		// Nothing todo because SearchAcvitity use its own Adapter
 		return mSearchQuery;
 	}
 
 	@Override
-	protected JSONArray getMessageSinceId(String maxId) throws IOException,
-			AuthException, ApiException {
-		// TODO Auto-generated method stub
-		// Nothing todo because SearchAcvitity use its own Adapter
-		return null;
+	protected Tweet getContextItemTweet(int position) {
+		return (Tweet)mAdapter.getItem(position);
 	}
 
 	@Override
-	protected void markAllRead() {
-		// TODO Auto-generated method stub
-		// Nothing todo because SearchAcvitity use its own Adapter
+	protected TweetAdapter getTweetAdapter() {
+		return mAdapter;
 	}
+
+	@Override
+	protected ListView getTweetList() {
+		return mTweetList;
+	}
+
+	@Override
+	protected void updateTweet(Tweet tweet) {
+		// TODO Simple and stupid implementation
+		for (Tweet t : mTweets){
+			if (t.id.equals(tweet.id)){
+				t.favorited = tweet.favorited;
+				break;
+			}
+		}
+	}
+
+	@Override
+	protected boolean useBasicMenu() {
+		return true;
+	}
+
+	@Override
+	protected void setupState() {
+		mTweets = new ArrayList<Tweet>();
+		mTweetList = (MyListView) findViewById(R.id.tweet_list);
+		mAdapter = new TweetArrayAdapter(this, mImageCache);
+		mTweetList.setAdapter(mAdapter);
+		registerForContextMenu(mTweetList);
+		mTweetList.setOnNeedMoreListener(this);		
+	}
+
 
 }

@@ -27,7 +27,7 @@ import android.view.MenuItem;
 import com.ch_linghu.android.fanfoudroid.TwitterApi.ApiException;
 import com.ch_linghu.android.fanfoudroid.TwitterApi.AuthException;
 
-public class MentionActivity extends TwitterListBaseActivity {
+public class MentionActivity extends TwitterCursorBaseActivity {
 	private static final String TAG = "MentionActivity";
 
 	private static final String LAUNCH_ACTION = "com.ch_linghu.android.fanfoudroid.REPLIES";
