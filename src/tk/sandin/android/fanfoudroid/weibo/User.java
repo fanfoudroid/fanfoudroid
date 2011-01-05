@@ -575,7 +575,6 @@ public class User extends WeiboResponse implements java.io.Serializable {
 
     /**
      *
-     * @deprecated
      */
     public boolean isFollowing() {
         return following;
@@ -592,7 +591,6 @@ public class User extends WeiboResponse implements java.io.Serializable {
     /**
      *
      * @since Weibo4J 2.0.1
-     * @deprecated
      */
     public boolean isNotificationEnabled() {
         return notificationEnabled;

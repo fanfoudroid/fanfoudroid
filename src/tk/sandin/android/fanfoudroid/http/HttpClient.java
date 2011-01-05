@@ -30,6 +30,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.auth.BasicSchemeFactory;
 import org.apache.http.impl.client.BasicCredentialsProvider;
@@ -50,6 +51,8 @@ import com.ch_linghu.android.fanfoudroid.Utils;
 public class HttpClient {
 	
 	private static final String TAG = "HttpClient";
+	
+	private final static boolean DEBUG = Configuration.debug;
 
 	private static final int OK = 200;// OK: Success!
 	private static final int NOT_MODIFIED = 304;// Not Modified: There was no new data to return.
@@ -63,8 +66,6 @@ public class HttpClient {
 	private static final int SERVICE_UNAVAILABLE = 503;// Service Unavailable: The Weibo servers are up, but overloaded with requests. Try again later. The search and trend methods use this to indicate when you are being rate limited.
 	
 	private static final String TWITTER_HOST = "api.fanfou.com";
-
-	private final static boolean DEBUG = Configuration.debug;
 
 	private DefaultHttpClient mClient;
 	private AuthScope mAuthScope;
@@ -82,9 +83,7 @@ public class HttpClient {
 	private static final int SOCKET_TIMEOUT_MS = 30 * 1000;
 	
 	public static final int RETRIEVE_LIMIT = 20;
-	
 	public static final int RETRIED_TIME = 3;
-
 
 	public HttpClient(String user_id, String password) {
 		prepareHttpClient();
@@ -95,13 +94,13 @@ public class HttpClient {
 		return !Utils.isEmpty(username) && !Utils.isEmpty(password);
 	}
 	
+	//TODO: HttpClient login
 	public void login(String username, String password) throws IOException, WeiboException {
 		Log.i(TAG, "Login attempt for " + username);
 		setCredentials(username, password);
 		//InputStream data = requestData(VERIFY_CREDENTIALS_URL, METHOD_GET, null);
 		//data.close();
 	}
-
 	
 	public void logout() {
 		setCredentials("", "");
@@ -220,36 +219,53 @@ public class HttpClient {
 			post.getParams().setBooleanParameter(
 					"http.protocol.expect-continue", false);
 			try {
-				// Has a file
 				if (null != file) {
+					// Has a file
+					
 					MultipartEntity entity = new MultipartEntity();
 					// Don't try this. Server does not appear to support chunking.
 					// entity.addPart("media", new InputStreamBody(imageStream, "media"));
 					entity.addPart("photo", new FileBody(file));
+					for (BasicNameValuePair param : postParams) {
+						entity.addPart(param.getName(), new StringBody(param.getValue()));
+					}
 					post.setEntity(entity);
 				} else {
-					post.setEntity(new UrlEncodedFormEntity(postParams, HTTP.UTF_8));
+					if (null != postParams) {
+						post.setEntity(new UrlEncodedFormEntity(postParams, HTTP.UTF_8));
+					}
 				}
-
 				method = post;
 			} catch (IOException ioe) {
 				throw new WeiboException(ioe.getMessage(), ioe);
 			}
 
 			// log post data
-			if (DEBUG && file == null) {
-				try {
-					log("POST INPUT : " + postParams.toString());
-					HttpEntity entity = post.getEntity();
-					BufferedReader in = new BufferedReader(new InputStreamReader(
-							entity.getContent()));
-					String line;
-					while ((line = in.readLine()) != null) {
-						log("POST ENTITY : " + line);
+			if (DEBUG) {
+				if (postParams != null) {
+					
+					log("POST Params : " + postParams.toString());
+					
+					try {
+						HttpEntity entity = post.getEntity();
+						if (null == file) {
+							BufferedReader in = new BufferedReader(new InputStreamReader(
+									entity.getContent()));
+							String line;
+							while ((line = in.readLine()) != null) {
+								log("POST Entity : " + line);
+							}
+						} else {
+							log("POST File : " + file.getParent() + "/" + file.getName()) ;
+						}
+					} catch (IOException ioe) {
+						throw new WeiboException(ioe.getMessage(), ioe);
 					}
-				} catch (IOException ioe) {
-					throw new WeiboException(ioe.getMessage(), ioe);
+				}  
+				if (file != null) {
+					
 				}
+				
 			}
 
 		} else if (METHOD_DELETE.equals(httpMethod)) {
@@ -284,7 +300,7 @@ public class HttpClient {
 			
 			//TODO: request headers is null
 			// log request URI and header 
-			log("[" + method.getMethod() + "] " + method.getURI());
+			log( method.getMethod() + " " + method.getURI() + " " + method.getProtocolVersion());
 			Header[] rHeaders = method.getAllHeaders();
 			for (Header h : rHeaders) {
 				log(h.getName() + " : " + h.getValue());

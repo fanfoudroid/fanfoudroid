@@ -423,4 +423,8 @@ public class Status extends WeiboResponse implements java.io.Serializable {
                 ", user=" + user +
                 '}';
     }
+    
+    public boolean isEmpty() {
+    	return (null == id);
+    }
 }
