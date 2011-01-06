@@ -20,9 +20,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import tk.sandin.android.fanfoudroid.http.HttpClient;
+import tk.sandin.android.fanfoudroid.weibo.Weibo;
+import tk.sandin.android.fanfoudroid.weibo.WeiboException;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -43,8 +43,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.ch_linghu.android.fanfoudroid.TwitterApi.ApiException;
-import com.ch_linghu.android.fanfoudroid.TwitterApi.AuthException;
 import com.google.android.photostream.UserTask;
 
 public class WriteActivity extends WithHeaderActivity {
@@ -391,7 +389,7 @@ public class WriteActivity extends WithHeaderActivity {
 	}
 
 	private enum SendResult {
-		OK, IO_ERROR, AUTH_ERROR, CANCELLED
+		OK, IO_ERROR, AUTH_ERROR, CANCELLED, FAILURE
 	}
 
 	private class SendTask extends UserTask<String, Void, SendResult> {
@@ -402,6 +400,29 @@ public class WriteActivity extends WithHeaderActivity {
 
 		@Override
 		public SendResult doInBackground(String... params) {
+			
+			try {
+				String _reply_to = params[0];
+				String status = mTweetEdit.getText().toString();
+				
+				Weibo api = TwitterApplication.nApi;
+				
+				if (withPic) {
+					api.updateStatus(status, mFile);
+				} else {
+					api.updateStatus(status);
+				}
+				
+			} catch (WeiboException e) {
+				Log.e(TAG, e.getMessage(), e);
+				
+				if (e.getStatusCode() == HttpClient.NOT_AUTHORIZED) {
+					return SendResult.AUTH_ERROR;
+				}
+				return SendResult.FAILURE;
+			}
+			
+			/*
 			try {
 				String _reply_to = params[0];
 				String status = mTweetEdit.getText().toString();
@@ -436,6 +457,8 @@ public class WriteActivity extends WithHeaderActivity {
 				Log.e(TAG, e.getMessage(), e);
 				return SendResult.IO_ERROR;
 			}
+			
+			*/
 
 			return SendResult.OK;
 		}
@@ -454,6 +477,8 @@ public class WriteActivity extends WithHeaderActivity {
 			} else if (result == SendResult.OK) {
 				onSendSuccess();
 			} else if (result == SendResult.IO_ERROR) {
+				onSendFailure();
+			} else if (result == SendResult.FAILURE) {
 				onSendFailure();
 			}
 		}

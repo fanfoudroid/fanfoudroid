@@ -2,6 +2,7 @@ package com.ch_linghu.android.fanfoudroid;
 
 import java.util.HashSet;
 
+import tk.sandin.android.fanfoudroid.weibo.Weibo;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -14,6 +15,7 @@ public class TwitterApplication extends Application {
   public static ImageManager mImageManager;
   public static TwitterDbAdapter mDb; 
   public static TwitterApi mApi;
+  public static Weibo nApi; // new API
 
   @Override
   public void onCreate() {
@@ -24,10 +26,14 @@ public class TwitterApplication extends Application {
     mDb.open();
     mApi = new TwitterApi();
     
+    
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);        
 
     String username = preferences.getString(Preferences.USERNAME_KEY, "");
     String password = preferences.getString(Preferences.PASSWORD_KEY, "");
+    
+    // Init API with username and password
+    nApi = new Weibo(username, password);
     
     if (TwitterApi.isValidCredentials(username, password)) {
       mApi.setCredentials(username, password);

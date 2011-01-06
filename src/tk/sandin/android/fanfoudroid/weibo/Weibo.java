@@ -597,7 +597,7 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
         		createParams(new BasicNameValuePair("status", status)), file, true, http.METHOD_POST));
     }
 
-    public Status uploadStatus(String status, File file) throws WeiboException {
+    public Status updateStatus(String status, File file) throws WeiboException {
     	return uploadPhoto(status, file);
     }
 
