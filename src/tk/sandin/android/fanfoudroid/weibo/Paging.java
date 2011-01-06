@@ -34,8 +34,8 @@ package tk.sandin.android.fanfoudroid.weibo;
 public class Paging implements java.io.Serializable {
     private int page = -1;
     private int count = -1;
-    private long sinceId = -1;
-    private long maxId = -1;
+    private String sinceId = "";
+    private String maxId = "";
     private static final long serialVersionUID = -3285857427993796670L;
 
     public Paging() {
@@ -45,7 +45,7 @@ public class Paging implements java.io.Serializable {
         setPage(page);
     }
 
-    public Paging(long sinceId) {
+    public Paging(String sinceId) {
         setSinceId(sinceId);
     }
 
@@ -53,17 +53,17 @@ public class Paging implements java.io.Serializable {
         this(page);
         setCount(count);
     }
-    public Paging(int page, long sinceId) {
+    public Paging(int page, String sinceId) {
         this(page);
         setSinceId(sinceId);
     }
 
-    public Paging(int page, int count, long sinceId) {
+    public Paging(int page, int count, String sinceId) {
         this(page, count);
         setSinceId(sinceId);
     }
 
-    public Paging(int page, int count, long sinceId, long maxId) {
+    public Paging(int page, int count, String sinceId, String maxId) {
         this(page, count, sinceId);
         setMaxId(maxId);
     }
@@ -95,46 +95,36 @@ public class Paging implements java.io.Serializable {
         return this;
     }
 
-    public long getSinceId() {
+    public String getSinceId() {
         return sinceId;
     }
 
-    public void setSinceId(int sinceId) {
-        if (sinceId < 1) {
-            throw new IllegalArgumentException("since_id should be positive integer. passed:" + sinceId);
+    public void setSinceId(String sinceId) {
+        if (sinceId.length() > 0) {
+        	this.sinceId = sinceId;
+        } else {
+            throw new IllegalArgumentException("since_id is null. passed:" + sinceId);
         }
-        this.sinceId = sinceId;
     }
 
-    public Paging sinceId(int sinceId) {
+
+    public Paging sinceId(String sinceId) {
         setSinceId(sinceId);
         return this;
     }
 
-    public void setSinceId(long sinceId) {
-        if (sinceId < 1) {
-            throw new IllegalArgumentException("since_id should be positive integer. passed:" + sinceId);
-        }
-        this.sinceId = sinceId;
-    }
-
-    public Paging sinceId(long sinceId) {
-        setSinceId(sinceId);
-        return this;
-    }
-
-    public long getMaxId() {
+    public String getMaxId() {
         return maxId;
     }
 
-    public void setMaxId(long maxId) {
-        if (maxId < 1) {
-            throw new IllegalArgumentException("max_id should be positive integer. passed:" + maxId);
+    public void setMaxId(String maxId) {
+        if (maxId.length() > 0) {
+            throw new IllegalArgumentException("max_id is null. passed:" + maxId);
         }
         this.maxId = maxId;
     }
 
-    public Paging maxId(long maxId) {
+    public Paging maxId(String maxId) {
         setMaxId(maxId);
         return this;
     }

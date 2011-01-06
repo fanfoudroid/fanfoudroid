@@ -202,22 +202,17 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
     	}
     	
         if (null != paging) {
-            if (-1 != paging.getMaxId()) {
+            if ("" != paging.getMaxId()) {
                 params.add(new BasicNameValuePair("max_id", String.valueOf(paging.getMaxId())));
             }
-            if (-1 != paging.getSinceId()) {
+            if ("" != paging.getSinceId()) {
                 params.add(new BasicNameValuePair("since_id", String.valueOf(paging.getSinceId())));
             }
             if (-1 != paging.getPage()) {
                 params.add(new BasicNameValuePair("page", String.valueOf(paging.getPage())));
             }
             if (-1 != paging.getCount()) {
-                if (-1 != url.indexOf("search")) {
-                    // search api takes "rpp"
-                    params.add(new BasicNameValuePair("rpp", String.valueOf(paging.getCount())));
-                } else {
-                    params.add(new BasicNameValuePair("count", String.valueOf(paging.getCount())));
-                }
+                params.add(new BasicNameValuePair("count", String.valueOf(paging.getCount())));
             }
             
             return get(url, params, authenticate);
@@ -303,22 +298,6 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
             WeiboException {
         return new RateLimitStatus(get(getBaseURL() +
                 "account/rate_limit_status.json", true),this);
-    }
-
-    /**
-     * Returns only public statuses with an ID greater than (that is, more recent than) the specified ID.
-     * <br>This method calls http://api.fanfou.com/statuses/public_timeline.format
-     *
-     * @param sinceID returns only public statuses with an ID greater than (that is, more recent than) the specified ID
-     * @return the 20 most recent statuses
-     * @throws WeiboException when Weibo service or network is unavailable
-     * @see <a href="http://code.google.com/p/fanfou-api/wiki/ApiDocumentation"</a>
-     */
-    public List<Status> getPublicTimeline(long sinceID) throws
-            WeiboException {
-    	return Status.constructStatuses(get(getBaseURL() +
-                "statuses/public_timeline.json", null, new Paging((long) sinceID)
-                , false));
     }
 
     /**
@@ -497,75 +476,6 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
                 null, paging, true));
     }
 
-    /**
-     * Returns the 20 most recent retweets posted by the authenticating user.
-     *
-     * @return the 20 most recent retweets posted by the authenticating user
-     * @throws WeiboException when Weibo service or network is unavailable
-     * @since fanfoudroid 0.5.0
-     */
-    public List<Status> getRetweetedByMe() throws WeiboException {
-    	return Status.constructStatuses(get(getBaseURL() + "statuses/retweeted_by_me.json",
-                null, true));
-    }
-
-    /**
-     * Returns the 20 most recent retweets posted by the authenticating user.
-     * @param paging controls pagination
-     * @return the 20 most recent retweets posted by the authenticating user
-     * @throws WeiboException when Weibo service or network is unavailable
-     * @since fanfoudroid 0.5.0
-     */
-    public List<Status> getRetweetedByMe(Paging paging) throws WeiboException {
-    	return Status.constructStatuses(get(getBaseURL() + "statuses/retweeted_by_me.json",
-                null, true));
-    }
-
-    /**
-     * Returns the 20 most recent retweets posted by the authenticating user's friends.
-     * @return the 20 most recent retweets posted by the authenticating user's friends.
-     * @throws WeiboException when Weibo service or network is unavailable
-     * @since fanfoudroid 0.5.0
-     */
-    public List<Status> getRetweetedToMe() throws WeiboException {
-    	return Status.constructStatuses(get(getBaseURL() + "statuses/retweeted_to_me.json",
-                null, true));
-    }
-
-    /**
-     * Returns the 20 most recent retweets posted by the authenticating user's friends.
-     * @param paging controls pagination
-     * @return the 20 most recent retweets posted by the authenticating user's friends.
-     * @throws WeiboException when Weibo service or network is unavailable
-     * @since fanfoudroid 0.5.0
-     */
-    public List<Status> getRetweetedToMe(Paging paging) throws WeiboException {
-    	return Status.constructStatuses(get(getBaseURL() + "statuses/retweeted_to_me.json",
-                null, paging, true));
-    }
-
-    /**
-     * Returns the 20 most recent tweets of the authenticated user that have been retweeted by others.
-     * @return the 20 most recent tweets of the authenticated user that have been retweeted by others.
-     * @throws WeiboException when Weibo service or network is unavailable
-     * @since fanfoudroid 0.5.0
-     */
-    public List<Status> getRetweetsOfMe() throws WeiboException {
-    	return Status.constructStatuses(get(getBaseURL() + "statuses/retweets_of_me.json",
-                null, true));
-    }
-
-    /**
-     * Returns the 20 most recent tweets of the authenticated user that have been retweeted by others.
-     * @param paging controls pagination
-     * @return the 20 most recent tweets of the authenticated user that have been retweeted by others.
-     * @throws WeiboException when Weibo service or network is unavailable
-     * @since fanfoudroid 0.5.0
-     */
-    public List<Status> getRetweetsOfMe(Paging paging) throws WeiboException {
-    	return Status.constructStatuses(get(getBaseURL() + "statuses/retweets_of_me.json",
-                null, paging, true));
-    }
 
     /**
      * Returns a single status, specified by the id parameter. The status's author will be returned inline.
