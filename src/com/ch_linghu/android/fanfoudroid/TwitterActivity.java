@@ -44,9 +44,12 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.CursorAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.ch_linghu.android.fanfoudroid.TwitterApi.ApiException;
+import com.ch_linghu.android.fanfoudroid.TwitterApi.AuthException;
 import com.google.android.photostream.UserTask;
 
 public class TwitterActivity extends WithHeaderActivity implements Refreshable {
@@ -72,7 +75,6 @@ public class TwitterActivity extends WithHeaderActivity implements Refreshable {
   
   private UserTask<Void, Void, RetrieveResult> mFollowersRetrieveTask;
   private UserTask<String, Void, SendResult> mFavTask;
-  private UserTask<String, Void, SendResult> mDelTask;
 
   // Refresh data at startup if last refresh was this long ago or greater.
   private static final long REFRESH_THRESHOLD = 5 * 60 * 1000;
@@ -256,7 +258,6 @@ public class TwitterActivity extends WithHeaderActivity implements Refreshable {
   private static final int CONTEXT_MORE_ID 	  = Menu.FIRST + 5;
   private static final int CONTEXT_ADD_FAV_ID = Menu.FIRST + 6;
   private static final int CONTEXT_DEL_FAV_ID = Menu.FIRST + 7;
-  private static final int CONTEXT_DEL_MSG_ID  = Menu.FIRST + 8;
   
   private String _reply_id;
 
@@ -272,11 +273,10 @@ public class TwitterActivity extends WithHeaderActivity implements Refreshable {
     String user = cursor.getString(cursor
         .getColumnIndexOrThrow(TwitterDbAdapter.KEY_USER));
 
-    menu.add(0, CONTEXT_MORE_ID, 0, user + getString(R.string.zone));
+    menu.add(0, CONTEXT_MORE_ID, 0, user+" 的空间");
     menu.add(0, CONTEXT_REPLY_ID, 0, R.string.reply);
     menu.add(0, CONTEXT_RETWEET_ID, 0, R.string.retweet);
     menu.add(0, CONTEXT_DM_ID, 0, R.string.dm);
-    menu.add(0, CONTEXT_DEL_MSG_ID, 0, R.string.delete);
     
     String favorited = cursor.getString(cursor
             .getColumnIndexOrThrow(TwitterDbAdapter.KEY_FAVORITED));
@@ -285,11 +285,6 @@ public class TwitterActivity extends WithHeaderActivity implements Refreshable {
     }else{
     	menu.add(0, CONTEXT_ADD_FAV_ID, 0, R.string.add_fav);    	
     }
-    
-    String status_user_id = cursor.getString(cursor.getColumnIndexOrThrow(
-    		TwitterDbAdapter.KEY_USER_ID));
-    Log.i(TAG, "user_id "     +  getApi().getUsername());
-    Log.i(TAG, "KEY_USER_id " + status_user_id);
     
 
     //MenuItem item = menu.add(0, CONTEXT_DM_ID, 0, R.string.dm);
@@ -366,13 +361,6 @@ public class TwitterActivity extends WithHeaderActivity implements Refreshable {
     	String id = cursor.getString(cursor
        	     .getColumnIndexOrThrow(TwitterDbAdapter.KEY_ID));
        	doFavorite("del", id);
-    }
-    	return true;
-    case CONTEXT_DEL_MSG_ID:
-    {
-    	String id = cursor.getString(cursor
-       	     .getColumnIndexOrThrow(TwitterDbAdapter.KEY_ID));
-       	doDestoryStatus("del", id);
     }
     	return true;
     default:
@@ -538,10 +526,13 @@ public class TwitterActivity extends WithHeaderActivity implements Refreshable {
       } catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
         return SendResult.IO_ERROR;
+      } catch (AuthException e) {
+        Log.i(TAG, "Invalid authorization.");
+        return SendResult.AUTH_ERROR;
       } catch (JSONException e) {
         Log.w(TAG, "Could not parse JSON after sending update.");
         return SendResult.IO_ERROR;
-      } catch (WeiboException e) {
+      } catch (ApiException e) {
         Log.e(TAG, e.getMessage(), e);
         return SendResult.IO_ERROR;
       }
@@ -576,81 +567,6 @@ public class TwitterActivity extends WithHeaderActivity implements Refreshable {
         //updateProgress(getString(R.string.refreshing));
     }
   }
-  
-  private void doDestoryStatus(String action, String id) {	  
-	    if (mDelTask != null && mDelTask.getStatus() == UserTask.Status.RUNNING) {
-	        Log.w(TAG, "FavTask still running");
-	      } else {
-	    	  if (!Utils.isEmpty(id)){
-	    		  mDelTask = new DestoryStatusTask().execute(action, id);
-	    	  }
-	      }
-	  }
-  
-  private class DestoryStatusTask extends UserTask<String, Void, SendResult> {
-	    @Override
-	    public void onPreExecute() {
-	      //onSendBegin();
-	    }
-
-	    @Override
-	    public SendResult doInBackground(String... params) {
-	      try {
-	    	String action = params[0];
-	    	String id = params[1];
-	    	JSONObject jsonObject = null;
-	    	if (action.equals("del")){
-	    		// delete on server 
-	    		jsonObject = getApi().destroyStatus(id);
-	    	}else{
-	    	}
-	    	
-	        Tweet tweet = Tweet.create(jsonObject);
-
-	        // delete in the local database 
-	        getDb().destoryStatus(id);
-	        
-	      } catch (IOException e) {
-	        Log.e(TAG, e.getMessage(), e);
-	        return SendResult.IO_ERROR;
-	      } catch (JSONException e) {
-	        Log.w(TAG, "Could not parse JSON after sending update.");
-	        return SendResult.IO_ERROR;
-	      } catch (WeiboException e) {
-	        Log.e(TAG, e.getMessage(), e);
-	        return SendResult.IO_ERROR;
-	      }
-
-	      return SendResult.OK;
-	    }
-
-	    @Override
-	    public void onPostExecute(SendResult result) {
-	      if (isCancelled()) {
-	        // Canceled doesn't really mean "canceled" in this task.
-	        // We want the request to complete, but don't want to update the
-	        // activity (it's probably dead).
-	        return;
-	      }
-
-	      if (result == SendResult.AUTH_ERROR) {
-	        logout();
-	      } else if (result == SendResult.OK) {
-	        onSuccess();
-	      } else if (result == SendResult.IO_ERROR) {
-	        onFailure();
-	      }
-	    }
-
-	    private void onSuccess() {
-	  	  //updateProgress(getString(R.string.refreshing));
-	  	  mTweetAdapter.notifyDataSetChanged();
-	  	  mTweetAdapter.refresh();
-	    }
-	    private void onFailure() {
-	        //updateProgress(getString(R.string.refreshing));
-	    }
-	  }
   
 
   public void doRetrieve() {
@@ -697,7 +613,10 @@ public class TwitterActivity extends WithHeaderActivity implements Refreshable {
       } catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
         return RetrieveResult.IO_ERROR;
-      } catch (WeiboException e) {
+      } catch (AuthException e) {
+        Log.i(TAG, "Invalid authorization.");
+        return RetrieveResult.AUTH_ERROR;
+      } catch (ApiException e) {
         Log.e(TAG, e.getMessage(), e);
         return RetrieveResult.IO_ERROR;
       }
@@ -782,7 +701,10 @@ public class TwitterActivity extends WithHeaderActivity implements Refreshable {
       } catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
         return RetrieveResult.IO_ERROR;
-      } catch (WeiboException e) {
+      } catch (AuthException e) {
+        Log.i(TAG, "Invalid authorization.");
+        return RetrieveResult.AUTH_ERROR;
+      } catch (ApiException e) {
         Log.e(TAG, e.getMessage(), e);
         return RetrieveResult.IO_ERROR;
       }

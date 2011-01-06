@@ -45,7 +45,6 @@ public class Utils {
   }
 
   private static HashMap<String, String> _userLinkMapping = new HashMap<String, String>();
-  
   public static String stringifyStream(InputStream is) throws IOException {
     BufferedReader reader = new BufferedReader(new InputStreamReader(is));
     StringBuilder sb = new StringBuilder();

@@ -15,14 +15,16 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.TextView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 
+import com.ch_linghu.android.fanfoudroid.TwitterApi.ApiException;
+import com.ch_linghu.android.fanfoudroid.TwitterApi.AuthException;
 import com.google.android.photostream.UserTask;
 
 public class SearchActivity extends BaseActivity implements MyListView.OnNeedMoreListener {
@@ -179,7 +181,10 @@ public class SearchActivity extends BaseActivity implements MyListView.OnNeedMor
       } catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
         return RetrieveResult.IO_ERROR;
-      } catch (WeiboException e) {
+      } catch (AuthException e) {
+        Log.i(TAG, "Invalid authorization.");
+        return RetrieveResult.AUTH_ERROR;
+      } catch (ApiException e) {
         Log.e(TAG, e.getMessage(), e);
         return RetrieveResult.IO_ERROR;
       }

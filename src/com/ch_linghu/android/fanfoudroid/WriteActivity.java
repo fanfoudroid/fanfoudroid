@@ -24,7 +24,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -43,8 +42,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.ch_linghu.android.fanfoudroid.TwitterApi.ApiException;
+import com.ch_linghu.android.fanfoudroid.TwitterApi.AuthException;
 import com.google.android.photostream.UserTask;
 
 public class WriteActivity extends WithHeaderActivity {
@@ -64,9 +64,6 @@ public class WriteActivity extends WithHeaderActivity {
 	private Button mSendButton;
 	private Button backgroundButton;
 	private Button chooseImagesButton;
-	
-	// Dialog
-	private ProgressDialog dialog;
 
 	// Picture
 	private boolean withPic = false;
@@ -429,10 +426,13 @@ public class WriteActivity extends WithHeaderActivity {
 			} catch (IOException e) {
 				Log.e(TAG, e.getMessage(), e);
 				return SendResult.IO_ERROR;
+			} catch (AuthException e) {
+				Log.i(TAG, "Invalid authorization.");
+				return SendResult.AUTH_ERROR;
 			} catch (JSONException e) {
 				Log.w(TAG, "Could not parse JSON after sending update.");
 				return SendResult.IO_ERROR;
-			} catch (WeiboException e) {
+			} catch (ApiException e) {
 				Log.e(TAG, e.getMessage(), e);
 				return SendResult.IO_ERROR;
 			}
@@ -461,23 +461,24 @@ public class WriteActivity extends WithHeaderActivity {
 
 	private void onSendBegin() {
 		disableEntry();
-		String msg = getString(R.string.updateing_status);
-		updateProgress(msg);
+		updateProgress(getString(R.string.updateing_status));
 		backgroundButton.setVisibility(View.VISIBLE);
 	}
 
 	private void onSendSuccess() {
 		mTweetEdit.setText("");
-//		updateProgress(getString(R.string.update_status_success));
-		updateProgress("");
-		
-		String msg = getString(R.string.update_status_success);
-		Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+		updateProgress(getString(R.string.update_status_success));
 		backgroundButton.setVisibility(View.INVISIBLE);
 		enableEntry();
 		// doRetrieve();
 		// draw();
 		// goTop();
+		try {
+			Thread.currentThread().sleep(500);
+			updateProgress("");
+		} catch (InterruptedException e) {
+			Log.i(TAG, e.getMessage());
+		}
 	}
 
 	private void onSendFailure() {

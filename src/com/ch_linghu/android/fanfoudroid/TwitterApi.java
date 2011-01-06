@@ -24,12 +24,39 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.auth.AuthSchemeRegistry;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.auth.BasicSchemeFactory;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import android.util.Log;
 
@@ -37,7 +64,6 @@ public class TwitterApi {
 	private static final String TAG = "TwitterApi";
 
 	private static final String UPDATE_URL = "http://api.fanfou.com/statuses/update.json";
-	private static final String DESTROY_STATUS_URL = "http://api.fanfou.com/statuses/destroy/%s.json";
 	private static final String FAVORITES_URL = "http://api.fanfou.com/favorites.json";
 	private static final String ADD_FAV_URL = "http://api.fanfou.com/favorites/create/%s.json";
 	private static final String DEL_FAV_URL = "http://api.fanfou.com/favorites/destroy/%s.json";
@@ -54,36 +80,48 @@ public class TwitterApi {
 	private static final String FRIENDSHIPS_CREATE_URL = "http://api.fanfou.com/friendships/create/%s.json";
 	private static final String FRIENDSHIPS_DESTROY_URL = "http://api.fanfou.com/friendships/destroy/%s.json";
 	private static final String SEARCH_URL = "http://api.fanfou.com/search/public_timeline.json";
-	private static final String USER_SHOW_URL = "http://api.fanfou.com/users/show.json";
-	private static final String UPLOAD_AND_POST_URL = "http://api.fanfou.com/photos/upload.json";
-	
-	private static final String FANFOU_SOURCE = "fanfoudriod";
 
-	private HttpClient http;
-	public static final int RETRIEVE_LIMIT = 20;
+	private static final String UPLOAD_AND_POST_URL = "http://api.fanfou.com/photos/upload.json";
+
+	private static final String TWITTER_HOST = "api.fanfou.com";
 	
+	private static final String FANFOU_SOURCE = "fanfoudroid";
+
+	private DefaultHttpClient mClient;
+	private AuthScope mAuthScope;
+
 	private String mUsername;
 	private String mPassword;
 
-	public TwitterApi(String username, String password) {
-		http = new HttpClient(username, password);
-		mUsername = username;
-		mPassword = password;
-	}
-	
-	public HttpClient getHttp(){
-		return http;
+	private static final String METHOD_GET = "GET";
+	private static final String METHOD_POST = "POST";
+	private static final String METHOD_DELETE = "DELETE";
+
+	public static final int RETRIEVE_LIMIT = 20;
+
+	public class AuthException extends Exception {
+		private static final long serialVersionUID = 1703735789572778599L;
 	}
 
-	//---------------------------------------------------------------
-	
-	public TwitterApi(){}
-	
-	public String getUsername() {
-		return mUsername;
+	public class ApiException extends Exception {
+		public int mCode;
+
+		public ApiException(int code, String string) {
+			super(string);
+
+			mCode = code;
+		}
+
+		private static final long serialVersionUID = -3755642135241860532L;
 	}
-	
-	
+
+	private static final int CONNECTION_TIMEOUT_MS = 30 * 1000;
+	private static final int SOCKET_TIMEOUT_MS = 30 * 1000;
+
+	public TwitterApi() {
+		prepareHttpClient();
+	}
+
 	public static boolean isValidCredentials(String username, String password) {
 		return !Utils.isEmpty(username) && !Utils.isEmpty(password);
 	}
@@ -91,21 +129,31 @@ public class TwitterApi {
 	public boolean isLoggedIn() {
 		return isValidCredentials(mUsername, mPassword);
 	}
-	
-	public void login(String username, String password) throws IOException,
-			WeiboException {
-		Log.i(TAG, "Login attempt for " + username);
-		http.setCredentials(username, password);
-		InputStream data = http.get(VERIFY_CREDENTIALS_URL);
-		data.close();
+
+	public String getUsername() {
+		return mUsername;
 	}
 
-	public void logout() {
-		http.setCredentials("", "");
+	private void prepareHttpClient() {
+		mAuthScope = new AuthScope(TWITTER_HOST, AuthScope.ANY_PORT);
+		mClient = new DefaultHttpClient();
+		BasicScheme basicScheme = new BasicScheme();
+		AuthSchemeRegistry authRegistry = new AuthSchemeRegistry();
+		authRegistry.register(basicScheme.getSchemeName(),
+				new BasicSchemeFactory());
+		mClient.setAuthSchemes(authRegistry);
+		mClient.setCredentialsProvider(new BasicCredentialsProvider());
 	}
-	
+
+	public void setCredentials(String username, String password) {
+		mUsername = username;
+		mPassword = password;
+		mClient.getCredentialsProvider().setCredentials(mAuthScope,
+				new UsernamePasswordCredentials(username, password));
+	}
+
 	public void postTwitPic(File file, String message) throws IOException,
-			WeiboException {
+			AuthException, ApiException {
 		URI uri;
 		Log.i(TAG, "Updating status WITH a picture.");
 
@@ -115,10 +163,7 @@ public class TwitterApi {
 			Log.e(TAG, e.getMessage(), e);
 			throw new IOException("Invalid URL.");
 		}
-		
-		
 
-		/*
 		//DefaultHttpClient client = new DefaultHttpClient();
 		HttpPost post = new HttpPost(uri);
 		MultipartEntity entity = new MultipartEntity();
@@ -150,62 +195,99 @@ public class TwitterApi {
 							.getContent()));
 			throw new IOException("Non OK response code: " + statusCode);
 		}
-		*/
-		
 	}
-	//---------------------------------------------------------------
-	
-	public User showUser(String id) throws IOException,
-			WeiboException, JSONException {
-		Log.i(TAG, "Requesting friends timeline.");
-		
-		String url = USER_SHOW_URL;
-//		if (id != null) {
-//			url = String.format(USER_SHOW_URL, id);
-//		} else {
-//			url = USER_SHOW_URL;
-//		}
-		
-		/*////////////////////////////////////////////////////////////////
-		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("status", status));
-		params.add(new BasicNameValuePair("source", FANFOU_SOURCE));
-		if (reply_to != null && !reply_to.equals("")) {
-			params.add(new BasicNameValuePair("in_reply_to_status_id",
-							reply_to));
-		}
-		InputStream data = http.get(UPDATE_URL, METHOD_POST, params);
-		////////////////////////////////////////////////////////////////*/
 
-		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("id", id));
-		InputStream data = http.post(url, params);
-		JSONObject json = null;
-		
+	// TODO: return a custom object that has a finish method
+	// that calls finish on the HttpEntity and stream.
+	private InputStream requestData(String url, String httpMethod,
+			ArrayList<NameValuePair> params) throws IOException, AuthException,
+			ApiException {
+		Log.i(TAG, "Sending " + httpMethod + " request to " + url);
+
+		URI uri;
+
 		try {
-			json = new JSONObject(Utils.stringifyStream(data));
-		} catch (JSONException e) {
+			uri = new URI(url);
+		} catch (URISyntaxException e) {
 			Log.e(TAG, e.getMessage(), e);
-			throw new IOException("Could not parse JSON.");
-		} finally {
-			data.close();
+			throw new IOException("Invalid URL.");
 		}
 
-		return User.create(json);
-	}
-	
-	public User showUser() throws IOException, WeiboException, JSONException {
-		return showUser(null);
+		HttpUriRequest method;
+
+		if (METHOD_POST.equals(httpMethod)) {
+			HttpPost post = new HttpPost(uri);
+			// See this:
+			// http://groups.google.com/group/twitter-development-talk/browse_thread/
+			// thread/e178b1d3d63d8e3b
+			post.getParams().setBooleanParameter(
+					"http.protocol.expect-continue", false);
+			post.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+			method = post;
+		} else if (METHOD_DELETE.equals(httpMethod)) {
+			method = new HttpDelete(uri);
+		} else {
+			method = new HttpGet(uri);
+		}
+
+		HttpConnectionParams.setConnectionTimeout(method.getParams(),
+				CONNECTION_TIMEOUT_MS);
+		HttpConnectionParams
+				.setSoTimeout(method.getParams(), SOCKET_TIMEOUT_MS);
+
+		HttpResponse response;
+
+		try {
+			response = mClient.execute(method);
+		} catch (ClientProtocolException e) {
+			Log.e(TAG, e.getMessage(), e);
+			throw new IOException("HTTP protocol error.");
+		}
+
+		int statusCode = response.getStatusLine().getStatusCode();
+
+		if (statusCode == 401) {
+			throw new AuthException();
+		} else if (statusCode == 403) {
+			try {
+				JSONObject json = new JSONObject(Utils.stringifyStream(response
+						.getEntity().getContent()));
+				throw new ApiException(statusCode, json.getString("error"));
+			} catch (IllegalStateException e) {
+				throw new IOException("Could not parse error response.");
+			} catch (JSONException e) {
+				throw new IOException("Could not parse error response.");
+			}
+		} else if (statusCode != 200) {
+			Log
+					.e(TAG, Utils.stringifyStream(response.getEntity()
+							.getContent()));
+			throw new IOException("Non OK response code: " + statusCode);
+		}
+
+		return response.getEntity().getContent();
 	}
 
+	public void login(String username, String password) throws IOException,
+			AuthException, ApiException {
+		Log.i(TAG, "Login attempt for " + username);
+		setCredentials(username, password);
+		InputStream data = requestData(VERIFY_CREDENTIALS_URL, METHOD_GET, null);
+		data.close();
+	}
 
-	public JSONArray getTimeline() throws IOException, WeiboException {
+	public void logout() {
+		setCredentials("", "");
+	}
+
+	public JSONArray getTimeline() throws IOException, AuthException,
+			ApiException {
 		Log.i(TAG, "Requesting friends timeline.");
 
 		String url = FRIENDS_TIMELINE_URL + "?format=html&count="
 				+ URLEncoder.encode(RETRIEVE_LIMIT + "", HTTP.UTF_8);
 
-		InputStream data = http.get(url);
+		InputStream data = requestData(url, METHOD_GET, null);
 		JSONArray json = null;
 
 		try {
@@ -221,7 +303,7 @@ public class TwitterApi {
 	}
 
 	public JSONArray getTimelineSinceId(String sinceId) throws IOException,
-			WeiboException {
+			AuthException, ApiException {
 		Log.i(TAG, "Requesting friends timeline since id.");
 
 		String url = FRIENDS_TIMELINE_URL + "?format=html&count="
@@ -231,7 +313,7 @@ public class TwitterApi {
 			url += "&since_id=" + URLEncoder.encode(sinceId + "", HTTP.UTF_8);
 		}
 
-		InputStream data = http.get(url);
+		InputStream data = requestData(url, METHOD_GET, null);
 		JSONArray json = null;
 
 		try {
@@ -246,13 +328,14 @@ public class TwitterApi {
 		return json;
 	}
 
-	public JSONArray getMention() throws IOException, WeiboException {
+	public JSONArray getMention() throws IOException, AuthException,
+			ApiException {
 		Log.i(TAG, "Requesting friends timeline.");
 
 		String url = REPLIES_URL + "?format=html&count="
 				+ URLEncoder.encode(RETRIEVE_LIMIT + "", HTTP.UTF_8);
 
-		InputStream data = http.get(url);
+		InputStream data = requestData(url, METHOD_GET, null);
 		JSONArray json = null;
 
 		try {
@@ -268,7 +351,7 @@ public class TwitterApi {
 	}
 
 	public JSONArray getMentionSinceId(String sinceId) throws IOException,
-			WeiboException {
+			AuthException, ApiException {
 		Log.i(TAG, "Requesting friends timeline since id.");
 
 		String url = REPLIES_URL + "?format=html&count="
@@ -278,7 +361,7 @@ public class TwitterApi {
 			url += "&since_id=" + URLEncoder.encode(sinceId + "", HTTP.UTF_8);
 		}
 
-		InputStream data = http.get(url);
+		InputStream data = requestData(url, METHOD_GET, null);
 		JSONArray json = null;
 
 		try {
@@ -293,10 +376,11 @@ public class TwitterApi {
 		return json;
 	}
 
-	public JSONArray getDirectMessages() throws IOException, WeiboException{
+	public JSONArray getDirectMessages() throws IOException, AuthException,
+			ApiException {
 		Log.i(TAG, "Requesting direct messages.");
 
-		InputStream data = http.get(DIRECT_MESSAGES_URL);
+		InputStream data = requestData(DIRECT_MESSAGES_URL, METHOD_GET, null);
 		JSONArray json = null;
 
 		try {
@@ -311,10 +395,12 @@ public class TwitterApi {
 		return json;
 	}
 
-	public JSONArray getDirectMessagesSent() throws IOException, WeiboException {
+	public JSONArray getDirectMessagesSent() throws IOException, AuthException,
+			ApiException {
 		Log.i(TAG, "Requesting sent direct messages.");
 
-		InputStream data = http.get(DIRECT_MESSAGES_SENT_URL);
+		InputStream data = requestData(DIRECT_MESSAGES_SENT_URL, METHOD_GET,
+				null);
 		JSONArray json = null;
 
 		try {
@@ -330,12 +416,12 @@ public class TwitterApi {
 	}
 
 	public JSONObject destroyDirectMessage(String id) throws IOException,
-			WeiboException {
+			AuthException, ApiException {
 		Log.i(TAG, "Deleting direct message: " + id);
 
 		String url = String.format(DIRECT_MESSAGES_DESTROY_URL, id);
 
-		InputStream data = http.get(url);
+		InputStream data = requestData(url, METHOD_DELETE, null);
 		JSONObject json = null;
 
 		try {
@@ -351,14 +437,15 @@ public class TwitterApi {
 	}
 
 	public JSONObject sendDirectMessage(String user, String text)
-			throws IOException, WeiboException{
+			throws IOException, AuthException, ApiException {
 		Log.i(TAG, "Sending dm.");
 
 		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("user", user));
 		params.add(new BasicNameValuePair("text", text));
 
-		InputStream data = http.post(DIRECT_MESSAGES_NEW_URL, params);
+		InputStream data = requestData(DIRECT_MESSAGES_NEW_URL, METHOD_POST,
+				params);
 		JSONObject json = null;
 
 		try {
@@ -374,48 +461,21 @@ public class TwitterApi {
 	}
 
 	public JSONObject update(String status, String reply_to)
-			throws IOException, WeiboException {
+			throws IOException, AuthException, ApiException {
 		Log.i(TAG, "Updating status.");
 
 		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("status", status));
 		params.add(new BasicNameValuePair("source", FANFOU_SOURCE));
 		if (reply_to != null && !reply_to.equals("")) {
-			params.add(new BasicNameValuePair("in_reply_to_status_id",
+			params
+					.add(new BasicNameValuePair("in_reply_to_status_id",
 							reply_to));
 		}
 
-		InputStream data = http.post(UPDATE_URL, params);
+		InputStream data = requestData(UPDATE_URL, METHOD_POST, params);
 		JSONObject json = null;
 
-		try {
-			json = new JSONObject(Utils.stringifyStream(data));
-		} catch (JSONException e) {
-			Log.e(TAG, e.getMessage(), e);
-			throw new IOException("Could not parse JSON.");
-		} finally {
-			data.close();
-		}
-
-		return json;
-	}
-	
-	public JSONObject update(String status)
-			throws IOException, WeiboException {
-		return update(status, "");
-	}
-	
-	
-	public JSONObject destroyStatus(String statusId) 
-			throws IOException, WeiboException {
-		Log.i(TAG, "Destory Status , id = " + statusId);
-		String url = String.format(DESTROY_STATUS_URL, statusId);
-		
-		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("source", FANFOU_SOURCE));
-		InputStream data = http.post(url, params);
-		JSONObject json = null;
-		
 		try {
 			json = new JSONObject(Utils.stringifyStream(data));
 		} catch (JSONException e) {
@@ -429,13 +489,13 @@ public class TwitterApi {
 	}
 	
 	public JSONObject addFavorite(String id)
-			throws IOException, WeiboException {
+			throws IOException, AuthException, ApiException{
 		Log.i(TAG, "Add favorite.");
 		String url = String.format(ADD_FAV_URL, id);
 
 		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("source", FANFOU_SOURCE));
-		InputStream data = http.post(url, params);
+		InputStream data = requestData(url, METHOD_POST, params);
 		JSONObject json = null;
 
 		try {
@@ -451,13 +511,13 @@ public class TwitterApi {
 	}
 
 	public JSONObject delFavorite(String id)
-			throws IOException, WeiboException {
+			throws IOException, AuthException, ApiException{
 		Log.i(TAG, "delete favorite.");
 		String url = String.format(DEL_FAV_URL, id);
 	
 		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("source", FANFOU_SOURCE));
-		InputStream data = http.post(url, params);
+		InputStream data = requestData(url, METHOD_POST, params);
 		JSONObject json = null;
 	
 		try {
@@ -473,7 +533,7 @@ public class TwitterApi {
 	}
 
 	public JSONArray getDmsSinceId(String sinceId, boolean isSent)
-			throws IOException, WeiboException {
+			throws IOException, AuthException, ApiException {
 		Log.i(TAG, "Requesting DMs since id.");
 
 		String url = isSent ? DIRECT_MESSAGES_SENT_URL : DIRECT_MESSAGES_URL;
@@ -482,7 +542,7 @@ public class TwitterApi {
 			url += "?since_id=" + URLEncoder.encode(sinceId + "", HTTP.UTF_8);
 		}
 
-		InputStream data = http.get(url);
+		InputStream data = requestData(url, METHOD_GET, null);
 		JSONArray json = null;
 
 		try {
@@ -498,10 +558,10 @@ public class TwitterApi {
 	}
 
 	public ArrayList<String> getFollowersIds() throws IOException,
-			WeiboException {
+			AuthException, ApiException {
 		Log.i(TAG, "Requesting followers ids.");
 
-		InputStream data = http.get(FOLLOWERS_IDS_URL);
+		InputStream data = requestData(FOLLOWERS_IDS_URL, METHOD_GET, null);
 		ArrayList<String> followers = new ArrayList<String>();
 
 		try {
@@ -520,7 +580,7 @@ public class TwitterApi {
 	}
 
 	public JSONArray getUserTimeline(String user, int page) throws IOException,
-			WeiboException {
+			AuthException, ApiException {
 		Log.i(TAG, "Requesting user timeline.");
 
 		String url = USER_TIMELINE_URL + "?screen_name="
@@ -529,7 +589,7 @@ public class TwitterApi {
 				+ "&count=" + URLEncoder.encode(RETRIEVE_LIMIT + "");
 		
 		
-		InputStream data = http.get(url);
+		InputStream data = requestData(url, METHOD_GET, null);
 		JSONArray json = null;
 
 		try {
@@ -545,14 +605,14 @@ public class TwitterApi {
 	}
 
 	public boolean isFollows(String a, String b) throws IOException,
-			WeiboException {
+			AuthException, ApiException {
 		Log.i(TAG, "Check follows.");
 
 		String url = FRIENDSHIPS_EXISTS_URL + "?user_a="
 				+ URLEncoder.encode(a, HTTP.UTF_8) + "&user_b="
 				+ URLEncoder.encode(b, HTTP.UTF_8);
 
-		InputStream data = http.get(url);
+		InputStream data = requestData(url, METHOD_GET, null);
 
 		try {
 			return "true".equals(Utils.stringifyStream(data).trim());
@@ -562,12 +622,13 @@ public class TwitterApi {
 	}
 
 	public JSONObject createFriendship(String id) throws IOException,
-			WeiboException {
+			AuthException, ApiException {
 		Log.i(TAG, "Following: " + id);
 
 		String url = String.format(FRIENDSHIPS_CREATE_URL, id);
 
-		InputStream data = http.post(url, new ArrayList<NameValuePair>());
+		InputStream data = requestData(url, METHOD_POST,
+				new ArrayList<NameValuePair>());
 		JSONObject json = null;
 
 		try {
@@ -583,12 +644,12 @@ public class TwitterApi {
 	}
 
 	public JSONObject destroyFriendship(String id) throws IOException,
-			WeiboException {
+			AuthException, ApiException {
 		Log.i(TAG, "Unfollowing: " + id);
 
 		String url = String.format(FRIENDSHIPS_DESTROY_URL, id);
 
-		InputStream data = http.get(url);
+		InputStream data = requestData(url, METHOD_DELETE, null);
 		JSONObject json = null;
 
 		try {
@@ -604,13 +665,13 @@ public class TwitterApi {
 	}
 
 	public JSONArray search(String query, int page) throws IOException,
-			WeiboException{
+			AuthException, ApiException {
 		Log.i(TAG, "Searching.");
 		
 		String url = SEARCH_URL + "?q=" + URLEncoder.encode(query, HTTP.UTF_8)
 				+ "&page=" + URLEncoder.encode(page + "", HTTP.UTF_8);
 
-		InputStream data = http.get(url);
+		InputStream data = requestData(url, METHOD_GET, null);
 		JSONArray json = null;
 
 		try {

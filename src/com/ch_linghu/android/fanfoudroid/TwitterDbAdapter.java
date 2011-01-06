@@ -320,11 +320,6 @@ public class TwitterDbAdapter {
     deleteAllDms();
     deleteAllFollowers();
   }
-  
-  public boolean destoryStatus(String status_id) {
-	    String where = KEY_ID + "='" + status_id + "'";
-	    return mDb.delete(TWEET_TABLE, where , null) > 0;
-  }
 
   public boolean deleteAllTweets() {
 	    return mDb.delete(TWEET_TABLE, null, null) > 0;

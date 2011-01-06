@@ -31,6 +31,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ch_linghu.android.fanfoudroid.TwitterApi.ApiException;
+import com.ch_linghu.android.fanfoudroid.TwitterApi.AuthException;
 import com.google.android.photostream.UserTask;
 
 public class UserActivity extends WithHeaderActivity implements MyListView.OnNeedMoreListener {
@@ -315,7 +317,10 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
       } catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
-      } catch (WeiboException e) {
+      } catch (AuthException e) {
+        Log.i(TAG, "Invalid authorization.");
+        return TaskResult.AUTH_ERROR;
+      } catch (ApiException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
       } 
@@ -373,7 +378,10 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
       } catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
-      } catch (WeiboException e) {
+      } catch (AuthException e) {
+        Log.i(TAG, "Invalid authorization.");
+        return TaskResult.AUTH_ERROR;
+      } catch (ApiException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
       }
@@ -431,7 +439,10 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
       catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
-      } catch (WeiboException e) {
+      } catch (AuthException e) {
+        Log.i(TAG, "Invalid authorization.");
+        return TaskResult.AUTH_ERROR;
+      } catch (ApiException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
       }
@@ -522,7 +533,10 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
       } catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
-      } catch (WeiboException e) {
+      } catch (AuthException e) {
+        Log.i(TAG, "Invalid authorization.");
+        return TaskResult.AUTH_ERROR;
+      } catch (ApiException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
       }
@@ -625,7 +639,6 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
 
     MenuItem item = menu.add(0, CONTEXT_DM_ID, 0, R.string.dm);
     item.setEnabled(mIsFollower);
-   
   }
 
   @Override

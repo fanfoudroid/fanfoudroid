@@ -43,6 +43,8 @@ import android.os.PowerManager.WakeLock;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.ch_linghu.android.fanfoudroid.TwitterApi.ApiException;
+import com.ch_linghu.android.fanfoudroid.TwitterApi.AuthException;
 import com.google.android.photostream.UserTask;
 
 public class TwitterService extends Service {
@@ -362,7 +364,10 @@ public class TwitterService extends Service {
 				} catch (IOException e) {
 					Log.e(TAG, e.getMessage(), e);
 					return RetrieveResult.IO_ERROR;
-				} catch (WeiboException e) {
+				} catch (AuthException e) {
+					Log.i(TAG, "Invalid authorization.");
+					return RetrieveResult.AUTH_ERROR;
+				} catch (ApiException e) {
 					Log.e(TAG, e.getMessage(), e);
 					return RetrieveResult.IO_ERROR;
 				}
@@ -401,7 +406,10 @@ public class TwitterService extends Service {
 				} catch (IOException e) {
 					Log.e(TAG, e.getMessage(), e);
 					return RetrieveResult.IO_ERROR;
-				} catch (WeiboException e) {
+				} catch (AuthException e) {
+					Log.i(TAG, "Invalid authorization.");
+					return RetrieveResult.AUTH_ERROR;
+				} catch (ApiException e) {
 					Log.e(TAG, e.getMessage(), e);
 					return RetrieveResult.IO_ERROR;
 				}
@@ -440,7 +448,10 @@ public class TwitterService extends Service {
 				} catch (IOException e) {
 					Log.e(TAG, e.getMessage(), e);
 					return RetrieveResult.IO_ERROR;
-				} catch (WeiboException e) {
+				} catch (AuthException e) {
+					Log.i(TAG, "Invalid authorization.");
+					return RetrieveResult.AUTH_ERROR;
+				} catch (ApiException e) {
 					Log.e(TAG, e.getMessage(), e);
 					return RetrieveResult.IO_ERROR;
 				}
