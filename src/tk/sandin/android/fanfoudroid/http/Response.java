@@ -25,10 +25,9 @@ import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import tk.sandin.android.fanfoudroid.weibo.Configuration;
 import tk.sandin.android.fanfoudroid.weibo.WeiboException;
 import android.util.Log;
-
-import com.ch_linghu.android.fanfoudroid.Configuration;
 
 public class Response {
 //    private final static String TAG = "HttpClient";

@@ -41,18 +41,18 @@ import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
 
+import tk.sandin.android.fanfoudroid.weibo.Configuration;
 import tk.sandin.android.fanfoudroid.weibo.Weibo;
 import tk.sandin.android.fanfoudroid.weibo.WeiboException;
 import android.util.Log;
 
-import com.ch_linghu.android.fanfoudroid.Configuration;
 import com.ch_linghu.android.fanfoudroid.Utils;
 
 public class HttpClient {
 	
 	private static final String TAG = "HttpClient";
 	
-	private final static boolean DEBUG = Configuration.debug;
+	private final static boolean DEBUG = Configuration.getDebug();
 
 	private static final int OK = 200;// OK: Success!
 	private static final int NOT_MODIFIED = 304;// Not Modified: There was no new data to return.

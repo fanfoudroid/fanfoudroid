@@ -2,4 +2,4 @@ Syntax:glob
 
 bin/*
 .svn/*
-
+release/*
