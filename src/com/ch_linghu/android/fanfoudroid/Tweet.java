@@ -24,7 +24,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Tweet extends Message {
-  @SuppressWarnings("unused")
   private static final String TAG = "Tweet";
 
   public String source;

@@ -688,9 +688,9 @@ public class DmActivity extends BaseActivity {
 
     switch (item.getItemId()) {
     case CONTEXT_REPLY_ID:
-      String user = cursor.getString(cursor
-          .getColumnIndexOrThrow(TwitterDbAdapter.KEY_USER));
-      mToEdit.setText(user);
+      String user_id = cursor.getString(cursor
+          .getColumnIndexOrThrow(TwitterDbAdapter.KEY_USER_ID));
+      mToEdit.setText(user_id);
       mTweetEdit.requestFocus();
 
       return true;
