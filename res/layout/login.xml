@@ -1,76 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
-  android:background="@drawable/login_background"
+  android:background="@drawable/background_login"
   >
-    <LinearLayout
-    android:orientation="vertical"
+
+    <!-- 登录框 -->
+    <RelativeLayout
+    android:id="@+id/login_div"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:paddingTop="12px"
-    android:paddingBottom="13px"    	    
-    android:paddingLeft="15px"
-    android:paddingRight="15px"    
+    android:layout_height="wrap_content"
+    android:padding="15px"
+    android:layout_margin="15px"
+    android:background="@drawable/background_login_div_bg"
     >    
-    <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="5px"
-    android:textColor="@drawable/label_color"
-    android:text="@string/username_label"
-    />
-    <!--  TODO: disable auto correct. -->    
-    <EditText
-    android:id="@+id/username_edit"
-    android:background="@drawable/edittext_background"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:singleLine="true"
-    android:inputType="text"
-    />
-    <TextView
-    android:layout_marginTop="3px"            
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:textColor="@drawable/label_color"
-    android:text="@string/password_label"
-    />
-    <EditText
-    android:id="@+id/password_edit"
-    android:password="true"
-    android:background="@drawable/edittext_background"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:singleLine="true"
-    android:inputType="textPassword"    
-    />	    
-    <Button
-    android:layout_marginTop="10px"        
-    android:id="@+id/signin_button"
-    android:background="@drawable/button_background_selector"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:textColor="@drawable/label_color"
-    android:text="@string/signin"
-    />    
-    <TextView
-    android:layout_marginTop="10px"            
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:textColor="@drawable/tweet_color"
-    android:text="请注意：登录使用的是用户名而不是Email。用户名请参考网页版饭否“我的空间”网址中， http://fanfou.com/ 后面的部分"
-    />    
-    <TextView
-    android:id="@+id/progress_text"
-    android:layout_width="wrap_content"
-    android:layout_height="0px"
-    android:layout_weight="1"
-    android:gravity="bottom"
-    android:textSize="14px"
-    android:singleLine="true"
-    android:textColor="@drawable/status_color"
-    />       
-    </LinearLayout>
-    
-</FrameLayout>
+	    <!-- 用户名 text -->
+	    <TextView
+	    android:id="@+id/login_user_input"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentTop="true"
+	    android:layout_marginTop="5px"
+	    android:text="@string/username_label"
+	    style="@style/normalText"
+	    />
+	    <!--  TODO: disable auto correct. -->    
+	    <!-- 用户名 input -->
+	    <EditText
+	    android:id="@+id/username_edit"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@id/login_user_input"
+	    android:singleLine="true"
+	    android:inputType="text"
+	    />
+	    <!-- 密码 text -->
+	    <TextView
+	    android:id="@+id/login_password_input"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@id/username_edit"
+	    android:layout_marginTop="3px"            
+	    android:text="@string/password_label"
+	    style="@style/normalText"
+	    />
+	    <!-- 密码 input -->
+	    <EditText
+	    android:id="@+id/password_edit"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@id/login_password_input"
+	    android:password="true"
+	    android:singleLine="true"
+	    android:inputType="textPassword"    
+	    />	    
+	    <!-- 登陆 button -->
+	    <Button
+	    android:id="@+id/signin_button"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@id/password_edit"
+	    android:layout_alignRight="@id/password_edit"
+	    android:layout_marginTop="10px"        
+	    android:text="@string/signin"
+	    style="@style/blue_button"
+	    />    
+	    <!-- 提示栏 -->
+	    <TextView
+	    android:id="@+id/progress_text"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignLeft="@id/password_edit"
+	    android:layout_alignBottom="@id/signin_button"
+	    android:gravity="bottom"
+	    android:textSize="13px"
+	    android:textColor="#888"
+	    android:singleLine="true"
+	    />       
+	</RelativeLayout>
+	
+	<RelativeLayout 
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:background="@drawable/background_login_footer"
+      >
+        <TextView  android:id="@+id/register_link"
+            android:text="@string/register_link"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:textColor="#888"
+            android:textColorLink="@color/link_color"
+         />
+	    <ImageView android:id="@+id/fanfoudroid_logo"
+	        android:src="@drawable/twitter_follow_me"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentRight="true"
+	        android:layout_alignParentBottom="true"
+	        android:layout_marginRight="25dp"
+	        android:layout_marginLeft="10dp"
+	        android:layout_marginBottom="25dp"
+	         />
+	    <ImageView android:src="@drawable/fanfoudroid_logo"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_toLeftOf="@id/fanfoudroid_logo"
+	        android:layout_alignBottom="@id/fanfoudroid_logo"
+	        android:paddingBottom="8dp"
+	         />
+	    </RelativeLayout>
+</LinearLayout>
+

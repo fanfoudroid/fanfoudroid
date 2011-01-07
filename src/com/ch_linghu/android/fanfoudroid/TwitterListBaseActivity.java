@@ -73,8 +73,6 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 
 	abstract protected void updateTweet(Tweet tweet);
 
-
-
 	public static final int CONTEXT_REPLY_ID = Menu.FIRST + 1;
 	// public static final int CONTEXT_AT_ID = Menu.FIRST + 2;
 	public static final int CONTEXT_RETWEET_ID = Menu.FIRST + 3;
@@ -86,12 +84,6 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		if (!getApi().isLoggedIn()) {
-			Log.i(TAG, "Not logged in.");
-			handleLoggedOut();
-			return;
-		}
 
 		setContentView(R.layout.main);
 		initHeader(HEADER_STYLE_HOME, this);
@@ -110,11 +102,7 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 	protected void onResume() {
 		super.onResume();
 
-		if (!getApi().isLoggedIn()) {
-			Log.i(TAG, "Not logged in.");
-			handleLoggedOut();
-			return;
-		}
+		checkIsLogedIn();
 	}
 
 	@Override

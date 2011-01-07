@@ -66,9 +66,11 @@ public class WithHeaderActivity extends BaseActivity implements Refreshable {
 	}
 	
 	protected void animRotate(View v) {
-		Animation anim = AnimationUtils.loadAnimation(v.getContext(),
-				R.anim.rotate360);
-		v.startAnimation(anim);
+		if (null != v) {
+			Animation anim = AnimationUtils.loadAnimation(v.getContext(),
+					R.anim.rotate360);
+			v.startAnimation(anim);
+		}
 	}
 	
 	protected void addSearchButton() {

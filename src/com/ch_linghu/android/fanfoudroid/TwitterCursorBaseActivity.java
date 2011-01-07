@@ -141,7 +141,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		checkIsLogedIn();
 
 		// Mark all as read.
 		// getDb().markAllMentionsRead();

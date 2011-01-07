@@ -23,9 +23,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -72,13 +74,22 @@ public class LoginActivity extends Activity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+	Log.i(TAG, "onCreate");
     super.onCreate(savedInstanceState);
+    
+    // No Titlebar
+	requestWindowFeature(Window.FEATURE_NO_TITLE);
+	requestWindowFeature(Window.FEATURE_PROGRESS);
 
     mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
     mApi = new TwitterApi();
 
     setContentView(R.layout.login);
+    
+    // TextView中嵌入HTML链接
+    TextView registerLink = (TextView) findViewById(R.id.register_link);
+    registerLink.setMovementMethod(LinkMovementMethod.getInstance());
 
     mUsernameEdit = (EditText) findViewById(R.id.username_edit);
     mPasswordEdit = (EditText) findViewById(R.id.password_edit);
@@ -108,6 +119,7 @@ public class LoginActivity extends Activity {
 
   @Override
   protected void onDestroy() {
+	Log.i(TAG, "onDestory");
     if (mLoginTask != null && mLoginTask.getStatus() == UserTask.Status.RUNNING) {
       mLoginTask.cancel(true);
     }
@@ -116,6 +128,13 @@ public class LoginActivity extends Activity {
   }
 
   @Override
+  protected void onStop() {
+	Log.i(TAG, "onStop");
+	// TODO Auto-generated method stub
+	super.onStop();
+  }
+
+@Override
   protected void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
 
@@ -201,10 +220,10 @@ public class LoginActivity extends Activity {
       String username = mUsernameEdit.getText().toString();
       String password = mPasswordEdit.getText().toString();
 
-      publishProgress("Logging in...");
+      publishProgress(getString(R.string.logging_in) + "...");
 
       if (!TwitterApi.isValidCredentials(username, password)) {
-        publishProgress("Invalid username or password");
+        publishProgress(getString(R.string.invalid_username_or_password));
         return false;
       }
 
@@ -212,14 +231,14 @@ public class LoginActivity extends Activity {
         mApi.login(username, password);
       } catch (IOException e) {
         Log.e(TAG, e.getMessage(), e);
-        publishProgress("Network or connection error");
+        publishProgress(getString(R.string.network_or_connection_error));
         return false;
       } catch (AuthException e) {
-        publishProgress("Invalid username or password");
+        publishProgress(getString(R.string.invalid_username_or_password));
         return false;
       } catch (ApiException e) {
         Log.e(TAG, e.getMessage(), e);
-        publishProgress("Network or connection error");
+        publishProgress(getString(R.string.network_or_connection_error));
         return false;
       }
 

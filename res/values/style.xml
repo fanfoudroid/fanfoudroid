@@ -25,6 +25,11 @@
     <style name="user_screen_name" parent="LinkText.Bold.Big">
     </style>
     
+	<style name="normalText" parent="@android:style/TextAppearance">
+        <item name="android:textColor">#444</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+    
     <!-- status bar -->
     <style name="statusbar">
         <item name="android:textSize">13sp</item>
@@ -50,6 +55,12 @@
         <item name="android:paddingBottom">5dip</item>
         <item name="android:paddingLeft">7dip</item>
         <item name="android:paddingRight">7dip</item>
+    </style>
+    
+    <style name="blue_button">
+        <item name="android:background">@drawable/blue_button_selector</item>
+        <item name="android:textColor">@color/simiple_button_color</item>
+        <item name="android:textStyle">bold</item>
     </style>
     
     <style name="follow_button" parent="simple_button">
