@@ -31,6 +31,14 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+          <activity android:name="StatusActivity"
+                  android:windowSoftInputMode="adjustResize|stateHidden"  
+                  android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="com.ch_linghu.android.fanfoudroid.SHOW" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity android:name="PictureActivity"
                   android:windowSoftInputMode="adjustResize|stateHidden"  
                   android:label="@string/app_name">

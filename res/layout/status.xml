@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:orientation="vertical"
+  android:background="@color/body_background"
+  >
+  
+   <!-- Header -->
+   <include android:id="@+id/header" layout="@layout/header" />
+   
+   
+   <ScrollView 
+   android:layout_width="fill_parent"
+   android:layout_height="fill_parent"
+   android:layout_weight="1">
+   <LinearLayout android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        >
+       <!-- 个人栏 -->
+        <RelativeLayout 
+            android:layout_width="fill_parent"
+            android:layout_height="68dp"
+            android:padding="10dp"
+            >
+            <ImageView android:id="@+id/profile_image"
+                android:src="@drawable/default_profile_normal"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignParentLeft="true"
+                android:layout_marginRight="10dp" />
+            <TextView android:id="@+id/tweet_user_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/profile_image"
+                style="@style/LinkText.Bold.Huge"
+                android:text="用户名"
+                 />
+            <ImageButton android:id="@+id/person_more"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="8dp"
+                android:src="@drawable/arrow_1" 
+                android:background="@null"/>
+        </RelativeLayout>
+        <!-- 分割线 -->
+        <LinearLayout
+           android:background="#CCC"
+           android:layout_width="fill_parent"
+           android:layout_height="1dp"
+           />
+        <!-- 消息主体 -->
+        <TextView android:id="@+id/status_content"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            style="@style/normalText.Big"
+            android:text="1949战死； 投胎至十岁，遇饥荒饿亡； 复投胎，家富，批斗而亡； 再投胎，读大学，流弹穿胸； 又投胎，饮三鹿，结石； 还投胎，幼儿园，遇弑； 再投胎，从产道出来，发现周围人说汉语，撞台身亡。医生抱尸痛哭：傻孩子，这里是纽约唐人街啊。——转的"
+            />
+        <!-- 消息图片 -->
+        <ImageView android:id="@+id/status_photo"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="center"
+            android:src="@drawable/twitter_follow_me"
+            />
+        <!-- 信息属性 -->
+        <RelativeLayout 
+            android:layout_width="fill_parent"
+            android:layout_height="35dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="10dp"
+            >
+            <TextView android:id="@+id/status_source"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                style="@style/normalText.span"
+                android:text="来自: 网页版"/>
+            <TextView android:id="@+id/status_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                style="@style/normalText.span"
+                android:text="10-10 10:10"/>
+         </RelativeLayout>
+         <!-- 回复原文 -->
+         <RelativeLayout 
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="20dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:background="@drawable/dialog_box"
+            android:layout_margin="10dp"
+            >
+            <TextView android:id="@+id/reply_status_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                style="@style/normalText"
+                android:text="某某某: 原文内容原文内容原文内容原文内容原文内容原文内容原文内容原文内容。"/>
+            <TextView android:id="@+id/status_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/reply_status_text"
+                android:layout_alignParentRight="true"
+                style="@style/normalText.span"
+                android:layout_marginTop="5dp"
+                android:text="10-10 10:10"/>
+         </RelativeLayout>
+            
+         
+     </LinearLayout>
+   </ScrollView>
+   
+   <!-- 底部栏 -->
+   <LinearLayout android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:padding="0px"
+        android:background="@drawable/twitter_bottom_bar_bg">
+        <ImageButton 
+         android:src="@drawable/search"
+         android:background="@null"
+         android:layout_width="fill_parent"
+         android:layout_height="fill_parent"
+         android:layout_weight="1"
+         android:scaleType="center"
+         />
+        <ImageButton 
+         android:src="@drawable/search"
+         android:background="@null"
+         android:layout_width="fill_parent"
+         android:layout_height="fill_parent"
+         android:layout_weight="1"
+         android:scaleType="center"
+         />
+        <ImageButton 
+         android:src="@drawable/search"
+         android:background="#2b000000"
+         android:layout_width="fill_parent"
+         android:layout_height="fill_parent"
+         android:layout_weight="1"
+         android:scaleType="center"
+         />
+        <ImageButton 
+         android:src="@drawable/search"
+         android:background="@null"
+         android:layout_width="fill_parent"
+         android:layout_height="fill_parent"
+         android:layout_weight="1"
+         android:scaleType="center"
+         />
+        <ImageButton 
+         android:src="@drawable/search"
+         android:background="@null"
+         android:layout_width="fill_parent"
+         android:layout_height="fill_parent"
+         android:layout_weight="1"
+         android:scaleType="center"
+         />
+   </LinearLayout>
+    
+</LinearLayout>

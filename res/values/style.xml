@@ -20,6 +20,10 @@
         <item name="android:textSize">14sp</item>
     </style>
     
+    <style name="LinkText.Bold.Huge">
+        <item name="android:textSize">18sp</item>
+    </style>
+    
     <style name="user_name" parent="LinkText.Bold.Big">
     </style>
     <style name="user_screen_name" parent="LinkText.Bold.Big">
@@ -29,6 +33,15 @@
         <item name="android:textColor">#444</item>
         <item name="android:textSize">14sp</item>
     </style>
+    
+    <style name="normalText.Big">
+        <item name="android:textSize">18sp</item>
+    </style>
+    
+    <style name="normalText.span">
+        <item name="android:textColor">#888</item>
+    </style>
+    
     
     <!-- status bar -->
     <style name="statusbar">
