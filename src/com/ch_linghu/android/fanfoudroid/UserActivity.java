@@ -105,7 +105,7 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
 
     // set UI
     setContentView(R.layout.user);
-    initHeader(HEADER_STYLE_HOME, this);
+    initHeader(HEADER_STYLE_HOME);
 
     // user name
     mMe = TwitterApplication.mApi.getUsername();

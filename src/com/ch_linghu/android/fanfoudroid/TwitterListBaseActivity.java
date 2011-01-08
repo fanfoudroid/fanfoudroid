@@ -37,8 +37,7 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public abstract class TwitterListBaseActivity extends WithHeaderActivity
-		implements Refreshable {
+public abstract class TwitterListBaseActivity extends WithHeaderActivity {
 	static final String TAG = "TwitterListBaseActivity";
 
 	protected TextView mProgressText;
@@ -74,7 +73,7 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.main);
-		initHeader(HEADER_STYLE_HOME, this);
+		initHeader(HEADER_STYLE_HOME);
 
 		mPreferences.getInt(Preferences.TWITTER_ACTIVITY_STATE_KEY, STATE_ALL);
 
@@ -177,7 +176,8 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case OPTIONS_MENU_ID_REFRESH:
-			doRetrieve();
+			//FIXME: 菜单中的刷新项是否可以删除了？
+//			doRetrieve();
 			return true;
 		case OPTIONS_MENU_ID_TWEETS:
 			launchActivity(TwitterActivity.createIntent(this));

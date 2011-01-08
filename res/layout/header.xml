@@ -5,7 +5,6 @@
   android:layout_width="fill_parent"
   android:layout_height="47dp">
   
-  
    <!-- 顶部条 -->
     <RelativeLayout android:id="@+id/LinearLayout01"
       android:layout_width="fill_parent"
@@ -24,7 +23,7 @@
           android:scaleType="center"
           android:layout_alignParentLeft="true"
           android:paddingLeft="5dip"
-          android:visibility="invisible"
+          android:visibility="gone"
           />
           
        <!-- BACK Button -->
@@ -34,7 +33,7 @@
           android:layout_alignParentLeft="true"
           style="@style/simple_button"
           android:text="@string/go_back"
-          android:visibility="invisible"
+          android:visibility="gone"
           />
            
         <!-- 搜索按钮 -->
@@ -46,7 +45,7 @@
            android:layout_alignParentRight="true"
            android:paddingRight="10dip"
            android:paddingLeft="10dip"
-           android:visibility="invisible"
+           android:visibility="gone"
            /> 
            
         <!-- HOME按钮 -->
@@ -58,7 +57,7 @@
            android:layout_toLeftOf="@id/search"
            android:paddingRight="10dip"
            android:paddingLeft="10dip"
-           android:visibility="invisible"
+           android:visibility="gone"
            />   
          
        
@@ -71,7 +70,7 @@
            android:layout_toLeftOf="@id/search"
            android:paddingRight="10dip"
            android:paddingLeft="10dip"
-           android:visibility="invisible"
+           android:visibility="gone"
            />
            
         <!-- 刷新按钮 -->
@@ -83,7 +82,7 @@
            android:layout_toLeftOf="@id/writeMessage"
            android:paddingRight="10dip"
            android:paddingLeft="10dip"
-           android:visibility="invisible"
+           android:visibility="gone"
            />
          
          

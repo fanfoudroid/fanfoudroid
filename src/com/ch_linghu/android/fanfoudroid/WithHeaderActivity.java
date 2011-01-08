@@ -1,15 +1,21 @@
 package com.ch_linghu.android.fanfoudroid;
 
+import tk.sandin.android.fanfoudoird.task.Retrievable;
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextPaint;
+import android.util.Log;
 import android.view.View;
+import android.view.WindowManager.LayoutParams;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-public class WithHeaderActivity extends BaseActivity implements Refreshable {
+public class WithHeaderActivity extends BaseActivity {
 	
 	private static final String TAG = "WithHeaderActivity";
 	
@@ -23,6 +29,7 @@ public class WithHeaderActivity extends BaseActivity implements Refreshable {
 	protected ImageButton logoButton;
 	protected Button backButton;
 	protected ImageButton homeButton;
+	protected MenuDialog dialog;
 	
 	protected void addLogoButton() {
 		
@@ -34,33 +41,41 @@ public class WithHeaderActivity extends BaseActivity implements Refreshable {
 		// LOGO按钮
 		logoButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				// 动画
-				Animation anim = AnimationUtils.loadAnimation(v.getContext(),
-						R.anim.scale_lite);
-				v.startAnimation(anim);
+				int top = logoButton.getTop();
+				int height = logoButton.getHeight();
+				int x = top + height;
 
-				// toggle float div
-				if (floatDiv.getVisibility() == View.VISIBLE) {
-					floatDiv.setVisibility(View.INVISIBLE);
+				if (null == dialog) {
+					dialog = new MenuDialog(WithHeaderActivity.this);
+					dialog.setPosition(-1, x);
+				}
+				
+				// toggle dialog
+				if (dialog.isShowing()) {
+					dialog.hide();
 				} else {
-					floatDiv.setVisibility(View.VISIBLE);
+					dialog.show();
 				}
 			}
 		});
 	}
 	
-	protected void addRefreshButton(final Refreshable activity) {
+	protected void addRefreshButton() {
+		final Activity that = this;
 		refreshButton = (ImageButton) findViewById(R.id.top_refresh);
 		refreshButton.setVisibility(View.VISIBLE);
 		
-		// 刷新
 		refreshButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				// 旋转动画
 				animRotate(v);
 				
 				// 刷新
-				activity.doRetrieve();
+				if (that instanceof Retrievable) {
+					((Retrievable) that).doRetrieve();
+				} else {
+					Log.e(TAG, "The current view " + that.getClass().getName() + " cann't be retrieved");
+				}
 			}
 		});
 	}
@@ -105,7 +120,6 @@ public class WithHeaderActivity extends BaseActivity implements Refreshable {
 				Intent intent = new Intent();
 				intent.setClass(v.getContext(), WriteActivity.class);
 				v.getContext().startActivity(intent);
-
 			}
 		});
 	}
@@ -148,36 +162,25 @@ public class WithHeaderActivity extends BaseActivity implements Refreshable {
 	}
 	
 	protected void initHeader(int Style) {
+//		Log.i("LDS", "initHeader call by " + this.getClass().getName());
 		switch (Style) {
 		case HEADER_STYLE_HOME:
 			addLogoButton();
 			addWriteButton();
 			addSearchButton();
+			addRefreshButton();
 			break;
 		case HEADER_STYLE_WRITE:
 			addBackButton();
 			addSearchButton();
 			addHomeButton();
-		}
-	}
-	
-	protected void initHeader(int Style, final Refreshable activity) {
-		switch (Style) {
-		case HEADER_STYLE_HOME:
-			addLogoButton();
-			addWriteButton();
-			addSearchButton();
-			addRefreshButton(activity);
 			break;
 		}
 	}
-
-
+	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 //		View header = (View) View.inflate(WithHeaderActivity.this, R.layout.header, null);
 
 	}
-	
-	public void doRetrieve() {}
 }
