@@ -19,6 +19,10 @@ package com.ch_linghu.android.fanfoudroid;
 import java.io.IOException;
 import java.util.ArrayList;
 import org.json.JSONArray;
+
+import tk.sandin.android.fanfoudoird.task.Followable;
+import tk.sandin.android.fanfoudoird.task.HasFavorite;
+import tk.sandin.android.fanfoudoird.task.Retrievable;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -27,7 +31,8 @@ import android.view.MenuItem;
 import com.ch_linghu.android.fanfoudroid.TwitterApi.ApiException;
 import com.ch_linghu.android.fanfoudroid.TwitterApi.AuthException;
 
-public class MentionActivity extends TwitterCursorBaseActivity {
+public class MentionActivity extends TwitterCursorBaseActivity 
+		implements Followable, Retrievable, HasFavorite {
 	private static final String TAG = "MentionActivity";
 
 	private static final String LAUNCH_ACTION = "com.ch_linghu.android.fanfoudroid.REPLIES";
@@ -68,42 +73,47 @@ public class MentionActivity extends TwitterCursorBaseActivity {
 
 		return super.onCreateOptionsMenu(menu);
 	}
-
-	@Override
-	protected String fetchMaxId() {
-		// TODO Auto-generated method stub
-		return getDb().fetchMaxMentionId();
-	}
-
+	
 	@Override
 	protected Cursor fetchMessages() {
 		// TODO Auto-generated method stub
 		return getDb().fetchMentions();
 	}
+	
+	@Override
+	protected void markAllRead() {
+		// TODO Auto-generated method stub
+		getDb().markAllMentionsRead();
+	}
+	
+	@Override
+	protected String getActivityTitle() {
+		// TODO Auto-generated method stub
+		return getResources().getString(R.string.show_at_replies);
+	}
+	
+	
+	// for Retrievable interface
 
 	@Override
-	protected JSONArray getMessageSinceId(String maxId) throws IOException,
+	public String fetchMaxId() {
+		// TODO Auto-generated method stub
+		return getDb().fetchMaxMentionId();
+	}
+
+	@Override
+	public JSONArray getMessageSinceId(String maxId) throws IOException,
 			AuthException, ApiException {
 		// TODO Auto-generated method stub
 		return getApi().getMentionSinceId(maxId);
 	}
 
 	@Override
-	protected void markAllRead() {
-		// TODO Auto-generated method stub
-		getDb().markAllMentionsRead();
-	}
-
-	@Override
-	protected void addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
+	public void addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
 		// TODO Auto-generated method stub
 		getDb().addMentions(tweets, isUnread);
 	}
 
-	@Override
-	protected String getActivityTitle() {
-		// TODO Auto-generated method stub
-		return getResources().getString(R.string.show_at_replies);
-	}
+
 
 }

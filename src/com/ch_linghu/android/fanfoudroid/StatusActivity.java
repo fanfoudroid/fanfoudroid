@@ -16,34 +16,9 @@
 
 package com.ch_linghu.android.fanfoudroid;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-
-import tk.sandin.android.fanfoudroid.http.HttpClient;
-import tk.sandin.android.fanfoudroid.weibo.Weibo;
-import tk.sandin.android.fanfoudroid.weibo.WeiboException;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.View;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
-import com.google.android.photostream.UserTask;
 
 public class StatusActivity extends WithHeaderActivity {
 

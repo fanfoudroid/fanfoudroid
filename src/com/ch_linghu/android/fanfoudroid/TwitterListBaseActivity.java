@@ -21,33 +21,21 @@
  */
 package com.ch_linghu.android.fanfoudroid;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import tk.sandin.android.fanfoudoird.task.TaskFactory;
+import tk.sandin.android.fanfoudoird.task.TaskResult;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
-import android.widget.ListAdapter;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-
-import com.ch_linghu.android.fanfoudroid.TwitterApi.ApiException;
-import com.ch_linghu.android.fanfoudroid.TwitterApi.AuthException;
-import com.google.android.photostream.UserTask;
 
 public abstract class TwitterListBaseActivity extends WithHeaderActivity
 		implements Refreshable {
@@ -58,7 +46,7 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 	protected static final int STATE_ALL = 0;
 
 	// Tasks.
-	protected UserTask<String, Void, SendResult> mFavTask;
+	protected AsyncTask<String, Void, TaskResult> mFavTask;
 
 	static final int DIALOG_WRITE_ID = 0;
 	
@@ -214,95 +202,31 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 	}
 
 	private void doFavorite(String action, String id) {
-		if (mFavTask != null && mFavTask.getStatus() == UserTask.Status.RUNNING) {
+		if (mFavTask != null && mFavTask.getStatus() == AsyncTask.Status.RUNNING) {
 			Log.w(TAG, "FavTask still running");
 		} else {
 			if (!Utils.isEmpty(id)) {
-				mFavTask = new FavTask().execute(action, id);
-			}
-		}
-	}
-
-	private enum SendResult {
-		OK, IO_ERROR, AUTH_ERROR, CANCELLED
-	}
-
-	private class FavTask extends UserTask<String, Void, SendResult> {
-		@Override
-		public void onPreExecute() {
-			// onSendBegin();
-		}
-
-		@Override
-		public SendResult doInBackground(String... params) {
-			try {
-				String action = params[0];
-				String id = params[1];
-				JSONObject jsonObject = null;
-				if (action.equals("add")) {
-					jsonObject = getApi().addFavorite(id);
-				} else {
-					jsonObject = getApi().delFavorite(id);
+//				mFavTask = new FavTask().execute(action, id);
+				AsyncTask<String,Void,TaskResult> task = TaskFactory.create(TaskFactory.FAVORITE_TASK_TYPE, this);
+				if (null != task) {
+					mFavTask = task.execute(action, id);
 				}
-
-				Tweet tweet = Tweet.create(jsonObject);
-
-				if (!Utils.isEmpty(tweet.profileImageUrl)) {
-					// Fetch image to cache.
-					try {
-						getImageManager().put(tweet.profileImageUrl);
-					} catch (IOException e) {
-						Log.e(TAG, e.getMessage(), e);
-					}
-				}
-
-				updateTweet(tweet);
-			} catch (IOException e) {
-				Log.e(TAG, e.getMessage(), e);
-				return SendResult.IO_ERROR;
-			} catch (AuthException e) {
-				Log.i(TAG, "Invalid authorization.");
-				return SendResult.AUTH_ERROR;
-			} catch (JSONException e) {
-				Log.w(TAG, "Could not parse JSON after sending update.");
-				return SendResult.IO_ERROR;
-			} catch (ApiException e) {
-				Log.e(TAG, e.getMessage(), e);
-				return SendResult.IO_ERROR;
 			}
-
-			return SendResult.OK;
-		}
-
-		@Override
-		public void onPostExecute(SendResult result) {
-			if (isCancelled()) {
-				// Canceled doesn't really mean "canceled" in this task.
-				// We want the request to complete, but don't want to update the
-				// activity (it's probably dead).
-				return;
-			}
-
-			if (result == SendResult.AUTH_ERROR) {
-				logout();
-			} else if (result == SendResult.OK) {
-				onSendSuccess();
-			} else if (result == SendResult.IO_ERROR) {
-				onSendFailure();
-			}
-		}
-
-		private void onSendSuccess() {
-			// updateProgress(getString(R.string.refreshing));
-			adapterRefresh();
-		}
-
-		private void onSendFailure() {
-			// updateProgress(getString(R.string.refreshing));
 		}
 	}
-
+	
 	protected void adapterRefresh(){
 		getTweetAdapter().refresh();
 	}
+	
+	// for HasFavorite interface
+	public void onFavSuccess() {
+		// updateProgress(getString(R.string.refreshing));
+		adapterRefresh();
+	}
+
+	public void onFavFailure() {
+		// updateProgress(getString(R.string.refreshing));
+	}
+	
 }

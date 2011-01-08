@@ -57,10 +57,6 @@ public class BaseActivity extends Activity {
     finish();
   }
 
-  protected ImageManager getImageManager() {
-    return TwitterApplication.mImageManager;
-  }
-
   protected TwitterDbAdapter getDb() {
     return TwitterApplication.mDb;
   }
@@ -80,7 +76,13 @@ public class BaseActivity extends Activity {
 
   private static final int RESULT_LOGOUT = RESULT_FIRST_USER + 1;
 
-  protected void logout() {
+  // Retrieve interface
+  
+  public ImageManager getImageManager() {
+    return TwitterApplication.mImageManager;
+  }
+  
+  public void logout() {
     TwitterService.unschedule(this);
 
     getDb().clearData();
@@ -96,6 +98,8 @@ public class BaseActivity extends Activity {
 
     handleLoggedOut();
   }
+  
+  
 
   protected void showLogin() {
     Intent intent = new Intent(this, LoginActivity.class);

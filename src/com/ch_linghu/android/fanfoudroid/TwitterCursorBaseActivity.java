@@ -17,35 +17,28 @@ package com.ch_linghu.android.fanfoudroid;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import android.content.Intent;
+import tk.sandin.android.fanfoudoird.task.TaskFactory;
+import tk.sandin.android.fanfoudoird.task.TaskResult;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.ch_linghu.android.fanfoudroid.TwitterApi.ApiException;
 import com.ch_linghu.android.fanfoudroid.TwitterApi.AuthException;
-import com.google.android.photostream.UserTask;
 
 /**
  * TwitterCursorBaseLine用于带有静态数据来源（对应数据库的，与twitter表同构的特定表）的展现
  */
-public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity {
+public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
+		{
 	static final String TAG = "TwitterListBaseActivity";
 
 	// Views.
@@ -53,8 +46,8 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 	protected TweetCursorAdapter mTweetAdapter;
 
 	// Tasks.
-	private UserTask<Void, Void, RetrieveResult> mRetrieveTask;
-	private UserTask<Void, Void, RetrieveResult> mFollowersRetrieveTask;
+	private AsyncTask<Void, Void, TaskResult> mRetrieveTask;
+	private AsyncTask<Void, Void, TaskResult> mFollowersRetrieveTask;
 
 	// Refresh data at startup if last refresh was this long ago or greater.
 	private static final long REFRESH_THRESHOLD = 5 * 60 * 1000;
@@ -198,12 +191,18 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 		Log.i(TAG, "Attempting followers retrieve.");
 
 		if (mFollowersRetrieveTask != null
-				&& mFollowersRetrieveTask.getStatus() == UserTask.Status.RUNNING) {
+				&& mFollowersRetrieveTask.getStatus() == AsyncTask.Status.RUNNING) {
 			Log.w(TAG, "Already retrieving.");
 		} else {
-			mFollowersRetrieveTask = new FollowersTask().execute();
+//			mFollowersRetrieveTask = new FollowersTask().execute();
+			AsyncTask<Void,Void,TaskResult> task = TaskFactory.create(TaskFactory.FOLLOWERS_TASK_TYPE, this);
+			if (null != task) {
+				mFollowersRetrieveTask = task.execute();
+			}
 		}
 	}
+	
+	
 
 	private static final String SIS_RUNNING_KEY = "running";
 
@@ -212,10 +211,10 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 		super.onSaveInstanceState(outState);
 
 		if (mRetrieveTask != null
-				&& mRetrieveTask.getStatus() == UserTask.Status.RUNNING) {
+				&& mRetrieveTask.getStatus() == AsyncTask.Status.RUNNING) {
 			outState.putBoolean(SIS_RUNNING_KEY, true);
 		} else if (mFavTask != null
-				&& mFavTask.getStatus() == UserTask.Status.RUNNING) {
+				&& mFavTask.getStatus() == AsyncTask.Status.RUNNING) {
 			outState.putBoolean(SIS_RUNNING_KEY, true);
 		}
 	}
@@ -232,11 +231,11 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 		Log.i(TAG, "onDestroy.");
 
 		if (mRetrieveTask != null
-				&& mRetrieveTask.getStatus() == UserTask.Status.RUNNING) {
+				&& mRetrieveTask.getStatus() == AsyncTask.Status.RUNNING) {
 			mRetrieveTask.cancel(true);
 		}
 
-		if (mFavTask != null && mFavTask.getStatus() == UserTask.Status.RUNNING) {
+		if (mFavTask != null && mFavTask.getStatus() == AsyncTask.Status.RUNNING) {
 			mFavTask.cancel(true);
 		}
 
@@ -246,22 +245,29 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 	}
 
 	// UI helpers.
-
-	private void updateProgress(String progress) {
-		mProgressText.setText(progress);
-	}
-
-	private void draw() {
-		mTweetAdapter.refresh();
-	}
-
-	private void goTop() {
-		mTweetList.setSelection(0);
-	}
-
+	
 	protected void adapterRefresh() {
 		mTweetAdapter.notifyDataSetChanged();
 		mTweetAdapter.refresh();
+	}
+
+	//  Retrieve interface
+	public void updateProgress(String progress) {
+		mProgressText.setText(progress);
+	}
+	public void draw() {
+		mTweetAdapter.refresh();
+	}
+	public void goTop() {
+		mTweetList.setSelection(0);
+	}
+	
+	public void onRetrieveBegin() {
+		updateProgress(getString(R.string.refreshing));
+	}
+	
+	public SharedPreferences getPreferences() {
+		  return mPreferences;
 	}
 
 	public void doRetrieve() {
@@ -271,153 +277,19 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 		animRotate(refreshButton);
 
 		if (mRetrieveTask != null
-				&& mRetrieveTask.getStatus() == UserTask.Status.RUNNING) {
+				&& mRetrieveTask.getStatus() == AsyncTask.Status.RUNNING) {
 			Log.w(TAG, "Already retrieving.");
 		} else {
-			mRetrieveTask = new RetrieveTask().execute();
-		}
-	}
-
-	private void onRetrieveBegin() {
-		updateProgress(getString(R.string.refreshing));
-	}
-
-	private enum RetrieveResult {
-		OK, IO_ERROR, AUTH_ERROR, CANCELLED
-	}
-
-	private class RetrieveTask extends UserTask<Void, Void, RetrieveResult> {
-		@Override
-		public void onPreExecute() {
-			onRetrieveBegin();
-		}
-
-		@Override
-		public void onProgressUpdate(Void... progress) {
-			draw();
-		}
-
-		@Override
-		public RetrieveResult doInBackground(Void... params) {
-			JSONArray jsonArray;
-
-			String maxId = fetchMaxId(); // getDb().fetchMaxMentionId();
-
-			try {
-				jsonArray = getMessageSinceId(maxId); // getApi().getMentionSinceId(maxId);
-			} catch (IOException e) {
-				Log.e(TAG, e.getMessage(), e);
-				return RetrieveResult.IO_ERROR;
-			} catch (AuthException e) {
-				Log.i(TAG, "Invalid authorization.");
-				return RetrieveResult.AUTH_ERROR;
-			} catch (ApiException e) {
-				Log.e(TAG, e.getMessage(), e);
-				return RetrieveResult.IO_ERROR;
-			}
-
-			ArrayList<Tweet> tweets = new ArrayList<Tweet>();
-			HashSet<String> imageUrls = new HashSet<String>();
-
-			for (int i = 0; i < jsonArray.length(); ++i) {
-				if (isCancelled()) {
-					return RetrieveResult.CANCELLED;
-				}
-
-				Tweet tweet;
-
-				try {
-					JSONObject jsonObject = jsonArray.getJSONObject(i);
-					tweet = Tweet.create(jsonObject);
-					tweets.add(tweet);
-				} catch (JSONException e) {
-					Log.e(TAG, e.getMessage(), e);
-					return RetrieveResult.IO_ERROR;
-				}
-
-				imageUrls.add(tweet.profileImageUrl);
-
-				if (isCancelled()) {
-					return RetrieveResult.CANCELLED;
-				}
-			}
-
-			addMessages(tweets, false); // getDb().addMentions(tweets, false);
-
-			if (isCancelled()) {
-				return RetrieveResult.CANCELLED;
-			}
-
-			publishProgress();
-
-			for (String imageUrl : imageUrls) {
-				if (!Utils.isEmpty(imageUrl)) {
-					// Fetch image to cache.
-					try {
-						getImageManager().put(imageUrl);
-					} catch (IOException e) {
-						Log.e(TAG, e.getMessage(), e);
-					}
-				}
-
-				if (isCancelled()) {
-					return RetrieveResult.CANCELLED;
-				}
-			}
-
-			return RetrieveResult.OK;
-		}
-
-		@Override
-		public void onPostExecute(RetrieveResult result) {
-			if (result == RetrieveResult.AUTH_ERROR) {
-				logout();
-			} else if (result == RetrieveResult.OK) {
-				SharedPreferences.Editor editor = mPreferences.edit();
-				editor.putLong(Preferences.LAST_TWEET_REFRESH_KEY, Utils
-						.getNowTime());
-				editor.commit();
-				draw();
-				goTop();
-			} else {
-				// Do nothing.
-			}
-
-			refreshButton.clearAnimation();
-			updateProgress("");
-		}
-	}
-
-	private class FollowersTask extends UserTask<Void, Void, RetrieveResult> {
-		@Override
-		public RetrieveResult doInBackground(Void... params) {
-			try {
-				ArrayList<String> followers = getApi().getFollowersIds();
-				getDb().syncFollowers(followers);
-			} catch (IOException e) {
-				Log.e(TAG, e.getMessage(), e);
-				return RetrieveResult.IO_ERROR;
-			} catch (AuthException e) {
-				Log.i(TAG, "Invalid authorization.");
-				return RetrieveResult.AUTH_ERROR;
-			} catch (ApiException e) {
-				Log.e(TAG, e.getMessage(), e);
-				return RetrieveResult.IO_ERROR;
-			}
-
-			return RetrieveResult.OK;
-		}
-
-		@Override
-		public void onPostExecute(RetrieveResult result) {
-			if (result == RetrieveResult.OK) {
-				SharedPreferences.Editor editor = mPreferences.edit();
-				editor.putLong(Preferences.LAST_FOLLOWERS_REFRESH_KEY, Utils
-						.getNowTime());
-				editor.commit();
-			} else {
-				// Do nothing.
+//			mRetrieveTask = new RetrieveTask().execute();
+			AsyncTask<Void,Void,TaskResult> task = TaskFactory.create(TaskFactory.RETRIEVE_LIST_TASK_TYPE, this);
+			if (null != task) {
+				mRetrieveTask = task.execute();
 			}
 		}
 	}
+	// for Retrievable interface
+	public ImageButton getRefreshButton() {
+		return refreshButton;
+	}
+	
 }

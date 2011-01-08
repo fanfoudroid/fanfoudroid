@@ -12,6 +12,7 @@ public class TwitterApplication extends Application {
   
   public static final String TAG = "TwitterApplication";
   
+  // public ?
   public static ImageManager mImageManager;
   public static TwitterDbAdapter mDb; 
   public static TwitterApi mApi;

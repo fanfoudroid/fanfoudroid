@@ -18,16 +18,25 @@ package com.ch_linghu.android.fanfoudroid;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
 import org.json.JSONArray;
+
+import tk.sandin.android.fanfoudoird.task.Followable;
+import tk.sandin.android.fanfoudoird.task.HasFavorite;
+import tk.sandin.android.fanfoudoird.task.Retrievable;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageButton;
+
 import com.ch_linghu.android.fanfoudroid.TwitterApi.ApiException;
 import com.ch_linghu.android.fanfoudroid.TwitterApi.AuthException;
 
-public class TwitterActivity extends TwitterCursorBaseActivity {
+//TODO: 暂无获取更旧的消息（例如NeedMore()），用户将无法查看更旧的FriendsTimeline内容。
+public class TwitterActivity extends TwitterCursorBaseActivity 
+		implements Followable, Retrievable, HasFavorite {
 	private static final String TAG = "TwitterActivity";
 
 	private static final String LAUNCH_ACTION = "com.ch_linghu.android.fanfoudroid.TWEETS";
@@ -66,18 +75,6 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 	}
 
 	@Override
-	protected void addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
-		// TODO Auto-generated method stub
-		getDb().addTweets(tweets, isUnread);
-	}
-
-	@Override
-	protected String fetchMaxId() {
-		// TODO Auto-generated method stub
-		return getDb().fetchMaxId();
-	}
-
-	@Override
 	protected Cursor fetchMessages() {
 		// TODO Auto-generated method stub
 		return getDb().fetchAllTweets();
@@ -89,17 +86,35 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 		return getResources().getString(R.string.tweets);
 	}
 
-	@Override
-	protected JSONArray getMessageSinceId(String maxId) throws IOException,
-			AuthException, ApiException {
-		// TODO Auto-generated method stub
-		return getApi().getTimelineSinceId(maxId);
-	}
-
+	
 	@Override
 	protected void markAllRead() {
 		// TODO Auto-generated method stub
 		getDb().markAllTweetsRead();
-
 	}
+	
+	
+	// hasRetrieveListTask interface
+	
+	@Override
+	public void addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
+		// TODO Auto-generated method stub
+		getDb().addTweets(tweets, isUnread);
+	}
+	
+	@Override
+	public String fetchMaxId() {
+		// TODO Auto-generated method stub
+		return getDb().fetchMaxId();
+	}
+	
+	@Override
+	public JSONArray getMessageSinceId(String maxId) throws IOException,
+			AuthException, ApiException {
+		// TODO Auto-generated method stub
+		return getApi().getTimelineSinceId(maxId);
+	}
+	
+	
+
 }
