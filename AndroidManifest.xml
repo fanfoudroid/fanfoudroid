@@ -12,13 +12,13 @@
         android:label="@string/app_name">
         
         <meta-data android:name="android.app.default_searchable"
-                   android:value=".SearchActivity" />
+                   android:value=".ui.SearchActivity" />
         
-        <activity android:name="LoginActivity"
+        <activity android:name=".ui.LoginActivity"
                   android:windowSoftInputMode="adjustResize|stateHidden"  
                   android:label="@string/app_name">
         </activity>
-         <activity android:name="WriteActivity"
+         <activity android:name=".ui.WriteActivity"
                   android:windowSoftInputMode="adjustResize|stateHidden"  
                   android:label="@string/app_name">
             <intent-filter>
@@ -31,7 +31,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-          <activity android:name="StatusActivity"
+          <activity android:name=".ui.StatusActivity"
                   android:windowSoftInputMode="adjustResize|stateHidden"  
                   android:label="@string/app_name">
             <intent-filter>
@@ -39,7 +39,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name="PictureActivity"
+        <activity android:name=".ui.PictureActivity"
                   android:windowSoftInputMode="adjustResize|stateHidden"  
                   android:label="@string/app_name">
             <intent-filter>
@@ -48,7 +48,7 @@
                 <data android:mimeType="image/*" />                
             </intent-filter>
         </activity>                              
-        <activity android:name="TwitterActivity"
+        <activity android:name=".ui.TwitterActivity"
                   android:windowSoftInputMode="adjustResize|stateHidden"  
                   android:label="@string/app_name"
                   >
@@ -62,7 +62,7 @@
             </intent-filter>                                                            
         </activity>
         <!--  TODO: why need stateHidden on the magic? -->
-        <activity android:name="MentionActivity"
+        <activity android:name=".ui.MentionActivity"
                   android:windowSoftInputMode="adjustResize|stateHidden"  
                   android:label="@string/mentions">
             <intent-filter>
@@ -71,7 +71,7 @@
             </intent-filter>
         </activity>
         <!--  TODO: why need stateHidden on the magic? -->
-        <activity android:name="DmActivity"
+        <activity android:name=".ui.DmActivity"
                   android:windowSoftInputMode="adjustResize|stateHidden"  
                   android:label="@string/direct_messages">
             <intent-filter>
@@ -79,7 +79,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>                              
         </activity>
-        <activity android:name="SearchActivity">
+        <activity android:name=".ui.SearchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -95,7 +95,7 @@
                       android:host="search" />                
             </intent-filter>                                                                                    
         </activity>                                                
-        <activity android:name="UserActivity">
+        <activity android:name=".ui.UserActivity">
             <intent-filter>
                 <action android:name="com.ch_linghu.android.fanfoudroid.USER" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -110,10 +110,10 @@
             </intent-filter>                                              
         </activity>                                        
         
-        <activity android:name="PreferencesActivity"  
+        <activity android:name=".ui.PreferencesActivity"  
                   android:label="@string/app_name" />
                                     
-        <service android:name="TwitterService" />
+        <service android:name=".service.TwitterService" />
 
         <receiver android:name="BootReceiver">
           <intent-filter>

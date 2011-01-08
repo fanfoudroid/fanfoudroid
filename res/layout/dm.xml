@@ -91,7 +91,7 @@
     </LinearLayout>
 
     <!-- Main content area. -->
-    <com.ch_linghu.android.fanfoudroid.MyListView
+    <com.ch_linghu.android.fanfoudroid.ui.widget.MyListView
     android:id="@+id/tweet_list"
     android:layout_width="fill_parent"
     android:layout_height="0px"

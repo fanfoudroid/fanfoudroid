@@ -8,13 +8,13 @@ import org.json.JSONArray;
 import android.content.SharedPreferences;
 import android.widget.ImageButton;
 
-import com.ch_linghu.android.fanfoudroid.ImageManager;
-import com.ch_linghu.android.fanfoudroid.Tweet;
 import com.ch_linghu.android.fanfoudroid.TwitterApi;
 import com.ch_linghu.android.fanfoudroid.TwitterApplication;
-import com.ch_linghu.android.fanfoudroid.TwitterDbAdapter;
 import com.ch_linghu.android.fanfoudroid.TwitterApi.ApiException;
 import com.ch_linghu.android.fanfoudroid.TwitterApi.AuthException;
+import com.ch_linghu.android.fanfoudroid.data.Tweet;
+import com.ch_linghu.android.fanfoudroid.data.db.TwitterDbAdapter;
+import com.ch_linghu.android.fanfoudroid.helper.ImageManager;
 
 public interface Retrievable {
 	// Global

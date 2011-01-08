@@ -7,10 +7,10 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.ch_linghu.android.fanfoudroid.Preferences;
 import com.ch_linghu.android.fanfoudroid.TwitterApi.ApiException;
 import com.ch_linghu.android.fanfoudroid.TwitterApi.AuthException;
-import com.ch_linghu.android.fanfoudroid.Utils;
+import com.ch_linghu.android.fanfoudroid.helper.Preferences;
+import com.ch_linghu.android.fanfoudroid.helper.Utils;
 
 public class FollowersTask extends AsyncTask<Void, Void, TaskResult> {
 	

@@ -8,10 +8,10 @@ import org.json.JSONObject;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.ch_linghu.android.fanfoudroid.Tweet;
 import com.ch_linghu.android.fanfoudroid.TwitterApi.ApiException;
 import com.ch_linghu.android.fanfoudroid.TwitterApi.AuthException;
-import com.ch_linghu.android.fanfoudroid.Utils;
+import com.ch_linghu.android.fanfoudroid.data.Tweet;
+import com.ch_linghu.android.fanfoudroid.helper.Utils;
 
 public class FavoriteTask extends AsyncTask<String, Void, TaskResult> {
 

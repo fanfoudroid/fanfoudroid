@@ -7,7 +7,7 @@
   android:padding="7dp"
 >
 
-<com.ch_linghu.android.fanfoudroid.MyTextView
+<com.ch_linghu.android.fanfoudroid.ui.widget.MyTextView
   android:id="@+id/tweet_text" 
   android:layout_width="fill_parent"
   android:layout_height="wrap_content"

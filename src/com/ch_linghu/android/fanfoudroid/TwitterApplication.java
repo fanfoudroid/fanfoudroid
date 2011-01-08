@@ -2,6 +2,10 @@ package com.ch_linghu.android.fanfoudroid;
 
 import java.util.HashSet;
 
+import com.ch_linghu.android.fanfoudroid.data.db.TwitterDbAdapter;
+import com.ch_linghu.android.fanfoudroid.helper.ImageManager;
+import com.ch_linghu.android.fanfoudroid.helper.Preferences;
+
 import tk.sandin.android.fanfoudroid.weibo.Weibo;
 import android.app.Application;
 import android.content.SharedPreferences;

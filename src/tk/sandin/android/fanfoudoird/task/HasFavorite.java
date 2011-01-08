@@ -2,11 +2,11 @@ package tk.sandin.android.fanfoudoird.task;
 
 import android.content.SharedPreferences;
 
-import com.ch_linghu.android.fanfoudroid.ImageManager;
-import com.ch_linghu.android.fanfoudroid.Tweet;
 import com.ch_linghu.android.fanfoudroid.TwitterApi;
 import com.ch_linghu.android.fanfoudroid.TwitterApplication;
-import com.ch_linghu.android.fanfoudroid.TwitterDbAdapter;
+import com.ch_linghu.android.fanfoudroid.data.Tweet;
+import com.ch_linghu.android.fanfoudroid.data.db.TwitterDbAdapter;
+import com.ch_linghu.android.fanfoudroid.helper.ImageManager;
 
 public interface HasFavorite {
 	// Global

@@ -46,7 +46,7 @@ import tk.sandin.android.fanfoudroid.weibo.Weibo;
 import tk.sandin.android.fanfoudroid.weibo.WeiboException;
 import android.util.Log;
 
-import com.ch_linghu.android.fanfoudroid.Utils;
+import com.ch_linghu.android.fanfoudroid.helper.Utils;
 
 public class HttpClient {
 	

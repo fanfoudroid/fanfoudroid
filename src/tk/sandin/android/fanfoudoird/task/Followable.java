@@ -4,7 +4,7 @@ import android.content.SharedPreferences;
 
 import com.ch_linghu.android.fanfoudroid.TwitterApi;
 import com.ch_linghu.android.fanfoudroid.TwitterApplication;
-import com.ch_linghu.android.fanfoudroid.TwitterDbAdapter;
+import com.ch_linghu.android.fanfoudroid.data.db.TwitterDbAdapter;
 
 public interface Followable {
 	// Global
