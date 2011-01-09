@@ -1,6 +1,5 @@
 package com.ch_linghu.android.fanfoudroid.ui.base;
 
-import tk.sandin.android.fanfoudoird.task.Retrievable;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
@@ -17,6 +16,7 @@ import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
 import com.ch_linghu.android.fanfoudroid.R;
+import com.ch_linghu.android.fanfoudroid.task.Retrievable;
 import com.ch_linghu.android.fanfoudroid.ui.TwitterActivity;
 import com.ch_linghu.android.fanfoudroid.ui.WriteActivity;
 import com.ch_linghu.android.fanfoudroid.ui.widget.MenuDialog;
@@ -95,6 +95,8 @@ public class WithHeaderActivity extends BaseActivity {
 				
 				if (that instanceof Retrievable) {
 					((Retrievable) that).doRetrieve();
+				} else if (that instanceof Refreshable) {
+					((Refreshable) that).doRetrieve();
 				} else {
 					Log.e(TAG, "The current view " + that.getClass().getName() + " cann't be retrieved");
 				}

@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  android:orientation="vertical"
+  android:orientation='vertical'
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
-  android:background="@drawable/dm_background"
+  android:background="@color/body_background"
   >
-    <!-- Input area. -->    
+  
+    <!-- Header -->
+
+    <!-- Main content area. -->
+    <com.ch_linghu.android.fanfoudroid.ui.widget.MyListView
+    android:id="@+id/tweet_list"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_weight="1"
+    android:cacheColorHint="#00000000"
+    android:fadeScrollbars="false"
+    android:divider="#FFCCCCCC"
+    android:dividerHeight="1dip"
+    android:fastScrollEnabled="false"
+    />      
+    
+     <!-- Input area.  --> 
     <LinearLayout
     android:orientation="vertical"
     android:layout_width="fill_parent"
@@ -13,108 +29,84 @@
     android:paddingTop="8px"              
     android:paddingBottom="7px"          
     android:paddingLeft="7px"
-    android:paddingRight="9px"        
+    android:paddingRight="9px"    
+    android:background="@drawable/send_message_block"
     >    
-    <LinearLayout
-    android:orientation="horizontal"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:paddingBottom="3px"              
-    >
-    <!--  TODO: extract string -->
-    <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Send"
-    android:textSize="13px"
-    android:singleLine="true"
-    android:textColor="#FF000000"    
-    android:layout_marginRight="5px"
-    />
-    <AutoCompleteTextView
-    android:id="@+id/to_edit"
-    android:background="@drawable/edittext_background"
-    android:layout_width="123px"
-    android:layout_height="wrap_content"
-    android:textSize="15px"
-    android:singleLine="true"
-    android:dropDownSelector="@drawable/list_selector"
-    android:inputType="text"        
-    />                             
-    <!--  TODO: extract string -->       
-    <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="a direct message"
-    android:textSize="13px"
-    android:singleLine="true"
-    android:textColor="#FF000000"    
-    android:layout_marginLeft="5px"
-    />
-    <TextView
-    android:id="@+id/chars_text"
-    android:layout_width="0px"
-    android:layout_weight="1"
-    android:layout_height="wrap_content"
-    android:gravity="right"    
-    android:textSize="13px"
-    android:singleLine="true"
-    android:textColor="#FF000000"
-    android:layout_marginRight="3px"
-    />                                                       
-    </LinearLayout>       
+        <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="3px"              
+        >
+            <!--  TODO: extract string -->
+            <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="收信人"
+            android:textSize="15px"
+            android:singleLine="true"
+            android:textColor="#FF000000"    
+            android:layout_marginRight="5px"
+            />
+            <AutoCompleteTextView
+            android:id="@+id/to_edit"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="15px"
+            android:singleLine="true"
+            android:dropDownSelector="@drawable/list_selector"
+            android:inputType="text"        
+            />  
+            <Button
+            android:id="@+id/send_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="3px"
+            android:text="撰写"
+            />        
+            <!-- 字数统计 -->                   
+            <TextView
+            android:id="@+id/chars_text"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:gravity="right"    
+            android:textSize="13px"
+            android:singleLine="true"
+            android:textColor="#FF000000"
+            android:layout_marginRight="3px"
+            />                                                       
+        </LinearLayout>       
     
-    <LinearLayout
-    android:orientation="horizontal"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    >
-    <EditText
-    android:id="@+id/tweet_edit"
-    android:background="@drawable/edittext_background"
-    android:layout_width="0px"
-    android:layout_height="wrap_content"
-    android:layout_weight="1"
-    android:textSize="15px"
-    android:singleLine="true"
-    android:inputType="textShortMessage"
-    android:imeOptions="actionSend|flagNoEnterAction"
-    />      
-    <ImageButton
-    android:id="@+id/send_button"
-    android:background="@drawable/heart_background_selector"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginLeft="3px"
-    />
-    </LinearLayout>
-    </LinearLayout>
+        <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        >
+            
+            <EditText
+            android:id="@+id/tweet_edit"
+            android:layout_width="0px"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="15px"
+            android:singleLine="true"
+            android:inputType="textShortMessage"
+            android:imeOptions="actionSend|flagNoEnterAction"
+            />      
+           
+        </LinearLayout>
+    </LinearLayout>    
 
-    <!-- Main content area. -->
-    <com.ch_linghu.android.fanfoudroid.ui.widget.MyListView
-    android:id="@+id/tweet_list"
-    android:layout_width="fill_parent"
-    android:layout_height="0px"
-    android:layout_weight="1"    
-    android:paddingLeft="9px"
-    android:paddingRight="12px"    
-    android:paddingBottom="3px"    
-    android:fadingEdge="none"
-    android:cacheColorHint="#00000000"
-    android:scrollbars="none"
-    android:listSelector="@drawable/list_selector"
-    />          
-
+    <!-- 提示栏 -->
     <TextView
     android:id="@+id/progress_text"
-    android:layout_width="fill_parent"
+    android:layout_width="wrap_content" 
     android:layout_height="wrap_content"
-    android:paddingLeft="7px"
-    android:paddingRight="9px"            
-    android:paddingBottom="7px"        
-    android:textSize="13px"
-    android:singleLine="true"
-    android:textColor="@drawable/status_color"
+    android:text="你哦锁定哈佛isdafnodisafh哦isdafn"
+    android:visibility="gone"
     />
+       
     
 </LinearLayout>

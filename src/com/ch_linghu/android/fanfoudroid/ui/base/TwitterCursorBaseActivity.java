@@ -20,8 +20,6 @@ import java.util.ArrayList;
 
 import org.json.JSONArray;
 
-import tk.sandin.android.fanfoudoird.task.TaskFactory;
-import tk.sandin.android.fanfoudoird.task.TaskResult;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -32,15 +30,14 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.ch_linghu.android.fanfoudroid.R;
-import com.ch_linghu.android.fanfoudroid.TwitterApi;
-import com.ch_linghu.android.fanfoudroid.R.id;
-import com.ch_linghu.android.fanfoudroid.R.string;
 import com.ch_linghu.android.fanfoudroid.TwitterApi.ApiException;
 import com.ch_linghu.android.fanfoudroid.TwitterApi.AuthException;
 import com.ch_linghu.android.fanfoudroid.data.Tweet;
 import com.ch_linghu.android.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.android.fanfoudroid.helper.Preferences;
 import com.ch_linghu.android.fanfoudroid.helper.Utils;
+import com.ch_linghu.android.fanfoudroid.task.TaskFactory;
+import com.ch_linghu.android.fanfoudroid.task.TaskResult;
 import com.ch_linghu.android.fanfoudroid.ui.widget.TweetAdapter;
 import com.ch_linghu.android.fanfoudroid.ui.widget.TweetCursorAdapter;
 
@@ -97,6 +94,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 		mTweetList = (ListView) findViewById(R.id.tweet_list);
 		mTweetAdapter = new TweetCursorAdapter(this, cursor);
 		mTweetList.setAdapter(mTweetAdapter);
+		registerOnClickListener(mTweetList);
 	}
 
 	@Override

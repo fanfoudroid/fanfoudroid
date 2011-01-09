@@ -89,7 +89,7 @@ public class Utils {
   }
 
   public static final DateFormat AGO_FULL_DATE_FORMATTER = new SimpleDateFormat(
-      "h:mm a MMM d");
+      "yyyy-MM-dd HH:mm");
 
   public static String getRelativeDate(Date date) {
     Date now = new Date();

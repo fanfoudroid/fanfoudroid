@@ -30,7 +30,17 @@ public class StatusActivity extends WithHeaderActivity {
 	private static final String SIS_RUNNING_KEY = "running";
 	private static final String PREFS_NAME = "com.ch_linghu.android.fanfoudroid";
 	
-	// View
+	private static final String EXTRA_USER = "user";
+	private static final String EXTRA_NAME_SCREEN = "name";
+	private static final String LAUNCH_ACTION = "com.ch_linghu.android.fanfoudroid.STATUS";
+	
+	public static Intent createIntent(String user, String name) {
+	    Intent intent = new Intent(LAUNCH_ACTION);
+	    intent.putExtra(EXTRA_USER, user);
+	    intent.putExtra(EXTRA_NAME_SCREEN, name);
+
+	    return intent;
+	}
 
 
 	protected void onCreate(Bundle savedInstanceState) {

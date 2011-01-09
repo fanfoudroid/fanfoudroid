@@ -35,7 +35,7 @@
                   android:windowSoftInputMode="adjustResize|stateHidden"  
                   android:label="@string/app_name">
             <intent-filter>
-                <action android:name="com.ch_linghu.android.fanfoudroid.SHOW" />
+                <action android:name="com.ch_linghu.android.fanfoudroid.STATUS" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>

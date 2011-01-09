@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+  android:layout_width="fill_parent"
+  android:layout_height="wrap_content"
+  android:paddingLeft="5dp"
+  android:paddingRight="6dp"
+  android:paddingBottom="8dp"
+  android:paddingTop="8dp"
+>
+    <!-- profile image -->
+	<ImageView
+	  android:id="@+id/profile_image"
+	  android:layout_marginTop="2dp"
+	  android:layout_marginLeft="2dp"
+	  android:layout_marginBottom="2dp"
+	  android:layout_marginRight="7dp"
+	  android:layout_alignParentLeft="true"
+	  android:layout_width="48dp"
+	  android:layout_height="48dp"
+	/>
+    <!-- user name -->
+	<TextView
+	  android:id="@+id/tweet_user_text" 
+	  android:layout_width="wrap_content"
+	  android:layout_height="wrap_content"
+	  android:layout_toRightOf="@id/profile_image"
+	  android:textColor="@color/link_color"
+	  android:shadowColor="#666"
+      android:shadowRadius="1"
+      android:shadowDx="0"
+      android:shadowDy="1"
+	/>
+	<!-- Tweet context -->
+    <com.ch_linghu.android.fanfoudroid.ui.widget.MyTextView
+      android:id="@+id/tweet_text" 
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_below="@id/tweet_user_text"
+      android:layout_alignLeft="@id/tweet_user_text"
+      android:textColor="@drawable/tweet_color"        
+    />
+	<!-- favorited icon -->
+    <ImageView
+      android:id="@+id/tweet_fav"
+      android:layout_gravity="right"
+      android:layout_width="16dp"
+      android:layout_height="16dp"
+      android:layout_alignParentRight="true"
+      android:visibility="invisible"
+      android:src="@android:drawable/star_off"
+    />
+	<!-- Tweet meta -->
+    <TextView
+      android:id="@+id/tweet_meta_text" 
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_toLeftOf="@id/tweet_fav"
+      android:textColor="#666"
+      android:textStyle="italic"
+      android:textSize="12sp"
+    />
+	
+</RelativeLayout>

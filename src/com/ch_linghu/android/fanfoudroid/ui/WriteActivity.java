@@ -20,9 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import tk.sandin.android.fanfoudroid.http.HttpClient;
-import tk.sandin.android.fanfoudroid.weibo.Weibo;
-import tk.sandin.android.fanfoudroid.weibo.WeiboException;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -49,8 +46,11 @@ import com.ch_linghu.android.fanfoudroid.R.id;
 import com.ch_linghu.android.fanfoudroid.R.layout;
 import com.ch_linghu.android.fanfoudroid.R.string;
 import com.ch_linghu.android.fanfoudroid.helper.Utils;
+import com.ch_linghu.android.fanfoudroid.http.HttpClient;
 import com.ch_linghu.android.fanfoudroid.ui.base.WithHeaderActivity;
 import com.ch_linghu.android.fanfoudroid.ui.widget.TweetEdit;
+import com.ch_linghu.android.fanfoudroid.weibo.Weibo;
+import com.ch_linghu.android.fanfoudroid.weibo.WeiboException;
 import com.google.android.photostream.UserTask;
 
 public class WriteActivity extends WithHeaderActivity {

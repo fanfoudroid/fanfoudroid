@@ -21,9 +21,6 @@ import java.util.ArrayList;
 
 import org.json.JSONArray;
 
-import tk.sandin.android.fanfoudoird.task.Followable;
-import tk.sandin.android.fanfoudoird.task.HasFavorite;
-import tk.sandin.android.fanfoudoird.task.Retrievable;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -35,6 +32,9 @@ import com.ch_linghu.android.fanfoudroid.R;
 import com.ch_linghu.android.fanfoudroid.TwitterApi.ApiException;
 import com.ch_linghu.android.fanfoudroid.TwitterApi.AuthException;
 import com.ch_linghu.android.fanfoudroid.data.Tweet;
+import com.ch_linghu.android.fanfoudroid.task.Followable;
+import com.ch_linghu.android.fanfoudroid.task.HasFavorite;
+import com.ch_linghu.android.fanfoudroid.task.Retrievable;
 import com.ch_linghu.android.fanfoudroid.ui.base.TwitterCursorBaseActivity;
 
 public class MentionActivity extends TwitterCursorBaseActivity 

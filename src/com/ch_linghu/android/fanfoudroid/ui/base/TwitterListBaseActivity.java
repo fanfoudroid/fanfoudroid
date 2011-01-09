@@ -21,8 +21,6 @@
  */
 package com.ch_linghu.android.fanfoudroid.ui.base;
 
-import tk.sandin.android.fanfoudoird.task.TaskFactory;
-import tk.sandin.android.fanfoudoird.task.TaskResult;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -34,15 +32,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ch_linghu.android.fanfoudroid.R;
 import com.ch_linghu.android.fanfoudroid.data.Tweet;
 import com.ch_linghu.android.fanfoudroid.helper.Preferences;
 import com.ch_linghu.android.fanfoudroid.helper.Utils;
+import com.ch_linghu.android.fanfoudroid.task.TaskFactory;
+import com.ch_linghu.android.fanfoudroid.task.TaskResult;
 import com.ch_linghu.android.fanfoudroid.ui.DmActivity;
 import com.ch_linghu.android.fanfoudroid.ui.MentionActivity;
+import com.ch_linghu.android.fanfoudroid.ui.StatusActivity;
 import com.ch_linghu.android.fanfoudroid.ui.TwitterActivity;
 import com.ch_linghu.android.fanfoudroid.ui.UserActivity;
 import com.ch_linghu.android.fanfoudroid.ui.WriteActivity;
@@ -94,6 +97,7 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity {
 		setupState();
 
 		registerForContextMenu(getTweetList());
+		
 	}
 
 	@Override
@@ -181,6 +185,25 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity {
 		default:
 			return super.onContextItemSelected(item);
 		}
+	}
+	
+	protected void registerOnClickListener(ListView listView) {
+
+		listView.setOnItemClickListener(new OnItemClickListener(){
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position,
+					long id) {
+				Tweet tweet = getContextItemTweet(position);
+		
+				if (tweet == null) {
+					Log.w(TAG, "Selected item not available.");
+				}
+				
+				// TODO: launch statusActivity with real data
+				launchActivity(StatusActivity.createIntent(tweet.userId, tweet.screenName));
+			}
+		});
+
 	}
 
 	@Override
