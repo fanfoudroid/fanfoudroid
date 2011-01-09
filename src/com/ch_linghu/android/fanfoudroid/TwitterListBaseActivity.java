@@ -127,7 +127,7 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity {
 
 		switch (item.getItemId()) {
 		case CONTEXT_MORE_ID:
-			launchActivity(UserActivity.createIntent(tweet.userId));
+			launchActivity(UserActivity.createIntent(tweet.userId, tweet.screenName));
 			return true;
 		case CONTEXT_REPLY_ID: {
 			// TODO: this isn't quite perfect. It leaves extra empty spaces if

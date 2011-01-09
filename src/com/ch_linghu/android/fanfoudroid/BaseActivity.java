@@ -48,12 +48,10 @@ public class BaseActivity extends Activity {
   protected void handleLoggedOut() {
     if (isTaskRoot()) {
       showLogin();
-      Log.i("LDS", "showLogin");
     } else {
       setResult(RESULT_LOGOUT);
-      Log.i("LDS", "setResult");
     }
-
+    
     finish();
   }
 

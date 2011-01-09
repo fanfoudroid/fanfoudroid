@@ -7,6 +7,7 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
 public class TwitterApplication extends Application {
   
@@ -45,6 +46,7 @@ public class TwitterApplication extends Application {
   public void onTerminate() {
     cleanupImages();
     mDb.close();
+//    Toast.makeText(this, "exit app", Toast.LENGTH_LONG);
     
     super.onTerminate();
   }

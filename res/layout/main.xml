@@ -6,7 +6,6 @@
   >
   
     <!-- Header -->
-    <include android:id="@+id/header" layout="@layout/header" />
     
     <!-- Main content area. -->
     <com.ch_linghu.android.fanfoudroid.MyListView
@@ -14,7 +13,6 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:layout_weight="1"
-    android:layout_below="@id/header"
     android:cacheColorHint="#00000000"
     android:fadeScrollbars="true"
     android:divider="#FFCCCCCC"
@@ -31,21 +29,4 @@
         />
        
        
-     <!-- 浮动层 --> 
-     <RelativeLayout
-        android:id="@+id/float_div"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/twitter_dialog"
-        android:layout_below="@id/header"
-        android:visibility="invisible"
-        >
-        <Button
-            android:text="flaot div"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-        />
-     </RelativeLayout>
-     
 </RelativeLayout>

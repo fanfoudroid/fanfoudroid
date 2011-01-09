@@ -80,4 +80,17 @@
         <item name="android:background">@drawable/simple_button_blue_selector</item>
     </style>
     
+    <style name="logo_button">
+         <item name="android:paddingLeft">5dip</item>
+          <item name="android:gravity">center_vertical</item>
+          <item name="android:clickable">true</item>
+          <item name="android:shadowColor">#666</item>
+          <item name="android:shadowRadius">1</item>
+          <item name="android:shadowDx">0</item>
+          <item name="android:shadowDy">-1</item>
+          <item name="android:drawableBottom">@drawable/tiny_square_selector</item>
+          <item name="android:textColor">#FFF</item>
+          <item name="android:textSize">15sp</item>
+    </style>
+    
 </resources>

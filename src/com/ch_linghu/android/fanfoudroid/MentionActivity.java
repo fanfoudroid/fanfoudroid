@@ -26,6 +26,7 @@ import tk.sandin.android.fanfoudoird.task.Retrievable;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.ch_linghu.android.fanfoudroid.TwitterApi.ApiException;
@@ -51,6 +52,13 @@ public class MentionActivity extends TwitterCursorBaseActivity
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
 		return intent;
+	}
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		setHeaderTitle("@提到我的");
 	}
 
 	@Override

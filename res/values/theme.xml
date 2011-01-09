@@ -4,12 +4,12 @@
     </style>
     <style name="Theme.MyDialog" parent="@android:style/Theme.Dialog">
 	    <item name="android:backgroundDimEnabled">false</item><!-- 去背景遮盖 -->
-	    <item name="android:windowBackground">@null</item>
+	    <item name="android:windowBackground">@drawable/dialog_box_2</item>
   </style>
   
   <style name="Theme.Transparent" parent="android:Theme">
-	    <item name="android:windowIsTranslucent">false</item>
 	    <item name="android:windowBackground">@drawable/dialog_box_2</item>
+	    <item name="android:windowIsTranslucent">false</item>
 	    <item name="android:windowContentOverlay">@null</item>
 	    <item name="android:windowNoTitle">true</item>
 	    <item name="android:windowIsFloating">true</item>
