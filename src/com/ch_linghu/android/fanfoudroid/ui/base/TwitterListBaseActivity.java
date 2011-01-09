@@ -21,20 +21,6 @@
  */
 package com.ch_linghu.android.fanfoudroid.ui.base;
 
-import com.ch_linghu.android.fanfoudroid.R;
-import com.ch_linghu.android.fanfoudroid.R.id;
-import com.ch_linghu.android.fanfoudroid.R.layout;
-import com.ch_linghu.android.fanfoudroid.R.string;
-import com.ch_linghu.android.fanfoudroid.data.Tweet;
-import com.ch_linghu.android.fanfoudroid.helper.Preferences;
-import com.ch_linghu.android.fanfoudroid.helper.Utils;
-import com.ch_linghu.android.fanfoudroid.ui.DmActivity;
-import com.ch_linghu.android.fanfoudroid.ui.MentionActivity;
-import com.ch_linghu.android.fanfoudroid.ui.TwitterActivity;
-import com.ch_linghu.android.fanfoudroid.ui.UserActivity;
-import com.ch_linghu.android.fanfoudroid.ui.WriteActivity;
-import com.ch_linghu.android.fanfoudroid.ui.widget.TweetAdapter;
-
 import tk.sandin.android.fanfoudoird.task.TaskFactory;
 import tk.sandin.android.fanfoudoird.task.TaskResult;
 import android.content.Intent;
@@ -51,8 +37,18 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public abstract class TwitterListBaseActivity extends WithHeaderActivity
-		implements Refreshable {
+import com.ch_linghu.android.fanfoudroid.R;
+import com.ch_linghu.android.fanfoudroid.data.Tweet;
+import com.ch_linghu.android.fanfoudroid.helper.Preferences;
+import com.ch_linghu.android.fanfoudroid.helper.Utils;
+import com.ch_linghu.android.fanfoudroid.ui.DmActivity;
+import com.ch_linghu.android.fanfoudroid.ui.MentionActivity;
+import com.ch_linghu.android.fanfoudroid.ui.TwitterActivity;
+import com.ch_linghu.android.fanfoudroid.ui.UserActivity;
+import com.ch_linghu.android.fanfoudroid.ui.WriteActivity;
+import com.ch_linghu.android.fanfoudroid.ui.widget.TweetAdapter;
+
+public abstract class TwitterListBaseActivity extends WithHeaderActivity {
 	static final String TAG = "TwitterListBaseActivity";
 
 	protected TextView mProgressText;
@@ -88,7 +84,7 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.main);
-		initHeader(HEADER_STYLE_HOME, this);
+		initHeader(HEADER_STYLE_HOME);
 
 		mPreferences.getInt(Preferences.TWITTER_ACTIVITY_STATE_KEY, STATE_ALL);
 
@@ -142,7 +138,7 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 
 		switch (item.getItemId()) {
 		case CONTEXT_MORE_ID:
-			launchActivity(UserActivity.createIntent(tweet.userId));
+			launchActivity(UserActivity.createIntent(tweet.userId, tweet.screenName));
 			return true;
 		case CONTEXT_REPLY_ID: {
 			// TODO: this isn't quite perfect. It leaves extra empty spaces if
@@ -191,7 +187,8 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case OPTIONS_MENU_ID_REFRESH:
-			doRetrieve();
+			//FIXME: 菜单中的刷新项是否可以删除了？
+//			doRetrieve();
 			return true;
 		case OPTIONS_MENU_ID_TWEETS:
 			launchActivity(TwitterActivity.createIntent(this));

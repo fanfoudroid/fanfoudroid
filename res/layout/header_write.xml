@@ -14,17 +14,26 @@
       android:layout_alignParentTop="true"
       >
       
-        <!-- title -->
-        <TextView android:id="@+id/title"
+        <!-- LOGO -->
+        <ImageButton android:id="@+id/logo"
+          android:src="@drawable/fanfou"
+          android:background="@null"
           android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
+          android:layout_height="fill_parent"
+          android:scaleType="center"
           android:layout_alignParentLeft="true"
-          android:layout_marginTop="12dp"
-          android:layout_marginLeft="8dp"
-          android:background="@drawable/fanfou"
-          style="@style/logo_button"
+          android:paddingLeft="5dip"
           />
-            
+          
+       <!-- BACK Button -->
+        <Button android:id="@+id/top_back"
+          android:layout_width="wrap_content"
+          android:layout_height="fill_parent"
+          android:layout_alignParentLeft="true"
+          style="@style/simple_button"
+          android:text="@string/go_back"
+          />
+           
         <!-- 搜索按钮 -->
         <ImageButton android:id="@+id/search"
            android:background="@null"
@@ -36,6 +45,18 @@
            android:paddingLeft="10dip"
            /> 
            
+        <!-- HOME按钮 -->
+        <ImageButton android:id="@+id/home"
+           android:background="@null"
+           android:src="@drawable/top_home"
+           android:layout_width="wrap_content"
+           android:layout_height="fill_parent"
+           android:layout_toLeftOf="@id/search"
+           android:paddingRight="10dip"
+           android:paddingLeft="10dip"
+           />   
+         
+       
         <!-- 发布消息按钮 -->
         <ImageButton android:id="@+id/writeMessage"
            android:background="@null"

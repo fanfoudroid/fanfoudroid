@@ -2,20 +2,6 @@ package com.ch_linghu.android.fanfoudroid.ui.base;
 
 import java.io.File;
 
-import com.ch_linghu.android.fanfoudroid.R;
-import com.ch_linghu.android.fanfoudroid.TwitterApi;
-import com.ch_linghu.android.fanfoudroid.TwitterApplication;
-import com.ch_linghu.android.fanfoudroid.R.string;
-import com.ch_linghu.android.fanfoudroid.R.xml;
-import com.ch_linghu.android.fanfoudroid.data.db.TwitterDbAdapter;
-import com.ch_linghu.android.fanfoudroid.helper.ImageManager;
-import com.ch_linghu.android.fanfoudroid.helper.Preferences;
-import com.ch_linghu.android.fanfoudroid.service.TwitterService;
-import com.ch_linghu.android.fanfoudroid.ui.AboutDialog;
-import com.ch_linghu.android.fanfoudroid.ui.LoginActivity;
-import com.ch_linghu.android.fanfoudroid.ui.PreferencesActivity;
-import com.ch_linghu.android.fanfoudroid.ui.WriteActivity;
-
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
@@ -31,6 +17,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.Window;
+
+import com.ch_linghu.android.fanfoudroid.R;
+import com.ch_linghu.android.fanfoudroid.TwitterApi;
+import com.ch_linghu.android.fanfoudroid.TwitterApplication;
+import com.ch_linghu.android.fanfoudroid.data.db.TwitterDbAdapter;
+import com.ch_linghu.android.fanfoudroid.helper.ImageManager;
+import com.ch_linghu.android.fanfoudroid.helper.Preferences;
+import com.ch_linghu.android.fanfoudroid.service.TwitterService;
+import com.ch_linghu.android.fanfoudroid.ui.AboutDialog;
+import com.ch_linghu.android.fanfoudroid.ui.LoginActivity;
+import com.ch_linghu.android.fanfoudroid.ui.PreferencesActivity;
+import com.ch_linghu.android.fanfoudroid.ui.WriteActivity;
 
 /**
  * A BaseActivity has common routines and variables for an Activity
@@ -62,12 +60,10 @@ public class BaseActivity extends Activity {
   protected void handleLoggedOut() {
     if (isTaskRoot()) {
       showLogin();
-      Log.i("LDS", "showLogin");
     } else {
       setResult(RESULT_LOGOUT);
-      Log.i("LDS", "setResult");
     }
-
+    
     finish();
   }
 

@@ -33,13 +33,9 @@ import android.widget.Toast;
 
 import com.ch_linghu.android.fanfoudroid.R;
 import com.ch_linghu.android.fanfoudroid.TwitterApi;
-import com.ch_linghu.android.fanfoudroid.TwitterApplication;
-import com.ch_linghu.android.fanfoudroid.R.drawable;
-import com.ch_linghu.android.fanfoudroid.R.id;
-import com.ch_linghu.android.fanfoudroid.R.layout;
-import com.ch_linghu.android.fanfoudroid.R.string;
 import com.ch_linghu.android.fanfoudroid.TwitterApi.ApiException;
 import com.ch_linghu.android.fanfoudroid.TwitterApi.AuthException;
+import com.ch_linghu.android.fanfoudroid.TwitterApplication;
 import com.ch_linghu.android.fanfoudroid.data.Tweet;
 import com.ch_linghu.android.fanfoudroid.data.User;
 import com.ch_linghu.android.fanfoudroid.helper.ImageManager;
@@ -55,6 +51,7 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
 
   // State.
   private String mUsername;
+  private String mScreenName;
   private String mMe;
   private ArrayList<Tweet> mTweets;
   private User mUser;
@@ -97,12 +94,14 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
   private UserTask<Void, Void, TaskResult> mLoadMoreTask;
 
   private static final String EXTRA_USER = "user";
+  private static final String EXTRA_NAME_SCREEN = "name";
 
   private static final String LAUNCH_ACTION = "com.ch_linghu.android.fanfoudroid.USER";
 
-  public static Intent createIntent(String user) {
+  public static Intent createIntent(String user, String name) {
     Intent intent = new Intent(LAUNCH_ACTION);
     intent.putExtra(EXTRA_USER, user);
+    intent.putExtra(EXTRA_NAME_SCREEN, name);
 
     return intent;
   }
@@ -119,8 +118,8 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
 
     // set UI
     setContentView(R.layout.user);
-    initHeader(HEADER_STYLE_HOME, this);
-
+    initHeader(HEADER_STYLE_HOME);
+   
     // user name
     mMe = TwitterApplication.mApi.getUsername();
     
@@ -148,7 +147,10 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
     Intent intent = getIntent();
     Uri data = intent.getData();
 
+    // Input username
     mUsername = intent.getStringExtra(EXTRA_USER);
+    mScreenName = intent.getStringExtra(EXTRA_NAME_SCREEN);
+    setHeaderTitle("@"+mScreenName); // set header title with current username
 
     if (TextUtils.isEmpty(mUsername)) {
       mUsername = data.getLastPathSegment();
@@ -164,7 +166,8 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
     mTweetList.setOnNeedMoreListener(this);
 
     State state = (State) getLastNonConfigurationInstance();
-
+    
+    
     boolean wasRunning = Utils.isTrue(savedInstanceState, SIS_RUNNING_KEY);
 
     if (state != null && !wasRunning) {

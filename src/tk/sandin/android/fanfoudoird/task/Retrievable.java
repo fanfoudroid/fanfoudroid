@@ -26,6 +26,8 @@ public interface Retrievable {
 	void goTop();
 	void logout();
 	
+	void doRetrieve();
+	
 	String fetchMaxId();
 	ImageManager getImageManager();
 	JSONArray getMessageSinceId(String maxId) throws IOException, AuthException, ApiException;;
