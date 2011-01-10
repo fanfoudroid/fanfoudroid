@@ -35,16 +35,16 @@
         android:layout_height="wrap_content"
         style="@style/user_screen_name"
       />                    
+      <!-- Follow Me -->
       <Button
         android:id="@+id/follow_button"
         android:layout_alignParentRight="true"        
-        android:background="@drawable/simple_button_blue_selector"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        android:paddingLeft="5px"
-        android:paddingRight="5px"                
+        android:paddingLeft="15px"
+        android:paddingRight="15px"                
         android:layout_marginRight="2px"
-        style="@style/follow_button"
+        style="@style/blue_button"
       />          
 </RelativeLayout>

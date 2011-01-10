@@ -150,11 +150,14 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
     // Input username
     mUsername = intent.getStringExtra(EXTRA_USER);
     mScreenName = intent.getStringExtra(EXTRA_NAME_SCREEN);
-    setHeaderTitle("@"+mScreenName); // set header title with current username
 
     if (TextUtils.isEmpty(mUsername)) {
       mUsername = data.getLastPathSegment();
     }
+    
+    // Set header title 
+    String header_title = (!TextUtils.isEmpty(mScreenName)) ? mScreenName : mUsername;
+    setHeaderTitle("@" + header_title);
 
     setTitle("@" + mUsername);
     mUserText.setText("@" + mUsername);

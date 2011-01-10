@@ -24,7 +24,7 @@
             android:padding="10dp"
             >
             <ImageView android:id="@+id/profile_image"
-                android:src="@drawable/default_profile_normal"
+                android:src="@drawable/user_default_photo"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_alignParentLeft="true"
@@ -35,6 +35,14 @@
                 android:layout_toRightOf="@id/profile_image"
                 style="@style/LinkText.Bold.Huge"
                 android:text="用户名"
+                 />
+            <TextView android:id="@+id/tweet_user_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tweet_user_text"
+                android:layout_alignLeft="@id/tweet_user_text"
+                style="@style/normalText.span"
+                android:text="用户单行简介..."
                  />
             <ImageButton android:id="@+id/person_more"
                 android:layout_width="wrap_content"
@@ -96,7 +104,7 @@
             android:paddingBottom="10dp"
             android:paddingLeft="15dp"
             android:paddingRight="15dp"
-            android:background="@drawable/dialog_box"
+            android:background="@drawable/dialog_box_2"
             android:layout_margin="10dp"
             >
             <TextView android:id="@+id/reply_status_text"

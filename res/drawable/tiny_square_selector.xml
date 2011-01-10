@@ -6,6 +6,6 @@
   <item android:state_focused="true" android:state_pressed="true" 
     android:drawable="@drawable/tiny_square_pressed" /> 
   <item android:state_focused="false" android:state_pressed="true" 
-    android:drawable="@drawable/button_background_pressed" /> 
+    android:drawable="@drawable/tiny_square_pressed" /> 
   <item android:drawable="@drawable/tiny_square" />   
 </selector> 

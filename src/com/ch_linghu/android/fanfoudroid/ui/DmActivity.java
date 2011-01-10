@@ -17,17 +17,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CursorAdapter;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -43,7 +40,6 @@ import com.ch_linghu.android.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.android.fanfoudroid.helper.Preferences;
 import com.ch_linghu.android.fanfoudroid.helper.Utils;
 import com.ch_linghu.android.fanfoudroid.ui.base.WithHeaderActivity;
-import com.ch_linghu.android.fanfoudroid.ui.widget.TweetEdit;
 import com.google.android.photostream.UserTask;
 
 public class DmActivity extends WithHeaderActivity {
@@ -53,19 +49,12 @@ public class DmActivity extends WithHeaderActivity {
   // Views.
   private ListView mTweetList;
   private Adapter mAdapter;
-  // Adapter for To: recipient autocomplete.
-  private FriendsAdapter mFriendsAdapter;
-
-  private AutoCompleteTextView mToEdit;
-  private TweetEdit mTweetEdit;
-  private Button mSendButton;
-
+  
   private TextView mProgressText;
 
   // Tasks.
   private UserTask<Void, Void, TaskResult> mRetrieveTask;
   private UserTask<String, Void, TaskResult> mDeleteTask;
-  private UserTask<Void, Void, TaskResult> mSendTask;
 
   // Refresh data at startup if last refresh was this long ago or greater.
   private static final long REFRESH_THRESHOLD = 5 * 60 * 1000;
@@ -102,31 +91,15 @@ public class DmActivity extends WithHeaderActivity {
     setContentView(R.layout.dm);
     initHeader(HEADER_STYLE_HOME);
     setHeaderTitle("我的私信");
+    
+    // 绑定底部栏按钮onClick监听器
+    bindFooterButtonEvent();
 
     mTweetList = (ListView) findViewById(R.id.tweet_list);
 
-    TwitterDbAdapter db = getDb();
-
-    mToEdit = (AutoCompleteTextView) findViewById(R.id.to_edit);
-    Cursor cursor = db.getFollowerUsernames("");
-    // startManagingCursor(cursor);
-    mFriendsAdapter = new FriendsAdapter(this, cursor);
-    mToEdit.setAdapter(mFriendsAdapter);
-
-    mTweetEdit = new TweetEdit((EditText) findViewById(R.id.tweet_edit),
-        (TextView) findViewById(R.id.chars_text));
-
-    mTweetEdit.setOnKeyListener(editEnterHandler);
-
     mProgressText = (TextView) findViewById(R.id.progress_text);
 
-    mSendButton = (Button) findViewById(R.id.send_button);
-    mSendButton.setOnClickListener(new View.OnClickListener() {
-      public void onClick(View v) {
-        doSend();
-      }
-    });
-
+    TwitterDbAdapter db = getDb();
     // Mark all as read.
     db.markAllDmsRead();
 
@@ -155,16 +128,6 @@ public class DmActivity extends WithHeaderActivity {
       doRetrieve();
     }
 
-    Bundle extras = getIntent().getExtras();
-
-    if (extras != null) {
-      String to = extras.getString(EXTRA_USER);
-      if (!Utils.isEmpty(to)) {
-        mToEdit.setText(to);
-        mTweetEdit.requestFocus();
-      }
-    }
-
     // Want to be able to focus on the items with the trackball.
     // That way, we can navigate up and down by changing item focus.
     mTweetList.setItemsCanFocus(true);
@@ -190,32 +153,13 @@ public class DmActivity extends WithHeaderActivity {
     if (mRetrieveTask != null
         && mRetrieveTask.getStatus() == UserTask.Status.RUNNING) {
       outState.putBoolean(SIS_RUNNING_KEY, true);
-    } else if (mSendTask != null
-        && mSendTask.getStatus() == UserTask.Status.RUNNING) {
-      outState.putBoolean(SIS_RUNNING_KEY, true);
-    }
-  }
-
-  @Override
-  protected void onRestoreInstanceState(Bundle bundle) {
-    super.onRestoreInstanceState(bundle);
-
-    mTweetEdit.updateCharsRemain();
+    } 
   }
 
   @Override
   protected void onDestroy() {
     Log.i(TAG, "onDestroy.");
-
-    if (mSendTask != null && mSendTask.getStatus() == UserTask.Status.RUNNING) {
-      // Doesn't really cancel execution (we let it continue running).
-      // See the SendTask code for more details.
-      mSendTask.cancel(true);
-    }
-    if (mRetrieveTask != null
-        && mRetrieveTask.getStatus() == UserTask.Status.RUNNING) {
-      mRetrieveTask.cancel(true);
-    }
+   
     if (mDeleteTask != null
         && mDeleteTask.getStatus() == UserTask.Status.RUNNING) {
       mDeleteTask.cancel(true);
@@ -225,6 +169,23 @@ public class DmActivity extends WithHeaderActivity {
   }
 
   // UI helpers.
+  
+  private void bindFooterButtonEvent() {
+	  // TODO: 绑定inbox, sendbox切换的监听器
+	  Button inbox   = (Button) findViewById(R.id.inbox);
+	  Button sendbox = (Button) findViewById(R.id.sendbox);
+	  Button newMsg  = (Button) findViewById(R.id.new_message);
+	  
+	  newMsg.setOnClickListener(new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			Intent intent = new Intent();
+			intent.setClass(DmActivity.this, WriteDmActivity.class);
+			intent.putExtra("reply_to_id", 0); //TODO: 传入实际的reply_to_id
+			startActivity(intent);
+		}
+	  });
+  }
 
   private void updateProgress(String progress) {
     mProgressText.setText(progress);
@@ -247,35 +208,6 @@ public class DmActivity extends WithHeaderActivity {
     mTweetList.setSelection(0);
   }
 
-  private void enableEntry() {
-    mToEdit.setEnabled(true);
-    mTweetEdit.setEnabled(true);
-    mSendButton.setEnabled(true);
-  }
-
-  private void disableEntry() {
-    mToEdit.setEnabled(false);
-    mTweetEdit.setEnabled(false);
-    mSendButton.setEnabled(false);
-  }
-
-  private enum TaskResult {
-    OK, IO_ERROR, AUTH_ERROR, CANCELLED, NOT_FOLLOWED_ERROR
-  }
-
-  private void doSend() {
-    if (mSendTask != null && mSendTask.getStatus() == UserTask.Status.RUNNING) {
-      Log.w(TAG, "Already sending.");
-    } else {
-      String to = mToEdit.getText().toString();
-      String status = mTweetEdit.getText().toString();
-
-      if (!Utils.isEmpty(status) && !Utils.isEmpty(to)) {
-        mSendTask = new SendTask().execute();
-      }
-    }
-  }
-
   private void doRetrieve() {
     Log.i(TAG, "Attempting retrieve.");
 
@@ -289,6 +221,10 @@ public class DmActivity extends WithHeaderActivity {
 
   private void onRetrieveBegin() {
     updateProgress("Refreshing...");
+  }
+  
+  private enum TaskResult {
+	    OK, IO_ERROR, AUTH_ERROR, CANCELLED, NOT_FOLLOWED_ERROR
   }
 
   private class RetrieveTask extends UserTask<Void, Void, TaskResult> {
@@ -516,132 +452,7 @@ public class DmActivity extends WithHeaderActivity {
 
   }
 
-  private class SendTask extends UserTask<Void, Void, TaskResult> {
-    @Override
-    public void onPreExecute() {
-      disableEntry();
-      updateProgress("Sending DM...");
-    }
-
-    @Override
-    public TaskResult doInBackground(Void... params) {
-      try {
-        String user = mToEdit.getText().toString();
-        String text = mTweetEdit.getText().toString();
-
-        JSONObject jsonObject = getApi().sendDirectMessage(user, text);
-        Dm dm = Dm.create(jsonObject, true);
-
-        if (!Utils.isEmpty(dm.profileImageUrl)) {
-          // Fetch image to cache.
-          try {
-            getImageManager().put(dm.profileImageUrl);
-          } catch (IOException e) {
-            Log.e(TAG, e.getMessage(), e);
-          }
-        }
-
-        getDb().createDm(dm, false);
-      } catch (IOException e) {
-        Log.e(TAG, e.getMessage(), e);
-        return TaskResult.IO_ERROR;
-      } catch (AuthException e) {
-        Log.i(TAG, "Invalid authorization.");
-        return TaskResult.AUTH_ERROR;
-      } catch (JSONException e) {
-        Log.w(TAG, "Could not parse JSON after sending update.");
-        return TaskResult.IO_ERROR;
-      } catch (ApiException e) {
-        Log.i(TAG, e.getMessage());
-        // TODO: check is this is actually the case.
-        return TaskResult.NOT_FOLLOWED_ERROR;
-      }
-
-      return TaskResult.OK;
-    }
-
-    @Override
-    public void onPostExecute(TaskResult result) {
-      if (isCancelled()) {
-        // Canceled doesn't really mean "canceled" in this task.
-        // We want the request to complete, but don't want to update the
-        // activity (it's probably dead).
-        return;
-      }
-
-      if (result == TaskResult.AUTH_ERROR) {
-        logout();
-      } else if (result == TaskResult.OK) {
-        mToEdit.setText("");
-        mTweetEdit.setText("");
-        updateProgress("");
-        enableEntry();
-        draw();
-        goTop();
-      } else if (result == TaskResult.NOT_FOLLOWED_ERROR) {
-        updateProgress("Unable to send. Is the person following you?");
-        enableEntry();
-      } else if (result == TaskResult.IO_ERROR) {
-        updateProgress("Unable to send");
-        enableEntry();
-      }
-    }
-  }
-
-  private static class FriendsAdapter extends CursorAdapter {
-
-    public FriendsAdapter(Context context, Cursor cursor) {
-      super(context, cursor);
-
-      mInflater = LayoutInflater.from(context);
-
-      mUserTextColumn = cursor.getColumnIndexOrThrow(TwitterDbAdapter.KEY_USER);
-    }
-
-    private LayoutInflater mInflater;
-
-    private int mUserTextColumn;
-
-    @Override
-    public View newView(Context context, Cursor cursor, ViewGroup parent) {
-      View view = mInflater.inflate(R.layout.dropdown_item, parent, false);
-
-      ViewHolder holder = new ViewHolder();
-      holder.userText = (TextView) view.findViewById(android.R.id.text1);
-      view.setTag(holder);
-
-      return view;
-    }
-
-    class ViewHolder {
-      public TextView userText;
-    }
-
-    @Override
-    public void bindView(View view, Context context, Cursor cursor) {
-      ViewHolder holder = (ViewHolder) view.getTag();
-
-      holder.userText.setText(cursor.getString(mUserTextColumn));
-    }
-
-    @Override
-    public Cursor runQueryOnBackgroundThread(CharSequence constraint) {
-      String filter = constraint == null ? "" : constraint.toString();
-
-      return TwitterApplication.mDb.getFollowerUsernames(filter);
-    }
-
-    @Override
-    public String convertToString(Cursor cursor) {
-      return cursor.getString(mUserTextColumn);
-    }
-
-    public void refresh() {
-      getCursor().requery();
-    }
-
-  }
-
+  
   // Menu.
 
   @Override
@@ -702,8 +513,9 @@ public class DmActivity extends WithHeaderActivity {
     case CONTEXT_REPLY_ID:
       String user_id = cursor.getString(cursor
           .getColumnIndexOrThrow(TwitterDbAdapter.KEY_USER_ID));
-      mToEdit.setText(user_id);
-      mTweetEdit.requestFocus();
+      //FIXME: launch new Activity
+//      mToEdit.setText(user_id);
+//      mTweetEdit.requestFocus();
 
       return true;
     case CONTEXT_DELETE_ID:
@@ -777,17 +589,6 @@ public class DmActivity extends WithHeaderActivity {
     }
   }
 
-  private View.OnKeyListener editEnterHandler = new View.OnKeyListener() {
-    public boolean onKey(View v, int keyCode, KeyEvent event) {
-      if (keyCode == KeyEvent.KEYCODE_ENTER
-          || keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
-        if (event.getAction() == KeyEvent.ACTION_UP) {
-          doSend();
-        }
-        return true;
-      }
-      return false;
-    }
-  };
+  
 
 }

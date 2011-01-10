@@ -14,17 +14,6 @@
       android:layout_alignParentTop="true"
       >
       
-        <!-- LOGO -->
-        <ImageButton android:id="@+id/logo"
-          android:src="@drawable/fanfou"
-          android:background="@null"
-          android:layout_width="wrap_content"
-          android:layout_height="fill_parent"
-          android:scaleType="center"
-          android:layout_alignParentLeft="true"
-          android:paddingLeft="5dip"
-          />
-          
        <!-- BACK Button -->
         <Button android:id="@+id/top_back"
           android:layout_width="wrap_content"
@@ -55,30 +44,6 @@
            android:paddingRight="10dip"
            android:paddingLeft="10dip"
            />   
-         
-       
-        <!-- 发布消息按钮 -->
-        <ImageButton android:id="@+id/writeMessage"
-           android:background="@null"
-           android:src="@drawable/messagebox"
-           android:layout_width="wrap_content"
-           android:layout_height="fill_parent"
-           android:layout_toLeftOf="@id/search"
-           android:paddingRight="10dip"
-           android:paddingLeft="10dip"
-           />
-           
-        <!-- 刷新按钮 -->
-        <ImageButton android:id="@+id/top_refresh"
-           android:background="@null"
-           android:src="@drawable/top_refresh"
-           android:layout_width="wrap_content"
-           android:layout_height="fill_parent"
-           android:layout_toLeftOf="@id/writeMessage"
-           android:paddingRight="10dip"
-           android:paddingLeft="10dip"
-           />
-         
          
         <!-- 分割线 -->
         <!--LinearLayout

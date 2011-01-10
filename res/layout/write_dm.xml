@@ -9,9 +9,12 @@
    
    <!-- Header -->
    
+   <!-- 状态栏 -->
    <RelativeLayout android:gravity="center_vertical"
         android:layout_width="fill_parent"
         android:layout_height="20dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
         >
         
         <!-- 提示框 -->
@@ -21,9 +24,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="2dp"
+            android:layout_marginLeft="5dp"
          />                   
-            
          <!-- 字数统计 -->
          <TextView
             android:id="@+id/chars_word"
@@ -33,6 +35,7 @@
             android:layout_alignParentRight="true"
             android:layout_marginRight="2dp"
             android:text="@string/words"
+            style="@style/normalText.span"
             /> 
         <TextView
             android:id="@+id/chars_text"
@@ -50,20 +53,11 @@
             android:layout_height="wrap_content"
             android:layout_toLeftOf="@id/chars_text"
             android:text="@string/you_can_type"
+            style="@style/normalText.span"
             /> 
         
     </RelativeLayout>
         
-    <!-- 图片预览 -->     
-    <ImageView
-            android:id="@+id/preview"
-            android:layout_width="fill_parent"
-            android:layout_height="0px"
-            android:layout_marginRight="10px"
-            android:gravity="center_vertical"
-            android:visibility="invisible"
-        />     
-
     <!-- main text input -->
     <EditText android:id="@+id/tweet_edit"
           android:layout_width="fill_parent"
@@ -74,42 +68,42 @@
           android:gravity="top"
           />   
            
-   <!-- 工具栏 -->
-   <RelativeLayout android:gravity="center_vertical"
+   <!-- 底部工具栏 -->
+   <LinearLayout android:orientation="horizontal" 
+         android:gravity="center_vertical"
          android:layout_width="fill_parent"
-         android:layout_height="50dp"
+         android:layout_height="wrap_content"
+         android:background="@drawable/send_message_block"
+         android:paddingRight="5dp"
+         android:paddingLeft="5dp"
           >
-                 
+        <TextView
+         android:id="@+id/char_you_can"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_toLeftOf="@id/chars_text"
+         android:text="收信人"
+         android:textColor="@color/status_text"
+         
+         /> 
+       <AutoCompleteTextView
+           android:id="@+id/to_edit"
+           android:layout_width="fill_parent"
+           android:layout_height="wrap_content"
+           android:layout_weight="1"
+           android:layout_marginRight="5dp"
+           android:layout_marginLeft="5dp"
+           android:layout_marginTop="1dp"
+           android:singleLine="true"
+           android:dropDownSelector="@drawable/list_selector"
+           android:inputType="text"        
+           />           
        <!-- 发送按钮 -->
 	   <Button android:id="@+id/send_button"
-	          android:layout_width="wrap_content"
-	          android:layout_height="wrap_content"
-	          android:layout_alignParentLeft="true"
-	          android:layout_marginLeft="3px"
-	          style="@style/blue_button"
-	          android:text="@string/send"
-	          />
-	   <!-- 选择图片 -->
-	   <Button android:id="@+id/choose_images_button"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_toRightOf="@id/send_button"
-              android:layout_marginLeft="3px"
-              style="@style/blue_button"
-              android:text="@string/choose_images"
-              />
-       <!-- 后台发送 -->
- 	   <Button android:id="@+id/send_in_backgroud_button"
-	          android:layout_width="wrap_content"
-	          android:layout_height="wrap_content"
-	          android:layout_alignParentRight="true"
-	          android:layout_marginRight="3px"
-	          android:text="@string/send_in_background"
-	          style="@style/blue_button"
-	          android:visibility="gone"
-	          />
-    </RelativeLayout>
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/send"
+	    />
+    </LinearLayout>
     
-    
-
 </LinearLayout>
