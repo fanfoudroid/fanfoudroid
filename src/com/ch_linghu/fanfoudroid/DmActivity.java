@@ -58,7 +58,7 @@ public class DmActivity extends WithHeaderActivity {
 
   private static final String EXTRA_USER = "user";
 
-  private static final String LAUNCH_ACTION = "com.ch_linghu.android.fanfoudroid.DMS";
+  private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.DMS";
 
   public static Intent createIntent() {
     return createIntent("");

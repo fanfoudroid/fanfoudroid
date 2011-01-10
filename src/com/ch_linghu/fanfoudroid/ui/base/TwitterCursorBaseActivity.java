@@ -142,7 +142,8 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		checkIsLogedIn();
+		if (!checkIsLogedIn())//FIXME: 在未登录的情况下，代码会继续继续！！
+			return;
 
 		// Mark all as read.
 		// getDb().markAllMentionsRead();

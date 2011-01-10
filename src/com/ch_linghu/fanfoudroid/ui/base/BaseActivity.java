@@ -287,12 +287,13 @@ public class BaseActivity extends Activity {
     }
   }
   
-  protected void checkIsLogedIn() {
+  protected boolean checkIsLogedIn() {
 	  if (!getApi().isLoggedIn()) {
 			Log.i(TAG, "Not logged in.");
 			handleLoggedOut();
-			return;
+			return false;
 		}
+	  return true;
   }
 
 }

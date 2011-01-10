@@ -93,7 +93,7 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
   private static final String EXTRA_USER = "user";
   private static final String EXTRA_NAME_SCREEN = "name";
 
-  private static final String LAUNCH_ACTION = "com.ch_linghu.android.fanfoudroid.USER";
+  private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.USER";
 
   public static Intent createIntent(String user, String name) {
     Intent intent = new Intent(LAUNCH_ACTION);

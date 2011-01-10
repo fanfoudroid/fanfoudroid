@@ -58,13 +58,13 @@ import com.google.android.photostream.UserTask;
  */
 public class WriteDmActivity extends WithHeaderActivity {
 
-	public static final String NEW_TWEET_ACTION = "com.ch_linghu.android.fanfoudroid.NEW";
+	public static final String NEW_TWEET_ACTION = "com.ch_linghu.fanfoudroid.NEW";
 	public static final String EXTRA_TEXT = "text";
 	public static final String REPLY_ID = "reply_id"; 
 
 	private static final String TAG = "WriteActivity";
 	private static final String SIS_RUNNING_KEY = "running";
-	private static final String PREFS_NAME = "com.ch_linghu.android.fanfoudroid";
+	private static final String PREFS_NAME = "com.ch_linghu.fanfoudroid";
 	
 	// View
 	private TweetEdit mTweetEdit;
@@ -82,7 +82,7 @@ public class WriteDmActivity extends WithHeaderActivity {
 	
 	private static final String EXTRA_USER = "user";
 
-	private static final String LAUNCH_ACTION = "com.ch_linghu.android.fanfoudroid.DMS";
+	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.DMS";
 	
 	public static Intent createIntent(String user) {
 	    Intent intent = new Intent(LAUNCH_ACTION);
