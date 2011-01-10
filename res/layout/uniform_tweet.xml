@@ -6,7 +6,7 @@
   android:layout_height="wrap_content"
 >
 
-<com.ch_linghu.android.fanfoudroid.ui.widget.MyTextView
+<com.ch_linghu.fanfoudroid.ui.module.MyTextView
   android:id="@+id/tweet_text" 
   android:layout_width="fill_parent"
   android:layout_height="wrap_content"
