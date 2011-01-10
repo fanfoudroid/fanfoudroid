@@ -31,7 +31,7 @@
       android:shadowDy="1"
 	/>
 	<!-- Tweet context -->
-    <com.ch_linghu.android.fanfoudroid.ui.widget.MyTextView
+    <com.ch_linghu.fanfoudroid.ui.module.MyTextView
       android:id="@+id/tweet_text" 
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
