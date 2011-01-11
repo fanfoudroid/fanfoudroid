@@ -504,8 +504,7 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
      */
     public Status updateStatus(String status) throws WeiboException{
     	return new Status(http.post(getBaseURL() + "statuses/update.json",
-    			createParams(new BasicNameValuePair("status", status), 
-    					new BasicNameValuePair("source", source))));
+    			createParams(new BasicNameValuePair("status", status))));
     }
     
     /**
@@ -524,7 +523,6 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
     public Status updateStatus(String status, double latitude, double longitude) throws WeiboException, JSONException {
         return new Status(http.post(getBaseURL() + "statuses/update.json",
         		createParams(new BasicNameValuePair("status", status),
-        					 new BasicNameValuePair("source", source),
         					 new BasicNameValuePair("location", latitude + "," + longitude))));
     }
 
@@ -559,7 +557,6 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
     public Status updateStatus(String status, String inReplyToStatusId) throws WeiboException {
          return new Status(http.post(getBaseURL() + "statuses/update.json",
         		 createParams(new BasicNameValuePair("status", status),
-        		    new BasicNameValuePair("source", source),
         			new BasicNameValuePair("in_reply_to_status_id", inReplyToStatusId))));
     }
 
@@ -580,7 +577,6 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
             , double latitude, double longitude) throws WeiboException {
         return new Status(http.post(getBaseURL() + "statuses/update.json",
         		createParams(new BasicNameValuePair("status", status),
-        		    new BasicNameValuePair("source", source),
    					new BasicNameValuePair("location", latitude + "," + longitude),
    					new BasicNameValuePair("in_reply_to_status_id", inReplyToStatusId))));
     }
@@ -598,9 +594,7 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
      */
     public Status uploadPhoto(String status, File file) throws WeiboException {
         return new Status(http.httpRequest(getBaseURL() + "photos/upload.json",
-        		createParams(new BasicNameValuePair("status", status),
-        					 new BasicNameValuePair("source", source)),
-        		file, true, http.METHOD_POST));
+        		createParams(new BasicNameValuePair("status", status)), file, true, http.METHOD_POST));
     }
 
     public Status updateStatus(String status, File file) throws WeiboException {

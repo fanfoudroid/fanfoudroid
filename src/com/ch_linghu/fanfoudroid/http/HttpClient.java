@@ -149,25 +149,28 @@ public class HttpClient {
 	
 	public Response post(String url, ArrayList<BasicNameValuePair> params) 
 			throws WeiboException {
-		return httpRequest(url, params, false, METHOD_POST);
+		return post(url, params, false);
 	}
 	
 	public Response post(String url, boolean authenticated) throws WeiboException {
-        return httpRequest(url, null, authenticated, METHOD_POST);
+        return post(url, (ArrayList<BasicNameValuePair>)null, authenticated);
     }
 
     public Response post(String url) throws WeiboException {
-        return httpRequest(url, null, false, METHOD_POST);
-    }
-    
-    public Response post(String url, File file) throws WeiboException {
-    	return httpRequest(url, null, file, false, METHOD_POST);
+        return post(url, (ArrayList<BasicNameValuePair>)null, false);
     }
     
     public Response post(String url, File file, boolean authenticate) throws WeiboException {
-    	return httpRequest(url, null, file, authenticate, METHOD_POST);
-}
+    	ArrayList<BasicNameValuePair> postParams = new ArrayList<BasicNameValuePair>();
+    	postParams.add(new BasicNameValuePair("source", Weibo.CONSUMER_KEY));
 
+    	return httpRequest(url, postParams, file, authenticate, METHOD_POST);
+    }
+
+    public Response post(String url, File file) throws WeiboException {
+    	return post(url, file, false);
+    }
+    
 	public Response get(String url, ArrayList<BasicNameValuePair> params, boolean authenticated) 
 			throws WeiboException {
 		return httpRequest(url, params, authenticated, METHOD_GET);
