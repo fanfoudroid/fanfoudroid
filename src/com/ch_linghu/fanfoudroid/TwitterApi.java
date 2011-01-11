@@ -240,6 +240,7 @@ public class TwitterApi {
 		HttpResponse response;
 
 		try {
+			//FIXME: 首次登录后自动刷新(getTimeline)时抛出IOException
 			response = mClient.execute(method);
 		} catch (ClientProtocolException e) {
 			Log.e(TAG, e.getMessage(), e);
