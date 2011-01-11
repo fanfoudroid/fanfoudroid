@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
 import android.widget.CursorAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -168,7 +169,7 @@ public class DmActivity extends WithHeaderActivity {
   // UI helpers.
   
   private void bindFooterButtonEvent() {
-	  // TODO: 绑定inbox, sendbox切换的监听器
+	  // TODO: 绑定私信收信箱/发信箱切换按钮的监听器
 	  Button inbox   = (Button) findViewById(R.id.inbox);
 	  Button sendbox = (Button) findViewById(R.id.sendbox);
 	  Button newMsg  = (Button) findViewById(R.id.new_message);
@@ -207,6 +208,9 @@ public class DmActivity extends WithHeaderActivity {
 
   private void doRetrieve() {
     Log.i(TAG, "Attempting retrieve.");
+    
+    // 旋转刷新按钮
+	animRotate(refreshButton);
 
     if (mRetrieveTask != null
         && mRetrieveTask.getStatus() == UserTask.Status.RUNNING) {
@@ -363,6 +367,8 @@ public class DmActivity extends WithHeaderActivity {
         // Do nothing.
       }
 
+      // 刷新按钮停止旋转
+	  getRefreshButton().clearAnimation();
       updateProgress("");
     }
   }
@@ -510,10 +516,9 @@ public class DmActivity extends WithHeaderActivity {
     case CONTEXT_REPLY_ID:
       String user_id = cursor.getString(cursor
           .getColumnIndexOrThrow(TwitterDbAdapter.KEY_USER_ID));
-      //FIXME: launch new Activity
-//      mToEdit.setText(user_id);
-//      mTweetEdit.requestFocus();
-
+      Intent intent = WriteDmActivity.createIntent(user_id);
+      startActivity(intent);
+      
       return true;
     case CONTEXT_DELETE_ID:
       int idIndex = cursor.getColumnIndexOrThrow(TwitterDbAdapter.KEY_ID);
@@ -586,6 +591,9 @@ public class DmActivity extends WithHeaderActivity {
     }
   }
 
-  
+   //for Retrievable interface
+   public ImageButton getRefreshButton() {
+		return refreshButton;
+   }
 
 }

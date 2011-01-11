@@ -34,9 +34,10 @@ import android.widget.GridView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
-import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.DmActivity;
+import com.ch_linghu.fanfoudroid.FavoritesActivity;
 import com.ch_linghu.fanfoudroid.MentionActivity;
+import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.TwitterActivity;
 
 /**
@@ -92,7 +93,7 @@ public class MenuDialog extends Dialog {
 			getContext().startActivity(intent);
 			dismiss();
 		} else {
-			String msg = "您正在此页.";
+			String msg = getContext().getString(R.string.some_page);
 			Toast.makeText(getContext(), msg,
 					Toast.LENGTH_SHORT).show();
 		}
@@ -142,7 +143,7 @@ public class MenuDialog extends Dialog {
 					goTo(DmActivity.class);
 					break;
 				case 3:
-					//TODO: goto(FavActivity.class);
+					goTo(FavoritesActivity.class);
 					break;
 				}
 			}

@@ -50,7 +50,7 @@ import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
 import com.ch_linghu.fanfoudroid.ui.module.TweetEdit;
 import com.google.android.photostream.UserTask;
 
-//FIXME: 1. 更换UI后，写私信功能失效，更换新API再测试。2. 和WriteActivity进行整合。
+//FIXME: 将WriteDmActivity和WriteActivity进行整合。
 /**
  * 撰写私信界面
  * @author lds
@@ -71,7 +71,6 @@ public class WriteDmActivity extends WithHeaderActivity {
 	private EditText mTweetEditText;
 	private TextView mProgressText;
 	private Button mSendButton;
-	private Button backgroundButton;
 	private AutoCompleteTextView mToEdit;
 
 	// Task
@@ -82,7 +81,7 @@ public class WriteDmActivity extends WithHeaderActivity {
 	
 	private static final String EXTRA_USER = "user";
 
-	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.DMS";
+	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.DMSW";
 	
 	public static Intent createIntent(String user) {
 	    Intent intent = new Intent(LAUNCH_ACTION);
@@ -152,7 +151,15 @@ public class WriteDmActivity extends WithHeaderActivity {
 	    // startManagingCursor(cursor);
 	    mFriendsAdapter = new FriendsAdapter(this, cursor);
 	    mToEdit.setAdapter(mFriendsAdapter);
+	    
+	    // Update status
+		mTweetEdit = new TweetEdit(mTweetEditText,
+				(TextView) findViewById(R.id.chars_text));
+		mTweetEdit.setOnKeyListener(editEnterHandler);
+		mTweetEdit
+				.addTextChangedListener(new MyTextWatcher(WriteDmActivity.this));
 
+		// With extras
 	    if (extras != null) {
 	      String to = extras.getString(EXTRA_USER);
 	      if (!Utils.isEmpty(to)) {
@@ -161,12 +168,7 @@ public class WriteDmActivity extends WithHeaderActivity {
 	      }
 	    }
 
-		// Update status
-		mTweetEdit = new TweetEdit(mTweetEditText,
-				(TextView) findViewById(R.id.chars_text));
-		mTweetEdit.setOnKeyListener(editEnterHandler);
-		mTweetEdit
-				.addTextChangedListener(new MyTextWatcher(WriteDmActivity.this));
+		
 
 		mSendButton = (Button) findViewById(R.id.send_button);
 		mSendButton.setOnClickListener(new View.OnClickListener() {
@@ -307,6 +309,10 @@ public class WriteDmActivity extends WithHeaderActivity {
 
 	      if (!Utils.isEmpty(status) && !Utils.isEmpty(to)) {
 	        mSendTask = new SendTask().execute();
+	      } else if (Utils.isEmpty(status)) {
+	    	  updateProgress("请输入私信内容.");
+	      } else if (Utils.isEmpty(to)) {
+	    	  updateProgress("请输入收信人.");
 	      }
 	    }
 	} 
@@ -375,6 +381,7 @@ public class WriteDmActivity extends WithHeaderActivity {
 	        updateProgress("Unable to send. Is the person following you?");
 	        enableEntry();
 	      } else if (result == TaskResult.IO_ERROR) {
+            //TODO: 什么情况下会抛出IO_ERROR？需要给用户更为具体的失败原因
 	        updateProgress("Unable to send");
 	        enableEntry();
 	      }
@@ -429,39 +436,9 @@ public class WriteDmActivity extends WithHeaderActivity {
 	      return cursor.getString(mUserTextColumn);
 	    }
 
-	    public void refresh() {
-	      getCursor().requery();
-	    }
-
 	  }
 	  
-	private void onSendBegin() {
-		disableEntry();
-		updateProgress(getString(R.string.updateing_status));
-		backgroundButton.setVisibility(View.VISIBLE);
-	}
-
-	private void onSendSuccess() {
-		mTweetEdit.setText("");
-		updateProgress(getString(R.string.update_status_success));
-		backgroundButton.setVisibility(View.INVISIBLE);
-		enableEntry();
-		// doRetrieve();
-		// draw();
-		// goTop();
-		try {
-			Thread.currentThread().sleep(500);
-			updateProgress("");
-		} catch (InterruptedException e) {
-			Log.i(TAG, e.getMessage());
-		}
-	}
-
-	private void onSendFailure() {
-		updateProgress(getString(R.string.unable_to_update_status));
-		enableEntry();
-	}
-
+	
 	private void enableEntry() {
 		mTweetEdit.setEnabled(true);
 		mSendButton.setEnabled(true);

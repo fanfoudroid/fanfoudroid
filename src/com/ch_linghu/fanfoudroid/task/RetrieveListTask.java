@@ -124,6 +124,7 @@ public class RetrieveListTask extends AsyncTask<Void, Integer, TaskResult> {
 			// Do nothing.
 		}
 
+		// 刷新按钮停止旋转
 		activity.getRefreshButton().clearAnimation();
 		activity.updateProgress("");
 	}

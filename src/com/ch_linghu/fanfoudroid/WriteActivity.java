@@ -414,6 +414,7 @@ public class WriteActivity extends WithHeaderActivity {
 				
 				Weibo api = TwitterApplication.nApi;
 				
+				// Update Status
 				if (withPic) {
 					api.updateStatus(status, mFile);
 				} else {
