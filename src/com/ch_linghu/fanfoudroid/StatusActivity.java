@@ -57,6 +57,8 @@ public class StatusActivity extends WithHeaderActivity {
 		Bundle extras = intent.getExtras();
 
 		// View
+		
+		//TODO: 为单推界面绑定顶部按钮监听器
 	}
 
 	@Override

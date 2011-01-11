@@ -34,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@id/profile_image"
                 style="@style/LinkText.Bold.Huge"
-                android:text="用户名"
+                android:text="饭友经典语录"
                  />
             <TextView android:id="@+id/tweet_user_info"
                 android:layout_width="wrap_content"
@@ -42,7 +42,7 @@
                 android:layout_below="@id/tweet_user_text"
                 android:layout_alignLeft="@id/tweet_user_text"
                 style="@style/normalText.span"
-                android:text="用户单行简介..."
+                android:text="所在地：北京"
                  />
             <ImageButton android:id="@+id/person_more"
                 android:layout_width="wrap_content"
@@ -112,7 +112,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 style="@style/normalText"
-                android:text="某某某: 原文内容原文内容原文内容原文内容原文内容原文内容原文内容原文内容。"/>
+                android:text="饭友经典语录: 追求艺术品有无数的动机。但是，“炫耀”却是最最重要并且最最不能缺少的动机之一。——@羊小倭"/>
             <TextView android:id="@+id/status_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

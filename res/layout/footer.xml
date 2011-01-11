@@ -9,44 +9,46 @@
        <!-- 
         android:background="@drawable/twitter_bottom_bar_bg">
         --> 
-        <ImageButton 
-         android:src="@drawable/search"
-         android:background="@null"
+        <TextView 
          android:layout_width="fill_parent"
          android:layout_height="fill_parent"
          android:layout_weight="1"
-         android:scaleType="center"
+         style="@style/footer_button"
+         android:drawableTop="@drawable/detail_refresh_selected"
+         android:text="刷新"
          />
-        <ImageButton 
-         android:src="@drawable/search"
-         android:background="@null"
+         <TextView 
          android:layout_width="fill_parent"
          android:layout_height="fill_parent"
          android:layout_weight="1"
-         android:scaleType="center"
+         style="@style/footer_button"
+         android:drawableTop="@drawable/detail_comment_selected"
+         android:text="评论"
          />
-        <ImageButton 
-         android:src="@drawable/search"
-         android:background="#2b000000"
+         <TextView 
          android:layout_width="fill_parent"
          android:layout_height="fill_parent"
          android:layout_weight="1"
-         android:scaleType="center"
+         style="@style/footer_button"
+         android:drawableTop="@drawable/detail_forward_selected"
+         android:text="转发"
          />
-        <ImageButton 
-         android:src="@drawable/search"
-         android:background="@null"
+         <TextView 
          android:layout_width="fill_parent"
          android:layout_height="fill_parent"
          android:layout_weight="1"
-         android:scaleType="center"
+         style="@style/footer_button"
+         android:drawableTop="@drawable/detail_fav_highlight_selected"
+         android:text="收藏"
          />
-        <ImageButton 
-         android:src="@drawable/search"
-         android:background="@null"
+         <TextView 
          android:layout_width="fill_parent"
          android:layout_height="fill_parent"
          android:layout_weight="1"
-         android:scaleType="center"
+         style="@style/footer_button"
+         android:drawableTop="@drawable/detail_more_selected"
+         android:text="更多"
          />
+        
+        
    </LinearLayout>
