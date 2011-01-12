@@ -27,6 +27,7 @@ public class WithHeaderActivity extends BaseActivity {
 	
 	public static final int HEADER_STYLE_HOME  = 1;
 	public static final int HEADER_STYLE_WRITE = 2;
+	public static final int HEADER_STYLE_BACK  = 3;
 
 	protected ImageButton refreshButton;
 	protected ImageButton searchButton;
@@ -189,6 +190,13 @@ public class WithHeaderActivity extends BaseActivity {
 		case HEADER_STYLE_HOME:
 			addHeaderView(R.layout.header);
 			addTitleButton();
+			addWriteButton();
+			addSearchButton();
+			addRefreshButton();
+			break;
+		case HEADER_STYLE_BACK:
+			addHeaderView(R.layout.header_back);
+			addBackButton();
 			addWriteButton();
 			addSearchButton();
 			addRefreshButton();

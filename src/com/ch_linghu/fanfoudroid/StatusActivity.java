@@ -16,13 +16,15 @@
 
 package com.ch_linghu.fanfoudroid;
 
-import com.ch_linghu.fanfoudroid.R;
-import com.ch_linghu.fanfoudroid.R.layout;
-import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.ch_linghu.fanfoudroid.data.Tweet;
+import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
 
 public class StatusActivity extends WithHeaderActivity {
 
@@ -30,15 +32,24 @@ public class StatusActivity extends WithHeaderActivity {
 	private static final String SIS_RUNNING_KEY = "running";
 	private static final String PREFS_NAME = "com.ch_linghu.fanfoudroid";
 	
-	private static final String EXTRA_USER = "user";
-	private static final String EXTRA_NAME_SCREEN = "name";
+	private static final String EXTRA_TWEET = "tweet";
 	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.STATUS";
 	
-	public static Intent createIntent(String user, String name) {
+	// View
+	private TextView tweet_user_name; 
+	private TextView status_content; 
+	private TextView tweet_user_info;
+	private ImageView profile_image;
+	private TextView status_source;
+	private TextView status_date;
+	private ImageButton person_more;
+	private ImageView status_photo = null; //if exists
+	private TextView reply_status_text = null; //if exists
+	private TextView reply_status_date = null; //if exists
+	
+	public static Intent createIntent(Tweet tweet) {
 	    Intent intent = new Intent(LAUNCH_ACTION);
-	    intent.putExtra(EXTRA_USER, user);
-	    intent.putExtra(EXTRA_NAME_SCREEN, name);
-
+	    intent.putExtra(EXTRA_TWEET, tweet);
 	    return intent;
 	}
 
@@ -49,7 +60,7 @@ public class StatusActivity extends WithHeaderActivity {
 
 		// init View
 		setContentView(R.layout.status);
-		initHeader(HEADER_STYLE_HOME);
+		initHeader(HEADER_STYLE_BACK);
 		
 		// Intent & Action & Extras
 		Intent intent = getIntent();
@@ -57,6 +68,19 @@ public class StatusActivity extends WithHeaderActivity {
 		Bundle extras = intent.getExtras();
 
 		// View
+		tweet_user_name = (TextView)	findViewById(R.id.tweet_user_name);
+		tweet_user_info = (TextView)	findViewById(R.id.tweet_user_info);
+		status_content  = (TextView)	findViewById(R.id.status_content);
+		status_source   = (TextView)	findViewById(R.id.status_source);
+		profile_image   = (ImageView)	findViewById(R.id.profile_image);
+		status_date 	= (TextView)	findViewById(R.id.status_date);
+		person_more 	= (ImageButton)	findViewById(R.id.person_more);
+		
+		// Set view with intent data
+		Tweet tweet = extras.getParcelable(EXTRA_TWEET);
+		tweet_user_name.setText(tweet.screenName);
+		status_content.setText(tweet.text);
+		
 		
 		//TODO: 为单推界面绑定顶部按钮监听器
 	}

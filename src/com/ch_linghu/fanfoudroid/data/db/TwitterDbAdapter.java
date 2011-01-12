@@ -222,6 +222,11 @@ public class TwitterDbAdapter {
 	  
 	  return result1 > result2 ? result1 : result2;
   }
+  
+  public boolean destoryStatus(String status_id) {		
+	  String where = KEY_ID + "='" + status_id + "'";		
+	  return mDb.delete(TWEET_TABLE, where , null) > 0;		
+  }
 
   
   public long createDm(Dm dm, boolean isUnread) {

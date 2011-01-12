@@ -17,20 +17,27 @@
 package com.ch_linghu.fanfoudroid.data;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.Log;
+
 import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.weibo.Status;
 
-public class Tweet extends Message {
+public class Tweet extends Message implements Parcelable {
   private static final String TAG = "Tweet";
 
   public String source;
+  
+  public Tweet(){}
 
   public boolean isReply() {
     // TODO: this is so wrong.
@@ -40,7 +47,7 @@ public class Tweet extends Message {
 
     return matcher.find();
   }
-
+  
   public static Tweet create(Status status){
     Tweet tweet = new Tweet();
 
@@ -98,6 +105,47 @@ public class Tweet extends Message {
 	}
 
     return builder.toString();
+  }
+  
+  
+  // For interface Parcelable
+  
+  public int describeContents() {
+      return 0;
+  }
+
+  public void writeToParcel(Parcel out, int flags) {
+	  out.writeString(id);
+	  out.writeString(text);
+	  out.writeString(screenName);
+  }
+
+  public static final Parcelable.Creator<Tweet> CREATOR
+          = new Parcelable.Creator<Tweet>() {
+      public Tweet createFromParcel(Parcel in) {
+    	  return new Tweet(in);
+      }
+
+      public Tweet[] newArray(int size) {
+//          return new Tweet[size];
+          throw new UnsupportedOperationException();   
+      }
+  };
+  
+  public Tweet(Parcel in) {
+	  this.id = in.readString();
+	  this.text = in.readString();
+	  this.screenName = in.readString();
+  }
+
+  @Override
+  public String toString() {
+		return "Tweet [source=" + source + ", id=" + id + ", screenName="
+				+ screenName + ", text=" + text + ", profileImageUrl="
+				+ profileImageUrl + ", createdAt=" + createdAt + ", userId="
+				+ userId + ", favorited=" + favorited + ", inReplyToStatusId="
+				+ inReplyToStatusId + ", inReplyToUserId=" + inReplyToUserId
+				+ ", inReplyToScreenName=" + inReplyToScreenName + "]";
   }
 
 }

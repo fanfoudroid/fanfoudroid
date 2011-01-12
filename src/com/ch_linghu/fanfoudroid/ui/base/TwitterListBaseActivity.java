@@ -200,7 +200,7 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity {
 				}
 				
 				// TODO: launch statusActivity with real data
-				launchActivity(StatusActivity.createIntent(tweet.userId, tweet.screenName));
+				launchActivity(StatusActivity.createIntent(tweet));
 			}
 		});
 
