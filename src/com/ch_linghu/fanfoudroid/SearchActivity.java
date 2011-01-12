@@ -39,6 +39,9 @@ import com.ch_linghu.fanfoudroid.ui.base.TwitterListBaseActivity;
 import com.ch_linghu.fanfoudroid.ui.module.MyListView;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 import com.ch_linghu.fanfoudroid.ui.module.TweetArrayAdapter;
+import com.ch_linghu.fanfoudroid.weibo.Query;
+import com.ch_linghu.fanfoudroid.weibo.QueryResult;
+import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 import com.google.android.photostream.UserTask;
 
 public class SearchActivity extends TwitterListBaseActivity implements
@@ -178,39 +181,29 @@ public class SearchActivity extends TwitterListBaseActivity implements
 
 		@Override
 		public RetrieveResult doInBackground(Void... params) {
-			JSONArray jsonArray;
+			QueryResult result;
 
 			try {
-				jsonArray = getApi().search(mSearchQuery, mNextPage);
-			} catch (IOException e) {
-				Log.e(TAG, e.getMessage(), e);
-				return RetrieveResult.IO_ERROR;
-			} catch (AuthException e) {
-				Log.i(TAG, "Invalid authorization.");
-				return RetrieveResult.AUTH_ERROR;
-			} catch (ApiException e) {
+				Query query = new Query(mSearchQuery);
+				query.setPage(mNextPage);
+				result = getApi().search(query);//.search(mSearchQuery, mNextPage);
+			} catch (WeiboException e) {
 				Log.e(TAG, e.getMessage(), e);
 				return RetrieveResult.IO_ERROR;
 			}
 
 			HashSet<String> imageUrls = new HashSet<String>();
 
-			for (int i = 0; i < jsonArray.length(); ++i) {
+			for (com.ch_linghu.fanfoudroid.weibo.Status status : result.getStatus()) {
 				if (isCancelled()) {
 					return RetrieveResult.CANCELLED;
 				}
 
 				Tweet tweet;
 
-				try {
-					JSONObject jsonObject = jsonArray.getJSONObject(i);
-					tweet = Tweet.create(jsonObject);
-					mTweets.add(tweet);
-					imageUrls.add(tweet.profileImageUrl);
-				} catch (JSONException e) {
-					Log.e(TAG, e.getMessage(), e);
-					return RetrieveResult.IO_ERROR;
-				}
+				tweet = Tweet.create(status);
+				mTweets.add(tweet);
+				imageUrls.add(tweet.profileImageUrl);
 
 				if (isCancelled()) {
 					return RetrieveResult.CANCELLED;

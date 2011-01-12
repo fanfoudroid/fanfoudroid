@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -58,6 +59,9 @@ import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.DmActivity;
 import com.ch_linghu.fanfoudroid.MentionActivity;
 import com.ch_linghu.fanfoudroid.TwitterActivity;
+import com.ch_linghu.fanfoudroid.weibo.Paging;
+import com.ch_linghu.fanfoudroid.weibo.Weibo;
+import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 import com.google.android.photostream.UserTask;
 
 public class TwitterService extends Service {
@@ -84,8 +88,8 @@ public class TwitterService extends Service {
 		return TwitterApplication.mDb;
 	}
 
-	private TwitterApi getApi() {
-		return TwitterApplication.mApi;
+	private Weibo getApi() {
+		return TwitterApplication.nApi;
 	}
 
 	@Override
@@ -370,35 +374,23 @@ public class TwitterService extends Service {
 				String maxId = getDb().fetchMaxId();
 				Log.i(TAG, "Max id is:" + maxId);
 	
-				JSONArray jsonArray;
+				List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
 	
 				try {
-					jsonArray = getApi().getTimelineSinceId(maxId);
-				} catch (IOException e) {
-					Log.e(TAG, e.getMessage(), e);
-					return RetrieveResult.IO_ERROR;
-				} catch (AuthException e) {
-					Log.i(TAG, "Invalid authorization.");
-					return RetrieveResult.AUTH_ERROR;
-				} catch (ApiException e) {
+					statusList = getApi().getFriendsTimeline(new Paging(maxId));
+				} catch (WeiboException e) {
 					Log.e(TAG, e.getMessage(), e);
 					return RetrieveResult.IO_ERROR;
 				}
 	
-				for (int i = 0; i < jsonArray.length(); ++i) {
+				for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
 					if (isCancelled()) {
 						return RetrieveResult.CANCELLED;
 					}
 	
 					Tweet tweet;
 	
-					try {
-						JSONObject jsonObject = jsonArray.getJSONObject(i);
-						tweet = Tweet.create(jsonObject);
-					} catch (JSONException e) {
-						Log.e(TAG, e.getMessage(), e);
-						return RetrieveResult.IO_ERROR;
-					}
+					tweet = Tweet.create(status);
 	
 					mNewTweets.add(tweet);
 				}
@@ -412,35 +404,23 @@ public class TwitterService extends Service {
 				String maxMentionId = getDb().fetchMaxMentionId();
 				Log.i(TAG, "Max mention id is:" + maxMentionId);
 
-				JSONArray jsonArray;
+				List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
 	
 				try {
-					jsonArray = getApi().getMentionSinceId(maxMentionId);
-				} catch (IOException e) {
-					Log.e(TAG, e.getMessage(), e);
-					return RetrieveResult.IO_ERROR;
-				} catch (AuthException e) {
-					Log.i(TAG, "Invalid authorization.");
-					return RetrieveResult.AUTH_ERROR;
-				} catch (ApiException e) {
+					statusList = getApi().getMentions(new Paging(maxMentionId));
+				} catch (WeiboException e) {
 					Log.e(TAG, e.getMessage(), e);
 					return RetrieveResult.IO_ERROR;
 				}
 	
-				for (int i = 0; i < jsonArray.length(); ++i) {
+				for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
 					if (isCancelled()) {
 						return RetrieveResult.CANCELLED;
 					}
 	
 					Tweet tweet;
-	
-					try {
-						JSONObject jsonObject = jsonArray.getJSONObject(i);
-						tweet = Tweet.create(jsonObject);
-					} catch (JSONException e) {
-						Log.e(TAG, e.getMessage(), e);
-						return RetrieveResult.IO_ERROR;
-					}
+
+					tweet = Tweet.create(status);
 	
 					mNewMentions.add(tweet);
 				}
@@ -454,35 +434,23 @@ public class TwitterService extends Service {
 				String maxId = getDb().fetchMaxDmId(false);
 				Log.i(TAG, "Max DM id is:" + maxId);
 	
-				JSONArray jsonArray;
+				List<com.ch_linghu.fanfoudroid.weibo.DirectMessage> dmList;
 				
 				try {
-					jsonArray = getApi().getDmsSinceId(maxId, false);
-				} catch (IOException e) {
-					Log.e(TAG, e.getMessage(), e);
-					return RetrieveResult.IO_ERROR;
-				} catch (AuthException e) {
-					Log.i(TAG, "Invalid authorization.");
-					return RetrieveResult.AUTH_ERROR;
-				} catch (ApiException e) {
+					dmList = getApi().getDirectMessages(new Paging(maxId));
+				} catch (WeiboException e) {
 					Log.e(TAG, e.getMessage(), e);
 					return RetrieveResult.IO_ERROR;
 				}
 	
-				for (int i = 0; i < jsonArray.length(); ++i) {
+				for (com.ch_linghu.fanfoudroid.weibo.DirectMessage directMessage : dmList) {
 					if (isCancelled()) {
 						return RetrieveResult.CANCELLED;
 					}
 	
 					Dm dm;
-	
-					try {
-						JSONObject jsonObject = jsonArray.getJSONObject(i);
-						dm = Dm.create(jsonObject, false);
-					} catch (JSONException e) {
-						Log.e(TAG, e.getMessage(), e);
-						return RetrieveResult.IO_ERROR;
-					}
+
+					dm = Dm.create(directMessage, false);
 	
 					mNewDms.add(dm);
 				}

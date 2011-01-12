@@ -16,10 +16,8 @@
 
 package com.ch_linghu.fanfoudroid;
 
-import java.io.IOException;
 import java.util.ArrayList;
-
-import org.json.JSONArray;
+import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
@@ -27,18 +25,16 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageButton;
-
 import com.ch_linghu.fanfoudroid.R;
-import com.ch_linghu.fanfoudroid.R.drawable;
-import com.ch_linghu.fanfoudroid.R.string;
-import com.ch_linghu.fanfoudroid.TwitterApi.ApiException;
-import com.ch_linghu.fanfoudroid.TwitterApi.AuthException;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.task.Followable;
 import com.ch_linghu.fanfoudroid.task.HasFavorite;
 import com.ch_linghu.fanfoudroid.task.Retrievable;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterCursorBaseActivity;
+import com.ch_linghu.fanfoudroid.weibo.Paging;
+import com.ch_linghu.fanfoudroid.weibo.Status;
+import com.ch_linghu.fanfoudroid.weibo.WeiboException;
+
 //TODO: 数据来源换成 getFavorites()
 public class FavoritesActivity extends TwitterCursorBaseActivity 
 		implements Followable, Retrievable, HasFavorite {
@@ -112,20 +108,16 @@ public class FavoritesActivity extends TwitterCursorBaseActivity
 	
 	@Override
 	public void addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
-		// TODO Auto-generated method stub
 		getDb().addTweets(tweets, isUnread);
 	}
 	
 	@Override
 	public String fetchMaxId() {
-		// TODO Auto-generated method stub
 		return getDb().fetchMaxId();
 	}
-	
+
 	@Override
-	public JSONArray getMessageSinceId(String maxId) throws IOException,
-			AuthException, ApiException {
-		// TODO Auto-generated method stub
-		return getApi().getTimelineSinceId(maxId);
+	protected List<Status> getMessageSinceId(String maxId) throws WeiboException {
+		return getApi().getFavorites(new Paging(maxId));
 	}
 }

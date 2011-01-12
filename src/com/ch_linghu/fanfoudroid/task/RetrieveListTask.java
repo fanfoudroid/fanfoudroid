@@ -3,17 +3,14 @@ package com.ch_linghu.fanfoudroid.task;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.List;
 
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.ch_linghu.fanfoudroid.TwitterApi.ApiException;
-import com.ch_linghu.fanfoudroid.TwitterApi.AuthException;
+import com.ch_linghu.fanfoudroid.weibo.WeiboException;
+import com.ch_linghu.fanfoudroid.weibo.Paging;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
@@ -40,19 +37,18 @@ public class RetrieveListTask extends AsyncTask<Void, Integer, TaskResult> {
 
 	@Override
 	public TaskResult doInBackground(Void... params) {
-		JSONArray jsonArray;
+		List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
 
 		String maxId = activity.fetchMaxId(); // getDb().fetchMaxMentionId();
 
 		try {
-			jsonArray = activity.getMessageSinceId(maxId); // getApi().getMentionSinceId(maxId);
-		} catch (IOException e) {
-			Log.e(TAG, e.getMessage(), e);
-			return TaskResult.IO_ERROR;
-		} catch (AuthException e) {
-			Log.i(TAG, "Invalid authorization.");
-			return TaskResult.AUTH_ERROR;
-		} catch (ApiException e) {
+			if (maxId != null){
+				Paging paging = new Paging(maxId);
+				statusList = activity.nApi.getFriendsTimeline(paging);
+			}else{
+				statusList = activity.nApi.getFriendsTimeline();
+			}
+		} catch (WeiboException e) {
 			Log.e(TAG, e.getMessage(), e);
 			return TaskResult.IO_ERROR;
 		}
@@ -60,21 +56,16 @@ public class RetrieveListTask extends AsyncTask<Void, Integer, TaskResult> {
 		ArrayList<Tweet> tweets = new ArrayList<Tweet>();
 		HashSet<String> imageUrls = new HashSet<String>();
 
-		for (int i = 0; i < jsonArray.length(); ++i) {
+		for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
 			if (isCancelled()) {
 				return TaskResult.CANCELLED;
 			}
 
 			Tweet tweet;
 
-			try {
-				JSONObject jsonObject = jsonArray.getJSONObject(i);
-				tweet = Tweet.create(jsonObject);
-				tweets.add(tweet);
-			} catch (JSONException e) {
-				Log.e(TAG, e.getMessage(), e);
-				return TaskResult.IO_ERROR;
-			}
+
+			tweet = Tweet.create(status);
+			tweets.add(tweet);
 
 			imageUrls.add(tweet.profileImageUrl);
 

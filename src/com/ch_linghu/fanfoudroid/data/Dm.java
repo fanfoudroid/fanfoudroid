@@ -1,7 +1,8 @@
 package com.ch_linghu.fanfoudroid.data;
 
 import org.json.JSONException;
-import org.json.JSONObject;
+import com.ch_linghu.fanfoudroid.weibo.DirectMessage;
+import com.ch_linghu.fanfoudroid.weibo.User;
 
 import com.ch_linghu.fanfoudroid.helper.Utils;
 
@@ -11,20 +12,19 @@ public class Dm extends Message {
 
   public boolean isSent;
 
-  public static Dm create(JSONObject jsonObject, boolean isSent)
-      throws JSONException {
+  public static Dm create(DirectMessage directMessage, boolean isSent){
     Dm dm = new Dm();
 
-    dm.id = jsonObject.getString("id") + "";
-    dm.text = Utils.decodeTwitterJson(jsonObject.getString("text"));
-    dm.createdAt = Utils.parseDateTime(jsonObject.getString("created_at"));
+    dm.id = directMessage.getId();
+    dm.text = Utils.decodeTwitterJson(directMessage.getText());
+    dm.createdAt = directMessage.getCreatedAt();
     dm.isSent = isSent;
 
-    JSONObject user = dm.isSent ? jsonObject.getJSONObject("recipient")
-        : jsonObject.getJSONObject("sender");
-    dm.screenName = Utils.decodeTwitterJson(user.getString("screen_name"));
-    dm.userId = user.getString("id");    
-    dm.profileImageUrl = user.getString("profile_image_url");
+    User user = dm.isSent ? directMessage.getRecipient()
+        : directMessage.getSender();
+    dm.screenName = Utils.decodeTwitterJson(user.getScreenName());
+    dm.userId = user.getId();    
+    dm.profileImageUrl = user.getProfileImageURL().toString();
 
     return dm;
   }

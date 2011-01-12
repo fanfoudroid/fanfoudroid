@@ -12,6 +12,7 @@ import com.ch_linghu.fanfoudroid.TwitterApi.ApiException;
 import com.ch_linghu.fanfoudroid.TwitterApi.AuthException;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 public class FavoriteTask extends AsyncTask<String, Void, TaskResult> {
 
@@ -33,14 +34,14 @@ public class FavoriteTask extends AsyncTask<String, Void, TaskResult> {
 		try {
 			String action = params[0];
 			String id = params[1];
-			JSONObject jsonObject = null;
+			com.ch_linghu.fanfoudroid.weibo.Status status = null;
 			if (action.equals("add")) {
-				jsonObject = activity.mApi.addFavorite(id);
+				status = activity.nApi.createFavorite(id);
 			} else {
-				jsonObject = activity.mApi.delFavorite(id);
+				status = activity.nApi.destroyFavorite(id);
 			}
 
-			Tweet tweet = Tweet.create(jsonObject);
+			Tweet tweet = Tweet.create(status);
 
 			if (!Utils.isEmpty(tweet.profileImageUrl)) {
 				// Fetch image to cache.
@@ -52,16 +53,7 @@ public class FavoriteTask extends AsyncTask<String, Void, TaskResult> {
 			}
 
 			activity.mDb.updateTweet(tweet);
-		} catch (IOException e) {
-			Log.e(TAG, e.getMessage(), e);
-			return TaskResult.IO_ERROR;
-		} catch (AuthException e) {
-			Log.i(TAG, "Invalid authorization.");
-			return TaskResult.AUTH_ERROR;
-		} catch (JSONException e) {
-			Log.w(TAG, "Could not parse JSON after sending update.");
-			return TaskResult.IO_ERROR;
-		} catch (ApiException e) {
+		} catch (WeiboException e) {
 			Log.e(TAG, e.getMessage(), e);
 			return TaskResult.IO_ERROR;
 		}

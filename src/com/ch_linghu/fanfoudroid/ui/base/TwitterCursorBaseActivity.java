@@ -17,6 +17,7 @@ package com.ch_linghu.fanfoudroid.ui.base;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONArray;
 
@@ -40,6 +41,8 @@ import com.ch_linghu.fanfoudroid.task.TaskFactory;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 import com.ch_linghu.fanfoudroid.ui.module.TweetCursorAdapter;
+import com.ch_linghu.fanfoudroid.weibo.Status;
+import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 /**
  * TwitterCursorBaseLine用于带有静态数据来源（对应数据库的，与twitter表同构的特定表）的展现
@@ -71,8 +74,8 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 	abstract protected void addMessages(ArrayList<Tweet> tweets,
 			boolean isUnread);
 
-	abstract protected JSONArray getMessageSinceId(String maxId)
-			throws IOException, AuthException, ApiException;
+	abstract protected List<Status> getMessageSinceId(String maxId)
+			throws WeiboException;
 
 	public static final int CONTEXT_REPLY_ID = Menu.FIRST + 1;
 	// public static final int CONTEXT_AT_ID = Menu.FIRST + 2;

@@ -4,10 +4,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
@@ -30,14 +27,15 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.ch_linghu.fanfoudroid.TwitterApi.ApiException;
-import com.ch_linghu.fanfoudroid.TwitterApi.AuthException;
 import com.ch_linghu.fanfoudroid.data.Dm;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
+import com.ch_linghu.fanfoudroid.weibo.DirectMessage;
+import com.ch_linghu.fanfoudroid.weibo.Paging;
+import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 import com.google.android.photostream.UserTask;
 
 public class DmActivity extends WithHeaderActivity {
@@ -241,12 +239,11 @@ public class DmActivity extends WithHeaderActivity {
 
     @Override
     public TaskResult doInBackground(Void... params) {
-      JSONArray jsonArray;
+      List<DirectMessage> dmList;
 
       ArrayList<Dm> dms = new ArrayList<Dm>();
 
       TwitterDbAdapter db = getDb();
-      TwitterApi api = getApi();
       ImageManager imageManager = getImageManager();
 
       String maxId = db.fetchMaxDmId(false);
@@ -254,34 +251,22 @@ public class DmActivity extends WithHeaderActivity {
       HashSet<String> imageUrls = new HashSet<String>();
 
       try {
-        jsonArray = api.getDmsSinceId(maxId, false);
-      } catch (IOException e) {
-        Log.e(TAG, e.getMessage(), e);
-        return TaskResult.IO_ERROR;
-      } catch (AuthException e) {
-        Log.i(TAG, "Invalid authorization.");
-        return TaskResult.AUTH_ERROR;
-      } catch (ApiException e) {
+    	  Paging paging = new Paging(maxId);
+    	  dmList = getApi().getDirectMessages(paging);
+      } catch (WeiboException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
       }
 
-      for (int i = 0; i < jsonArray.length(); ++i) {
+      for (DirectMessage directMessage : dmList) {
         if (isCancelled()) {
           return TaskResult.CANCELLED;
         }
 
         Dm dm;
 
-        try {
-          JSONObject jsonObject = jsonArray.getJSONObject(i);
-          dm = Dm.create(jsonObject, false);
-          dms.add(dm);
-        } catch (JSONException e) {
-          Log.e(TAG, e.getMessage(), e);
-          return TaskResult.IO_ERROR;
-        }
-
+	    dm = Dm.create(directMessage, false);
+        dms.add(dm);
         imageUrls.add(dm.profileImageUrl);
 
         if (isCancelled()) {
@@ -292,34 +277,22 @@ public class DmActivity extends WithHeaderActivity {
       maxId = db.fetchMaxDmId(true);
 
       try {
-        jsonArray = api.getDmsSinceId(maxId, true);
-      } catch (IOException e) {
-        Log.e(TAG, e.getMessage(), e);
-        return TaskResult.IO_ERROR;
-      } catch (AuthException e) {
-        Log.i(TAG, "Invalid authorization.");
-        return TaskResult.AUTH_ERROR;
-      } catch (ApiException e) {
+    	  Paging paging = new Paging(maxId);
+    	  dmList = getApi().getSentDirectMessages(paging);
+      } catch (WeiboException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
       }
 
-      for (int i = 0; i < jsonArray.length(); ++i) {
+      for (DirectMessage directMessage : dmList) {
         if (isCancelled()) {
           return TaskResult.CANCELLED;
         }
 
         Dm dm;
 
-        try {
-          JSONObject jsonObject = jsonArray.getJSONObject(i);
-          dm = Dm.create(jsonObject, true);
-          dms.add(dm);
-        } catch (JSONException e) {
-          Log.e(TAG, e.getMessage(), e);
-          return TaskResult.IO_ERROR;
-        }
-
+        dm = Dm.create(directMessage, true);
+        dms.add(dm);
         imageUrls.add(dm.profileImageUrl);
 
         if (isCancelled()) {
@@ -553,19 +526,10 @@ public class DmActivity extends WithHeaderActivity {
       String id = params[0];
 
       try {
-        JSONObject json = getApi().destroyDirectMessage(id);
-        Dm.create(json, false);
+        DirectMessage directMessage = getApi().destroyDirectMessage(id);
+        Dm.create(directMessage, false);
         getDb().deleteDm(id);
-      } catch (IOException e) {
-        Log.e(TAG, e.getMessage(), e);
-        return TaskResult.IO_ERROR;
-      } catch (AuthException e) {
-        Log.i(TAG, "Invalid authorization.");
-        return TaskResult.AUTH_ERROR;
-      } catch (JSONException e) {
-        Log.e(TAG, e.getMessage(), e);
-        return TaskResult.IO_ERROR;
-      } catch (ApiException e) {
+      } catch (WeiboException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
       }

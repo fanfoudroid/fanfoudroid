@@ -25,6 +25,7 @@ import org.json.JSONObject;
 
 import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.weibo.Status;
 
 public class Tweet extends Message {
   private static final String TAG = "Tweet";
@@ -40,23 +41,22 @@ public class Tweet extends Message {
     return matcher.find();
   }
 
-  public static Tweet create(JSONObject jsonObject) throws JSONException {
+  public static Tweet create(Status status){
     Tweet tweet = new Tweet();
 
-    tweet.id = jsonObject.getString("id") + "";
-    tweet.text = Utils.decodeTwitterJson(jsonObject.getString("text"));
-    tweet.createdAt = Utils.parseDateTime(jsonObject.getString("created_at"));
-    tweet.favorited = jsonObject.getString("favorited");
-    tweet.inReplyToStatusId = jsonObject.getString("in_reply_to_status_id");
-    tweet.inReplyToUserId = jsonObject.getString("in_reply_to_user_id");
-    tweet.inReplyToScreenName = jsonObject.getString("in_reply_to_screen_name");
+    tweet.id = status.getId();
+    tweet.text = Utils.decodeTwitterJson(status.getText());
+    tweet.createdAt = status.getCreatedAt();
+    tweet.favorited = status.isFavorited()?"true":"false";
+    tweet.inReplyToStatusId = status.getInReplyToStatusId();
+    tweet.inReplyToUserId = status.getInReplyToUserId();
+    tweet.inReplyToScreenName = status.getInReplyToScreenName();
     
-    JSONObject user = jsonObject.getJSONObject("user");
-    tweet.screenName = Utils.decodeTwitterJson(user.getString("screen_name"));
-    tweet.profileImageUrl = user.getString("profile_image_url");
-    tweet.userId = user.getString("id");
+    tweet.screenName = Utils.decodeTwitterJson(status.getUser().getScreenName());
+    tweet.profileImageUrl = status.getUser().getProfileImageURL().toString();
+    tweet.userId = status.getUser().getId();
     
-    tweet.source = Utils.decodeTwitterJson(jsonObject.getString("source")).
+    tweet.source = Utils.decodeTwitterJson(status.getSource()).
         replaceAll("\\<.*?>", "");
 
     return tweet;

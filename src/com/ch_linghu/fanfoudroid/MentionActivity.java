@@ -16,10 +16,8 @@
 
 package com.ch_linghu.fanfoudroid;
 
-import java.io.IOException;
 import java.util.ArrayList;
-
-import org.json.JSONArray;
+import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
@@ -29,13 +27,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.ch_linghu.fanfoudroid.R;
-import com.ch_linghu.fanfoudroid.TwitterApi.ApiException;
-import com.ch_linghu.fanfoudroid.TwitterApi.AuthException;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.task.Followable;
 import com.ch_linghu.fanfoudroid.task.HasFavorite;
 import com.ch_linghu.fanfoudroid.task.Retrievable;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterCursorBaseActivity;
+import com.ch_linghu.fanfoudroid.weibo.Paging;
+import com.ch_linghu.fanfoudroid.weibo.Status;
+import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 public class MentionActivity extends TwitterCursorBaseActivity 
 		implements Followable, Retrievable, HasFavorite {
@@ -115,10 +114,9 @@ public class MentionActivity extends TwitterCursorBaseActivity
 	}
 
 	@Override
-	public JSONArray getMessageSinceId(String maxId) throws IOException,
-			AuthException, ApiException {
+	public List<Status> getMessageSinceId(String maxId) throws WeiboException {
 		// TODO Auto-generated method stub
-		return getApi().getMentionSinceId(maxId);
+		return getApi().getMentions(new Paging(maxId));
 	}
 
 	@Override

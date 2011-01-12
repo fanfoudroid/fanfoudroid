@@ -15,16 +15,16 @@ public class User {
   public String profileImageUrl = "";
   public String url = "";
 
-  public static User create(JSONObject jsonObject) throws JSONException {
+  public static User create(com.ch_linghu.fanfoudroid.weibo.User u){
     User user = new User();
     
-    user.id = jsonObject.getString("id");    
-    user.name = Utils.decodeTwitterJson(jsonObject.getString("name"));
-    user.screenName = Utils.decodeTwitterJson(jsonObject.getString("screen_name"));
-    user.location = Utils.decodeTwitterJson(jsonObject.getString("location"));
-    user.description = Utils.decodeTwitterJson(jsonObject.getString("description"));
-    user.profileImageUrl = jsonObject.getString("profile_image_url");
-    user.url = jsonObject.getString("url");
+    user.id = u.getId();    
+    user.name = Utils.decodeTwitterJson(u.getName());
+    user.screenName = Utils.decodeTwitterJson(u.getScreenName());
+    user.location = Utils.decodeTwitterJson(u.getLocation());
+    user.description = Utils.decodeTwitterJson(u.getDescription());
+    user.profileImageUrl = u.getProfileImageURL().toString();
+    user.url = u.getURL().toString();
         
     return user;
   }  

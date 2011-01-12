@@ -18,6 +18,7 @@ package com.ch_linghu.fanfoudroid;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONArray;
 
@@ -38,6 +39,9 @@ import com.ch_linghu.fanfoudroid.task.Followable;
 import com.ch_linghu.fanfoudroid.task.HasFavorite;
 import com.ch_linghu.fanfoudroid.task.Retrievable;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterCursorBaseActivity;
+import com.ch_linghu.fanfoudroid.weibo.Paging;
+import com.ch_linghu.fanfoudroid.weibo.Status;
+import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 //TODO: 暂无获取更旧的消息（例如NeedMore()），用户将无法查看更旧的FriendsTimeline内容。
 public class TwitterActivity extends TwitterCursorBaseActivity 
@@ -114,10 +118,8 @@ public class TwitterActivity extends TwitterCursorBaseActivity
 	}
 	
 	@Override
-	public JSONArray getMessageSinceId(String maxId) throws IOException,
-			AuthException, ApiException {
-		// TODO Auto-generated method stub
-		return getApi().getTimelineSinceId(maxId);
+	public List<Status> getMessageSinceId(String maxId) throws WeiboException {
+		return getApi().getFriendsTimeline(new Paging(maxId));
 	}
 	
 	

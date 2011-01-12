@@ -2,6 +2,7 @@ package com.ch_linghu.fanfoudroid.ui.base;
 
 import java.io.File;
 
+
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
@@ -22,13 +23,13 @@ import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.AboutDialog;
 import com.ch_linghu.fanfoudroid.LoginActivity;
 import com.ch_linghu.fanfoudroid.PreferencesActivity;
-import com.ch_linghu.fanfoudroid.TwitterApi;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.WriteActivity;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.service.TwitterService;
+import com.ch_linghu.fanfoudroid.weibo.Weibo;
 
 /**
  * A BaseActivity has common routines and variables for an Activity
@@ -71,8 +72,8 @@ public class BaseActivity extends Activity {
     return TwitterApplication.mDb;
   }
 
-  protected TwitterApi getApi() {
-    return TwitterApplication.mApi;
+  protected Weibo getApi() {
+    return TwitterApplication.nApi;
   }
 
   @Override

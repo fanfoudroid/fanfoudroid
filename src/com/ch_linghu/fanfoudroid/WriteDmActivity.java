@@ -48,6 +48,8 @@ import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
 import com.ch_linghu.fanfoudroid.ui.module.TweetEdit;
+import com.ch_linghu.fanfoudroid.weibo.DirectMessage;
+import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 import com.google.android.photostream.UserTask;
 
 //FIXME: 将WriteDmActivity和WriteActivity进行整合。
@@ -330,8 +332,8 @@ public class WriteDmActivity extends WithHeaderActivity {
 	        String user = mToEdit.getText().toString();
 	        String text = mTweetEdit.getText().toString();
 
-	        JSONObject jsonObject = getApi().sendDirectMessage(user, text);
-	        Dm dm = Dm.create(jsonObject, true);
+	        DirectMessage directMessage = getApi().sendDirectMessage(user, text);
+	        Dm dm = Dm.create(directMessage, true);
 
 	        if (!Utils.isEmpty(dm.profileImageUrl)) {
 	          // Fetch image to cache.
@@ -343,16 +345,7 @@ public class WriteDmActivity extends WithHeaderActivity {
 	        }
 
 	        getDb().createDm(dm, false);
-	      } catch (IOException e) {
-	        Log.e(TAG, e.getMessage(), e);
-	        return TaskResult.IO_ERROR;
-	      } catch (AuthException e) {
-	        Log.i(TAG, "Invalid authorization.");
-	        return TaskResult.AUTH_ERROR;
-	      } catch (JSONException e) {
-	        Log.w(TAG, "Could not parse JSON after sending update.");
-	        return TaskResult.IO_ERROR;
-	      } catch (ApiException e) {
+	      } catch (WeiboException e) {
 	        Log.i(TAG, e.getMessage());
 	        // TODO: check is this is actually the case.
 	        return TaskResult.NOT_FOLLOWED_ERROR;

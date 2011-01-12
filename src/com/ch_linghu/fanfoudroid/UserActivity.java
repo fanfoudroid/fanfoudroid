@@ -3,6 +3,7 @@ package com.ch_linghu.fanfoudroid;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,6 +41,10 @@ import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
 import com.ch_linghu.fanfoudroid.ui.module.MyListView;
 import com.ch_linghu.fanfoudroid.ui.module.TweetArrayAdapter;
+import com.ch_linghu.fanfoudroid.weibo.Paging;
+import com.ch_linghu.fanfoudroid.weibo.Status;
+import com.ch_linghu.fanfoudroid.weibo.Weibo;
+import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 import com.google.android.photostream.UserTask;
 
 public class UserActivity extends WithHeaderActivity implements MyListView.OnNeedMoreListener {
@@ -319,49 +324,32 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
 
     @Override
     public TaskResult doInBackground(Void... params) {
-      JSONArray jsonArray;
+      List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
 
-      TwitterApi api = getApi();
       ImageManager imageManager = getImageManager();
 
       try {
-        jsonArray = api.getUserTimeline(mUsername, mNextPage);
+        statusList = getApi().getUserTimeline(mUsername, new Paging(mNextPage));
         
-      } catch (SocketTimeoutException e) {
-    	Log.e(TAG, e.getMessage(), e);
-    	Toast.makeText(getApplicationContext(), getString(R.string.timeout), Toast.LENGTH_SHORT).show();
-    	return TaskResult.IO_ERROR;
-      } catch (IOException e) {
-        Log.e(TAG, e.getMessage(), e);
-        return TaskResult.IO_ERROR;
-      } catch (AuthException e) {
-        Log.i(TAG, "Invalid authorization.");
-        return TaskResult.AUTH_ERROR;
-      } catch (ApiException e) {
+      } catch (WeiboException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
       } 
 
-      for (int i = 0; i < jsonArray.length(); ++i) {
+      for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
         if (isCancelled()) {
           return TaskResult.CANCELLED;
         }
 
         Tweet tweet;
 
-        try {
-          JSONObject jsonObject = jsonArray.getJSONObject(i);
-          tweet = Tweet.create(jsonObject);
-          mTweets.add(tweet);
+        tweet = Tweet.create(status);
+        mTweets.add(tweet);
 
-          if (mUser == null) {
-            mUser = User.create(jsonObject.getJSONObject("user"));
-          }
-        } catch (JSONException e) {
-          Log.e(TAG, e.getMessage(), e);
-          return TaskResult.IO_ERROR;
+        if (mUser == null) {
+          mUser = User.create(status.getUser());
         }
-
+      
         if (isCancelled()) {
           return TaskResult.CANCELLED;
         }
@@ -389,19 +377,22 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
 
       publishProgress();
 
-      try {
-        mIsFollowing = api.isFollows(mMe, mUsername);
-        mIsFollower = api.isFollows(mUsername, mMe);
-      } catch (IOException e) {
-        Log.e(TAG, e.getMessage(), e);
-        return TaskResult.IO_ERROR;
-      } catch (AuthException e) {
-        Log.i(TAG, "Invalid authorization.");
-        return TaskResult.AUTH_ERROR;
-      } catch (ApiException e) {
-        Log.e(TAG, e.getMessage(), e);
-        return TaskResult.IO_ERROR;
-      }
+      //TODO: 新API中如何获得跟随关系？
+      mIsFollowing = false;
+      mIsFollower = false;
+//      try {
+//        mIsFollowing = getApi().isFollows(mMe, mUsername);
+//        mIsFollower = getApi().isFollows(mUsername, mMe);
+//      } catch (IOException e) {
+//        Log.e(TAG, e.getMessage(), e);
+//        return TaskResult.IO_ERROR;
+//      } catch (AuthException e) {
+//        Log.i(TAG, "Invalid authorization.");
+//        return TaskResult.AUTH_ERROR;
+//      } catch (ApiException e) {
+//        Log.e(TAG, e.getMessage(), e);
+//        return TaskResult.IO_ERROR;
+//      }
 
       if (isCancelled()) {
         return TaskResult.CANCELLED;
@@ -442,43 +433,24 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
 
     @Override
     public TaskResult doInBackground(Void... params) {
-      JSONArray jsonArray;
-
-      TwitterApi api = getApi();
+      List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
 
       try {
-        jsonArray = api.getUserTimeline(mUsername, mNextPage);
-      } catch (SocketTimeoutException e) {
-    	Log.e(TAG, e.getMessage(), e);
-    	Toast.makeText(getApplicationContext(), getString(R.string.timeout), Toast.LENGTH_SHORT).show();
-    	return TaskResult.IO_ERROR;
-      }
-      catch (IOException e) {
-        Log.e(TAG, e.getMessage(), e);
-        return TaskResult.IO_ERROR;
-      } catch (AuthException e) {
-        Log.i(TAG, "Invalid authorization.");
-        return TaskResult.AUTH_ERROR;
-      } catch (ApiException e) {
+        statusList = getApi().getUserTimeline(mUsername, new Paging(mNextPage));
+      } catch (WeiboException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
       }
 
-      for (int i = 0; i < jsonArray.length(); ++i) {
+      for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
         if (isCancelled()) {
           return TaskResult.CANCELLED;
         }
 
         Tweet tweet;
 
-        try {
-          JSONObject jsonObject = jsonArray.getJSONObject(i);
-          tweet = Tweet.create(jsonObject);
-          mTweets.add(tweet);
-        } catch (JSONException e) {
-          Log.e(TAG, e.getMessage(), e);
-          return TaskResult.IO_ERROR;
-        }
+        tweet = Tweet.create(status);
+        mTweets.add(tweet);
       }
 
       if (isCancelled()) {
@@ -535,25 +507,17 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
 
     @Override
     public TaskResult doInBackground(Void... params) {
-      JSONObject jsonObject;
+      com.ch_linghu.fanfoudroid.weibo.User user;
 
       String id = mUser.id;
 
-      TwitterApi api = getApi();
-
       try {
         if (mIsDestroy) {
-          jsonObject = api.destroyFriendship(id);
+          user = getApi().destroyFriendship(id);
         } else {
-          jsonObject = api.createFriendship(id);
+          user = getApi().createFriendship(id);
         }
-      } catch (IOException e) {
-        Log.e(TAG, e.getMessage(), e);
-        return TaskResult.IO_ERROR;
-      } catch (AuthException e) {
-        Log.i(TAG, "Invalid authorization.");
-        return TaskResult.AUTH_ERROR;
-      } catch (ApiException e) {
+      } catch (WeiboException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
       }
@@ -562,12 +526,7 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
         return TaskResult.CANCELLED;
       }
 
-      try {
-        User.create(jsonObject);
-      } catch (JSONException e) {
-        Log.e(TAG, e.getMessage(), e);
-        return TaskResult.IO_ERROR;
-      }
+      User.create(user);
 
       if (isCancelled()) {
         return TaskResult.CANCELLED;
