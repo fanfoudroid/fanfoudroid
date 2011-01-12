@@ -42,12 +42,7 @@ public class RetrieveListTask extends AsyncTask<Void, Integer, TaskResult> {
 		String maxId = activity.fetchMaxId(); // getDb().fetchMaxMentionId();
 
 		try {
-			if (maxId != null){
-				Paging paging = new Paging(maxId);
-				statusList = activity.nApi.getFriendsTimeline(paging);
-			}else{
-				statusList = activity.nApi.getFriendsTimeline();
-			}
+			statusList = activity.getMessageSinceId(maxId);
 		} catch (WeiboException e) {
 			Log.e(TAG, e.getMessage(), e);
 			return TaskResult.IO_ERROR;

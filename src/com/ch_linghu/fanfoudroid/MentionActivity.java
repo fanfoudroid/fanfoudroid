@@ -115,8 +115,11 @@ public class MentionActivity extends TwitterCursorBaseActivity
 
 	@Override
 	public List<Status> getMessageSinceId(String maxId) throws WeiboException {
-		// TODO Auto-generated method stub
-		return getApi().getMentions(new Paging(maxId));
+		if (maxId != null){
+			return getApi().getMentions(new Paging(maxId));
+		}else{
+			return getApi().getMentions();
+		}
 	}
 
 	@Override

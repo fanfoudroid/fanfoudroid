@@ -251,8 +251,12 @@ public class DmActivity extends WithHeaderActivity {
       HashSet<String> imageUrls = new HashSet<String>();
 
       try {
-    	  Paging paging = new Paging(maxId);
-    	  dmList = getApi().getDirectMessages(paging);
+    	  if (maxId != null){
+    		  Paging paging = new Paging(maxId);
+    		  dmList = getApi().getDirectMessages(paging);
+    	  }else{
+    		  dmList = getApi().getDirectMessages();    		  
+    	  }
       } catch (WeiboException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;
@@ -277,8 +281,12 @@ public class DmActivity extends WithHeaderActivity {
       maxId = db.fetchMaxDmId(true);
 
       try {
-    	  Paging paging = new Paging(maxId);
-    	  dmList = getApi().getSentDirectMessages(paging);
+    	  if (maxId != null){
+    		  Paging paging = new Paging(maxId);
+    		  dmList = getApi().getDirectMessages(paging);
+    	  }else{
+    		  dmList = getApi().getDirectMessages();    		  
+    	  }
       } catch (WeiboException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;

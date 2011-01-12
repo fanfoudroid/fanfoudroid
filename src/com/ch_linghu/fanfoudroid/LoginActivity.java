@@ -33,12 +33,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.R;
-import com.ch_linghu.fanfoudroid.R.id;
-import com.ch_linghu.fanfoudroid.R.layout;
-import com.ch_linghu.fanfoudroid.R.string;
 import com.ch_linghu.fanfoudroid.TwitterApi.ApiException;
 import com.ch_linghu.fanfoudroid.TwitterApi.AuthException;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
+import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 import com.google.android.photostream.UserTask;
 
 public class LoginActivity extends Activity {
@@ -195,6 +193,15 @@ public class LoginActivity extends Activity {
     editor.commit();
 
     TwitterApplication.mApi.setCredentials(username, password);
+    try {
+		TwitterApplication.nApi.login(username, password);
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (WeiboException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 
     Intent intent = getIntent().getParcelableExtra(Intent.EXTRA_INTENT);
     String action = intent.getAction();

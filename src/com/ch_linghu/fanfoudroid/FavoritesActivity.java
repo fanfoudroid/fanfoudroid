@@ -117,7 +117,11 @@ public class FavoritesActivity extends TwitterCursorBaseActivity
 	}
 
 	@Override
-	protected List<Status> getMessageSinceId(String maxId) throws WeiboException {
-		return getApi().getFavorites(new Paging(maxId));
+	public List<Status> getMessageSinceId(String maxId) throws WeiboException {
+		if (maxId != null){
+			return getApi().getFavorites(new Paging(maxId));
+		}else{
+			return getApi().getFavorites();
+		}
 	}
 }

@@ -119,7 +119,11 @@ public class TwitterActivity extends TwitterCursorBaseActivity
 	
 	@Override
 	public List<Status> getMessageSinceId(String maxId) throws WeiboException {
-		return getApi().getFriendsTimeline(new Paging(maxId));
+		if (maxId != null){
+			return getApi().getFriendsTimeline(new Paging(maxId));
+		}else{
+			return getApi().getFriendsTimeline();
+		}
 	}
 	
 	

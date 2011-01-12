@@ -377,7 +377,11 @@ public class TwitterService extends Service {
 				List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
 	
 				try {
-					statusList = getApi().getFriendsTimeline(new Paging(maxId));
+					if (maxId != null){
+						statusList = getApi().getFriendsTimeline(new Paging(maxId));
+					}else{
+						statusList = getApi().getFriendsTimeline();
+					}
 				} catch (WeiboException e) {
 					Log.e(TAG, e.getMessage(), e);
 					return RetrieveResult.IO_ERROR;
@@ -407,7 +411,11 @@ public class TwitterService extends Service {
 				List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
 	
 				try {
-					statusList = getApi().getMentions(new Paging(maxMentionId));
+					if (maxMentionId != null){
+						statusList = getApi().getMentions(new Paging(maxMentionId));
+					}else{
+						statusList = getApi().getMentions();						
+					}
 				} catch (WeiboException e) {
 					Log.e(TAG, e.getMessage(), e);
 					return RetrieveResult.IO_ERROR;
@@ -437,7 +445,11 @@ public class TwitterService extends Service {
 				List<com.ch_linghu.fanfoudroid.weibo.DirectMessage> dmList;
 				
 				try {
-					dmList = getApi().getDirectMessages(new Paging(maxId));
+					if (maxId != null){
+						dmList = getApi().getDirectMessages(new Paging(maxId));
+					}else{
+						dmList = getApi().getDirectMessages();
+					}
 				} catch (WeiboException e) {
 					Log.e(TAG, e.getMessage(), e);
 					return RetrieveResult.IO_ERROR;

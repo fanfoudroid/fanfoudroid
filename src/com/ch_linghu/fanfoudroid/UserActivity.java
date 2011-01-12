@@ -377,22 +377,13 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
 
       publishProgress();
 
-      //TODO: 新API中如何获得跟随关系？
-      mIsFollowing = false;
-      mIsFollower = false;
-//      try {
-//        mIsFollowing = getApi().isFollows(mMe, mUsername);
-//        mIsFollower = getApi().isFollows(mUsername, mMe);
-//      } catch (IOException e) {
-//        Log.e(TAG, e.getMessage(), e);
-//        return TaskResult.IO_ERROR;
-//      } catch (AuthException e) {
-//        Log.i(TAG, "Invalid authorization.");
-//        return TaskResult.AUTH_ERROR;
-//      } catch (ApiException e) {
-//        Log.e(TAG, e.getMessage(), e);
-//        return TaskResult.IO_ERROR;
-//      }
+      try {
+        mIsFollowing = getApi().existsFriendship(mMe, mUsername);
+        mIsFollower = getApi().existsFriendship(mUsername, mMe);
+      } catch (WeiboException e) {
+        Log.e(TAG, e.getMessage(), e);
+        return TaskResult.IO_ERROR;
+      }
 
       if (isCancelled()) {
         return TaskResult.CANCELLED;
