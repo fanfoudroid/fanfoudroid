@@ -1,6 +1,6 @@
 package com.ch_linghu.fanfoudroid.task;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import android.content.SharedPreferences;
@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.weibo.IDs;
 import com.ch_linghu.fanfoudroid.weibo.User;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
@@ -26,11 +27,8 @@ public class FollowersTask extends AsyncTask<Void, Void, TaskResult> {
 	public TaskResult doInBackground(Void... params) {
 		try {
 			//TODO: 目前仅做新API兼容性改动，待完善Follower处理
-			List<User> followers = activity.nApi.getFollowersStatuses();
-			List<String> followerIds = new ArrayList<String>();
-			for(User follower : followers){
-				followerIds.add(follower.getId());
-			}
+			IDs followers = activity.nApi.getFollowersIDs();
+			List<String> followerIds = Arrays.asList(followers.getIDs());
 			activity.mDb.syncFollowers(followerIds);
 		} catch (WeiboException e) {
 			Log.e(TAG, e.getMessage(), e);

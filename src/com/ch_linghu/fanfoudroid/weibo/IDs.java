@@ -68,6 +68,7 @@ public class IDs extends WeiboResponse {
 
     /*package*/ IDs(Response res,Weibo w) throws WeiboException {
         super(res);
+        // TODO: 饭否返回的为 JSONArray 类型， 例如["ifan","fanfouapi","\u62cd\u62cd","daoru"]
         JSONObject json=  res.asJSONObject();
         try {
         	previousCursor = json.getLong("previous_cursor");

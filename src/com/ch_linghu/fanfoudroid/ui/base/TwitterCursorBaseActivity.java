@@ -182,7 +182,10 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 		diff = nowTime - lastFollowersRefreshTime;
 		Log.i(TAG, "Last followers refresh was " + diff + " ms ago.");
 
-		if (diff > FOLLOWERS_REFRESH_THRESHOLD) {
+		// Should Refresh Followers
+		if (diff > FOLLOWERS_REFRESH_THRESHOLD && 
+				(mRetrieveTask == null || mFollowersRetrieveTask.getStatus() != AsyncTask.Status.RUNNING)) {
+			Log.i(TAG, "Refresh followers.");
 			doRetrieveFollowers();
 		}
 	}
