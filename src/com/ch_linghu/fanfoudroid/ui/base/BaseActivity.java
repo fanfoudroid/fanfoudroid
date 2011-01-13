@@ -1,6 +1,8 @@
 package com.ch_linghu.fanfoudroid.ui.base;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 
 import android.app.Activity;
@@ -18,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.Window;
+import android.widget.Toast;
 
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.AboutDialog;
@@ -44,6 +47,28 @@ public class BaseActivity extends Activity {
 
   protected SharedPreferences mPreferences;
 
+	//FIXME: DEBUG
+	private static final String debugFile = "/sdcard/fanfoudroid_debug.txt";
+	File file = new File(debugFile);
+	FileWriter fw = null;
+	protected void debug(String info){
+		try {
+			if (fw == null){
+				fw = new FileWriter(file, true);
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			Toast.makeText(getBaseContext(), "debug file cannot be created", Toast.LENGTH_LONG);
+		}
+		try {
+			fw.write(info + "\n");
+			fw.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			Toast.makeText(getBaseContext(), "debug file write error", Toast.LENGTH_LONG);
+		}
+	}
+  
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -259,7 +284,9 @@ public class BaseActivity extends Activity {
     	Intent intent = new Intent(Intent.ACTION_SEND);
     	Bundle bundle = new Bundle();
     	bundle.putParcelable("uri", mImageUri);
+    	debug(String.format("[BaseActivity:ImageCapture]mImageUri=%s", mImageUri.toString()));
     	bundle.putString("filename", mImageFile.getPath());
+    	debug(String.format("[BaseActivity:ImageCapture]filename=%s", mImageFile.getPath()));
     	
     	intent.setClass(this, WriteActivity.class);
     	intent.putExtras(bundle);
@@ -268,12 +295,16 @@ public class BaseActivity extends Activity {
     	mImageUri = data.getData();
     	if (mImageUri.getScheme().equals("content")){
         	String filePath = getRealPathFromURI(mImageUri);
+        	debug(String.format("[BaseActivity:PhotoLibrary getRealPathFromURI]mImageUri=%s", mImageUri.toString()));
+        	debug(String.format("[BaseActivity:PhotoLibrary]filePath=%s", filePath));
         	mImageFile = new File(filePath);    	
     	}else{
     		//suppose that we got a file:// URI, convert it to content:// URI
     		String filePath = mImageUri.getPath();
     		mImageFile = new File(filePath);
     		mImageUri = Uri.fromFile(mImageFile);
+        	debug(String.format("[BaseActivity:PhotoLibrary]mImageUri=%s", mImageUri.toString()));
+        	debug(String.format("[BaseActivity:PhotoLibrary]filePath=%s", filePath));
     	}
 
     	Intent intent = new Intent(Intent.ACTION_SEND);

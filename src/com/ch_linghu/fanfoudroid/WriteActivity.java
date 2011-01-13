@@ -17,10 +17,14 @@
 package com.ch_linghu.fanfoudroid;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -39,6 +43,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.R.id;
@@ -81,6 +86,15 @@ public class WriteActivity extends WithHeaderActivity {
 	private UserTask<String, Void, SendResult> mSendTask;
 
 	private String _reply_id;
+	
+	
+	
+
+	private Context getContext() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 	// sub menu
 	protected void createInsertPhotoDialog() {
@@ -120,6 +134,7 @@ public class WriteActivity extends WithHeaderActivity {
 		if (Intent.ACTION_SEND.equals(intent.getAction()) && extras != null) {
 			mImageUri = (Uri) extras.getParcelable("uri");
 			String filename = extras.getString("filename");
+			debug(String.format("[WriteActivity]filename=%s", filename));
 			mFile = new File(filename);
 			mPreview.setImageBitmap(createThumbnailBitmap(mImageUri,
 					MAX_BITMAP_SIZE));
@@ -416,6 +431,7 @@ public class WriteActivity extends WithHeaderActivity {
 				
 				// Update Status
 				if (withPic) {
+					debug(String.format("[WriteActivity]mFile=", mFile.toString()));
 					api.updateStatus(status, mFile);
 				} else {
 					api.updateStatus(status);
