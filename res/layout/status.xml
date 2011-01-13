@@ -23,6 +23,7 @@
             android:layout_height="68dp"
             android:padding="10dp"
             >
+            <!-- 用户头像 -->
             <ImageView android:id="@+id/profile_image"
                 android:src="@drawable/user_default_photo"
                 android:layout_width="48dp"
@@ -30,7 +31,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_marginRight="10dp" />
             <!-- 用户名 -->
-            <TextView android:id="@+id/tweet_user_name"
+            <TextView android:id="@+id/tweet_screen_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@id/profile_image"
@@ -60,7 +61,7 @@
            android:layout_height="1dp"
            />
         <!-- 消息主体 -->
-        <TextView android:id="@+id/status_content"
+        <TextView android:id="@+id/tweet_text"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
@@ -82,18 +83,16 @@
             android:paddingTop="5dp"
             android:paddingBottom="10dp"
             >
-            <TextView android:id="@+id/status_source"
+            <TextView android:id="@+id/tweet_source"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                style="@style/normalText.span"
-                android:text="来自: 网页版"/>
-            <TextView android:id="@+id/status_date"
+                style="@style/normalText.span"/>
+            <TextView android:id="@+id/tweet_created_at"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                style="@style/normalText.span"
-                android:text="10-10 10:10"/>
+                style="@style/normalText.span"/>
          </RelativeLayout>
          <!-- 回复原文 -->
          <RelativeLayout 
@@ -112,7 +111,7 @@
                 android:layout_alignParentLeft="true"
                 style="@style/normalText"
                 android:text="饭友经典语录: 追求艺术品有无数的动机。但是，“炫耀”却是最最重要并且最最不能缺少的动机之一。——@羊小倭"/>
-            <TextView android:id="@+id/reply_status_date"
+            <TextView android:id="@+id/reply_tweet_created_at"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/reply_status_text"

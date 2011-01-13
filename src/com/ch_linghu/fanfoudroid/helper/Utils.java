@@ -64,7 +64,7 @@ public class Utils {
   
 //Wed Dec 15 02:53:36 +0000 2010
   public static final DateFormat TWITTER_DATE_FORMATTER = new SimpleDateFormat(
-      "E MMM d HH:mm:ss Z yyyy", Locale.US);
+      "EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
 
   public static final DateFormat TWITTER_SEARCH_API_DATE_FORMATTER = new SimpleDateFormat(
       "E, d MMM yyyy HH:mm:ss Z", Locale.US);
