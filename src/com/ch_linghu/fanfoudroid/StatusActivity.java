@@ -17,6 +17,7 @@
 package com.ch_linghu.fanfoudroid;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageButton;
@@ -24,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
+import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
 
 public class StatusActivity extends WithHeaderActivity {
@@ -36,12 +38,12 @@ public class StatusActivity extends WithHeaderActivity {
 	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.STATUS";
 	
 	// View
-	private TextView tweet_user_name; 
-	private TextView status_content; 
+	private TextView tweet_screen_name; 
+	private TextView tweet_text; 
 	private TextView tweet_user_info;
 	private ImageView profile_image;
-	private TextView status_source;
-	private TextView status_date;
+	private TextView tweet_source;
+	private TextView tweet_created_at;
 	private ImageButton person_more;
 	private ImageView status_photo = null; //if exists
 	private TextView reply_status_text = null; //if exists
@@ -68,19 +70,23 @@ public class StatusActivity extends WithHeaderActivity {
 		Bundle extras = intent.getExtras();
 
 		// View
-		tweet_user_name = (TextView)	findViewById(R.id.tweet_user_name);
-		tweet_user_info = (TextView)	findViewById(R.id.tweet_user_info);
-		status_content  = (TextView)	findViewById(R.id.status_content);
-		status_source   = (TextView)	findViewById(R.id.status_source);
-		profile_image   = (ImageView)	findViewById(R.id.profile_image);
-		status_date 	= (TextView)	findViewById(R.id.status_date);
-		person_more 	= (ImageButton)	findViewById(R.id.person_more);
+		tweet_screen_name	= (TextView)	findViewById(R.id.tweet_screen_name);
+		tweet_user_info		= (TextView)	findViewById(R.id.tweet_user_info);
+		tweet_text			= (TextView)	findViewById(R.id.tweet_text);
+		tweet_source		= (TextView)	findViewById(R.id.tweet_source);
+		profile_image		= (ImageView)	findViewById(R.id.profile_image);
+		tweet_created_at 	= (TextView)	findViewById(R.id.tweet_created_at);
+		person_more 		= (ImageButton)	findViewById(R.id.person_more);
 		
 		// Set view with intent data
 		Tweet tweet = extras.getParcelable(EXTRA_TWEET);
-		tweet_user_name.setText(tweet.screenName);
-		status_content.setText(tweet.text);
+		tweet_screen_name.setText(tweet.screenName);
+		tweet_text.setText(tweet.text);
+		tweet_created_at.setText(Utils.getRelativeDate(tweet.createdAt));
+		tweet_source.setText("通过" + tweet.source);
 		
+		Bitmap mProfileBitmap = TwitterApplication.mImageManager.get(tweet.profileImageUrl);
+		profile_image.setImageBitmap(mProfileBitmap);
 		
 		//TODO: 为单推界面绑定顶部按钮监听器
 	}

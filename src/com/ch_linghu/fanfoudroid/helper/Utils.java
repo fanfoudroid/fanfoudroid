@@ -30,6 +30,8 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
+
 import android.os.Bundle;
 import android.text.util.Linkify;
 import android.util.Log;
@@ -67,12 +69,24 @@ public class Utils {
       "E MMM d HH:mm:ss Z yyyy", Locale.US);
 
   public static final DateFormat TWITTER_SEARCH_API_DATE_FORMATTER = new SimpleDateFormat(
+	  //TODO: Z -> z ?
       "E, d MMM yyyy HH:mm:ss Z", Locale.US);
 
   public static final Date parseDateTime(String dateString) {
     try {
     	Log.d(TAG, String.format("in parseDateTime, dateString=%s", dateString));
       return TWITTER_DATE_FORMATTER.parse(dateString);
+    } catch (ParseException e) {
+      Log.w(TAG, "Could not parse Twitter date string: " + dateString);
+      return null;
+    }
+  }
+  
+  // Handle "yyyy-MM-dd'T'HH:mm:ss.SSS" from sqlite
+  public static final Date parseDateTimeFromSqlite(String dateString) {
+    try {
+    	Log.d(TAG, String.format("in parseDateTime, dateString=%s", dateString));
+      return TwitterDbAdapter.DB_DATE_FORMATTER.parse(dateString);
     } catch (ParseException e) {
       Log.w(TAG, "Could not parse Twitter date string: " + dateString);
       return null;

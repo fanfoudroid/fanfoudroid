@@ -36,6 +36,7 @@ public class Tweet extends Message implements Parcelable {
   private static final String TAG = "Tweet";
 
   public String source;
+  public String prevId;
   
   public Tweet(){}
 
@@ -117,7 +118,16 @@ public class Tweet extends Message implements Parcelable {
   public void writeToParcel(Parcel out, int flags) {
 	  out.writeString(id);
 	  out.writeString(text);
+	  out.writeValue(createdAt); //Date
 	  out.writeString(screenName);
+	  out.writeString(favorited);
+	  out.writeString(inReplyToStatusId);
+	  out.writeString(inReplyToUserId);
+	  out.writeString(inReplyToScreenName);
+	  out.writeString(screenName);
+	  out.writeString(profileImageUrl);
+	  out.writeString(userId);
+	  out.writeString(source);
   }
 
   public static final Parcelable.Creator<Tweet> CREATOR
@@ -133,9 +143,18 @@ public class Tweet extends Message implements Parcelable {
   };
   
   public Tweet(Parcel in) {
-	  this.id = in.readString();
-	  this.text = in.readString();
-	  this.screenName = in.readString();
+	  id = in.readString();
+	  text = in.readString();
+	  createdAt = (Date) in.readValue(Date.class.getClassLoader());
+	  screenName = in.readString();
+	  favorited = in.readString();
+	  inReplyToStatusId = in.readString();
+	  inReplyToUserId = in.readString();
+	  inReplyToScreenName = in.readString();
+	  screenName = in.readString();
+	  profileImageUrl = in.readString();
+	  userId = in.readString();
+	  source = in.readString();
   }
 
   @Override

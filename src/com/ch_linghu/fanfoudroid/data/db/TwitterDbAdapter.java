@@ -168,6 +168,7 @@ public class TwitterDbAdapter {
 
   // TODO: move all these to the model.
   public long createTweet(String tableName, Tweet tweet, String prevId, boolean isUnread) {
+	Log.i(TAG, "Insert tweet to table " + TABLE_TWEET + " : " + tweet.toString());
     ContentValues initialValues = new ContentValues();
     initialValues.put(KEY_ID, tweet.id);
     initialValues.put(KEY_USER, tweet.screenName);
@@ -562,6 +563,8 @@ public class TwitterDbAdapter {
 		  tweet.inReplyToUserId = cursor.getString(cursor.getColumnIndex(KEY_IN_REPLY_TO_USER_ID));
 		  tweet.inReplyToStatusId = cursor.getString(cursor.getColumnIndex(KEY_IN_REPLY_TO_STATUS_ID));
 		  
+		  tweet.prevId = cursor.getString(cursor.getColumnIndex(KEY_PREV_ID));
+
 		  return tweet;
 	  }else{
 		  return null;
@@ -653,54 +656,18 @@ public class TwitterDbAdapter {
 	  if(Utils.isEmpty(prevId)){
 		  return null;
 	  }else{
-		  Cursor cursor = mDb.rawQuery("SELECT " + KEY_CREATED_AT 
-				                      + " FROM " + tableName 
-				                      + " WHERE " + KEY_ID + " = ?",
-				                      new String[]{prevId});
-		  String date = null;
-		  if (cursor != null && cursor.moveToFirst()){
-			  date = cursor.getString(0);
-		  }else{
-			  return null;
-		  }
-		  cursor = mDb.rawQuery("SELECT * FROM " + tableName 
-				              + " WHERE " + KEY_CREATED_AT + " <= ? "
-				              + " ORDER BY " + KEY_CREATED_AT + " DESC",
-				              new String[]{date});
-		  if (cursor != null && cursor.moveToFirst()){
-			  List<Tweet> tweetList = new ArrayList<Tweet>();
-			  int index = 0;
-			  boolean start = false;
-			  String tweet_prevId = null;
-			  do{
-				  //因为按时间排序不精确，所以我们从找到所需要的记录开始工作
-				  if (!start && cursor.getString(cursor.getColumnIndex(KEY_ID)).equals(prevId)){
-					  start = true;
-				  }
-				  if (start){
-					  Tweet tweet = new Tweet();
-					  tweet.id = cursor.getString(cursor.getColumnIndex(KEY_ID));
-					  tweet.text = cursor.getString(cursor.getColumnIndex(KEY_TEXT));
-					  tweet.createdAt = Utils.parseDateTime(cursor.getString(cursor.getColumnIndex(KEY_CREATED_AT)));
-					  tweet.favorited = cursor.getString(cursor.getColumnIndex(KEY_FAVORITED));
-					  tweet.source = cursor.getString(cursor.getColumnIndex(KEY_SOURCE));
-					  tweet.profileImageUrl = cursor.getString(cursor.getColumnIndex(KEY_PROFILE_IMAGE_URL));
-					  tweet.userId = cursor.getString(cursor.getColumnIndex(KEY_USER_ID));
-					  tweet.screenName = cursor.getString(cursor.getColumnIndex(KEY_USER));
-					  tweet.inReplyToScreenName = cursor.getString(cursor.getColumnIndex(KEY_IN_REPLY_TO_SCREEN_NAME));
-					  tweet.inReplyToUserId = cursor.getString(cursor.getColumnIndex(KEY_IN_REPLY_TO_USER_ID));
-					  tweet.inReplyToStatusId = cursor.getString(cursor.getColumnIndex(KEY_IN_REPLY_TO_STATUS_ID));
-					  
-					  tweet_prevId = cursor.getString(cursor.getColumnIndex(KEY_PREV_ID));
-					  
-					  tweetList.add(tweet);
-					  index++;
-				  }
-			  }while(cursor.moveToNext() && index < limit && !Utils.isEmpty(tweet_prevId));
-			  return tweetList;
-		  }
+		  int index = 0;
+		  List<Tweet> tweetList = new ArrayList<Tweet>();
+		  do{
+			  Tweet tweet = getTweet(tableName, prevId);
+						  
+			  prevId = tweet.prevId;
+						  
+			  tweetList.add(tweet);
+			  index++;
+		  }while(index < limit && !Utils.isEmpty(prevId));
+		  return tweetList;
 	  }
-	  return null;
   }
 
   public int limitRows(String tablename, int limit) {

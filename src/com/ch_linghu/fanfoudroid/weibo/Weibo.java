@@ -37,7 +37,6 @@ import java.util.TimeZone;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 
-
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
 import com.ch_linghu.fanfoudroid.http.Response;
@@ -751,7 +750,8 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
     public List<User> getFollowersStatuses() throws WeiboException {
         return User.constructResult(get(getBaseURL() + "statuses/followers.json", true));
     }
-
+    
+  
 
     /**
      * Returns the authenticating user's followers, each with current status inline. They are ordered by the order in which they joined Weibo (this is going to be changed).
@@ -1145,6 +1145,32 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
     public User createFriendship(String id) throws WeiboException {
          return new User(http.post(getBaseURL() + "friendships/create/" + id + ".json", createParams(), true).asJSONObject());
     }
+    
+    /**
+     * Returns an array of numeric IDs for every user the specified user is followed by.
+     * @param userId Specifies the ID of the user for whom to return the followers list.
+     * @param cursor  Specifies the page number of the results beginning at 1. A single page contains 5000 ids. This is recommended for users with large ID lists. If not provided all ids are returned.
+     * @return The ID or screen_name of the user to retrieve the friends ID list for.
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.10
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Followers/ids">followers/ids </a>
+     */
+    public IDs getFollowersIDs(String userId) throws WeiboException {
+        return new IDs(get(getBaseURL() + "followers/ids.xml?user_id=" + userId, true));
+    }
+    
+    /**
+     * Returns an array of numeric IDs for every user the specified user is followed by.
+     * @param cursor  Specifies the page number of the results beginning at 1. A single page contains 5000 ids. This is recommended for users with large ID lists. If not provided all ids are returned.
+     * @return The ID or screen_name of the user to retrieve the friends ID list for.
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since Weibo4J 2.0.10
+     * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Followers/ids">followers/ids </a>
+     */
+    public IDs getFollowersIDs() throws WeiboException {
+        return new IDs(get(getBaseURL() + "followers/ids.xml", true));
+    }
+
 
     /**
      * Returns an array of numeric IDs for every user the authenticating user is following.

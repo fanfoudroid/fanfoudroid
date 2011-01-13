@@ -123,7 +123,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 		}else{
 			Tweet tweet = new Tweet();
 			tweet.id = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_ID));
-			tweet.createdAt = Utils.parseDateTime(cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_CREATED_AT)));
+			tweet.createdAt = Utils.parseDateTimeFromSqlite(cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_CREATED_AT)));
 			tweet.favorited = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_FAVORITED));
 			tweet.screenName = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_USER));
 			tweet.userId = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_USER_ID));
@@ -182,7 +182,10 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 		diff = nowTime - lastFollowersRefreshTime;
 		Log.i(TAG, "Last followers refresh was " + diff + " ms ago.");
 
-		if (diff > FOLLOWERS_REFRESH_THRESHOLD) {
+		// Should Refresh Followers
+		if (diff > FOLLOWERS_REFRESH_THRESHOLD && 
+				(mRetrieveTask == null || mFollowersRetrieveTask.getStatus() != AsyncTask.Status.RUNNING)) {
+			Log.i(TAG, "Refresh followers.");
 			doRetrieveFollowers();
 		}
 	}
