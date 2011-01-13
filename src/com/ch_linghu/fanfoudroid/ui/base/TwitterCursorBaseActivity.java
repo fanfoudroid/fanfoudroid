@@ -139,7 +139,10 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 
 	@Override
 	protected void updateTweet(Tweet tweet){
-		getDb().updateTweet(tweet);
+		//对所有相关表的对应消息都进行刷新（如果存在的话）
+		getDb().updateTweet(TwitterDbAdapter.TABLE_FAVORITE, tweet);
+		getDb().updateTweet(TwitterDbAdapter.TABLE_MENTION, tweet);
+		getDb().updateTweet(TwitterDbAdapter.TABLE_TWEET, tweet);
 	}
 
 	@Override

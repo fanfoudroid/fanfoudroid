@@ -11,6 +11,7 @@ import android.util.Log;
 import com.ch_linghu.fanfoudroid.TwitterApi.ApiException;
 import com.ch_linghu.fanfoudroid.TwitterApi.AuthException;
 import com.ch_linghu.fanfoudroid.data.Tweet;
+import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
@@ -52,7 +53,10 @@ public class FavoriteTask extends AsyncTask<String, Void, TaskResult> {
 				}
 			}
 
-			activity.mDb.updateTweet(tweet);
+			//对所有相关表的对应消息都进行刷新（如果存在的话）
+			activity.mDb.updateTweet(TwitterDbAdapter.TABLE_FAVORITE, tweet);
+			activity.mDb.updateTweet(TwitterDbAdapter.TABLE_MENTION, tweet);
+			activity.mDb.updateTweet(TwitterDbAdapter.TABLE_TWEET, tweet);
 		} catch (WeiboException e) {
 			Log.e(TAG, e.getMessage(), e);
 			return TaskResult.IO_ERROR;

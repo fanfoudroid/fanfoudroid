@@ -132,7 +132,7 @@ public class TwitterService extends Service {
 
 		Log.i(TAG, mNewTweets.size() + " new tweets.");
 
-		int count = getDb().addNewTweetsAndCountUnread(mNewTweets);
+		int count = getDb().addNewTweetsAndCountUnread(TwitterDbAdapter.TABLE_TWEET, mNewTweets);
 
 		for (Tweet tweet : mNewTweets) {
 			if (!Utils.isEmpty(tweet.profileImageUrl)) {
@@ -177,7 +177,7 @@ public class TwitterService extends Service {
 
 		Log.i(TAG, mNewMentions.size() + " new mentions.");
 
-		int count = getDb().addNewMentionsAndCountUnread(mNewMentions);
+		int count = getDb().addNewTweetsAndCountUnread(TwitterDbAdapter.TABLE_MENTION, mNewMentions);
 
 		for (Tweet tweet : mNewMentions) {
 			if (!Utils.isEmpty(tweet.profileImageUrl)) {
@@ -371,7 +371,7 @@ public class TwitterService extends Service {
 			boolean dm_only = preferences.getBoolean(Preferences.DM_ONLY_KEY, true);
 			
 			if (timeline_only){
-				String maxId = getDb().fetchMaxId();
+				String maxId = getDb().fetchMaxId(TwitterDbAdapter.TABLE_TWEET);
 				Log.i(TAG, "Max id is:" + maxId);
 	
 				List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
@@ -405,7 +405,7 @@ public class TwitterService extends Service {
 			}
 			
 			if (replies_only){
-				String maxMentionId = getDb().fetchMaxMentionId();
+				String maxMentionId = getDb().fetchMaxId(TwitterDbAdapter.TABLE_MENTION);
 				Log.i(TAG, "Max mention id is:" + maxMentionId);
 
 				List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;

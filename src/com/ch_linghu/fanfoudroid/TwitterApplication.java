@@ -58,7 +58,7 @@ public class TwitterApplication extends Application {
   private void cleanupImages() {
     HashSet<String> keepers = new HashSet<String>();
     
-    Cursor cursor = mDb.fetchAllTweets();
+    Cursor cursor = mDb.fetchAllTweets(TwitterDbAdapter.TABLE_TWEET);
     
     if (cursor.moveToFirst()) {
       int imageIndex = cursor.getColumnIndexOrThrow(

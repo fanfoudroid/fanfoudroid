@@ -35,6 +35,7 @@ import com.ch_linghu.fanfoudroid.R.string;
 import com.ch_linghu.fanfoudroid.TwitterApi.ApiException;
 import com.ch_linghu.fanfoudroid.TwitterApi.AuthException;
 import com.ch_linghu.fanfoudroid.data.Tweet;
+import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.task.Followable;
 import com.ch_linghu.fanfoudroid.task.HasFavorite;
 import com.ch_linghu.fanfoudroid.task.Retrievable;
@@ -86,7 +87,7 @@ public class TwitterActivity extends TwitterCursorBaseActivity
 	@Override
 	protected Cursor fetchMessages() {
 		// TODO Auto-generated method stub
-		return getDb().fetchAllTweets();
+		return getDb().fetchAllTweets(TwitterDbAdapter.TABLE_TWEET);
 	}
 
 	@Override
@@ -99,7 +100,7 @@ public class TwitterActivity extends TwitterCursorBaseActivity
 	@Override
 	protected void markAllRead() {
 		// TODO Auto-generated method stub
-		getDb().markAllTweetsRead();
+		getDb().markAllTweetsRead(TwitterDbAdapter.TABLE_TWEET);
 	}
 	
 	
@@ -108,13 +109,13 @@ public class TwitterActivity extends TwitterCursorBaseActivity
 	@Override
 	public void addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
 		// TODO Auto-generated method stub
-		getDb().addTweets(tweets, isUnread);
+		getDb().addTweets(TwitterDbAdapter.TABLE_TWEET, tweets, isUnread);
 	}
 	
 	@Override
 	public String fetchMaxId() {
 		// TODO Auto-generated method stub
-		return getDb().fetchMaxId();
+		return getDb().fetchMaxId(TwitterDbAdapter.TABLE_TWEET);
 	}
 	
 	@Override

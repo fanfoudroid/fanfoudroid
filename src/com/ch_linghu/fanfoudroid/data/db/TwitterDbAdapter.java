@@ -41,6 +41,7 @@ public class TwitterDbAdapter {
 
   public static final String TABLE_TWEET = "tweets";
   public static final String TABLE_MENTION = "mentions";
+  public static final String TABLE_FAVORITE = "favorites";
   public static final String TABLE_DIRECTMESSAGE = "dms";
   public static final String TABLE_FOLLOWER = "followers";
   
@@ -106,6 +107,19 @@ public class TwitterDbAdapter {
       + KEY_IN_REPLY_TO_SCREEN_NAME + " text, "
       + KEY_SOURCE + " text not null, " + KEY_USER_ID + " text, " + KEY_PREV_ID + " text)";
 
+  private static final String FAVORITE_TABLE_CREATE = "create table "
+      + TABLE_FAVORITE + " (" + KEY_ID
+      + " text primary key on conflict replace, " + KEY_USER
+      + " text not null, " + KEY_TEXT + " text not null, "
+      + KEY_PROFILE_IMAGE_URL + " text not null, " + KEY_IS_UNREAD
+      + " boolean not null, " + KEY_CREATED_AT + " date not null, "
+      + KEY_FAVORITED + " text, "
+      + KEY_IN_REPLY_TO_STATUS_ID + " text, "
+      + KEY_IN_REPLY_TO_USER_ID + " text, "
+      + KEY_IN_REPLY_TO_SCREEN_NAME + " text, "
+      + KEY_SOURCE + " text not null, " + KEY_USER_ID + " text, " + KEY_PREV_ID + " text)";
+
+ 
   private static final String DM_TABLE_CREATE = "create table " + TABLE_DIRECTMESSAGE
       + " (" + KEY_ID + " text primary key on conflict replace, " + KEY_USER
       + " text not null, " + KEY_TEXT + " text not null, "
@@ -128,6 +142,7 @@ public class TwitterDbAdapter {
     public void onCreate(SQLiteDatabase db) {
       db.execSQL(TWEET_TABLE_CREATE);
       db.execSQL(MENTION_TABLE_CREATE);
+      db.execSQL(FAVORITE_TABLE_CREATE);
       db.execSQL(DM_TABLE_CREATE);
       db.execSQL(FOLLOWER_TABLE_CREATE);
     }
@@ -138,6 +153,7 @@ public class TwitterDbAdapter {
           + newVersion + " which destroys all old data");
       db.execSQL("DROP TABLE IF EXISTS " + TABLE_TWEET);
       db.execSQL("DROP TABLE IF EXISTS " + TABLE_MENTION);
+      db.execSQL("DROP TABLE IF EXISTS " + TABLE_FAVORITE);
       db.execSQL("DROP TABLE IF EXISTS " + TABLE_DIRECTMESSAGE);
       db.execSQL("DROP TABLE IF EXISTS " + TABLE_FOLLOWER);
       onCreate(db);
@@ -168,7 +184,7 @@ public class TwitterDbAdapter {
 
   // TODO: move all these to the model.
   public long createTweet(String tableName, Tweet tweet, String prevId, boolean isUnread) {
-	Log.d(TAG, "Insert tweet to table " + TABLE_TWEET + " : " + tweet.toString());
+	Log.d(TAG, "Insert tweet to table " + tableName + " : " + tweet.toString());
 	//FIXME: guard code to avoid FC
 	if (tweet == null){
 		return -1;
@@ -194,33 +210,15 @@ public class TwitterDbAdapter {
 
 	//如果已经存在就更新,否则插入
 	if (isTweetExists(tableName, tweet.id)){
+		Log.d(TAG, String.format("[update]tweet.id=%s", tweet.id));
 		return mDb.update(tableName, initialValues, KEY_ID+"=?", new String[]{tweet.id});
 	}else{
+		Log.d(TAG, String.format("[insert]tweet.id=%s", tweet.id));
 		return mDb.insert(tableName, null, initialValues);
 	}
   }
   
-  public long createMention(Tweet tweet, boolean isUnread) {
-	    ContentValues initialValues = new ContentValues();
-	    initialValues.put(KEY_ID, tweet.id);
-	    initialValues.put(KEY_USER, tweet.screenName);
-	    initialValues.put(KEY_TEXT, tweet.text);
-	    initialValues.put(KEY_PROFILE_IMAGE_URL, tweet.profileImageUrl);
-	    initialValues.put(KEY_FAVORITED, tweet.favorited);
-	    initialValues.put(KEY_IN_REPLY_TO_STATUS_ID, tweet.inReplyToStatusId);
-	    initialValues.put(KEY_IN_REPLY_TO_USER_ID, tweet.inReplyToUserId);
-	    initialValues.put(KEY_IN_REPLY_TO_SCREEN_NAME, tweet.inReplyToScreenName);
-	    initialValues.put(KEY_IS_UNREAD, isUnread);
-	    //initialValues.put(KEY_IS_REPLY, tweet.isReply());
-	    initialValues
-	        .put(KEY_CREATED_AT, DB_DATE_FORMATTER.format(tweet.createdAt));
-	    initialValues.put(KEY_SOURCE, tweet.source);
-	    initialValues.put(KEY_USER_ID, tweet.userId);
-
-	    return mDb.insert(TABLE_MENTION, null, initialValues);
-	  }
-  
-  public long updateTweet(Tweet tweet){
+  public long updateTweet(String tableName, Tweet tweet){
 	  String id = tweet.id;
 
 	    ContentValues initialValues = new ContentValues();
@@ -238,15 +236,12 @@ public class TwitterDbAdapter {
 	    initialValues.put(KEY_SOURCE, tweet.source);
 	    initialValues.put(KEY_USER_ID, tweet.userId);
 	  
-	  int result1 = mDb.update(TABLE_TWEET, initialValues, KEY_ID+"=?", new String[]{id});
-	  int result2 = mDb.update(TABLE_MENTION, initialValues, KEY_ID+"=?", new String[]{id});
-	  
-	  return result1 > result2 ? result1 : result2;
+	  return mDb.update(TABLE_MENTION, initialValues, KEY_ID+"=?", new String[]{id});
   }
   
-  public boolean destoryStatus(String status_id) {		
+  public boolean destoryStatus(String tableName, String status_id) {		
 	  String where = KEY_ID + "='" + status_id + "'";		
-	  return mDb.delete(TABLE_TWEET, where , null) > 0;		
+	  return mDb.delete(tableName, where , null) > 0;		
   }
 
   
@@ -286,27 +281,15 @@ public class TwitterDbAdapter {
     }
   }
 
-  public int addNewTweetsAndCountUnread(List<Tweet> tweets) {
-    addTweets(tweets, true);
+  public int addNewTweetsAndCountUnread(String tableName, List<Tweet> tweets) {
+    addTweets(tableName, tweets, true);
 
-    return fetchUnreadCount();
+    return fetchUnreadCount(tableName);
   }
 
-
-  public int addNewMentionsAndCountUnread(List<Tweet> tweets) {
-    addMentions(tweets, true);
-
-    return fetchUnreadMentionCount();
-  }
-
-  public Cursor fetchAllTweets() {
-    return mDb.query(TABLE_TWEET, TWEET_COLUMNS, null, null, null, null, KEY_CREATED_AT
+  public Cursor fetchAllTweets(String tableName) {
+    return mDb.query(tableName, TWEET_COLUMNS, null, null, null, null, KEY_CREATED_AT
         + " DESC");
-  }
-
-  public Cursor fetchMentions() {
-    return mDb.query(TABLE_MENTION, TWEET_COLUMNS, null, null,
-        null, null, KEY_CREATED_AT + " DESC");
   }
 
   public Cursor fetchAllDms() {
@@ -346,17 +329,14 @@ public class TwitterDbAdapter {
 
   public void clearData() {
     // TODO: just wipe the database.
-    deleteAllTweets();
+    deleteAllTweets(TABLE_TWEET);
+    deleteAllTweets(TABLE_MENTION);
     deleteAllDms();
     deleteAllFollowers();
   }
 
-  public boolean deleteAllTweets() {
-	    return mDb.delete(TABLE_TWEET, null, null) > 0;
-	  }
-
-  public boolean deleteAllMentions() {
-	    return mDb.delete(TABLE_MENTION, null, null) > 0;
+  public boolean deleteAllTweets(String tableName) {
+	    return mDb.delete(tableName, null, null) > 0;
 	  }
 
   public boolean deleteAllDms() {
@@ -372,16 +352,10 @@ public class TwitterDbAdapter {
     
   }
 
-  public void markAllTweetsRead() {
+  public void markAllTweetsRead(String tableName) {
 	    ContentValues values = new ContentValues();
 	    values.put(KEY_IS_UNREAD, 0);
-	    mDb.update(TABLE_TWEET, values, null, null);
-	  }
-
-  public void markAllMentionsRead() {
-	    ContentValues values = new ContentValues();
-	    values.put(KEY_IS_UNREAD, 0);
-	    mDb.update(TABLE_MENTION, values, null, null);
+	    mDb.update(tableName, values, null, null);
 	  }
 
   public void markAllDmsRead() {
@@ -390,9 +364,9 @@ public class TwitterDbAdapter {
     mDb.update(TABLE_DIRECTMESSAGE, values, null, null);
   }
 
-  public String fetchMaxId() {
+  public String fetchMaxId(String tableName) {
     Cursor mCursor = mDb.rawQuery("SELECT " + KEY_ID + " FROM "
-        + TABLE_TWEET + " ORDER BY " + KEY_CREATED_AT + " DESC LIMIT 1", null);
+        + tableName + " ORDER BY " + KEY_CREATED_AT + " DESC LIMIT 1", null);
 
     String result = null;
 
@@ -412,9 +386,9 @@ public class TwitterDbAdapter {
     return result;
   }
 
-  public int fetchUnreadCount() {
+  public int fetchUnreadCount(String tableName) {
     Cursor mCursor = mDb.rawQuery("SELECT COUNT(" + KEY_ID + ") FROM "
-        + TABLE_TWEET + " WHERE " + KEY_IS_UNREAD + " = 1", null);
+        + tableName + " WHERE " + KEY_IS_UNREAD + " = 1", null);
 
     int result = 0;
 
@@ -429,43 +403,6 @@ public class TwitterDbAdapter {
     return result;
   }
 
-  public String fetchMaxMentionId() {
-	    Cursor mCursor = mDb.rawQuery("SELECT " + KEY_ID + " FROM "
-	        + TABLE_MENTION + " ORDER BY " + KEY_CREATED_AT + " DESC LIMIT 1", null);
-
-	    String result = null;
-
-	    if (mCursor == null) {
-	      return result;
-	    }
-
-	    mCursor.moveToFirst();
-	    if (mCursor.getCount() == 0){
-	    	result = null;
-	    }else{
-	    	result = mCursor.getString(0);
-	    }
-	    mCursor.close();
-
-	    return result;
-	  }
-
-	  public int fetchUnreadMentionCount() {
-	    Cursor mCursor = mDb.rawQuery("SELECT COUNT(" + KEY_ID + ") FROM "
-	        + TABLE_MENTION + " WHERE " + KEY_IS_UNREAD + " = 1", null);
-
-	    int result = 0;
-
-	    if (mCursor == null) {
-	      return result;
-	    }
-
-	    mCursor.moveToFirst();
-	    result = mCursor.getInt(0);
-	    mCursor.close();
-
-	    return result;
-	  }  
   public String fetchMaxDmId(boolean isSent) {
     Cursor mCursor = mDb.rawQuery("SELECT " + KEY_ID + " FROM " + TABLE_DIRECTMESSAGE
         + " WHERE " + KEY_IS_SENT + " = ? "
@@ -528,21 +465,22 @@ public class TwitterDbAdapter {
     return result;
   }
 
-  public void addTweets(List<Tweet> tweets, boolean isUnread) {
+  public void addTweets(String tableName, List<Tweet> tweets, boolean isUnread) {
     try {
       mDb.beginTransaction();
 
       Tweet prevTweet = null;
       for (Tweet tweet : tweets) {
     	if (prevTweet != null){
-    		createTweet(TABLE_TWEET, prevTweet, tweet.id, isUnread);
+    		long result = createTweet(tableName, prevTweet, tweet.id, isUnread);
+    		Log.d(TAG, String.format("createTweet returns %d", result));
     	}
         prevTweet = tweet;
       }
       //add the last tweet with previd is empty
-      createTweet(TABLE_TWEET, prevTweet, "", isUnread);
+      createTweet(tableName, prevTweet, "", isUnread);
 
-      limitRows(TABLE_TWEET, TwitterApi.RETRIEVE_LIMIT);
+      limitRows(tableName, TwitterApi.RETRIEVE_LIMIT);
       mDb.setTransactionSuccessful();
     } finally {
       mDb.endTransaction();
@@ -598,21 +536,6 @@ public class TwitterDbAdapter {
 	    }
 	  }
   
-  public void addMentions(List<Tweet> tweets, boolean isUnread) {
-	    try {
-	      mDb.beginTransaction();
-
-	      for (Tweet tweet : tweets) {
-	        createMention(tweet, isUnread);
-	      }
-
-	      limitRows(TABLE_MENTION, TwitterApi.RETRIEVE_LIMIT);
-	      mDb.setTransactionSuccessful();
-	    } finally {
-	      mDb.endTransaction();
-	    }
-	  }
-  
   public void addDms(List<Dm> dms, boolean isUnread) {
     try {
       mDb.beginTransaction();
@@ -630,13 +553,21 @@ public class TwitterDbAdapter {
   
   //检查指定ID的消息是否存在于数据库
   public boolean isTweetExists(String tableName, String id){
-	  Cursor cursor = mDb.rawQuery("SELECT " + KEY_ID 
+	  Cursor cursor = mDb.rawQuery("SELECT COUNT(*) " 
 			                      + " FROM " + tableName 
 			                      + " WHERE " + KEY_ID + " = ?",
 			                      new String[]{id});
-	  if (cursor != null && cursor.moveToFirst() && cursor.getCount() > 0){
-		  return true;
+	  if (cursor != null && cursor.moveToFirst()){
+		  int count = cursor.getInt(0);
+		  if (count > 0){
+			  Log.d(TAG, String.format("[isTweetExists], id=%s, tableName=%s, count = %d, return true", id, tableName, count));
+			  return true;
+		  }else{
+			  Log.d(TAG, String.format("[isTweetExists], id=%s, tableName=%s, count = %d, return false", id, tableName, count));
+			  return false;
+		  }
 	  }else{
+		  Log.d(TAG, "cursor=null, return false");
 		  return false;
 	  }
   }
