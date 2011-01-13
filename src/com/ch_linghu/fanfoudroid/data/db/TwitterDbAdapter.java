@@ -168,7 +168,11 @@ public class TwitterDbAdapter {
 
   // TODO: move all these to the model.
   public long createTweet(String tableName, Tweet tweet, String prevId, boolean isUnread) {
-	Log.i(TAG, "Insert tweet to table " + TABLE_TWEET + " : " + tweet.toString());
+	Log.d(TAG, "Insert tweet to table " + TABLE_TWEET + " : " + tweet.toString());
+	//FIXME: guard code to avoid FC
+	if (tweet == null){
+		return -1;
+	}
     ContentValues initialValues = new ContentValues();
     initialValues.put(KEY_ID, tweet.id);
     initialValues.put(KEY_USER, tweet.screenName);
