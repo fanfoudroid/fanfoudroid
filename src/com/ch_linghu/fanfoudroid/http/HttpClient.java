@@ -142,8 +142,6 @@ public class HttpClient {
 		 if (null == postParams) {
 			 postParams = new ArrayList<BasicNameValuePair>();
 		 }
-		 
-		 postParams.add(new BasicNameValuePair("source", Weibo.CONSUMER_KEY));
 		 return httpRequest(url, postParams, authenticated, METHOD_POST);
 	}
 	

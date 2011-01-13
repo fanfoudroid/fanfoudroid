@@ -156,10 +156,11 @@ public class TwitterDbAdapter {
   }
 
   public final static DateFormat DB_DATE_FORMATTER = new SimpleDateFormat(
-	"EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
+	"yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.ENGLISH);
 
   // TODO: move all these to the model.
   public long createTweet(Tweet tweet, boolean isUnread) {
+	Log.i(TAG, "Insert tweet to table " + TWEET_TABLE + " : " + tweet.toString());
     ContentValues initialValues = new ContentValues();
     initialValues.put(KEY_ID, tweet.id);
     initialValues.put(KEY_USER, tweet.screenName);
