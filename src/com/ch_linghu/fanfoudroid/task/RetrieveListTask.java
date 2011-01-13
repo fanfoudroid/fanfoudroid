@@ -58,7 +58,6 @@ public class RetrieveListTask extends AsyncTask<Void, Integer, TaskResult> {
 
 			Tweet tweet;
 
-
 			tweet = Tweet.create(status);
 			tweets.add(tweet);
 

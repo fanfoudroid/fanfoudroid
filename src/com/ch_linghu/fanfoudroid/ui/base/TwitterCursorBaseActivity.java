@@ -184,7 +184,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 
 		// Should Refresh Followers
 		if (diff > FOLLOWERS_REFRESH_THRESHOLD && 
-				(mRetrieveTask == null || mFollowersRetrieveTask.getStatus() != AsyncTask.Status.RUNNING)) {
+				(mFollowersRetrieveTask == null || mFollowersRetrieveTask.getStatus() != AsyncTask.Status.RUNNING)) {
 			Log.i(TAG, "Refresh followers.");
 			doRetrieveFollowers();
 		}
