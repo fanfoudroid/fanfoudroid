@@ -158,16 +158,16 @@ public class TwitterDbAdapter {
   public void close() {
     mDbHelper.close();
   }
+  
+  public void resetDatabase(){
+	  mDbHelper.onUpgrade(mDb, 1, 2);
+  }
 
   public final static DateFormat DB_DATE_FORMATTER = new SimpleDateFormat(
       "yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US);
 
   // TODO: move all these to the model.
   public long createTweet(String tableName, Tweet tweet, String prevId, boolean isUnread) {
-	//如果已经存在就忽略
-	if (isTweetExists(tableName, tweet.id)){
-		return -1;
-	}
     ContentValues initialValues = new ContentValues();
     initialValues.put(KEY_ID, tweet.id);
     initialValues.put(KEY_USER, tweet.screenName);
@@ -179,13 +179,20 @@ public class TwitterDbAdapter {
     initialValues.put(KEY_IN_REPLY_TO_SCREEN_NAME, tweet.inReplyToScreenName);
     initialValues.put(KEY_IS_UNREAD, isUnread);
     //initialValues.put(KEY_IS_REPLY, tweet.isReply());
-    initialValues.put(KEY_PREV_ID, prevId);
+    if (!Utils.isEmpty(prevId)){
+    	initialValues.put(KEY_PREV_ID, prevId);
+    }
     initialValues
         .put(KEY_CREATED_AT, DB_DATE_FORMATTER.format(tweet.createdAt));
     initialValues.put(KEY_SOURCE, tweet.source);
     initialValues.put(KEY_USER_ID, tweet.userId);
 
-    return mDb.insert(tableName, null, initialValues);
+	//如果已经存在就更新,否则插入
+	if (isTweetExists(tableName, tweet.id)){
+		return mDb.update(tableName, initialValues, KEY_ID+"=?", new String[]{tweet.id});
+	}else{
+		return mDb.insert(tableName, null, initialValues);
+	}
   }
   
   public long createMention(Tweet tweet, boolean isUnread) {
@@ -537,6 +544,53 @@ public class TwitterDbAdapter {
     }
   }
 
+  public Tweet getTweet(String tableName, String id){
+	  Cursor cursor = mDb.query(tableName, TWEET_COLUMNS, 
+			  KEY_ID + " = ?", new String[]{id}, 
+			  null, null, null);
+	  if (cursor != null && cursor.moveToFirst()){
+		  Tweet tweet = new Tweet();
+		  tweet.id = cursor.getString(cursor.getColumnIndex(KEY_ID));
+		  tweet.text = cursor.getString(cursor.getColumnIndex(KEY_TEXT));
+		  tweet.source = cursor.getString(cursor.getColumnIndex(KEY_SOURCE));
+		  tweet.favorited = cursor.getString(cursor.getColumnIndex(KEY_FAVORITED));
+		  tweet.createdAt = Utils.parseDateTime(cursor.getString(cursor.getColumnIndex(KEY_CREATED_AT)));
+		  tweet.profileImageUrl = cursor.getString(cursor.getColumnIndex(KEY_PROFILE_IMAGE_URL));
+		  tweet.screenName = cursor.getString(cursor.getColumnIndex(KEY_USER));
+		  tweet.userId = cursor.getString(cursor.getColumnIndex(KEY_USER_ID));
+		  tweet.inReplyToScreenName = cursor.getString(cursor.getColumnIndex(KEY_IN_REPLY_TO_SCREEN_NAME));
+		  tweet.inReplyToUserId = cursor.getString(cursor.getColumnIndex(KEY_IN_REPLY_TO_USER_ID));
+		  tweet.inReplyToStatusId = cursor.getString(cursor.getColumnIndex(KEY_IN_REPLY_TO_STATUS_ID));
+		  
+		  return tweet;
+	  }else{
+		  return null;
+	  }
+  }
+  
+  public void addTweets(List<Tweet> tweets, String id, boolean isUnread) {
+	    try {
+	      mDb.beginTransaction();
+	      
+	      String tableName = TABLE_TWEET;
+
+	      Tweet prevTweet = getTweet(tableName, id);
+	      for (Tweet tweet : tweets) {
+	    	if (prevTweet != null){
+	    		createTweet(tableName, prevTweet, tweet.id, isUnread);
+	    	}
+	        prevTweet = tweet;
+	      }
+	      //add the last tweet with previd is empty
+	      createTweet(TABLE_TWEET, prevTweet, null, isUnread);
+
+	      limitRows(TABLE_TWEET, TwitterApi.RETRIEVE_LIMIT);
+	      mDb.setTransactionSuccessful();
+	    } finally {
+	      mDb.endTransaction();
+	    }
+	  }
+  
   public void addMentions(List<Tweet> tweets, boolean isUnread) {
 	    try {
 	      mDb.beginTransaction();
@@ -596,7 +650,7 @@ public class TwitterDbAdapter {
   //获取从指定ID开始的更早的N条消息
   public List<Tweet> fetchMoreTweetsSinceId(String tableName, String id, int limit){
 	  String prevId = getPrevTweetID(tableName, id);
-	  if(prevId.equals("")){
+	  if(Utils.isEmpty(prevId)){
 		  return null;
 	  }else{
 		  Cursor cursor = mDb.rawQuery("SELECT " + KEY_CREATED_AT 
@@ -610,33 +664,39 @@ public class TwitterDbAdapter {
 			  return null;
 		  }
 		  cursor = mDb.rawQuery("SELECT * FROM " + tableName 
-				              + "WHERE " + KEY_CREATED_AT + " <= ?"
-				              + "ORDER BY " + KEY_CREATED_AT + " DESC",
+				              + " WHERE " + KEY_CREATED_AT + " <= ? "
+				              + " ORDER BY " + KEY_CREATED_AT + " DESC",
 				              new String[]{date});
 		  if (cursor != null && cursor.moveToFirst()){
 			  List<Tweet> tweetList = new ArrayList<Tweet>();
 			  int index = 0;
+			  boolean start = false;
+			  String tweet_prevId = null;
 			  do{
 				  //因为按时间排序不精确，所以我们从找到所需要的记录开始工作
-				  if (!cursor.getString(cursor.getColumnIndex(KEY_ID)).equals(prevId)){
-					  continue;
+				  if (!start && cursor.getString(cursor.getColumnIndex(KEY_ID)).equals(prevId)){
+					  start = true;
 				  }
-				  Tweet tweet = new Tweet();
-				  tweet.id = cursor.getString(cursor.getColumnIndex(KEY_ID));
-				  tweet.text = cursor.getString(cursor.getColumnIndex(KEY_TEXT));
-				  tweet.createdAt = Utils.parseDateTime(cursor.getString(cursor.getColumnIndex(KEY_CREATED_AT)));
-				  tweet.favorited = cursor.getString(cursor.getColumnIndex(KEY_FAVORITED));
-				  tweet.source = cursor.getString(cursor.getColumnIndex(KEY_SOURCE));
-				  tweet.profileImageUrl = cursor.getString(cursor.getColumnIndex(KEY_PROFILE_IMAGE_URL));
-				  tweet.userId = cursor.getString(cursor.getColumnIndex(KEY_USER_ID));
-				  tweet.screenName = cursor.getString(cursor.getColumnIndex(KEY_USER));
-				  tweet.inReplyToScreenName = cursor.getString(cursor.getColumnIndex(KEY_IN_REPLY_TO_SCREEN_NAME));
-				  tweet.inReplyToUserId = cursor.getString(cursor.getColumnIndex(KEY_IN_REPLY_TO_USER_ID));
-				  tweet.inReplyToStatusId = cursor.getString(cursor.getColumnIndex(KEY_IN_REPLY_TO_STATUS_ID));
-				  
-				  tweetList.add(tweet);
-				  index++;
-			  }while(cursor.moveToNext() && index <= limit);
+				  if (start){
+					  Tweet tweet = new Tweet();
+					  tweet.id = cursor.getString(cursor.getColumnIndex(KEY_ID));
+					  tweet.text = cursor.getString(cursor.getColumnIndex(KEY_TEXT));
+					  tweet.createdAt = Utils.parseDateTime(cursor.getString(cursor.getColumnIndex(KEY_CREATED_AT)));
+					  tweet.favorited = cursor.getString(cursor.getColumnIndex(KEY_FAVORITED));
+					  tweet.source = cursor.getString(cursor.getColumnIndex(KEY_SOURCE));
+					  tweet.profileImageUrl = cursor.getString(cursor.getColumnIndex(KEY_PROFILE_IMAGE_URL));
+					  tweet.userId = cursor.getString(cursor.getColumnIndex(KEY_USER_ID));
+					  tweet.screenName = cursor.getString(cursor.getColumnIndex(KEY_USER));
+					  tweet.inReplyToScreenName = cursor.getString(cursor.getColumnIndex(KEY_IN_REPLY_TO_SCREEN_NAME));
+					  tweet.inReplyToUserId = cursor.getString(cursor.getColumnIndex(KEY_IN_REPLY_TO_USER_ID));
+					  tweet.inReplyToStatusId = cursor.getString(cursor.getColumnIndex(KEY_IN_REPLY_TO_STATUS_ID));
+					  
+					  tweet_prevId = cursor.getString(cursor.getColumnIndex(KEY_PREV_ID));
+					  
+					  tweetList.add(tweet);
+					  index++;
+				  }
+			  }while(cursor.moveToNext() && index < limit && !Utils.isEmpty(tweet_prevId));
 			  return tweetList;
 		  }
 	  }
