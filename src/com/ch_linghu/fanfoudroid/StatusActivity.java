@@ -84,7 +84,7 @@ public class StatusActivity extends WithHeaderActivity {
 		tweet_screen_name.setText(tweet.screenName);
 		tweet_text.setText(tweet.text);
 		tweet_created_at.setText(Utils.getRelativeDate(tweet.createdAt));
-		tweet_source.setText("通过" + tweet.source);
+		tweet_source.setText(getString(R.string.tweet_source_prefix) + tweet.source);
 		
 		Bitmap mProfileBitmap = TwitterApplication.mImageManager.get(tweet.profileImageUrl);
 		profile_image.setImageBitmap(mProfileBitmap);

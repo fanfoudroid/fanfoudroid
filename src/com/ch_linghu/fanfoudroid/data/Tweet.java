@@ -22,6 +22,9 @@ import org.json.JSONObject;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.ch_linghu.fanfoudroid.R;
+import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.weibo.Status;
 
@@ -80,12 +83,12 @@ public class Tweet extends Message implements Parcelable {
 
     builder.append(Utils.getRelativeDate(createdAt));
     builder.append(" ");
-
-    builder.append("发送自 ");
+    
+    builder.append(TwitterApplication.mContext.getString(R.string.tweet_source_prefix));
     builder.append(source);
     
 	if (!Utils.isEmpty(replyTo)) {
-		builder.append(" 回复 ");
+		builder.append(" " + TwitterApplication.mContext.getString(R.string.tweet_reply_to_prefix));
 		builder.append(replyTo);
 	}
 

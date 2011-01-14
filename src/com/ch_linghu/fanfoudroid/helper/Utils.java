@@ -30,6 +30,8 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.ch_linghu.fanfoudroid.R;
+import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 
 import android.os.Bundle;
@@ -107,6 +109,13 @@ public class Utils {
 
   public static String getRelativeDate(Date date) {
     Date now = new Date();
+    
+    String prefix = TwitterApplication.mContext.getString(R.string.tweet_created_at_beautify_prefix);
+    String sec = TwitterApplication.mContext.getString(R.string.tweet_created_at_beautify_sec);
+    String min = TwitterApplication.mContext.getString(R.string.tweet_created_at_beautify_min);
+    String hour = TwitterApplication.mContext.getString(R.string.tweet_created_at_beautify_hour);
+    String day = TwitterApplication.mContext.getString(R.string.tweet_created_at_beautify_day);
+    String suffix = TwitterApplication.mContext.getString(R.string.tweet_created_at_beautify_suffix);
 
     // Seconds.
     long diff = (now.getTime() - date.getTime()) / 1000;
@@ -116,21 +125,21 @@ public class Utils {
     }
 
     if (diff < 60) {
-      return diff + "秒前";
+      return diff + sec + suffix;
     }
 
     // Minutes.
     diff /= 60;
 
     if (diff < 60) {
-      return "大约" + diff + "分钟前";
+      return prefix + diff + min + suffix;
     }
 
     // Hours.
     diff /= 60;
 
     if (diff < 24) {
-      return "大约" + diff + "小时前";
+      return prefix + diff + hour + suffix;
     }
 
     return AGO_FULL_DATE_FORMATTER.format(date);

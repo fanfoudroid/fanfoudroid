@@ -8,6 +8,7 @@ import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.weibo.Weibo;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.preference.PreferenceManager;
@@ -20,6 +21,7 @@ public class TwitterApplication extends Application {
   public static ImageManager mImageManager;
   public static TwitterDbAdapter mDb; 
   public static Weibo nApi; // new API
+  public static Context mContext;
 
   @Override
   public void onCreate() {
@@ -37,6 +39,8 @@ public class TwitterApplication extends Application {
     
     // Init API with username and password
     nApi = new Weibo(username, password);
+    
+    mContext = this.getApplicationContext();
   }
 
   @Override

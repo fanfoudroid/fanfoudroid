@@ -101,7 +101,17 @@
     <string name="service_new_mention_updates">新提到我的消息</string>
     <string name="service_x_new_mentions">{0} 条新提到我的消息</string>
     <string name="service_new_direct_message_updates">新私信</string>    
-    <string name="service_x_new_direct_messages">{0} 条新私信</string>    
+    <string name="service_x_new_direct_messages">{0} 条新私信</string>  
+    
+    <!-- Tweet Item相关 -->
+    <string name="tweet_source_prefix">来自</string>
+    <string name="tweet_reply_to_prefix">回复</string>
+    <string name="tweet_created_at_beautify_prefix">大约</string>
+    <string name="tweet_created_at_beautify_sec">秒</string>
+    <string name="tweet_created_at_beautify_min">分钟</string>
+    <string name="tweet_created_at_beautify_hour">小时</string>
+    <string name="tweet_created_at_beautify_day">天</string>
+	<string name="tweet_created_at_beautify_suffix">前</string>      
     
     <!-- About -->
     <string name="about_message">

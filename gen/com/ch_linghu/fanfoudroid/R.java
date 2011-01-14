@@ -166,10 +166,10 @@ public final class R {
         public static final int write_dm=0x7f030014;
     }
     public static final class string {
-        public static final int about_label_ok=0x7f08004b;
+        public static final int about_label_ok=0x7f080053;
         /**  About 
          */
-        public static final int about_message=0x7f08004a;
+        public static final int about_message=0x7f080052;
         public static final int app_name=0x7f080000;
         public static final int cmenu_add_fav=0x7f080017;
         public static final int cmenu_del_fav=0x7f080018;
@@ -180,10 +180,10 @@ public final class R {
         public static final int cmenu_reply=0x7f080014;
         public static final int cmenu_retweet=0x7f080015;
         public static final int cmenu_user_profile_prefix=0x7f08001a;
-        public static final int general_lable_cancel=0x7f08004f;
+        public static final int general_lable_cancel=0x7f080057;
         /**  通用 
          */
-        public static final int general_lable_ok=0x7f08004e;
+        public static final int general_lable_ok=0x7f080056;
         public static final int login_label_password=0x7f08001c;
         public static final int login_label_signin=0x7f08001d;
         /**  Login页面 
@@ -243,10 +243,10 @@ public final class R {
         /**  设置页面  
          */
         public static final int pref_title_notifications=0x7f08002f;
-        public static final int search_hint=0x7f08004d;
+        public static final int search_hint=0x7f080055;
         /**  搜索  
          */
-        public static final int search_label=0x7f08004c;
+        public static final int search_label=0x7f080054;
         public static final int service_new_direct_message_updates=0x7f080048;
         public static final int service_new_mention_updates=0x7f080046;
         /**  Service 
@@ -255,6 +255,16 @@ public final class R {
         public static final int service_x_new_direct_messages=0x7f080049;
         public static final int service_x_new_mentions=0x7f080047;
         public static final int service_x_new_tweets=0x7f080045;
+        public static final int tweet_created_at_beautify_day=0x7f080050;
+        public static final int tweet_created_at_beautify_hour=0x7f08004f;
+        public static final int tweet_created_at_beautify_min=0x7f08004e;
+        public static final int tweet_created_at_beautify_prefix=0x7f08004c;
+        public static final int tweet_created_at_beautify_sec=0x7f08004d;
+        public static final int tweet_created_at_beautify_suffix=0x7f080051;
+        public static final int tweet_reply_to_prefix=0x7f08004b;
+        /**  Tweet Item相关 
+         */
+        public static final int tweet_source_prefix=0x7f08004a;
         /**  User页面 
          */
         public static final int user_label_follow=0x7f080022;
