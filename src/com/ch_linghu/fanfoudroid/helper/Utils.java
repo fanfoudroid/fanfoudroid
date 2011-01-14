@@ -35,6 +35,7 @@ import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 
 import android.os.Bundle;
+import android.text.Html;
 import android.text.util.Linkify;
 import android.util.Log;
 import android.widget.TextView;
@@ -200,22 +201,40 @@ public class Utils {
     return bundle != null && bundle.containsKey(key) && bundle.getBoolean(key);
   }
   
+  private static Pattern USER_LINK = Pattern.compile("@<a href=\"http:\\/\\/fanfou\\.com\\/(.*?)\" class=\"former\">(.*?)<\\/a>");
   public static String preprocessText(String text){
 	  //处理HTML格式返回的用户链接
-	  Pattern p = Pattern.compile("@<a href=\"http:\\/\\/fanfou\\.com\\/(.*?)\" class=\"former\">(.*?)<\\/a>");
-	  Matcher m = p.matcher(text);
+	  Matcher m = USER_LINK.matcher(text);
 	  while(m.find()){
 		  _userLinkMapping.put(m.group(2), m.group(1));
 		  Log.d(TAG, String.format("Found mapping! %s=%s", m.group(2), m.group(1)));
 	  }
-	  return text.replaceAll("<.*?>", "");
+
+	  //将User Link的连接去掉
+	  StringBuffer sb = new StringBuffer();
+	  m = USER_LINK.matcher(text);
+	  while(m.find()){
+		  m.appendReplacement(sb, "@$2");
+	  }
+	  m.appendTail(sb);
+	  return sb.toString();
+  }
+  
+  public static void setSimpleTweetText(TextView textView, String text){
+	  String processedText = text.replaceAll("<.*?>", "")
+	  						     .replace("&lt;", "<")
+	  						     .replace("&gt;", ">")
+	  						     .replace("&nbsp;", " ")
+	  						     .replace("&amp;", "&")
+	  						     .replace("&quot;", "\"");
+	  textView.setText(processedText);
   }
 
   public static void setTweetText(TextView textView, String text) {
     String processedText = preprocessText(text);
-	textView.setText(processedText, BufferType.SPANNABLE);
-    Linkify.addLinks(textView, Linkify.WEB_URLS);
-    Utils.linkifyUsers(textView);
+	textView.setText(Html.fromHtml(processedText), BufferType.SPANNABLE);
+	Linkify.addLinks(textView, Linkify.WEB_URLS);
+	Utils.linkifyUsers(textView);
     Utils.linkifyTags(textView);
     _userLinkMapping.clear();
   }

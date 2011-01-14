@@ -81,7 +81,7 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 		Tweet tweet = mTweets.get(position);
 
 		holder.tweetUserText.setText(tweet.screenName);
-		Utils.setTweetText(holder.tweetText, tweet.text);
+		Utils.setSimpleTweetText(holder.tweetText, tweet.text);
 		// holder.tweetText.setText(tweet.text, BufferType.SPANNABLE);
 
 		if (mImageCache != null) {

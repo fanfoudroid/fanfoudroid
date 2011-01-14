@@ -93,7 +93,7 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 				.getTag();
 
 		holder.tweetUserText.setText(cursor.getString(mUserTextColumn));
-		Utils.setTweetText(holder.tweetText, cursor.getString(mTextColumn));
+		Utils.setSimpleTweetText(holder.tweetText, cursor.getString(mTextColumn));
 
 		String profileImageUrl = cursor.getString(mProfileImageUrlColumn);
 

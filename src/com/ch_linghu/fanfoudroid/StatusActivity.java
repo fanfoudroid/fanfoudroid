@@ -82,7 +82,7 @@ public class StatusActivity extends WithHeaderActivity {
 		// Set view with intent data
 		Tweet tweet = extras.getParcelable(EXTRA_TWEET);
 		tweet_screen_name.setText(tweet.screenName);
-		tweet_text.setText(tweet.text);
+		Utils.setTweetText(tweet_text, tweet.text);
 		tweet_created_at.setText(Utils.getRelativeDate(tweet.createdAt));
 		tweet_source.setText(getString(R.string.tweet_source_prefix) + tweet.source);
 		
