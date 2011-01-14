@@ -120,7 +120,7 @@ public class WriteActivity extends WithHeaderActivity {
 			//String filename = extras.getString("filename");
 			//mFile = new File(filename);
 			//TODO: 需要进一步细化
-			mFile = bitmapToFile(createThumbnailBitmap(mImageUri, 1024));
+			mFile = bitmapToFile(createThumbnailBitmap(mImageUri, 800));
 			mPreview.setImageBitmap(createThumbnailBitmap(mImageUri,
 					MAX_BITMAP_SIZE));
 		}
@@ -136,7 +136,7 @@ public class WriteActivity extends WithHeaderActivity {
       	File file = new File(Environment.getExternalStorageDirectory(), "upload.jpg");
         try {
             FileOutputStream out=new FileOutputStream(file);
-            if(bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)){
+            if(bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out)){
                 out.flush();
                 out.close();
             }
