@@ -12,10 +12,11 @@ public interface HasFavorite {
 	static Weibo nApi = TwitterApplication.nApi;
 	static TwitterDbAdapter mDb = TwitterApplication.mDb; 
 	SharedPreferences getPreferences();
+	ImageManager getImageManager();
 	
 	void logout();
 	
-	ImageManager getImageManager();
+	void doFavorite(String action, String id);
 	
 	// Callback
 	void onFavSuccess();

@@ -79,6 +79,10 @@ public class BaseActivity extends Activity {
   protected Weibo getApi() {
     return TwitterApplication.nApi;
   }
+  
+  public SharedPreferences getPreferences() {
+      return mPreferences;
+  }
 
   @Override
   protected void onDestroy() {

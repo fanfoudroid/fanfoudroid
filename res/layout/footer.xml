@@ -9,7 +9,7 @@
        <!-- 
         android:background="@drawable/twitter_bottom_bar_bg">
         --> 
-        <TextView 
+        <TextView android:id="@+id/footer_btn_refresh"
          android:layout_width="fill_parent"
          android:layout_height="fill_parent"
          android:layout_weight="1"
@@ -17,15 +17,15 @@
          android:drawableTop="@drawable/detail_refresh_selected"
          android:text="刷新"
          />
-         <TextView 
+         <TextView android:id="@+id/footer_btn_reply"
          android:layout_width="fill_parent"
          android:layout_height="fill_parent"
          android:layout_weight="1"
          style="@style/footer_button"
          android:drawableTop="@drawable/detail_comment_selected"
-         android:text="评论"
+         android:text="回复"
          />
-         <TextView 
+         <TextView android:id="@+id/footer_btn_retweet"
          android:layout_width="fill_parent"
          android:layout_height="fill_parent"
          android:layout_weight="1"
@@ -33,7 +33,7 @@
          android:drawableTop="@drawable/detail_forward_selected"
          android:text="转发"
          />
-         <TextView 
+         <TextView android:id="@+id/footer_btn_fav"
          android:layout_width="fill_parent"
          android:layout_height="fill_parent"
          android:layout_weight="1"
@@ -41,7 +41,7 @@
          android:drawableTop="@drawable/detail_fav_highlight_selected"
          android:text="收藏"
          />
-         <TextView 
+         <TextView android:id="@+id/footer_btn_more"
          android:layout_width="fill_parent"
          android:layout_height="fill_parent"
          android:layout_weight="1"

@@ -37,14 +37,15 @@
                 android:layout_toRightOf="@id/profile_image"
                 style="@style/LinkText.Bold.Huge"
                  />
-            <!-- 用户所在地 -->
+            <!-- 用户资料 -->
             <TextView android:id="@+id/tweet_user_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tweet_user_text"
-                android:layout_alignLeft="@id/tweet_user_text"
+                android:layout_below="@id/tweet_screen_name"
+                android:layout_alignLeft="@id/tweet_screen_name"
                 style="@style/normalText.span"
                  />
+            <!-- More -->
             <ImageButton android:id="@+id/person_more"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -52,7 +53,8 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="8dp"
                 android:src="@drawable/arrow_1" 
-                android:background="@null"/>
+                android:background="@null"
+                android:visibility="gone"/>
         </RelativeLayout>
         <!-- 分割线 -->
         <LinearLayout
@@ -73,6 +75,8 @@
             android:layout_height="wrap_content"
             android:scaleType="center"
             android:src="@drawable/twitter_follow_me"
+            android:maxWidth="460px"
+            android:visibility="gone"
             />
         <!-- 信息属性 -->
         <RelativeLayout 
@@ -95,7 +99,7 @@
                 style="@style/normalText.span"/>
          </RelativeLayout>
          <!-- 回复原文 -->
-         <RelativeLayout 
+         <RelativeLayout android:id="@+id/reply_wrap"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:paddingTop="20dp"
@@ -104,21 +108,20 @@
             android:paddingRight="15dp"
             android:background="@drawable/dialog_box_2"
             android:layout_margin="10dp"
+            android:visibility="gone"
             >
             <TextView android:id="@+id/reply_status_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                style="@style/normalText"
-                android:text="饭友经典语录: 追求艺术品有无数的动机。但是，“炫耀”却是最最重要并且最最不能缺少的动机之一。——@羊小倭"/>
+                style="@style/normalText" />
             <TextView android:id="@+id/reply_tweet_created_at"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/reply_status_text"
                 android:layout_alignParentRight="true"
                 style="@style/normalText.span"
-                android:layout_marginTop="5dp"
-                android:text="10-10 10:10"/>
+                android:layout_marginTop="5dp" />
          </RelativeLayout>
          
      </LinearLayout>

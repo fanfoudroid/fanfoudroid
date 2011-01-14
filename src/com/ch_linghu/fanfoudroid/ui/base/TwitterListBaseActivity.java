@@ -150,32 +150,15 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity {
 			return true;
 		case CONTEXT_REPLY_ID: {
 			// TODO: this isn't quite perfect. It leaves extra empty spaces if
-			// you
-			// perform the reply action again.
-			String replyTo = "@" + tweet.screenName + " ";
-			Intent intent = new Intent(WriteActivity.NEW_TWEET_ACTION, null,
-					this, WriteActivity.class);
-			intent.putExtra(WriteActivity.EXTRA_TEXT, replyTo);
-			intent.putExtra(WriteActivity.REPLY_ID, tweet.id);
+			// you perform the reply action again.
+		    Intent intent = WriteActivity.createNewReplyIntent(tweet.screenName, tweet.id);
 			startActivity(intent);
-
 			return true;
 		}
 		case CONTEXT_RETWEET_ID:
-			String prefix = mPreferences.getString(Preferences.RT_PREFIX_KEY,
-					getString(R.string.pref_rt_prefix_default));
-			String retweet = " "
-					+ prefix
-					+ " @"
-					+ tweet.screenName
-					+ " "
-					+ tweet.text.replaceAll("<.*?>", "");//TODO: 使用更好的方法对TEXT进行格式化
-			Intent intent = new Intent(WriteActivity.NEW_TWEET_ACTION, null,
-					this, WriteActivity.class);
-			intent.putExtra(WriteActivity.EXTRA_TEXT, retweet);
-			intent.putExtra(WriteActivity.REPLY_ID, tweet.id);
+		    Intent intent = WriteActivity.createNewReTweetIntent(this,
+		            tweet.text, tweet.screenName, tweet.id);
 			startActivity(intent);
-
 			return true;
 		case CONTEXT_DM_ID:
 			launchActivity(DmActivity.createIntent(tweet.userId));
@@ -238,26 +221,27 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity {
 	private void goTop() {
 		getTweetList().setSelection(0);
 	}
-
-	private void doFavorite(String action, String id) {
-		if (mFavTask != null && mFavTask.getStatus() == AsyncTask.Status.RUNNING) {
-			Log.w(TAG, "FavTask still running");
-		} else {
-			if (!Utils.isEmpty(id)) {
-//				mFavTask = new FavTask().execute(action, id);
-				AsyncTask<String,Void,TaskResult> task = TaskFactory.create(TaskFactory.FAVORITE_TASK_TYPE, this);
-				if (null != task) {
-					mFavTask = task.execute(action, id);
-				}
-			}
-		}
-	}
 	
 	protected void adapterRefresh(){
 		getTweetAdapter().refresh();
 	}
 	
 	// for HasFavorite interface
+	
+	public void doFavorite(String action, String id) {
+        if (mFavTask != null && mFavTask.getStatus() == AsyncTask.Status.RUNNING) {
+            Log.w(TAG, "FavTask still running");
+        } else {
+            if (!Utils.isEmpty(id)) {
+//              mFavTask = new FavTask().execute(action, id);
+                AsyncTask<String,Void,TaskResult> task = TaskFactory.create(TaskFactory.FAVORITE_TASK_TYPE, this);
+                if (null != task) {
+                    mFavTask = task.execute(action, id);
+                }
+            }
+        }
+    }
+	
 	public void onFavSuccess() {
 		// updateProgress(getString(R.string.refreshing));
 		adapterRefresh();

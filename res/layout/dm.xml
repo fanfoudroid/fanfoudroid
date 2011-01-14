@@ -29,7 +29,7 @@
         android:background="@drawable/maintab_toolbar_bg">
         <Button 
          android:id="@+id/inbox"
-         android:background="#2b000000"
+         android:background="@drawable/iphone_button_selector"
          android:layout_width="fill_parent"
          android:layout_height="fill_parent"
          android:layout_weight="1"

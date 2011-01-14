@@ -219,7 +219,7 @@ public class DmActivity extends WithHeaderActivity {
   }
 
   private void onRetrieveBegin() {
-    updateProgress("Refreshing...");
+    updateProgress(getString(R.string.page_status_refreshing));
   }
   
   private enum TaskResult {
@@ -526,7 +526,7 @@ public class DmActivity extends WithHeaderActivity {
   private class DeleteTask extends UserTask<String, Void, TaskResult> {
     @Override
     public void onPreExecute() {
-      updateProgress("Deleting...");
+      updateProgress(getString(R.string.page_status_deleting));
     }
 
     @Override

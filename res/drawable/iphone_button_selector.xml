@@ -3,5 +3,6 @@
   <item android:state_focused="true" android:drawable="@drawable/home_btn_bg_d" />
   <item android:state_pressed="true" android:drawable="@drawable/home_btn_bg_d"  />
   <item android:state_selected="true" android:drawable="@drawable/home_btn_bg_d" />
+  <item android:state_enabled="false" android:drawable="@drawable/iphone_button_disabled" />
   <item android:drawable="@android:color/transparent" />      
 </selector>
