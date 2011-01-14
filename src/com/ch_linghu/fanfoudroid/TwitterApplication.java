@@ -23,7 +23,7 @@ public class TwitterApplication extends Application {
   public static TwitterDbAdapter mDb; 
   public static TwitterApi mApi;
   public static Weibo nApi; // new API
-  public static DatabaseHelper dbHelper; 
+  public static DatabaseHelper mDb2; 
 
   @Override
   public void onCreate() {
@@ -32,28 +32,20 @@ public class TwitterApplication extends Application {
     mImageManager = new ImageManager(this);
     mDb = new TwitterDbAdapter(this);
     mDb.open();
-    mApi = new TwitterApi();
-    
-    dbHelper = new DatabaseHelper(this);
+    mDb2 = new DatabaseHelper(this); // Init Database
     
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);        
-
     String username = preferences.getString(Preferences.USERNAME_KEY, "");
     String password = preferences.getString(Preferences.PASSWORD_KEY, "");
     
-    // Init API with username and password
-    nApi = new Weibo(username, password);
-    
-    if (TwitterApi.isValidCredentials(username, password)) {
-      mApi.setCredentials(username, password);
-    }
+    nApi = new Weibo(username, password); // Init API
   }
 
   @Override
   public void onTerminate() {
     cleanupImages();
     mDb.close();
-    dbHelper.close();
+    mDb2.close();
 //    Toast.makeText(this, "exit app", Toast.LENGTH_LONG);
     
     super.onTerminate();

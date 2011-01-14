@@ -15,6 +15,7 @@ import android.provider.BaseColumns;
 import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
+import com.ch_linghu.fanfoudroid.helper.Utils;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseHelper";
@@ -73,6 +74,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	        + " CREATE INDEX status_id_idx ON "
 	        + TABLE_NAME + " ( " 
 	        + FIELD_STATUS_ID  + " ) "; 
+	    
+	    public static Tweet parseTweetFromCursor(Cursor cursor) {
+	        Tweet tweet = new Tweet();
+	        tweet.id = cursor.getString(cursor.getColumnIndex(FIELD_STATUS_ID));
+	        tweet.createdAt = Utils.parseDateTimeFromSqlite(cursor.getString(cursor.getColumnIndex(FIELD_CREATED_AT)));
+	        tweet.favorited = cursor.getString(cursor.getColumnIndex(FIELD_FAVORITED));
+	        tweet.screenName = cursor.getString(cursor.getColumnIndex(FIELD_USER_SCREEN_NAME));
+	        tweet.userId = cursor.getString(cursor.getColumnIndex(FIELD_USER_ID));
+	        tweet.text = cursor.getString(cursor.getColumnIndex(FIELD_TEXT));
+	        tweet.source = cursor.getString(cursor.getColumnIndex(FIELD_SOURCE));
+	        tweet.profileImageUrl = cursor.getString(cursor.getColumnIndex(FIELD_PROFILE_IMAGE_URL));
+	        tweet.inReplyToScreenName = cursor.getString(cursor.getColumnIndex(FIELD_IN_REPLY_TO_SCREEN_NAME));
+	        tweet.inReplyToStatusId = cursor.getString(cursor.getColumnIndex(FIELD_IN_REPLY_TO_STATUS_ID));
+	        tweet.inReplyToUserId = cursor.getString(cursor.getColumnIndex(FIELD_IN_REPLY_TO_USER_ID));
+	        tweet.truncated = cursor.getString(cursor.getColumnIndex(FIELD_TRUNCATED));
+	        return tweet;
+	    }
     }
 
     // Construct
@@ -227,5 +245,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 	    return result;
 	  }
+	
+	
 	
 }

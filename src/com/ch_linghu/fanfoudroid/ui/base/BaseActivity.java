@@ -97,6 +97,10 @@ public class BaseActivity extends Activity {
   protected TwitterDbAdapter getDb() {
     return TwitterApplication.mDb;
   }
+    
+  protected DatabaseHelper getDb2() {
+    return TwitterApplication.mDb2;
+  }
 
   protected Weibo getApi() {
     return TwitterApplication.nApi;

@@ -79,7 +79,7 @@ public class TwitterActivity extends TwitterCursorBaseActivity
 
 	@Override
 	protected Cursor fetchMessages() {
-		return TwitterApplication.dbHelper.fetchAllTweets(StatusTable.TABLE_NAME);
+		return getDb2().fetchAllTweets(StatusTable.TABLE_NAME);
 	}
 
 	@Override
@@ -101,14 +101,14 @@ public class TwitterActivity extends TwitterCursorBaseActivity
 	@Override
 	public void addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
 		// TODO Auto-generated method stub
-		TwitterApplication.dbHelper.putTweets(tweets, isUnread);
+	    getDb2().putTweets(tweets, isUnread);
 	}
 	
 	@Override
 	public String fetchMaxId() {
 		// TODO Auto-generated method stub
 //		return getDb().fetchMaxId(TwitterDbAdapter.TABLE_TWEET);
-		return TwitterApplication.dbHelper.fetchMaxId(TwitterDbAdapter.TABLE_TWEET);
+		return getDb2().fetchMaxId(TwitterDbAdapter.TABLE_TWEET);
 	}
 	
 	@Override
