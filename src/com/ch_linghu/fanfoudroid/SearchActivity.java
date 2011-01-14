@@ -34,7 +34,6 @@ public class SearchActivity extends TwitterListBaseActivity implements
 
 	// Views.
 	private MyListView mTweetList;
-	private TextView mProgressText;
 
 	// State.
 	private String mSearchQuery;

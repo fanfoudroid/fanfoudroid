@@ -96,7 +96,7 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity {
 		setupState();
 
 		registerForContextMenu(getTweetList());
-		
+		registerOnClickListener(getTweetList());		
 	}
 
 	@Override
@@ -191,25 +191,6 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity {
 		}
 	}
 	
-	protected void registerOnClickListener(ListView listView) {
-
-		listView.setOnItemClickListener(new OnItemClickListener(){
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position,
-					long id) {
-				Tweet tweet = getContextItemTweet(position);
-		
-				if (tweet == null) {
-					Log.w(TAG, "Selected item not available.");
-				}
-				
-				// TODO: launch statusActivity with real data
-				launchActivity(StatusActivity.createIntent(tweet));
-			}
-		});
-
-	}
-
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -267,4 +248,22 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity {
 		// updateProgress(getString(R.string.refreshing));
 	}
 	
+	protected void registerOnClickListener(ListView listView) {
+
+		listView.setOnItemClickListener(new OnItemClickListener(){
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position,
+					long id) {
+				Tweet tweet = getContextItemTweet(position);
+		
+				if (tweet == null) {
+					Log.w(TAG, "Selected item not available.");
+				}
+				
+				// TODO: launch statusActivity with real data
+				launchActivity(StatusActivity.createIntent(tweet));
+			}
+		});
+
+	}
 }

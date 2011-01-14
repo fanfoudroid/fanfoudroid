@@ -16,7 +16,12 @@ public class MemoryImageCache implements ImageCache {
   @Override
   public Bitmap get(String url) {
     synchronized(this) {
-      return mCache.get(url);
+      Bitmap bitmap = mCache.get(url);
+      if (bitmap == null){
+    	  return mDefaultBitmap;
+      }else{
+    	  return bitmap;
+      }
     }
   }
 

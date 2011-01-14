@@ -62,8 +62,6 @@ public class ImageManager implements ImageCache {
   // MD5 hasher.
   private MessageDigest mDigest;
   
-  private Bitmap mDefaultBitmap;
-
   // We want the requests to timeout quickly.
   // Tweets are processed in a batch and we don't want to stay on one too long.
   private static final int CONNECTION_TIMEOUT_MS = 10 * 1000;
@@ -73,7 +71,6 @@ public class ImageManager implements ImageCache {
     mContext = context;
     mCache = new HashMap<String, SoftReference<Bitmap>>();
     mClient = new DefaultHttpClient();
-    mDefaultBitmap = drawableToBitmap(mContext.getResources().getDrawable(R.drawable.user_default_photo));
 
     try {
       mDigest = MessageDigest.getInstance("MD5");
@@ -127,19 +124,7 @@ public class ImageManager implements ImageCache {
     }
   }
 
-  private Bitmap drawableToBitmap(Drawable drawable) {  
-      
-      Bitmap bitmap = Bitmap  
-                      .createBitmap(  
-                                      drawable.getIntrinsicWidth(),  
-                                      drawable.getIntrinsicHeight(),  
-                                      drawable.getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888  
-                                                      : Bitmap.Config.RGB_565);  
-      Canvas canvas = new Canvas(bitmap);  
-      drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());  
-      drawable.draw(canvas);  
-      return bitmap;  
-  }    
+ 
 
   public Bitmap fetchImage(String url) throws IOException {
     Log.i(TAG, "Fetching image: " + url);

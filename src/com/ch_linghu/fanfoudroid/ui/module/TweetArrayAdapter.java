@@ -91,6 +91,8 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 				holder.profileImage.setImageBitmap(mImageCache
 						.get(profileImageUrl));
 			}
+		}else{
+			holder.profileImage.setImageBitmap(ImageCache.mDefaultBitmap);
 		}
 
 		holder.metaText.setText(Tweet.buildMetaText(mMetaBuilder,

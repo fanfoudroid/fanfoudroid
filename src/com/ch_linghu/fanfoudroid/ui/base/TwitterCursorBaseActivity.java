@@ -92,7 +92,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 		mTweetList = (ListView) findViewById(R.id.tweet_list);
 		mTweetAdapter = new TweetCursorAdapter(this, cursor);
 		mTweetList.setAdapter(mTweetAdapter);
-		registerOnClickListener(mTweetList);
+		//registerOnClickListener(mTweetList);
 	}
 	
 	@Override
