@@ -231,7 +231,7 @@ public class TwitterDbAdapter {
 	    initialValues.put(KEY_SOURCE, tweet.source);
 	    initialValues.put(KEY_USER_ID, tweet.userId);
 	  
-	  return mDb.update(TABLE_MENTION, initialValues, KEY_ID+"=?", new String[]{id});
+	  return mDb.update(tableName, initialValues, KEY_ID+"=?", new String[]{id});
   }
   
   public boolean destoryStatus(String tableName, String status_id) {		
