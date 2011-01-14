@@ -36,10 +36,15 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 
+import com.ch_linghu.fanfoudroid.R;
+
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 /**
@@ -56,6 +61,8 @@ public class ImageManager implements ImageCache {
   private HttpClient mClient;
   // MD5 hasher.
   private MessageDigest mDigest;
+  
+  private Bitmap mDefaultBitmap;
 
   // We want the requests to timeout quickly.
   // Tweets are processed in a batch and we don't want to stay on one too long.
@@ -66,6 +73,7 @@ public class ImageManager implements ImageCache {
     mContext = context;
     mCache = new HashMap<String, SoftReference<Bitmap>>();
     mClient = new DefaultHttpClient();
+    mDefaultBitmap = drawableToBitmap(mContext.getResources().getDrawable(R.drawable.user_default_photo));
 
     try {
       mDigest = MessageDigest.getInstance("MD5");
@@ -118,6 +126,20 @@ public class ImageManager implements ImageCache {
       }
     }
   }
+
+  private Bitmap drawableToBitmap(Drawable drawable) {  
+      
+      Bitmap bitmap = Bitmap  
+                      .createBitmap(  
+                                      drawable.getIntrinsicWidth(),  
+                                      drawable.getIntrinsicHeight(),  
+                                      drawable.getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888  
+                                                      : Bitmap.Config.RGB_565);  
+      Canvas canvas = new Canvas(bitmap);  
+      drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());  
+      drawable.draw(canvas);  
+      return bitmap;  
+  }    
 
   public Bitmap fetchImage(String url) throws IOException {
     Log.i(TAG, "Fetching image: " + url);
@@ -235,11 +257,12 @@ public class ImageManager implements ImageCache {
     }
 
     Log.i(TAG, "Image is missing: " + url);
-    return null;
+    //return the default photo
+    return mDefaultBitmap;
   }
 
   public boolean contains(String url) {
-    return get(url) != null;
+    return get(url) != mDefaultBitmap;
   }
 
   public void clear() {
