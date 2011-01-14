@@ -183,10 +183,7 @@ public class TwitterDbAdapter {
   // TODO: move all these to the model.
   public long createTweet(String tableName, Tweet tweet, String prevId, boolean isUnread) {
 	Log.d(TAG, "Insert tweet to table " + tableName + " : " + tweet.toString());
-	//FIXME: guard code to avoid FC
-	if (tweet == null){
-		return -1;
-	}
+
     ContentValues initialValues = new ContentValues();
     initialValues.put(KEY_ID, tweet.id);
     initialValues.put(KEY_USER, tweet.screenName);
@@ -470,13 +467,14 @@ public class TwitterDbAdapter {
       Tweet prevTweet = null;
       for (Tweet tweet : tweets) {
     	if (prevTweet != null){
-    		long result = createTweet(tableName, prevTweet, tweet.id, isUnread);
-    		Log.d(TAG, String.format("createTweet returns %d", result));
+    		createTweet(tableName, prevTweet, tweet.id, isUnread);
     	}
         prevTweet = tweet;
       }
       //add the last tweet with previd is empty
-      createTweet(tableName, prevTweet, "", isUnread);
+      if (prevTweet != null){
+    	  createTweet(tableName, prevTweet, "", isUnread);
+      }
 
       //limitRows(tableName, TwitterApi.RETRIEVE_LIMIT);
       mDb.setTransactionSuccessful();
@@ -525,7 +523,9 @@ public class TwitterDbAdapter {
 	        prevTweet = tweet;
 	      }
 	      //add the last tweet with previd is empty
-	      createTweet(TABLE_TWEET, prevTweet, null, isUnread);
+	      if (prevTweet != null){
+	    	  createTweet(tableName, prevTweet, null, isUnread);
+	      }
 
 	      //limitRows(TABLE_TWEET, TwitterApi.RETRIEVE_LIMIT);
 	      mDb.setTransactionSuccessful();
