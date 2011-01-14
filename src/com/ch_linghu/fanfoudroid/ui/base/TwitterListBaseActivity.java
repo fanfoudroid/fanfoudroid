@@ -61,6 +61,7 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity {
 
 	static final int DIALOG_WRITE_ID = 0;
 	
+	abstract protected int getLayoutId();
 	abstract protected ListView getTweetList();
 	abstract protected TweetAdapter getTweetAdapter();
 	abstract protected void setupState();
@@ -84,7 +85,7 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.main);
+		setContentView(getLayoutId());
 		initHeader(HEADER_STYLE_HOME);
 
 		mPreferences.getInt(Preferences.TWITTER_ACTIVITY_STATE_KEY, STATE_ALL);

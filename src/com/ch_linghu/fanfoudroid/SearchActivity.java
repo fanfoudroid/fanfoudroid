@@ -76,8 +76,6 @@ public class SearchActivity extends TwitterListBaseActivity implements
 		setTitle(mSearchQuery);
 
 
-		mProgressText = (TextView) findViewById(R.id.progress_text);
-
 		State state = (State) getLastNonConfigurationInstance();
 
 		if (state != null) {
@@ -89,6 +87,11 @@ public class SearchActivity extends TwitterListBaseActivity implements
 		}
 	}
 
+	@Override
+	protected int getLayoutId(){
+		return R.layout.main;
+	}
+	
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -332,7 +335,6 @@ public class SearchActivity extends TwitterListBaseActivity implements
 		mTweetList = (MyListView) findViewById(R.id.tweet_list);
 		mAdapter = new TweetArrayAdapter(this, mImageCache);
 		mTweetList.setAdapter(mAdapter);
-		registerForContextMenu(mTweetList);
 		mTweetList.setOnNeedMoreListener(this);		
 	}
 

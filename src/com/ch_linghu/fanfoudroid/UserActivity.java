@@ -24,11 +24,13 @@ import android.view.ViewGroup;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.User;
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.ui.base.TwitterListBaseActivity;
 import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
 import com.ch_linghu.fanfoudroid.ui.module.MyListView;
 import com.ch_linghu.fanfoudroid.ui.module.TweetArrayAdapter;
@@ -36,7 +38,7 @@ import com.ch_linghu.fanfoudroid.weibo.Paging;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 import com.google.android.photostream.UserTask;
 
-public class UserActivity extends WithHeaderActivity implements MyListView.OnNeedMoreListener {
+public class UserActivity extends TwitterListBaseActivity implements MyListView.OnNeedMoreListener {
 
   private static final String TAG = "UserActivity";
 
@@ -71,7 +73,6 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
 
   // Views.
   private MyListView mTweetList;
-  private TextView mProgressText;
   private TextView mUserText;
   private TextView mNameText;
   private ImageView mProfileImage;
@@ -99,28 +100,11 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
+	super.onCreate(savedInstanceState);
 
-    if (!getApi().isLoggedIn()) {
-      Log.i(TAG, "Not logged in.");
-      handleLoggedOut();
-      return;
-    }
-
-    // set UI
-    setContentView(R.layout.user);
-    initHeader(HEADER_STYLE_HOME);
-   
     // user name
     mMe = TwitterApplication.nApi.getUserId();
     
-    // 提示框
-    mProgressText = (TextView) findViewById(R.id.progress_text);
-    
-    // Add Header to ListView
-    mTweetList 	  = (MyListView) findViewById(R.id.tweet_list);
-    View header = View.inflate(this, R.layout.user_header, null);
-    mTweetList.addHeaderView(header);
     
     // 用户栏（用户名/头像）
     mUserText 	  = (TextView) findViewById(R.id.tweet_user_text);
@@ -149,15 +133,9 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
     // Set header title 
     String header_title = (!TextUtils.isEmpty(mScreenName)) ? mScreenName : mUsername;
     setHeaderTitle("@" + header_title);
-
+    
     setTitle("@" + mUsername);
     mUserText.setText("@" + mUsername);
-
-    mTweets = new ArrayList<Tweet>();
-    mAdapter = new TweetAdapter(this);
-    mTweetList.setAdapter(mAdapter);
-    registerForContextMenu(mTweetList);
-    mTweetList.setOnNeedMoreListener(this);
 
     State state = (State) getLastNonConfigurationInstance();
     
@@ -568,67 +546,6 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
     return super.onPrepareOptionsMenu(menu);
   }
 
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    switch (item.getItemId()) {
-    case OPTIONS_MENU_ID_REFRESH:
-      doRetrieve();
-      return true;
-    case OPTIONS_MENU_ID_DM:
-      launchActivity(DmActivity.createIntent(mUsername));
-      return true;
-    }
-
-    return super.onOptionsItemSelected(item);
-  }
-
-  private static final int CONTEXT_REPLY_ID = 0;
-  private static final int CONTEXT_RETWEET_ID = 1;
-  private static final int CONTEXT_DM_ID = 2;
-
-  @Override
-  public void onCreateContextMenu(ContextMenu menu, View v,
-      ContextMenuInfo menuInfo) {
-    super.onCreateContextMenu(menu, v, menuInfo);
-    menu.add(0, CONTEXT_REPLY_ID, 0, R.string.cmenu_reply);
-    menu.add(0, CONTEXT_RETWEET_ID, 0, R.string.cmenu_retweet);
-
-    MenuItem item = menu.add(0, CONTEXT_DM_ID, 0, R.string.cmenu_direct_message);
-    item.setEnabled(mIsFollower);
-  }
-
-  @Override
-  public boolean onContextItemSelected(MenuItem item) {
-    AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-    Tweet tweet = (Tweet) mAdapter.getItem(info.position);
-
-    if (tweet == null) {
-      Log.w(TAG, "Selected item not available.");
-      return super.onContextItemSelected(item);
-    }
-
-    switch (item.getItemId()) {
-    case CONTEXT_REPLY_ID:
-      String replyTo = "@" + tweet.screenName + " ";
-      launchNewTweetActivity(replyTo);
-      return true;
-    case CONTEXT_RETWEET_ID:
-      String retweet = getString(R.string.pref_rt_prefix_default)+ " @" + tweet.screenName + " " + tweet.text;
-      launchNewTweetActivity(retweet);
-      return true;
-    case CONTEXT_DM_ID:
-      launchActivity(DmActivity.createIntent(mUsername));
-      return true;
-    default:
-      return super.onContextItemSelected(item);
-    }
-  }
-
-  private void launchNewTweetActivity(String text) {
-    launchActivity(WriteActivity.createNewTweetIntent(text));
-  }
-
-
   private static final int DIALOG_CONFIRM = 0;
 
   private void confirmFollow() {
@@ -748,6 +665,63 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
   private synchronized void setProfileBitmap(Bitmap bitmap) {
     mProfileBitmap = bitmap;
   }
+
+@Override
+protected String getActivityTitle() {
+	return "@" + mUsername;
+}
+
+@Override
+protected Tweet getContextItemTweet(int position) {
+	if (position >= 1){
+		return (Tweet)mAdapter.getItem(position-1);
+	}else{
+		return null;
+	}
+}
+
+@Override
+protected int getLayoutId() {
+	return R.layout.user;
+}
+
+@Override
+protected com.ch_linghu.fanfoudroid.ui.module.TweetAdapter getTweetAdapter() {
+	return mAdapter;
+}
+
+@Override
+protected ListView getTweetList() {
+	return mTweetList;
+}
+
+@Override
+protected void setupState() {
+    mTweets = new ArrayList<Tweet>();
+    mAdapter = new TweetAdapter(this);
+    // Add Header to ListView
+    mTweetList 	  = (MyListView) findViewById(R.id.tweet_list);
+    View header = View.inflate(this, R.layout.user_header, null);
+    mTweetList.addHeaderView(header);
+    mTweetList.setAdapter(mAdapter);
+    mTweetList.setOnNeedMoreListener(this);
+}
+
+@Override
+protected void updateTweet(Tweet tweet) {
+	// TODO Simple and stupid implementation
+	for (Tweet t : mTweets){
+		if (t.id.equals(tweet.id)){
+			t.favorited = tweet.favorited;
+			break;
+		}
+	}
+}
+
+@Override
+protected boolean useBasicMenu() {
+	return true;
+}
   
  
 

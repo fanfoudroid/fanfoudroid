@@ -94,6 +94,11 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 		mTweetList.setAdapter(mTweetAdapter);
 		registerOnClickListener(mTweetList);
 	}
+	
+	@Override
+	protected int getLayoutId(){
+		return R.layout.main;
+	}
 
 	@Override
 	protected ListView getTweetList(){
