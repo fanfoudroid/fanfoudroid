@@ -21,19 +21,13 @@
     android:fastScrollEnabled="true"
     />                
 
-    <!-- 提示框 -->
-    <TextView
-    android:id="@+id/progress_text"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:paddingLeft="7dp"
-    android:paddingRight="9dp"            
-    android:paddingBottom="7dp"        
-    android:textSize="13dp"
-    android:singleLine="true"
-    android:textColor="@drawable/status_color"
-    android:visibility="gone"
-    />
+	 <!-- 提示栏 -->
+     <TextView
+     android:id="@+id/progress_text"
+     android:layout_alignParentBottom="true"
+     android:layout_alignParentRight="true"
+     style="@style/statusbar"
+     />
     
     
 </LinearLayout>
