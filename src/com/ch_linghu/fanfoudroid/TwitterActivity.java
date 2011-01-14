@@ -22,14 +22,26 @@ import java.util.List;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.AsyncTask;
+import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
+
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
+import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.task.Deletable;
 import com.ch_linghu.fanfoudroid.task.Followable;
 import com.ch_linghu.fanfoudroid.task.HasFavorite;
 import com.ch_linghu.fanfoudroid.task.Retrievable;
+import com.ch_linghu.fanfoudroid.task.TaskFactory;
+import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterCursorBaseActivity;
 import com.ch_linghu.fanfoudroid.weibo.Paging;
 import com.ch_linghu.fanfoudroid.weibo.Status;
@@ -37,11 +49,12 @@ import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 //TODO: 暂无获取更旧的消息（例如NeedMore()），用户将无法查看更旧的FriendsTimeline内容。
 public class TwitterActivity extends TwitterCursorBaseActivity 
-		implements Followable, Retrievable, HasFavorite {
+		implements Followable, Retrievable, HasFavorite, Deletable {
 	private static final String TAG = "TwitterActivity";
 
 	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.TWEETS";
-
+	protected AsyncTask<String,Void,TaskResult> mDeleteTask;
+	
 	static final int DIALOG_WRITE_ID = 0;
 
 	public static Intent createIntent(Context context) {
@@ -74,32 +87,66 @@ public class TwitterActivity extends TwitterCursorBaseActivity
 
 		return super.onCreateOptionsMenu(menu);
 	}
+	
+	private int CONTEXT_DELETE_ID = getLastContextMenuId() + 1;
+	
+	@Override
+	protected int getLastContextMenuId(){
+		return CONTEXT_DELETE_ID;
+	}
+	
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		
+		AdapterView.AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+		Tweet tweet = getContextItemTweet(info.position);
+		
+		if (tweet.userId.equals(TwitterApplication.nApi.getUserId())){
+			menu.add(0, CONTEXT_DELETE_ID, 0, R.string.cmenu_delete);
+		}
+	}
+	
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
+		.getMenuInfo();
+		Tweet tweet = getContextItemTweet(info.position);
+		
+		if (tweet == null) {
+			Log.w(TAG, "Selected item not available.");
+			return super.onContextItemSelected(item);
+		}
+		
+		if (item.getItemId() == CONTEXT_DELETE_ID) {
+			doDelete(tweet.id);
+			return true;
+		}else{
+			return super.onContextItemSelected(item);
+		}
+	}
 
 	@Override
 	protected Cursor fetchMessages() {
-		// TODO Auto-generated method stub
 		return getDb().fetchAllTweets(TwitterDbAdapter.TABLE_TWEET);
 	}
 
 	@Override
 	protected String getActivityTitle() {
-		// TODO Auto-generated method stub
 		return getResources().getString(R.string.page_title_home);
 	}
 
-	
 	@Override
 	protected void markAllRead() {
-		// TODO Auto-generated method stub
 		getDb().markAllTweetsRead(TwitterDbAdapter.TABLE_TWEET);
 	}
 	
 	
 	// hasRetrieveListTask interface
-	
 	@Override
 	public void addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
-		// TODO Auto-generated method stub
 		getDb().addTweets(TwitterDbAdapter.TABLE_TWEET, tweets, isUnread);
 	}
 	
@@ -117,7 +164,29 @@ public class TwitterActivity extends TwitterCursorBaseActivity
 			return getApi().getFriendsTimeline();
 		}
 	}
-	
-	
+
+	@Override
+	public void onDeleteFailure() {
+		Log.e(TAG, "Delete failed");		
+	}
+
+	@Override
+	public void onDeleteSuccess() {
+		mTweetAdapter.refresh();
+	}
+
+	private void doDelete(String id) {
+		if (mDeleteTask != null && mDeleteTask.getStatus() == AsyncTask.Status.RUNNING) {
+			Log.w(TAG, "DeleteTask still running");
+		} else {
+			if (!Utils.isEmpty(id)) {
+//				mFavTask = new FavTask().execute(action, id);
+				AsyncTask<String,Void,TaskResult> task = TaskFactory.create(TaskFactory.DELETE_TASK_TYPE, this);
+				if (null != task) {
+					mDeleteTask = task.execute(id);
+				}
+			}
+		}
+	}
 
 }

@@ -26,9 +26,11 @@ import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.task.Deletable;
 import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
 
-public class StatusActivity extends WithHeaderActivity {
+public class StatusActivity extends WithHeaderActivity 
+	implements Deletable {
 
 	private static final String TAG = "WriteActivity";
 	private static final String SIS_RUNNING_KEY = "running";
@@ -132,6 +134,18 @@ public class StatusActivity extends WithHeaderActivity {
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
+	}
+
+
+	@Override
+	public void onDeleteFailure() {
+		Log.e(TAG, "Delete failed");		
+	}
+
+
+	@Override
+	public void onDeleteSuccess() {
+		finish();
 	}
 
 }

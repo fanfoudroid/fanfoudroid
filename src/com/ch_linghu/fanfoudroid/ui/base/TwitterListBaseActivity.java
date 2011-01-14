@@ -80,7 +80,16 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity {
 	public static final int CONTEXT_MORE_ID = Menu.FIRST + 5;
 	public static final int CONTEXT_ADD_FAV_ID = Menu.FIRST + 6;
 	public static final int CONTEXT_DEL_FAV_ID = Menu.FIRST + 7;
-
+	
+	/**
+	 * 如果增加了Context Menu常量的数量，则必须重载此方法，
+	 * 以保证其他人使用常量时不产生重复
+	 * @return 最大的Context Menu常量
+	 */
+	protected int getLastContextMenuId(){
+		return CONTEXT_DEL_FAV_ID;
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

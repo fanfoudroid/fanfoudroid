@@ -128,7 +128,4 @@ public class MentionActivity extends TwitterCursorBaseActivity
 		// TODO Auto-generated method stub
 		getDb().addTweets(TwitterDbAdapter.TABLE_MENTION, tweets, isUnread);
 	}
-
-
-
 }

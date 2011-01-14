@@ -151,6 +151,15 @@ public class BaseActivity extends Activity {
   protected static final int OPTIONS_MENU_ID_IMAGE_CAPTURE = 12;
   protected static final int OPTIONS_MENU_ID_PHOTO_LIBRARY = 13;
   
+  /**
+   * 如果增加了Option Menu常量的数量，则必须重载此方法，
+   * 以保证其他人使用常量时不产生重复
+   * @return 最大的Option Menu常量
+   */
+  protected int getLastOptionMenuId(){
+	  return OPTIONS_MENU_ID_PHOTO_LIBRARY;
+  }
+  
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     super.onCreateOptionsMenu(menu);
