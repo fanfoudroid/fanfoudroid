@@ -111,7 +111,7 @@ public class DmActivity extends WithHeaderActivity {
     // Mark all as read.
     db.markAllDmsRead();
 
-    setupAdapter();
+    setupAdapter(); // Make sure call bindFooterButtonEvent first
 
     boolean shouldRetrieve = false;
 
@@ -183,9 +183,7 @@ public class DmActivity extends WithHeaderActivity {
 	  sendbox = (Button) findViewById(R.id.sendbox);
 	  newMsg  = (Button) findViewById(R.id.new_message);
 
-	  // TODO: 绑定私信收信箱/发信箱切换按钮的监听器
 	  inbox.setOnClickListener(new View.OnClickListener() {
-		
 		@Override
 		public void onClick(View v) {
 			if (mDMType != DM_TYPE_INBOX){
@@ -199,19 +197,17 @@ public class DmActivity extends WithHeaderActivity {
 	});
 	  
 	  sendbox.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				if (mDMType != DM_TYPE_SENDBOX){
-					mDMType = DM_TYPE_SENDBOX;
-					inbox.setEnabled(true);
-					sendbox.setEnabled(false);
-					mTweetList.setAdapter(mSendboxAdapter);
-					mSendboxAdapter.refresh();
-				}
+		@Override
+		public void onClick(View v) {
+			if (mDMType != DM_TYPE_SENDBOX){
+				mDMType = DM_TYPE_SENDBOX;
+				inbox.setEnabled(true);
+				sendbox.setEnabled(false);
+				mTweetList.setAdapter(mSendboxAdapter);
+				mSendboxAdapter.refresh();
 			}
+		}
 		});
-		  
 
 	  newMsg.setOnClickListener(new View.OnClickListener() {
 		@Override
@@ -243,6 +239,8 @@ public class DmActivity extends WithHeaderActivity {
     
     mTweetList.setAdapter(mInboxAdapter);
     registerForContextMenu(mTweetList);
+    
+    inbox.setEnabled(false);
   }
 
   private void draw() {
@@ -270,7 +268,7 @@ public class DmActivity extends WithHeaderActivity {
   }
 
   private void onRetrieveBegin() {
-    updateProgress("Refreshing...");
+    updateProgress(getString(R.string.page_status_refreshing));
   }
   
   private enum TaskResult {
@@ -577,7 +575,7 @@ public class DmActivity extends WithHeaderActivity {
   private class DeleteTask extends UserTask<String, Void, TaskResult> {
     @Override
     public void onPreExecute() {
-      updateProgress("Deleting...");
+      updateProgress(getString(R.string.page_status_deleting));
     }
 
     @Override

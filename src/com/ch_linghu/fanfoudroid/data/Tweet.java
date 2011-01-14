@@ -31,6 +31,7 @@ import com.ch_linghu.fanfoudroid.weibo.Status;
 public class Tweet extends Message implements Parcelable {
   private static final String TAG = "Tweet";
 
+  public com.ch_linghu.fanfoudroid.weibo.User user;
   public String source;
   public String prevId;
   
@@ -50,6 +51,7 @@ public class Tweet extends Message implements Parcelable {
     tweet.screenName = Utils.decodeTwitterJson(status.getUser().getScreenName());
     tweet.profileImageUrl = status.getUser().getProfileImageURL().toString();
     tweet.userId = status.getUser().getId();
+    tweet.user = status.getUser();
     
     tweet.source = Utils.decodeTwitterJson(status.getSource()).
         replaceAll("\\<.*?>", "");
@@ -88,8 +90,9 @@ public class Tweet extends Message implements Parcelable {
     builder.append(source);
     
 	if (!Utils.isEmpty(replyTo)) {
-		builder.append(" " + TwitterApplication.mContext.getString(R.string.tweet_reply_to_prefix));
+		builder.append(" " + TwitterApplication.mContext.getString(R.string.tweet_reply_to_prefix_to));
 		builder.append(replyTo);
+		builder.append(TwitterApplication.mContext.getString(R.string.tweet_reply_to_prefix));
 	}
 
     return builder.toString();

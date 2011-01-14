@@ -23,13 +23,16 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -41,7 +44,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import com.ch_linghu.fanfoudroid.R;
+
+import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
 import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
@@ -334,6 +338,34 @@ public class WriteActivity extends WithHeaderActivity {
 
 		return intent;
 	}
+	
+	public static Intent createNewReplyIntent(String screenName, String replyId) {
+	    String replyTo = "@" + screenName + " ";
+        Intent intent = new Intent(WriteActivity.NEW_TWEET_ACTION);
+        intent.putExtra(WriteActivity.EXTRA_TEXT, replyTo);
+        intent.putExtra(WriteActivity.REPLY_ID, replyId);
+        
+        return intent;
+	}
+	
+	public static Intent createNewReTweetIntent(Context content, String tweetText, String screenName, String replyId) {
+	    SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(content);
+	    
+	    String prefix = mPreferences.getString(Preferences.RT_PREFIX_KEY,
+                content.getString(R.string.pref_rt_prefix_default));
+        String retweet = " "
+                + prefix
+                + " @"
+                + screenName
+                + " "
+                + tweetText.replaceAll("<.*?>", "");//TODO: 使用更好的方法对TEXT进行格式化
+        Intent intent = new Intent(WriteActivity.NEW_TWEET_ACTION);
+        intent.putExtra(WriteActivity.EXTRA_TEXT, retweet);
+        intent.putExtra(WriteActivity.REPLY_ID, replyId);
+        
+        return intent;
+    }
+	
 
 	private class MyTextWatcher implements TextWatcher {
 
@@ -417,7 +449,7 @@ public class WriteActivity extends WithHeaderActivity {
 				if (withPic) {
 					api.updateStatus(status, mFile);
 				} else {
-					api.updateStatus(status);
+					api.updateStatus(status, _reply_to);
 				}
 				
 			} catch (WeiboException e) {

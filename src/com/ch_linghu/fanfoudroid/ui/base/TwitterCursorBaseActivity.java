@@ -283,10 +283,6 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 	public void onRetrieveBegin() {
 		updateProgress(getString(R.string.page_status_refreshing));
 	}
-	
-	public SharedPreferences getPreferences() {
-		  return mPreferences;
-	}
 
 	public void doRetrieve() {
 		Log.i(TAG, "Attempting retrieve.");

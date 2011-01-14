@@ -19,6 +19,7 @@ package com.ch_linghu.fanfoudroid;
 import java.io.IOException;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -32,7 +33,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 import com.google.android.photostream.UserTask;
@@ -43,11 +43,9 @@ public class LoginActivity extends Activity {
   // Views.
   private EditText mUsernameEdit;
   private EditText mPasswordEdit;
-
-  // Displays progress of tasks.
   private TextView mProgressText;
-
   private Button mSigninButton;
+  private ProgressDialog dialog;
 
   private View.OnKeyListener enterKeyHandler = new View.OnKeyListener() {
     public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -169,9 +167,12 @@ public class LoginActivity extends Activity {
 
   private void onLoginBegin() {
     disableLogin();
+    dialog = ProgressDialog.show(LoginActivity.this, "", 
+            getString(R.string.login_status_logging_in), true);
   }
 
   private void onLoginSuccess() {
+    dialog.dismiss();
     updateProgress("");
 
     String username = mUsernameEdit.getText().toString();
@@ -210,6 +211,7 @@ public class LoginActivity extends Activity {
   }
 
   private void onLoginFailure() {
+    dialog.dismiss();
     enableLogin();
   }
 

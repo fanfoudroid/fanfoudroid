@@ -12,10 +12,14 @@
 	<!-- 状态条提示  -->
     <string name="page_status_refreshing">正在获取...</string>
     <string name="page_status_updating">正在发送...</string>
+    <string name="page_status_deleting">正在删除...</string>
     <string name="page_status_update_success">发送成功.</string>
     <string name="page_status_unable_to_update">无法发送信息...</string>
     <string name="page_status_timeout">网络超时.</string>    
     <string name="page_status_same_page">您正在此页.</string>
+    <string name="page_dm_texting_is_null">请输入私信内容.</string>
+    <string name="page_dm_user_is_null">请输入收信人.</string>
+    <string name="page_is_the_person_following_you">无法发送私信，通过客户端只能给互相关注的人发私信。</string>
 
 	<!-- 按钮提示 -->
     <string name="page_label_get_more">获取更多</string>
@@ -42,7 +46,7 @@
     <string name="login_label_username">帐号</string>    
     <string name="login_label_password">密码</string>
     <string name="login_label_signin">登 录</string>
-    <string name="login_status_logging_in">登录中</string>
+    <string name="login_status_logging_in">登录中...</string>
     <string name="login_status_invalid_username_or_password">帐号或密码错误，请重新输入。</string>
     <string name="login_status_network_or_connection_error">网络错误，请稍后再试。</string>
     <string name="login_register_link">没有帐号？ <a href="http://fanfou.com/register">注册</a></string>
@@ -105,7 +109,8 @@
     
     <!-- Tweet Item相关 -->
     <string name="tweet_source_prefix">来自</string>
-    <string name="tweet_reply_to_prefix">回复</string>
+    <string name="tweet_reply_to_prefix_to">给</string>
+    <string name="tweet_reply_to_prefix">的回复</string>
     <string name="tweet_created_at_beautify_prefix">大约</string>
     <string name="tweet_created_at_beautify_sec">秒</string>
     <string name="tweet_created_at_beautify_min">分钟</string>

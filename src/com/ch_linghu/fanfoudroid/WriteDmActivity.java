@@ -277,9 +277,9 @@ public class WriteDmActivity extends WithHeaderActivity {
 	      if (!Utils.isEmpty(status) && !Utils.isEmpty(to)) {
 	        mSendTask = new SendTask().execute();
 	      } else if (Utils.isEmpty(status)) {
-	    	  updateProgress("请输入私信内容.");
+	    	  updateProgress(getString(R.string.page_dm_texting_is_null));
 	      } else if (Utils.isEmpty(to)) {
-	    	  updateProgress("请输入收信人.");
+	    	  updateProgress(getString(R.string.page_dm_user_is_null));
 	      }
 	    }
 	} 
@@ -288,7 +288,7 @@ public class WriteDmActivity extends WithHeaderActivity {
 	    @Override
 	    public void onPreExecute() {
 	      disableEntry();
-	      updateProgress("Sending DM...");
+	      updateProgress(getString(R.string.page_status_refreshing));
 	    }
 
 	    @Override
@@ -336,11 +336,11 @@ public class WriteDmActivity extends WithHeaderActivity {
 	        updateProgress("");
 	        enableEntry();
 	      } else if (result == TaskResult.NOT_FOLLOWED_ERROR) {
-	        updateProgress("Unable to send. Is the person following you?");
+	        updateProgress(getString(R.string.page_is_the_person_following_you));
 	        enableEntry();
 	      } else if (result == TaskResult.IO_ERROR) {
             //TODO: 什么情况下会抛出IO_ERROR？需要给用户更为具体的失败原因
-	        updateProgress("Unable to send");
+	        updateProgress(getString(R.string.page_status_unable_to_update));
 	        enableEntry();
 	      }
 	    }

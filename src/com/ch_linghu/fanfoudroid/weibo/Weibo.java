@@ -531,22 +531,6 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
 
     /**
      * Updates the user's status.
-     * The text will be trimed if the length of the text is exceeding 160 characters.
-     * <br>This method calls http://api.fanfou.com/statuses/update.format
-     *
-     * @param status            the text of your status update
-     * @param inReplyToStatusId The ID of an existing status that the status to be posted is in reply to.  This implicitly sets the in_reply_to_user_id attribute of the resulting status to the user ID of the message being replied to.  Invalid/missing status IDs will be ignored.
-     * @return the latest status
-     * @throws WeiboException when Weibo service or network is unavailable
-     * @see <a href="http://code.google.com/p/fanfou-api/wiki/ApiDocumentation"</a>
-     * @deprecated Use updateStatus(String status, long inReplyToStatusId) instead
-     */
-    public Status update(String status, String inReplyToStatusId) throws WeiboException {
-        return updateStatus(status, inReplyToStatusId);
-    }
-
-    /**
-     * Updates the user's status.
      * 如果要使用inreplyToStatusId参数, 那么该status就必须得是@别人的.
      * The text will be trimed if the length of the text is exceeding 160 characters.
      * <br>发布消息  http://api.fanfou.com/statuses/update.[json|xml] 
