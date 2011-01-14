@@ -16,25 +16,18 @@
 
 package com.ch_linghu.fanfoudroid;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.json.JSONArray;
 
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageButton;
 
-import com.ch_linghu.fanfoudroid.R;
-import com.ch_linghu.fanfoudroid.R.drawable;
-import com.ch_linghu.fanfoudroid.R.string;
-import com.ch_linghu.fanfoudroid.TwitterApi.ApiException;
-import com.ch_linghu.fanfoudroid.TwitterApi.AuthException;
 import com.ch_linghu.fanfoudroid.data.Tweet;
+import com.ch_linghu.fanfoudroid.data.db.DatabaseHelper;
+import com.ch_linghu.fanfoudroid.data.db.DatabaseHelper.StatusTable;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.task.Followable;
 import com.ch_linghu.fanfoudroid.task.HasFavorite;
@@ -86,8 +79,7 @@ public class TwitterActivity extends TwitterCursorBaseActivity
 
 	@Override
 	protected Cursor fetchMessages() {
-		// TODO Auto-generated method stub
-		return getDb().fetchAllTweets(TwitterDbAdapter.TABLE_TWEET);
+		return TwitterApplication.dbHelper.fetchAllTweets(StatusTable.TABLE_NAME);
 	}
 
 	@Override
@@ -109,13 +101,14 @@ public class TwitterActivity extends TwitterCursorBaseActivity
 	@Override
 	public void addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
 		// TODO Auto-generated method stub
-		getDb().addTweets(TwitterDbAdapter.TABLE_TWEET, tweets, isUnread);
+		TwitterApplication.dbHelper.putTweets(tweets, isUnread);
 	}
 	
 	@Override
 	public String fetchMaxId() {
 		// TODO Auto-generated method stub
-		return getDb().fetchMaxId(TwitterDbAdapter.TABLE_TWEET);
+//		return getDb().fetchMaxId(TwitterDbAdapter.TABLE_TWEET);
+		return TwitterApplication.dbHelper.fetchMaxId(TwitterDbAdapter.TABLE_TWEET);
 	}
 	
 	@Override

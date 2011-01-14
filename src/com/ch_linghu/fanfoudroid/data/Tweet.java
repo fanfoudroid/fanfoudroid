@@ -56,6 +56,7 @@ public class Tweet extends Message implements Parcelable {
     tweet.text = Utils.decodeTwitterJson(status.getText());
     tweet.createdAt = status.getCreatedAt();
     tweet.favorited = status.isFavorited()?"true":"false";
+    tweet.truncated = status.isTruncated()?"true":"false";
     tweet.inReplyToStatusId = status.getInReplyToStatusId();
     tweet.inReplyToUserId = status.getInReplyToUserId();
     tweet.inReplyToScreenName = status.getInReplyToScreenName();
@@ -77,6 +78,7 @@ public class Tweet extends Message implements Parcelable {
     tweet.text = Utils.decodeTwitterJson(jsonObject.getString("text"));
     tweet.createdAt = Utils.parseSearchApiDateTime(jsonObject.getString("created_at"));
     tweet.favorited = jsonObject.getString("favorited");
+    tweet.truncated = jsonObject.getString("truncated");
     tweet.inReplyToStatusId = jsonObject.getString("in_reply_to_status_id");
     tweet.inReplyToUserId = jsonObject.getString("in_reply_to_user_id");
     tweet.inReplyToScreenName = jsonObject.getString("in_reply_to_screen_name");

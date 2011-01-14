@@ -2,6 +2,7 @@ package com.ch_linghu.fanfoudroid;
 
 import java.util.HashSet;
 
+import com.ch_linghu.fanfoudroid.data.db.DatabaseHelper;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
@@ -22,6 +23,7 @@ public class TwitterApplication extends Application {
   public static TwitterDbAdapter mDb; 
   public static TwitterApi mApi;
   public static Weibo nApi; // new API
+  public static DatabaseHelper dbHelper; 
 
   @Override
   public void onCreate() {
@@ -32,6 +34,7 @@ public class TwitterApplication extends Application {
     mDb.open();
     mApi = new TwitterApi();
     
+    dbHelper = new DatabaseHelper(this);
     
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);        
 
@@ -50,6 +53,7 @@ public class TwitterApplication extends Application {
   public void onTerminate() {
     cleanupImages();
     mDb.close();
+    dbHelper.close();
 //    Toast.makeText(this, "exit app", Toast.LENGTH_LONG);
     
     super.onTerminate();
