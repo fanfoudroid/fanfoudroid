@@ -115,6 +115,11 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity {
 			AdapterView.AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
 			Tweet tweet = getContextItemTweet(info.position);
 			
+			if (tweet == null) {
+				Log.w(TAG, "Selected item not available.");
+				return;
+			}
+			
 			menu.add(0, CONTEXT_MORE_ID, 0, tweet.screenName + getResources().getString(R.string.cmenu_user_profile_prefix));
 			menu.add(0, CONTEXT_REPLY_ID, 0, R.string.cmenu_reply);
 			menu.add(0, CONTEXT_RETWEET_ID, 0, R.string.cmenu_retweet);

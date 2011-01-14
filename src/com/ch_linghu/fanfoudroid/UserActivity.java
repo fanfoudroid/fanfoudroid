@@ -29,6 +29,7 @@ import android.widget.TextView;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.User;
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
+import com.ch_linghu.fanfoudroid.helper.MemoryImageCache;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterListBaseActivity;
 import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
@@ -52,6 +53,7 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
   private Boolean mIsFollower = false;
   private int mNextPage = 1;
   private Bitmap mProfileBitmap;
+  private MemoryImageCache mImageCache;
 
   private static class State {
     State(UserActivity activity) {
@@ -61,6 +63,7 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
       mIsFollower = activity.mIsFollower;
       mNextPage = activity.mNextPage;
       mProfileBitmap = activity.mProfileBitmap;
+  	  mImageCache = activity.mImageCache;
     }
 
     public ArrayList<Tweet> mTweets;
@@ -69,6 +72,7 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
     public boolean mIsFollower;
     public int mNextPage;
     public Bitmap mProfileBitmap;
+	public MemoryImageCache mImageCache;
   }
 
   // Views.
@@ -78,7 +82,7 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
   private ImageView mProfileImage;
   private Button mFollowButton;
 
-  private TweetAdapter mAdapter;
+  private TweetArrayAdapter mAdapter;
 
   // Tasks.
   private UserTask<Void, Void, TaskResult> mRetrieveTask;
@@ -149,6 +153,8 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
       mIsFollower = state.mIsFollower;
       mNextPage = state.mNextPage;
       mProfileBitmap = state.mProfileBitmap;
+      mImageCache = state.mImageCache;
+
       draw();
     } else {
       doRetrieve();
@@ -222,7 +228,7 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
       mProfileImage.setImageBitmap(mProfileBitmap);
     }
 
-    mAdapter.refresh(mTweets);
+    mAdapter.refresh(mTweets, mImageCache);
 
     if (mUser != null) {
       mNameText.setText(mUser.name);
@@ -330,9 +336,12 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
 
       publishProgress();
 
-      if (!Utils.isEmpty(mUser.profileImageUrl)) {
+	 mImageCache = new MemoryImageCache();
+     if (!Utils.isEmpty(mUser.profileImageUrl)) {
         try {
-          setProfileBitmap(imageManager.fetchImage(mUser.profileImageUrl));
+          Bitmap bitmap = imageManager.fetchImage(mUser.profileImageUrl);
+          setProfileBitmap(bitmap);
+      	  mImageCache.put(mUser.profileImageUrl, bitmap);
         } catch (IOException e) {
           Log.e(TAG, e.getMessage(), e);
         }
@@ -602,44 +611,6 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
     // TODO: should we do a timeline refresh here?
   }
 
-  private static class TweetAdapter extends TweetArrayAdapter {
-    public TweetAdapter(Context context) {
-      super(context, null);
-    }
-
-    private static class ViewHolder {
-      public TextView tweetText;
-      public TextView metaText;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-      View view;
-
-      if (convertView == null) {
-        view = mInflater.inflate(R.layout.user_tweet, parent, false);
-
-        ViewHolder holder = new ViewHolder();
-        holder.tweetText = (TextView) view.findViewById(R.id.tweet_text);
-        holder.metaText = (TextView) view.findViewById(R.id.tweet_meta_text);
-        view.setTag(holder);
-      } else {
-        view = convertView;
-      }
-
-      ViewHolder holder = (ViewHolder) view.getTag();
-
-      Tweet tweet = mTweets.get(position);
-
-      Utils.setTweetText(holder.tweetText, tweet.text);
-
-      holder.metaText.setText(Tweet.buildMetaText(mMetaBuilder,
-          tweet.createdAt, tweet.source, tweet.inReplyToScreenName));
-
-      return view;
-    }
-  }
-
   @Override
   public void needMore() {
     if (!isLastPage()) {
@@ -698,7 +669,7 @@ protected ListView getTweetList() {
 @Override
 protected void setupState() {
     mTweets = new ArrayList<Tweet>();
-    mAdapter = new TweetAdapter(this);
+    mAdapter = new TweetArrayAdapter(this, mImageCache);
     // Add Header to ListView
     mTweetList 	  = (MyListView) findViewById(R.id.tweet_list);
     View header = View.inflate(this, R.layout.user_header, null);
