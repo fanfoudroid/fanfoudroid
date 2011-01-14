@@ -1,7 +1,7 @@
 <PreferenceScreen
         xmlns:android="http://schemas.android.com/apk/res/android">
 
-  <PreferenceCategory android:title="@string/preferences_notifications">
+  <PreferenceCategory android:title="@string/pref_title_notifications">
 
    <CheckBoxPreference  
             android:key="check_updates"  
@@ -15,23 +15,23 @@
             android:key="timeline_only"
             android:dependency="check_updates"  
             android:defaultValue="false"
-            android:title="@string/timeline_only_title"
-            android:summary="@string/timeline_only_summary"
+            android:title="@string/pref_check_updates_timeline_only_title"
+            android:summary="@string/pref_check_updates_timeline_only_summary"
             />  
 
    <CheckBoxPreference  
             android:key="replies_only"
             android:dependency="check_updates"  
             android:defaultValue="true"
-            android:title="@string/replies_only_title"
-            android:summary="@string/replies_only_summary"
+            android:title="@string/pref_check_updates_replies_only_title"
+            android:summary="@string/pref_check_updates_replies_only_summary"
             />  
    <CheckBoxPreference  
             android:key="dm_only"
             android:dependency="check_updates"  
             android:defaultValue="true"
-            android:title="@string/dm_only_title"
-            android:summary="@string/dm_only_summary"
+            android:title="@string/pref_check_updates_direct_message_only_title"
+            android:summary="@string/pref_check_updates_direct_message_only_summary"
             />  
 
  
@@ -49,8 +49,8 @@
   <RingtonePreference
     android:dependency="check_updates"
     android:key="ringtone"
-    android:title="@string/pref_ringtone_title"
-    android:summary="@string/pref_ringtone_summary"
+    android:title="@string/pref_check_updates_ringtone_title"
+    android:summary="@string/pref_check_updates_ringtone_summary"
     android:ringtoneType="notification"
     android:defaultValue="content://settings/system/notification_sound" />
 	          
@@ -58,12 +58,12 @@
             android:key="vibrate"
             android:dependency="check_updates"  
             android:defaultValue="true"
-            android:title="@string/vibrate_title"
-            android:summary="@string/vibrate_summary"
+            android:title="@string/pref_check_updates_vibrate_title"
+            android:summary="@string/pref_check_updates_vibrate_summary"
             />  
 
   </PreferenceCategory>
-  <PreferenceCategory android:title="@string/preferences_misc">
+  <PreferenceCategory android:title="@string/pref_title_misc">
     <EditTextPreference
     android:key="rt_prefix"
     android:title="@string/pref_rt_prefix_title"

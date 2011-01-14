@@ -93,7 +93,7 @@ public class MenuDialog extends Dialog {
 			getContext().startActivity(intent);
 			dismiss();
 		} else {
-			String msg = getContext().getString(R.string.some_page);
+			String msg = getContext().getString(R.string.page_status_same_page);
 			Toast.makeText(getContext(), msg,
 					Toast.LENGTH_SHORT).show();
 		}

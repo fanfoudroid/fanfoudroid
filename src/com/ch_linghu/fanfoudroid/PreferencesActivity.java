@@ -17,8 +17,6 @@
 package com.ch_linghu.fanfoudroid;
 
 import com.ch_linghu.fanfoudroid.R;
-import com.ch_linghu.fanfoudroid.R.xml;
-
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 

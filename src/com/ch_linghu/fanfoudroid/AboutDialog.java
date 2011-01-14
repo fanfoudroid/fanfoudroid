@@ -17,9 +17,6 @@
 package com.ch_linghu.fanfoudroid;
 
 import com.ch_linghu.fanfoudroid.R;
-import com.ch_linghu.fanfoudroid.R.layout;
-import com.ch_linghu.fanfoudroid.R.string;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -41,12 +38,12 @@ public class AboutDialog {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-    String title = String.format("%s ver.%s", activity.getString(R.string.about_title), pinfo.versionName);
+    String title = String.format("%s ver.%s", activity.getString(R.string.app_name), pinfo.versionName);
     AlertDialog.Builder builder = new AlertDialog.Builder(activity);
     builder.setView(view);
     builder.setCancelable(true);
     builder.setTitle(title);
-    builder.setPositiveButton(R.string.cool, null);
+    builder.setPositiveButton(R.string.about_label_ok, null);
     builder.create().show();
   }  
  

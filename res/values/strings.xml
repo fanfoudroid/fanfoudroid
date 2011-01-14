@@ -2,84 +2,109 @@
 <resources>
     <string name="app_name">安能饭否</string>
     
-    <string name="direct_messages_page">我的私信</string>
-    <string name="favorites_page">我的收藏</string>
+    <!-- 页面Title -->
+    <string name="page_title_home">首页</string>
+    <string name="page_title_direct_messages">我的私信</string>
+    <string name="page_title_favorites">我的收藏</string>
+    <string name="page_title_mentions">提到我的</string>
+    <string name="page_title_write">撰写信息</string>
     
-    <string name="direct_messages">私信</string>
-    <string name="mentions">提到我的</string>
-    <string name="post_picture">Post picture</string>
-    
-    <string name="username_label">帐号</string>    
-    <string name="password_label">密码</string>
-    <string name="signin">登 录</string>
-    <string name="logging_in">登录中</string>
-    <string name="invalid_username_or_password">帐号或密码错误，请重新输入。</string>
-    <string name="network_or_connection_error">网络错误，请稍后再试。</string>
-    <string name="register_link">没有帐号？ <a href="http://fanfou.com/register">注册</a></string>
-    
-    <string name="signout">注销</string>
-    <string name="refresh">刷新</string>
-    <string name="preferences">选项</string>
-    <string name="settings">设置</string>
-    <string name="about">关于</string>
-    <string name="replies">提到我的</string>
-    <string name="dm">私信</string>
-    <string name="add_fav">收藏</string>
-    <string name="del_fav">取消收藏</string>
-    <string name="tweets">消息</string>
-    <string name="show_at_replies">提到我的</string>
-    <string name="show_all">Show all</string>
-    <string name="follow">关注此人</string>
-    <string name="unfollow">取消关注</string>
-    <string name="friendship">Friendship</string>
-    <string name="cancel">取消</string>
-    <string name="search">搜索</string>
-    <string name="photo">拍照上传</string>
-    <string name="image_capture">拍摄</string>
-    <string name="photo_library">从图库中选择</string>
+	<!-- 状态条提示  -->
+    <string name="page_status_refreshing">正在获取...</string>
+    <string name="page_status_updating">正在发送...</string>
+    <string name="page_status_update_success">发送成功.</string>
+    <string name="page_status_unable_to_update">无法发送信息...</string>
+    <string name="page_status_timeout">网络超时.</string>    
+    <string name="page_status_same_page">您正在此页.</string>
 
-    <string name="timeline_only_title">消息</string>
-    <string name="timeline_only_summary">提示好友消息</string>
-    <string name="replies_only_title">回复</string>
-    <string name="replies_only_summary">提示提到我的回复</string>
-    <string name="dm_only_title">私信</string>
-    <string name="dm_only_summary">提示私信</string>
+	<!-- 按钮提示 -->
+    <string name="page_label_get_more">获取更多</string>
+    <string name="page_label_go_back">返回</string>
+    
+    <!-- options menu -->
+    <string name="omenu_signout">注销</string>
+    <string name="omenu_refresh">刷新</string>
+    <string name="omenu_preferences">选项</string>
+    <string name="omenu_settings">设置</string>
+    <string name="omenu_search">搜索</string>
+    <string name="omenu_about">关于</string>
+    
+    <!-- context menu -->
+    <string name="cmenu_reply">回复</string>
+    <string name="cmenu_retweet">热饭</string>
+    <string name="cmenu_direct_message">私信</string>
+    <string name="cmenu_add_fav">收藏</string>
+    <string name="cmenu_del_fav">取消收藏</string>
+    <string name="cmenu_delete">删除</string>
+    <string name="cmenu_user_profile_prefix">的空间</string>
+    
+    <!-- Login页面 -->
+    <string name="login_label_username">帐号</string>    
+    <string name="login_label_password">密码</string>
+    <string name="login_label_signin">登 录</string>
+    <string name="login_status_logging_in">登录中</string>
+    <string name="login_status_invalid_username_or_password">帐号或密码错误，请重新输入。</string>
+    <string name="login_status_network_or_connection_error">网络错误，请稍后再试。</string>
+    <string name="login_register_link">没有帐号？ <a href="http://fanfou.com/register">注册</a></string>
+    
+    <!-- User页面 -->
+    <string name="user_label_follow">关注此人</string>
+    <string name="user_label_unfollow">取消关注</string>
+    <string name="user_status_following">正在关注...</string>
+    <string name="user_status_unfollowing">正在取消关注...</string>
+    <string name="user_prompt_this_person_has_protected_their_updates">该用户只向关注他/她的人公开消息。</string>
 
+    <!-- Write页面 -->
+    <string name="write_label_send">发送</string>
+    <string name="write_label_choose_images">插入图片</string>
+    <string name="write_label_send_in_background">后台发送</string>
+    <string name="write_label_take_a_picture">相机拍摄</string>
+    <string name="write_label_choose_a_picture">手机相册</string>
+    <string name="write_label_insert_picture">插入图片</string>
+    
+    <string name="write_label_you_can_type_prefix">可以输入</string>
+    <string name="write_label_you_can_type_suffix">字</string>
+
+	<!-- 设置页面  -->
+    <string name="pref_title_notifications">后台提示</string>
+    <string name="pref_title_misc">杂项</string>
+    
     <string name="pref_check_updates_title">设置后台提醒</string>
     <string name="pref_check_updates_summary">选中可以在后台提醒新发言、提到我的和私信</string>
+
+    <string name="pref_check_updates_timeline_only_title">消息</string>
+    <string name="pref_check_updates_timeline_only_summary">提示好友消息</string>
+    <string name="pref_check_updates_replies_only_title">回复</string>
+    <string name="pref_check_updates_replies_only_summary">提示提到我的回复</string>
+    <string name="pref_check_updates_direct_message_only_title">私信</string>
+    <string name="pref_check_updates_direct_message_only_summary">提示私信</string>
 
     <string name="pref_check_updates_interval_title">检查频率</string>
     <string name="pref_check_updates_interval_summary">两次检查的间隔分钟数</string>
         
     <string name="pref_check_updates_interval_dialog_title">间隔分钟数:</string>
-    
     <string name="pref_check_updates_interval_default">60</string>
-    
+
+    <string name="pref_check_updates_vibrate_title">振动</string>
+    <string name="pref_check_updates_vibrate_summary">有新消息提示时手机振动</string>
+
+    <string name="pref_check_updates_ringtone_title">选择提示铃音</string>
+    <string name="pref_check_updates_ringtone_summary"></string>
+        
     <string name="pref_rt_prefix_title">转发前缀</string>
     <string name="pref_rt_prefix_summary">转发消息时的前缀</string>
     <string name="pref_rt_prefix_default">热饭</string>
-    
-    <string name="new_twitter_updates">新消息</string>
-    <string name="x_new_tweets">{0} 条新消息</string>
-    <string name="new_mention_updates">新提到我的消息</string>
-    <string name="x_new_mentions">{0} 条新提到我的消息</string>
-    <string name="new_twitter_dms">新私信</string>    
-    <string name="x_new_dms">{0} 条新私信</string>    
-    
-    <string name="reply">回复</string>
-    <string name="retweet">热饭</string>
-    <string name="delete">删除</string>
-    <string name="zone"> 的空间</string>
-                
-    <string name="vibrate_title">振动</string>
-    <string name="vibrate_summary">有新消息提示时手机振动</string>
 
-    <string name="pref_ringtone_title">选择提示铃音</string>
-    <string name="pref_ringtone_summary"></string>
+	<!-- Service -->    
+    <string name="service_new_twitter_updates">新消息</string>
+    <string name="service_x_new_tweets">{0} 条新消息</string>
+    <string name="service_new_mention_updates">新提到我的消息</string>
+    <string name="service_x_new_mentions">{0} 条新提到我的消息</string>
+    <string name="service_new_direct_message_updates">新私信</string>    
+    <string name="service_x_new_direct_messages">{0} 条新私信</string>    
     
-    <string name="about_title">安能饭否</string>
+    <!-- About -->
     <string name="about_message">
-    安能饭否
     \n作者：
     \n  令狐虫(ch.linghu@gmail.com)
     \n  三日坊主(lds2012@gmail.com)
@@ -90,37 +115,14 @@
     \nTwitta is open sourced under the Apache 2.0 license. 
     \nPlease visit the project page at http://code.google.com/p/twitta/ to contribute code or report issues.
     </string>
+    <string name="about_label_ok">了解</string>
+    
 
-    <string name="cool">了解</string>
-    
-    <string name="preferences_notifications">后台提示</string>
-    <string name="preferences_misc">杂项</string>
-    
+	<!-- 搜索  -->    
     <string name="search_label">安能饭否</string>
     <string name="search_hint">搜索饭否</string>
-
-    <string name="refreshing">正在刷新...</string>
-    <string name="updateing_status">正在发送...</string>
-    <string name="update_status_success">发送成功.</string>
-    <string name="unable_to_update_status">无法发送信息...</string>
-    <string name="get_more">读取更多...</string>
     
-    <string name="write_status">撰写信息</string>
-    <string name="send">发送</string>
-    <string name="choose_images">插入图片</string>
-    <string name="go_back">返回</string>
-    <string name="send_in_background">后台发送</string>
-    <string name="take_a_picture">相机拍摄</string>
-    <string name="choose_a_picture">手机相册</string>
-    <string name="insert_picture">插入图片</string>
-    
-    <string name="you_can_type">可以输入</string>
-    <string name="words">字</string>
-    
-    <string name="This_person_has_protected_their_updates">该用户只向关注他/她的人公开消息。</string>
-    <string name="following">正在关注</string>
-    <string name="unfollowing">取消关注</string>
-    
-    <string name="timeout">网络超时.</string>    
-    <string name="some_page">您正在此页.</string>
+    <!-- 通用 -->
+    <string name="general_lable_ok">确定</string>
+    <string name="general_lable_cancel">取消</string>
 </resources>

@@ -57,7 +57,7 @@ public class IDs extends WeiboResponse {
         ids = new String[idlist.getLength()];
         for (int i = 0; i < idlist.getLength(); i++) {
             try {
-                ids[i] = (String) idlist.item(i).getFirstChild().getNodeValue();
+                ids[i] = idlist.item(i).getFirstChild().getNodeValue();
             } catch (NumberFormatException nfe) {
                 throw new WeiboException("Weibo API returned malformed response: " + elem, nfe);
             }

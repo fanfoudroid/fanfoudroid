@@ -57,7 +57,7 @@ public class FavoritesActivity extends TwitterCursorBaseActivity
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		
-		setHeaderTitle(getString(R.string.favorites_page));
+		setHeaderTitle(getString(R.string.page_title_favorites));
 		
 	}
 
@@ -72,14 +72,14 @@ public class FavoritesActivity extends TwitterCursorBaseActivity
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuItem item = menu.add(0, OPTIONS_MENU_ID_REFRESH, 0,
-				R.string.refresh);
+				R.string.omenu_refresh);
 		item.setIcon(R.drawable.refresh);
 
 		item = menu
-				.add(0, OPTIONS_MENU_ID_REPLIES, 0, R.string.show_at_replies);
+				.add(0, OPTIONS_MENU_ID_REPLIES, 0, R.string.page_title_mentions);
 		item.setIcon(android.R.drawable.ic_menu_revert);
 
-		item = menu.add(0, OPTIONS_MENU_ID_DM, 0, R.string.dm);
+		item = menu.add(0, OPTIONS_MENU_ID_DM, 0, R.string.page_title_direct_messages);
 		item.setIcon(android.R.drawable.ic_menu_send);
 
 		return super.onCreateOptionsMenu(menu);
@@ -94,7 +94,7 @@ public class FavoritesActivity extends TwitterCursorBaseActivity
 	@Override
 	protected String getActivityTitle() {
 		// TODO Auto-generated method stub
-		return getResources().getString(R.string.tweets);
+		return getResources().getString(R.string.page_title_favorites);
 	}
 
 	

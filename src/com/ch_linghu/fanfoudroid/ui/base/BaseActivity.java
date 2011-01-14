@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.provider.MediaStore.MediaColumns;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -176,23 +177,23 @@ public class BaseActivity extends Activity {
   public boolean onCreateOptionsMenu(Menu menu) {
     super.onCreateOptionsMenu(menu);
 
-    SubMenu submenu = menu.addSubMenu(R.string.photo);
+    SubMenu submenu = menu.addSubMenu(R.string.write_label_insert_picture);
     submenu.setIcon(android.R.drawable.ic_menu_gallery);
     
-    submenu.add(0, OPTIONS_MENU_ID_IMAGE_CAPTURE, 0, R.string.image_capture);
-    submenu.add(0, OPTIONS_MENU_ID_PHOTO_LIBRARY, 0, R.string.photo_library);
+    submenu.add(0, OPTIONS_MENU_ID_IMAGE_CAPTURE, 0, R.string.write_label_take_a_picture);
+    submenu.add(0, OPTIONS_MENU_ID_PHOTO_LIBRARY, 0, R.string.write_label_choose_a_picture);
     
-    MenuItem item = menu.add(0, OPTIONS_MENU_ID_SEARCH, 0, R.string.search);
+    MenuItem item = menu.add(0, OPTIONS_MENU_ID_SEARCH, 0, R.string.omenu_search);
     item.setIcon(android.R.drawable.ic_search_category_default);
     item.setAlphabeticShortcut(SearchManager.MENU_KEY);
 
-    item = menu.add(0, OPTIONS_MENU_ID_PREFERENCES, 0, R.string.settings);
+    item = menu.add(0, OPTIONS_MENU_ID_PREFERENCES, 0, R.string.omenu_settings);
     item.setIcon(android.R.drawable.ic_menu_preferences);
 
-    item = menu.add(0, OPTIONS_MENU_ID_LOGOUT, 0, R.string.signout);
+    item = menu.add(0, OPTIONS_MENU_ID_LOGOUT, 0, R.string.omenu_signout);
     item.setIcon(android.R.drawable.ic_menu_revert);
 
-    item = menu.add(0, OPTIONS_MENU_ID_ABOUT, 0, R.string.about);
+    item = menu.add(0, OPTIONS_MENU_ID_ABOUT, 0, R.string.omenu_about);
     item.setIcon(android.R.drawable.ic_menu_info_details);
 
     return true;
@@ -263,9 +264,9 @@ public class BaseActivity extends Activity {
   }
 
   private String getRealPathFromURI(Uri contentUri) {
-          String[] proj = { MediaStore.Images.Media.DATA };
+          String[] proj = { MediaColumns.DATA };
           Cursor cursor = managedQuery(contentUri, proj, null, null, null);
-          int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+          int column_index = cursor.getColumnIndexOrThrow(MediaColumns.DATA);
           cursor.moveToFirst();
           return cursor.getString(column_index);
       }

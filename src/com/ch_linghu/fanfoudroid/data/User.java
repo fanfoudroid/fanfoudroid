@@ -1,8 +1,5 @@
 package com.ch_linghu.fanfoudroid.data;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.ch_linghu.fanfoudroid.helper.Utils;
 
 public class User {

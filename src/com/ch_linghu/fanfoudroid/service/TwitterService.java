@@ -25,10 +25,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -45,12 +41,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.R;
-import com.ch_linghu.fanfoudroid.R.drawable;
-import com.ch_linghu.fanfoudroid.R.string;
-import com.ch_linghu.fanfoudroid.TwitterApi;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
-import com.ch_linghu.fanfoudroid.TwitterApi.ApiException;
-import com.ch_linghu.fanfoudroid.TwitterApi.AuthException;
 import com.ch_linghu.fanfoudroid.data.Dm;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
@@ -158,8 +149,8 @@ public class TwitterService extends Service {
 			title = latestTweet.screenName;
 			text = latestTweet.text.replaceAll("<.*?>", "");
 		} else {
-			title = getString(R.string.new_twitter_updates);
-			text = getString(R.string.x_new_tweets);
+			title = getString(R.string.service_new_twitter_updates);
+			text = getString(R.string.service_x_new_tweets);
 			text = MessageFormat.format(text, count);
 		}
 
@@ -203,8 +194,8 @@ public class TwitterService extends Service {
 			title = latestTweet.screenName;
 			text = latestTweet.text.replaceAll("<.*?>", "");
 		} else {
-			title = getString(R.string.new_mention_updates);
-			text = getString(R.string.x_new_mentions);
+			title = getString(R.string.service_new_mention_updates);
+			text = getString(R.string.service_x_new_mentions);
 			text = MessageFormat.format(text, count);
 		}
 
@@ -292,8 +283,8 @@ public class TwitterService extends Service {
 			title = latest.screenName;
 			text = latest.text.replaceAll("<.*?>", "");
 		} else {
-			title = getString(R.string.new_twitter_dms);
-			text = getString(R.string.x_new_dms);
+			title = getString(R.string.service_new_direct_message_updates);
+			text = getString(R.string.service_x_new_direct_messages);
 			text = MessageFormat.format(text, count);
 		}
 

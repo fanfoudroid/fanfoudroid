@@ -19,12 +19,10 @@ package com.ch_linghu.fanfoudroid.data.db;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 import com.ch_linghu.fanfoudroid.helper.Utils;
-import com.ch_linghu.fanfoudroid.TwitterApi;
 import com.ch_linghu.fanfoudroid.data.Dm;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 
@@ -480,7 +478,7 @@ public class TwitterDbAdapter {
       //add the last tweet with previd is empty
       createTweet(tableName, prevTweet, "", isUnread);
 
-      limitRows(tableName, TwitterApi.RETRIEVE_LIMIT);
+      //limitRows(tableName, TwitterApi.RETRIEVE_LIMIT);
       mDb.setTransactionSuccessful();
     } finally {
       mDb.endTransaction();
@@ -529,7 +527,7 @@ public class TwitterDbAdapter {
 	      //add the last tweet with previd is empty
 	      createTweet(TABLE_TWEET, prevTweet, null, isUnread);
 
-	      limitRows(TABLE_TWEET, TwitterApi.RETRIEVE_LIMIT);
+	      //limitRows(TABLE_TWEET, TwitterApi.RETRIEVE_LIMIT);
 	      mDb.setTransactionSuccessful();
 	    } finally {
 	      mDb.endTransaction();
@@ -544,7 +542,7 @@ public class TwitterDbAdapter {
         createDm(dm, isUnread);
       }
 
-      limitRows(TABLE_DIRECTMESSAGE, TwitterApi.RETRIEVE_LIMIT);
+      //limitRows(TABLE_DIRECTMESSAGE, TwitterApi.RETRIEVE_LIMIT);
       mDb.setTransactionSuccessful();
     } finally {
       mDb.endTransaction();

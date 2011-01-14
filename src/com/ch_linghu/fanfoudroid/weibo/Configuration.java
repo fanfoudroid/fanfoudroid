@@ -32,8 +32,6 @@ import java.io.InputStream;
 import java.security.AccessControlException;
 import java.util.Properties;
 
-import junit.runner.Version;
-
 /**
  * @author Yusuke Yamamoto - yusuke at mac.com
  */

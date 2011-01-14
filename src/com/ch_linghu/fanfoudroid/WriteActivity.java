@@ -17,9 +17,6 @@
 package com.ch_linghu.fanfoudroid;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -43,12 +40,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.ch_linghu.fanfoudroid.R;
-import com.ch_linghu.fanfoudroid.R.id;
-import com.ch_linghu.fanfoudroid.R.layout;
-import com.ch_linghu.fanfoudroid.R.string;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
 import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
@@ -99,11 +91,11 @@ public class WriteActivity extends WithHeaderActivity {
 	// sub menu
 	protected void createInsertPhotoDialog() {
 
-		final CharSequence[] items = { getString(R.string.take_a_picture),
-				getString(R.string.choose_a_picture) };
+		final CharSequence[] items = { getString(R.string.write_label_take_a_picture),
+				getString(R.string.write_label_choose_a_picture) };
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(getString(R.string.insert_picture));
+		builder.setTitle(getString(R.string.write_label_insert_picture));
 		builder.setItems(items, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int item) {
 				// Toast.makeText(getApplicationContext(), items[item],
@@ -510,20 +502,21 @@ public class WriteActivity extends WithHeaderActivity {
 
 	private void onSendBegin() {
 		disableEntry();
-		updateProgress(getString(R.string.updateing_status));
+		updateProgress(getString(R.string.page_status_updating));
 		backgroundButton.setVisibility(View.VISIBLE);
 	}
 
 	private void onSendSuccess() {
 		mTweetEdit.setText("");
-		updateProgress(getString(R.string.update_status_success));
+		updateProgress(getString(R.string.page_status_update_success));
 		backgroundButton.setVisibility(View.INVISIBLE);
 		enableEntry();
 		// doRetrieve();
 		// draw();
 		// goTop();
 		try {
-			Thread.currentThread().sleep(500);
+			Thread.currentThread();
+			Thread.sleep(500);
 			updateProgress("");
 		} catch (InterruptedException e) {
 			Log.i(TAG, e.getMessage());
@@ -531,7 +524,7 @@ public class WriteActivity extends WithHeaderActivity {
 	}
 
 	private void onSendFailure() {
-		updateProgress(getString(R.string.unable_to_update_status));
+		updateProgress(getString(R.string.page_status_unable_to_update));
 		enableEntry();
 	}
 

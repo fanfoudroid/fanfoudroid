@@ -72,7 +72,7 @@ public class WithHeaderActivity extends BaseActivity {
 	protected void setHeaderTitle(String title) {
 		titleButton.setBackgroundDrawable( new BitmapDrawable());
 		titleButton.setText(title);
-		LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
+		LayoutParams lp = new LayoutParams(android.view.ViewGroup.LayoutParams.WRAP_CONTENT,android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
 		lp.setMargins(3, 12, 0, 0);
 		titleButton.setLayoutParams(lp);
 		// 中文粗体
@@ -214,12 +214,13 @@ public class WithHeaderActivity extends BaseActivity {
 		// find content root view
 		ViewGroup root =  (ViewGroup) getWindow().getDecorView();
 		ViewGroup content = (ViewGroup) root.getChildAt(0);
-		View header = (View) View.inflate(WithHeaderActivity.this, resource, null);
+		View header = View.inflate(WithHeaderActivity.this, resource, null);
 //		LayoutParams params = new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT);
 		
 		content.addView(header, 0);
 	}
 	
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 //		View header = (View) View.inflate(WithHeaderActivity.this, R.layout.header, null);

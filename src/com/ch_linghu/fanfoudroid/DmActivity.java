@@ -441,14 +441,14 @@ public class DmActivity extends WithHeaderActivity {
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
-    MenuItem item = menu.add(0, OPTIONS_MENU_ID_REFRESH, 0, R.string.refresh);
+    MenuItem item = menu.add(0, OPTIONS_MENU_ID_REFRESH, 0, R.string.omenu_refresh);
     item.setIcon(R.drawable.refresh);
 
-    item = menu.add(0, OPTIONS_MENU_ID_TWEETS, 0, R.string.tweets);
+    item = menu.add(0, OPTIONS_MENU_ID_TWEETS, 0, R.string.page_title_home);
     item.setIcon(android.R.drawable.ic_menu_view);
 
     item = menu.add(0, OPTIONS_MENU_ID_REPLIES, 0,
-            R.string.show_at_replies);
+            R.string.page_title_mentions);
         item.setIcon(android.R.drawable.ic_menu_revert);
         
 
@@ -479,8 +479,8 @@ public class DmActivity extends WithHeaderActivity {
   public void onCreateContextMenu(ContextMenu menu, View v,
       ContextMenuInfo menuInfo) {
     super.onCreateContextMenu(menu, v, menuInfo);
-    menu.add(0, CONTEXT_REPLY_ID, 0, R.string.reply);
-    menu.add(0, CONTEXT_DELETE_ID, 0, R.string.delete);
+    menu.add(0, CONTEXT_REPLY_ID, 0, R.string.cmenu_reply);
+    menu.add(0, CONTEXT_DELETE_ID, 0, R.string.cmenu_delete);
   }
 
   @Override

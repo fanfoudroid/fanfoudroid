@@ -4,33 +4,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.SearchManager;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-
 import com.ch_linghu.fanfoudroid.R;
-import com.ch_linghu.fanfoudroid.R.drawable;
-import com.ch_linghu.fanfoudroid.R.id;
-import com.ch_linghu.fanfoudroid.R.string;
-import com.ch_linghu.fanfoudroid.TwitterApi.ApiException;
-import com.ch_linghu.fanfoudroid.TwitterApi.AuthException;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.MemoryImageCache;
@@ -265,7 +249,7 @@ public class SearchActivity extends TwitterListBaseActivity implements
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuItem item = menu.add(0, OPTIONS_MENU_ID_REFRESH, 0,
-				R.string.refresh);
+				R.string.omenu_refresh);
 		item.setIcon(R.drawable.refresh);
 
 		return super.onCreateOptionsMenu(menu);

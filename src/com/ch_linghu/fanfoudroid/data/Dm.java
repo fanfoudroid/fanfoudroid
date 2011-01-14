@@ -1,6 +1,5 @@
 package com.ch_linghu.fanfoudroid.data;
 
-import org.json.JSONException;
 import com.ch_linghu.fanfoudroid.weibo.DirectMessage;
 import com.ch_linghu.fanfoudroid.weibo.User;
 

@@ -7,8 +7,6 @@ import java.text.ParseException;
 import java.util.Date;
 
 import com.ch_linghu.fanfoudroid.R;
-import com.ch_linghu.fanfoudroid.R.id;
-import com.ch_linghu.fanfoudroid.R.layout;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;

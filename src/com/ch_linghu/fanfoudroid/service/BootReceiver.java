@@ -29,7 +29,8 @@ import android.util.Log;
 public class BootReceiver extends BroadcastReceiver {
   private static final String TAG = "BootReceiver";
   
-  public void onReceive(Context context, Intent intent) {
+  @Override
+public void onReceive(Context context, Intent intent) {
     Log.i(TAG, "Twitta BootReceiver is receiving.");
     if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {      
       TwitterService.schedule(context);

@@ -1,13 +1,8 @@
 package com.ch_linghu.fanfoudroid;
 
 import java.io.IOException;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -30,10 +25,6 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.ch_linghu.fanfoudroid.TwitterApi.ApiException;
-import com.ch_linghu.fanfoudroid.TwitterApi.AuthException;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.User;
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
@@ -42,8 +33,6 @@ import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
 import com.ch_linghu.fanfoudroid.ui.module.MyListView;
 import com.ch_linghu.fanfoudroid.ui.module.TweetArrayAdapter;
 import com.ch_linghu.fanfoudroid.weibo.Paging;
-import com.ch_linghu.fanfoudroid.weibo.Status;
-import com.ch_linghu.fanfoudroid.weibo.Weibo;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 import com.google.android.photostream.UserTask;
 
@@ -123,7 +112,7 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
     initHeader(HEADER_STYLE_HOME);
    
     // user name
-    mMe = TwitterApplication.mApi.getUsername();
+    mMe = TwitterApplication.nApi.getUserId();
     
     // 提示框
     mProgressText = (TextView) findViewById(R.id.progress_text);
@@ -267,9 +256,9 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
       mFollowButton.setVisibility(View.VISIBLE);
 
       if (mIsFollowing) {
-        mFollowButton.setText(R.string.unfollow);
+        mFollowButton.setText(R.string.user_label_unfollow);
       } else {
-        mFollowButton.setText(R.string.follow);
+        mFollowButton.setText(R.string.user_label_follow);
       }
     }
   }
@@ -306,11 +295,11 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
   }
 
   private void onRetrieveBegin() {
-    updateProgress(getString(R.string.refreshing));
+    updateProgress(getString(R.string.page_status_refreshing));
   }
 
   private void onLoadMoreBegin() {
-    updateProgress(getString(R.string.get_more));
+    updateProgress(getString(R.string.page_status_refreshing));
     animRotate(refreshButton);
   }
 
@@ -400,7 +389,7 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
     @Override
     public void onPostExecute(TaskResult result) {
       if (result == TaskResult.AUTH_ERROR) {
-        updateProgress(getString(R.string.This_person_has_protected_their_updates));
+        updateProgress(getString(R.string.user_prompt_this_person_has_protected_their_updates));
 
         return;
       } else if (result == TaskResult.OK) {
@@ -490,9 +479,9 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
       mFollowButton.setEnabled(false);
 
       if (mIsDestroy) {
-        updateProgress(getString(R.string.unfollowing) + "...");
+        updateProgress(getString(R.string.user_status_unfollowing));
       } else {
-        updateProgress(getString(R.string.following) + "...");
+        updateProgress(getString(R.string.user_status_following));
       }
     }
 
@@ -545,13 +534,13 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
-    MenuItem item = menu.add(0, OPTIONS_MENU_ID_REFRESH, 0, R.string.refresh);
+    MenuItem item = menu.add(0, OPTIONS_MENU_ID_REFRESH, 0, R.string.omenu_refresh);
     item.setIcon(R.drawable.refresh);
 
-    item = menu.add(0, OPTIONS_MENU_ID_DM, 0, R.string.dm);
+    item = menu.add(0, OPTIONS_MENU_ID_DM, 0, R.string.page_title_direct_messages);
     item.setIcon(android.R.drawable.ic_menu_send);
 
-    item = menu.add(0, OPTIONS_MENU_ID_FOLLOW, 0, R.string.follow);
+    item = menu.add(0, OPTIONS_MENU_ID_FOLLOW, 0, R.string.user_label_follow);
     item.setIcon(android.R.drawable.ic_menu_add);
 
     return super.onCreateOptionsMenu(menu);
@@ -566,13 +555,13 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
 
     if (mIsFollowing == null) {
       item.setEnabled(false);
-      item.setTitle(R.string.follow);
+      item.setTitle(R.string.user_label_follow);
       item.setIcon(android.R.drawable.ic_menu_add);
     } else if (mIsFollowing) {
-      item.setTitle(R.string.unfollow);
+      item.setTitle(R.string.user_label_unfollow);
       item.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
     } else {
-      item.setTitle(R.string.follow);
+      item.setTitle(R.string.user_label_follow);
       item.setIcon(android.R.drawable.ic_menu_add);
     }
 
@@ -601,10 +590,10 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
   public void onCreateContextMenu(ContextMenu menu, View v,
       ContextMenuInfo menuInfo) {
     super.onCreateContextMenu(menu, v, menuInfo);
-    menu.add(0, CONTEXT_REPLY_ID, 0, R.string.reply);
-    menu.add(0, CONTEXT_RETWEET_ID, 0, R.string.retweet);
+    menu.add(0, CONTEXT_REPLY_ID, 0, R.string.cmenu_reply);
+    menu.add(0, CONTEXT_RETWEET_ID, 0, R.string.cmenu_retweet);
 
-    MenuItem item = menu.add(0, CONTEXT_DM_ID, 0, R.string.dm);
+    MenuItem item = menu.add(0, CONTEXT_DM_ID, 0, R.string.cmenu_direct_message);
     item.setEnabled(mIsFollower);
   }
 
@@ -650,10 +639,10 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
   protected Dialog onCreateDialog(int id) {
     AlertDialog dialog = new AlertDialog.Builder(this).create();
 
-    dialog.setTitle(R.string.friendship);
-    dialog.setButton(AlertDialog.BUTTON_POSITIVE, "Doesn't matter", mConfirmListener);
-    dialog.setButton(AlertDialog.BUTTON_NEUTRAL,
-        getString(R.string.cancel), mCancelListener);
+    dialog.setTitle(R.string.user_label_follow);
+    dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Doesn't matter", mConfirmListener);
+    dialog.setButton(DialogInterface.BUTTON_NEUTRAL,
+        getString(R.string.general_lable_cancel), mCancelListener);
     dialog.setMessage("FOO");
 
     return dialog;
@@ -665,11 +654,11 @@ public class UserActivity extends WithHeaderActivity implements MyListView.OnNee
 
     AlertDialog confirmDialog = (AlertDialog) dialog;
 
-    String action = mIsFollowing ? getString(R.string.unfollow) :
-        getString(R.string.follow);
+    String action = mIsFollowing ? getString(R.string.user_label_unfollow) :
+        getString(R.string.user_label_follow);
     String message = action + " " + mUsername + "?";
 
-    (confirmDialog.getButton(AlertDialog.BUTTON_POSITIVE)).setText(action);
+    (confirmDialog.getButton(DialogInterface.BUTTON_POSITIVE)).setText(action);
     confirmDialog.setMessage(message);
   }
 

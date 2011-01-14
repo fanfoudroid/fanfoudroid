@@ -17,18 +17,11 @@
 package com.ch_linghu.fanfoudroid.data;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
-
-import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.weibo.Status;
 
@@ -39,15 +32,6 @@ public class Tweet extends Message implements Parcelable {
   public String prevId;
   
   public Tweet(){}
-
-  public boolean isReply() {
-    // TODO: this is so wrong.
-    String username = TwitterApplication.mApi.getUsername();
-    Pattern namePattern = Pattern.compile("\\B\\@\\Q" + username + "\\E\\b");
-    Matcher matcher = namePattern.matcher(text);
-
-    return matcher.find();
-  }
   
   public static Tweet create(Status status){
     Tweet tweet = new Tweet();

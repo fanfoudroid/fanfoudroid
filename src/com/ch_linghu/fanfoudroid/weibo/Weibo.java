@@ -650,7 +650,7 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
         StringBuilder sb = new StringBuilder();
         sb.append(new_status);
         sb.append(" ");
-        sb.append(R.string.retweet + "：@");
+        sb.append(R.string.pref_rt_prefix_default + "：@");
         sb.append(to_user_name);
         sb.append(" ");
         sb.append(repost_status_text);

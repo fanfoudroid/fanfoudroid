@@ -69,13 +69,13 @@ public class MentionActivity extends TwitterCursorBaseActivity
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuItem item = menu.add(0, OPTIONS_MENU_ID_REFRESH, 0,
-				R.string.refresh);
+				R.string.omenu_refresh);
 		item.setIcon(R.drawable.refresh);
 
-		item = menu.add(0, OPTIONS_MENU_ID_TWEETS, 0, R.string.tweets);
+		item = menu.add(0, OPTIONS_MENU_ID_TWEETS, 0, R.string.page_title_home);
 		item.setIcon(android.R.drawable.ic_menu_view);
 
-		item = menu.add(0, OPTIONS_MENU_ID_DM, 0, R.string.dm);
+		item = menu.add(0, OPTIONS_MENU_ID_DM, 0, R.string.page_title_direct_messages);
 		item.setIcon(android.R.drawable.ic_menu_send);
 
 		/*
@@ -102,7 +102,7 @@ public class MentionActivity extends TwitterCursorBaseActivity
 	@Override
 	protected String getActivityTitle() {
 		// TODO Auto-generated method stub
-		return getResources().getString(R.string.show_at_replies);
+		return getResources().getString(R.string.page_title_mentions);
 	}
 	
 	

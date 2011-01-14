@@ -3,8 +3,6 @@ package com.ch_linghu.fanfoudroid.ui.module;
 import java.util.ArrayList;
 
 import com.ch_linghu.fanfoudroid.R;
-import com.ch_linghu.fanfoudroid.R.id;
-import com.ch_linghu.fanfoudroid.R.layout;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.helper.ImageCache;
 import com.ch_linghu.fanfoudroid.helper.Utils;

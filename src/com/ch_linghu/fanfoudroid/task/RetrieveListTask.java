@@ -10,7 +10,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
-import com.ch_linghu.fanfoudroid.weibo.Paging;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;

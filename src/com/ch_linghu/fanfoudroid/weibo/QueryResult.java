@@ -100,7 +100,8 @@ public class QueryResult extends WeiboResponse {
      * @deprecated The Weibo API doesn't return total anymore
      * @see <a href="http://yusuke.homeip.net/jira/browse/TFJ-108">TRJ-108 deprecate QueryResult#getTotal()</a>
      */
-    public int getTotal() {
+    @Deprecated
+	public int getTotal() {
         return total;
     }
 

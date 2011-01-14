@@ -3,7 +3,6 @@ package com.ch_linghu.fanfoudroid.helper;
 import android.text.Spannable;
 import android.text.method.LinkMovementMethod;
 import android.text.method.MovementMethod;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.TextView;
 

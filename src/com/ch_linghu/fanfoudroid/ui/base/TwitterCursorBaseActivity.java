@@ -15,11 +15,8 @@
  */
 package com.ch_linghu.fanfoudroid.ui.base;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.json.JSONArray;
 
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -31,8 +28,6 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.ch_linghu.fanfoudroid.R;
-import com.ch_linghu.fanfoudroid.TwitterApi.ApiException;
-import com.ch_linghu.fanfoudroid.TwitterApi.AuthException;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
@@ -263,6 +258,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 
 	// UI helpers.
 	
+	@Override
 	protected void adapterRefresh() {
 		mTweetAdapter.notifyDataSetChanged();
 		mTweetAdapter.refresh();
@@ -280,7 +276,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 	}
 	
 	public void onRetrieveBegin() {
-		updateProgress(getString(R.string.refreshing));
+		updateProgress(getString(R.string.page_status_refreshing));
 	}
 	
 	public SharedPreferences getPreferences() {

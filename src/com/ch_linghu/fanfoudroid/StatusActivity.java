@@ -56,6 +56,7 @@ public class StatusActivity extends WithHeaderActivity {
 	}
 
 
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "onCreate.");
 		super.onCreate(savedInstanceState);
@@ -128,6 +129,7 @@ public class StatusActivity extends WithHeaderActivity {
 		super.onDestroy();
 	}
 
+	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 	}

@@ -70,7 +70,7 @@
         <!--  TODO: why need stateHidden on the magic? -->
         <activity android:name=".MentionActivity"
                   android:windowSoftInputMode="adjustResize|stateHidden"  
-                  android:label="@string/mentions">
+                  android:label="@string/page_title_mentions">
             <intent-filter>
                 <action android:name="com.ch_linghu.fanfoudroid.REPLIES" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -79,7 +79,7 @@
         <!--  TODO: why need stateHidden on the magic? -->
         <activity android:name=".DmActivity"
                   android:windowSoftInputMode="adjustResize|stateHidden"  
-                  android:label="@string/direct_messages">
+                  android:label="@string/page_title_direct_messages">
             <intent-filter>
                 <action android:name="com.ch_linghu.fanfoudroid.DMS" />
                 <category android:name="android.intent.category.DEFAULT" />

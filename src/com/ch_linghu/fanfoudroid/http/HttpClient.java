@@ -45,7 +45,6 @@ import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.weibo.Configuration;
-import com.ch_linghu.fanfoudroid.weibo.Weibo;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 public class HttpClient {

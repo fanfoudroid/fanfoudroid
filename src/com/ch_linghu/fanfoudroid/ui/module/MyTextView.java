@@ -1,14 +1,13 @@
 package com.ch_linghu.fanfoudroid.ui.module;
 
 import com.ch_linghu.fanfoudroid.R;
-import com.ch_linghu.fanfoudroid.R.color;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.URLSpan;
 import android.util.AttributeSet;
@@ -81,7 +80,7 @@ public class MyTextView extends TextView {
         } else if (action == MotionEvent.ACTION_DOWN) {
           mCurrentLink = link[0];
           buffer.setSpan(mLinkFocusStyle, buffer.getSpanStart(link[0]), buffer
-              .getSpanEnd(link[0]), SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE);
+              .getSpanEnd(link[0]), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
 
         return true;

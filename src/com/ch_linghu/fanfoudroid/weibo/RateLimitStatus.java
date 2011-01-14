@@ -85,7 +85,8 @@ public class RateLimitStatus extends WeiboResponse {
      *
      * @deprecated use getResetTime() instead
      */
-    public Date getDateTime() {
+    @Deprecated
+	public Date getDateTime() {
         return resetTime;
     }
 

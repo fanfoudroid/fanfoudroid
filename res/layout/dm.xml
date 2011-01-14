@@ -25,7 +25,7 @@
     android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
-        android:padding="0px"
+        android:padding="0dp"
         android:background="@drawable/maintab_toolbar_bg">
         <Button 
          android:id="@+id/inbox"
@@ -67,7 +67,7 @@
     android:id="@+id/progress_text"
     android:layout_width="wrap_content" 
     android:layout_height="wrap_content"
-    android:text="你哦锁定哈佛isdafnodisafh哦isdafn"
+    android:text=""
     android:visibility="gone"
     />
        

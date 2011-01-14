@@ -16,24 +16,15 @@
 
 package com.ch_linghu.fanfoudroid;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.json.JSONArray;
 
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageButton;
-
 import com.ch_linghu.fanfoudroid.R;
-import com.ch_linghu.fanfoudroid.R.drawable;
-import com.ch_linghu.fanfoudroid.R.string;
-import com.ch_linghu.fanfoudroid.TwitterApi.ApiException;
-import com.ch_linghu.fanfoudroid.TwitterApi.AuthException;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.task.Followable;
@@ -71,14 +62,14 @@ public class TwitterActivity extends TwitterCursorBaseActivity
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuItem item = menu.add(0, OPTIONS_MENU_ID_REFRESH, 0,
-				R.string.refresh);
+				R.string.omenu_refresh);
 		item.setIcon(R.drawable.refresh);
 
 		item = menu
-				.add(0, OPTIONS_MENU_ID_REPLIES, 0, R.string.show_at_replies);
+				.add(0, OPTIONS_MENU_ID_REPLIES, 0, R.string.page_title_mentions);
 		item.setIcon(android.R.drawable.ic_menu_revert);
 
-		item = menu.add(0, OPTIONS_MENU_ID_DM, 0, R.string.dm);
+		item = menu.add(0, OPTIONS_MENU_ID_DM, 0, R.string.page_title_direct_messages);
 		item.setIcon(android.R.drawable.ic_menu_send);
 
 		return super.onCreateOptionsMenu(menu);
@@ -93,7 +84,7 @@ public class TwitterActivity extends TwitterCursorBaseActivity
 	@Override
 	protected String getActivityTitle() {
 		// TODO Auto-generated method stub
-		return getResources().getString(R.string.tweets);
+		return getResources().getString(R.string.page_title_home);
 	}
 
 	

@@ -33,8 +33,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.R;
-import com.ch_linghu.fanfoudroid.TwitterApi.ApiException;
-import com.ch_linghu.fanfoudroid.TwitterApi.AuthException;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 import com.google.android.photostream.UserTask;
@@ -64,9 +62,6 @@ public class LoginActivity extends Activity {
     }
   };
 
-  // Sources.
-  private TwitterApi mApi;
-
   // Preferences.
   private SharedPreferences mPreferences;
 
@@ -85,8 +80,6 @@ public class LoginActivity extends Activity {
 	requestWindowFeature(Window.FEATURE_PROGRESS);
 
     mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-    mApi = new TwitterApi();
 
     setContentView(R.layout.login);
     
@@ -192,7 +185,6 @@ public class LoginActivity extends Activity {
     editor.putString(Preferences.PASSWORD_KEY, password);
     editor.commit();
 
-    TwitterApplication.mApi.setCredentials(username, password);
     try {
 		TwitterApplication.nApi.login(username, password);
 	} catch (IOException e) {
@@ -232,25 +224,17 @@ public class LoginActivity extends Activity {
       String username = mUsernameEdit.getText().toString();
       String password = mPasswordEdit.getText().toString();
 
-      publishProgress(getString(R.string.logging_in) + "...");
-
-      if (!TwitterApi.isValidCredentials(username, password)) {
-        publishProgress(getString(R.string.invalid_username_or_password));
-        return false;
-      }
+      publishProgress(getString(R.string.login_status_logging_in) + "...");
 
       try {
-        mApi.login(username, password);
+		TwitterApplication.nApi.login(username, password);
       } catch (IOException e) {
+          Log.e(TAG, e.getMessage(), e);
+          publishProgress(getString(R.string.login_status_network_or_connection_error));
+          return false;      
+      } catch (WeiboException e) {
         Log.e(TAG, e.getMessage(), e);
-        publishProgress(getString(R.string.network_or_connection_error));
-        return false;
-      } catch (AuthException e) {
-        publishProgress(getString(R.string.invalid_username_or_password));
-        return false;
-      } catch (ApiException e) {
-        Log.e(TAG, e.getMessage(), e);
-        publishProgress(getString(R.string.network_or_connection_error));
+        publishProgress(getString(R.string.login_status_network_or_connection_error));
         return false;
       }
 

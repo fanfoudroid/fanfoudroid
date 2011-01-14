@@ -18,14 +18,10 @@ package com.ch_linghu.fanfoudroid;
 
 import java.io.IOException;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
@@ -41,8 +37,6 @@ import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.ch_linghu.fanfoudroid.TwitterApi.ApiException;
-import com.ch_linghu.fanfoudroid.TwitterApi.AuthException;
 import com.ch_linghu.fanfoudroid.data.Dm;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.helper.Utils;
@@ -79,8 +73,6 @@ public class WriteDmActivity extends WithHeaderActivity {
 	private UserTask<Void, Void, TaskResult> mSendTask;
 	private FriendsAdapter mFriendsAdapter; // Adapter for To: recipient autocomplete.
 
-	private String _reply_id;
-	
 	private static final String EXTRA_USER = "user";
 
 	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.DMSW";
@@ -99,11 +91,11 @@ public class WriteDmActivity extends WithHeaderActivity {
 	// sub menu
 	protected void createInsertPhotoDialog() {
 
-		final CharSequence[] items = { getString(R.string.take_a_picture),
-				getString(R.string.choose_a_picture) };
+		final CharSequence[] items = { getString(R.string.write_label_take_a_picture),
+				getString(R.string.write_label_choose_a_picture) };
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(getString(R.string.insert_picture));
+		builder.setTitle(getString(R.string.write_label_insert_picture));
 		builder.setItems(items, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int item) {
 				// Toast.makeText(getApplicationContext(), items[item],
@@ -121,11 +113,6 @@ public class WriteDmActivity extends WithHeaderActivity {
 		alert.show();
 	}
 
-	private void getPic(Intent intent, Bundle extras) {
-		
-
-	}
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "onCreate.");
@@ -137,11 +124,8 @@ public class WriteDmActivity extends WithHeaderActivity {
 		
 		// Intent & Action & Extras
 		Intent intent = getIntent();
-		String action = intent.getAction();
 		Bundle extras = intent.getExtras();
 
-		_reply_id = null;
-		
 		// View
 		mProgressText = (TextView) findViewById(R.id.progress_text);
 		mTweetEditText = (EditText) findViewById(R.id.tweet_edit);
@@ -231,24 +215,6 @@ public class WriteDmActivity extends WithHeaderActivity {
 		super.onDestroy();
 	}
 
-	private void saveLastEditText() {
-		// TODO:
-		// Preferences preferences = this.getSharedPreferences(,0);
-		// preferences.setStr
-		String lastEditText = mTweetEdit.getText();
-
-		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putString("lastEditText", lastEditText);
-		editor.commit();
-	}
-
-	private void resumeLastEditTexxt() {
-		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-		String text = settings.getString("lastEditText", "");
-		mTweetEdit.setText(text);
-	}
-
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -278,7 +244,6 @@ public class WriteDmActivity extends WithHeaderActivity {
 		public void afterTextChanged(Editable s) {
 			// TODO Auto-generated method stub
 			if (s.length() == 0) {
-				_activity._reply_id = null;
 			}
 		}
 

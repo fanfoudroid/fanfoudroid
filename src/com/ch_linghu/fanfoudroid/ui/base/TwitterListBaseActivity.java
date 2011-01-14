@@ -35,8 +35,6 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.DmActivity;
 import com.ch_linghu.fanfoudroid.MentionActivity;
@@ -116,15 +114,15 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity {
 			AdapterView.AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
 			Tweet tweet = getContextItemTweet(info.position);
 			
-			menu.add(0, CONTEXT_MORE_ID, 0, tweet.screenName + " 的空间");
-			menu.add(0, CONTEXT_REPLY_ID, 0, R.string.reply);
-			menu.add(0, CONTEXT_RETWEET_ID, 0, R.string.retweet);
-			menu.add(0, CONTEXT_DM_ID, 0, R.string.dm);
+			menu.add(0, CONTEXT_MORE_ID, 0, tweet.screenName + getResources().getString(R.string.cmenu_user_profile_prefix));
+			menu.add(0, CONTEXT_REPLY_ID, 0, R.string.cmenu_reply);
+			menu.add(0, CONTEXT_RETWEET_ID, 0, R.string.cmenu_retweet);
+			menu.add(0, CONTEXT_DM_ID, 0, R.string.cmenu_direct_message);
 	
 			if (tweet.favorited.equals("true")) {
-				menu.add(0, CONTEXT_DEL_FAV_ID, 0, R.string.del_fav);
+				menu.add(0, CONTEXT_DEL_FAV_ID, 0, R.string.cmenu_del_fav);
 			} else {
-				menu.add(0, CONTEXT_ADD_FAV_ID, 0, R.string.add_fav);
+				menu.add(0, CONTEXT_ADD_FAV_ID, 0, R.string.cmenu_add_fav);
 			}
 		}
 	}

@@ -11,7 +11,6 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.preference.PreferenceManager;
-import android.widget.Toast;
 
 public class TwitterApplication extends Application {
   
@@ -20,7 +19,6 @@ public class TwitterApplication extends Application {
   // public ?
   public static ImageManager mImageManager;
   public static TwitterDbAdapter mDb; 
-  public static TwitterApi mApi;
   public static Weibo nApi; // new API
 
   @Override
@@ -30,7 +28,6 @@ public class TwitterApplication extends Application {
     mImageManager = new ImageManager(this);
     mDb = new TwitterDbAdapter(this);
     mDb.open();
-    mApi = new TwitterApi();
     
     
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);        
@@ -40,10 +37,6 @@ public class TwitterApplication extends Application {
     
     // Init API with username and password
     nApi = new Weibo(username, password);
-    
-    if (TwitterApi.isValidCredentials(username, password)) {
-      mApi.setCredentials(username, password);
-    }
   }
 
   @Override

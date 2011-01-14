@@ -56,7 +56,6 @@
       android:layout_height="wrap_content"
       android:layout_toLeftOf="@id/tweet_fav"
       android:textColor="#666"
-      android:textStyle="italic"
       android:textSize="12sp"
     />
 	

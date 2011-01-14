@@ -2,14 +2,9 @@ package com.ch_linghu.fanfoudroid.task;
 
 import java.io.IOException;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.ch_linghu.fanfoudroid.TwitterApi.ApiException;
-import com.ch_linghu.fanfoudroid.TwitterApi.AuthException;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.helper.Utils;
@@ -37,9 +32,9 @@ public class FavoriteTask extends AsyncTask<String, Void, TaskResult> {
 			String id = params[1];
 			com.ch_linghu.fanfoudroid.weibo.Status status = null;
 			if (action.equals("add")) {
-				status = activity.nApi.createFavorite(id);
+				status = HasFavorite.nApi.createFavorite(id);
 			} else {
-				status = activity.nApi.destroyFavorite(id);
+				status = HasFavorite.nApi.destroyFavorite(id);
 			}
 
 			Tweet tweet = Tweet.create(status);
@@ -54,9 +49,9 @@ public class FavoriteTask extends AsyncTask<String, Void, TaskResult> {
 			}
 
 			//对所有相关表的对应消息都进行刷新（如果存在的话）
-			activity.mDb.updateTweet(TwitterDbAdapter.TABLE_FAVORITE, tweet);
-			activity.mDb.updateTweet(TwitterDbAdapter.TABLE_MENTION, tweet);
-			activity.mDb.updateTweet(TwitterDbAdapter.TABLE_TWEET, tweet);
+			HasFavorite.mDb.updateTweet(TwitterDbAdapter.TABLE_FAVORITE, tweet);
+			HasFavorite.mDb.updateTweet(TwitterDbAdapter.TABLE_MENTION, tweet);
+			HasFavorite.mDb.updateTweet(TwitterDbAdapter.TABLE_TWEET, tweet);
 		} catch (WeiboException e) {
 			Log.e(TAG, e.getMessage(), e);
 			return TaskResult.IO_ERROR;

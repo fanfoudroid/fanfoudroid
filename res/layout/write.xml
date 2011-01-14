@@ -32,16 +32,16 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
             android:layout_marginRight="2dp"
-            android:text="@string/words"
+            android:text="@string/write_label_you_can_type_suffix"
             /> 
         <TextView
             android:id="@+id/chars_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toLeftOf="@id/chars_word"
-            android:textSize="13px"
+            android:textSize="13dp"
             android:textColor="#FF000000"
-            android:layout_marginRight="3px"
+            android:layout_marginRight="3dp"
             android:text="140"
             />
         <TextView
@@ -49,7 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toLeftOf="@id/chars_text"
-            android:text="@string/you_can_type"
+            android:text="@string/write_label_you_can_type_prefix"
             /> 
         
     </RelativeLayout>
@@ -58,8 +58,8 @@
     <ImageView
             android:id="@+id/preview"
             android:layout_width="fill_parent"
-            android:layout_height="0px"
-            android:layout_marginRight="10px"
+            android:layout_height="0dp"
+            android:layout_marginRight="10dp"
             android:gravity="center_vertical"
             android:visibility="invisible"
         />     
@@ -69,7 +69,7 @@
           android:layout_width="fill_parent"
           android:layout_height="fill_parent"
           android:layout_weight="1"
-          android:textSize="15px"
+          android:textSize="15dp"
           android:imeOptions="actionSend|flagNoEnterAction"    
           android:gravity="top"
           />   
@@ -85,26 +85,26 @@
 	          android:layout_width="wrap_content"
 	          android:layout_height="wrap_content"
 	          android:layout_alignParentLeft="true"
-	          android:layout_marginLeft="3px"
+	          android:layout_marginLeft="3dp"
 	          style="@style/blue_button"
-	          android:text="@string/send"
+	          android:text="@string/write_label_send"
 	          />
 	   <!-- 选择图片 -->
 	   <Button android:id="@+id/choose_images_button"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
               android:layout_toRightOf="@id/send_button"
-              android:layout_marginLeft="3px"
+              android:layout_marginLeft="3dp"
               style="@style/blue_button"
-              android:text="@string/choose_images"
+              android:text="@string/write_label_choose_images"
               />
        <!-- 后台发送 -->
  	   <Button android:id="@+id/send_in_backgroud_button"
 	          android:layout_width="wrap_content"
 	          android:layout_height="wrap_content"
 	          android:layout_alignParentRight="true"
-	          android:layout_marginRight="3px"
-	          android:text="@string/send_in_background"
+	          android:layout_marginRight="3dp"
+	          android:text="@string/write_label_send_in_background"
 	          style="@style/blue_button"
 	          android:visibility="gone"
 	          />
