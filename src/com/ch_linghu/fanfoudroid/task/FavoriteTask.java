@@ -52,6 +52,9 @@ public class FavoriteTask extends AsyncTask<String, Void, TaskResult> {
 			HasFavorite.mDb.updateTweet(TwitterDbAdapter.TABLE_FAVORITE, tweet);
 			HasFavorite.mDb.updateTweet(TwitterDbAdapter.TABLE_MENTION, tweet);
 			HasFavorite.mDb.updateTweet(TwitterDbAdapter.TABLE_TWEET, tweet);
+			if(action.equals("del")){
+				HasFavorite.mDb.destoryStatus(TwitterDbAdapter.TABLE_FAVORITE, tweet.id);
+			}
 		} catch (WeiboException e) {
 			Log.e(TAG, e.getMessage(), e);
 			return TaskResult.IO_ERROR;
