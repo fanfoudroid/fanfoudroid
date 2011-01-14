@@ -17,18 +17,19 @@
 package com.ch_linghu.fanfoudroid;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -78,15 +79,6 @@ public class WriteActivity extends WithHeaderActivity {
 	private UserTask<String, Void, SendResult> mSendTask;
 
 	private String _reply_id;
-	
-	
-	
-
-	private Context getContext() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 
 	// sub menu
 	protected void createInsertPhotoDialog() {
@@ -125,9 +117,10 @@ public class WriteActivity extends WithHeaderActivity {
 
 		if (Intent.ACTION_SEND.equals(intent.getAction()) && extras != null) {
 			mImageUri = (Uri) extras.getParcelable("uri");
-			String filename = extras.getString("filename");
-			debug(String.format("[WriteActivity]filename=%s", filename));
-			mFile = new File(filename);
+			//String filename = extras.getString("filename");
+			//mFile = new File(filename);
+			//TODO: 需要进一步细化
+			mFile = bitmapToFile(createThumbnailBitmap(mImageUri, 1024));
 			mPreview.setImageBitmap(createThumbnailBitmap(mImageUri,
 					MAX_BITMAP_SIZE));
 		}
@@ -139,6 +132,24 @@ public class WriteActivity extends WithHeaderActivity {
 
 	}
 	
+	private File bitmapToFile(Bitmap bitmap) {
+      	File file = new File(Environment.getExternalStorageDirectory(), "upload.jpg");
+        try {
+            FileOutputStream out=new FileOutputStream(file);
+            if(bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)){
+                out.flush();
+                out.close();
+            }
+        } catch (FileNotFoundException e) {
+            Log.e(TAG, "Sorry, the file can not be created");
+            return null;
+        } catch (IOException e) {
+            Log.e(TAG, "IOException occurred when save upload file");
+            return null;
+        }
+        return file;
+	}
+
 	private void changeStyleWithPic() {
 		mPreview.setLayoutParams(
 			new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 1f)
@@ -307,24 +318,6 @@ public class WriteActivity extends WithHeaderActivity {
 		super.onDestroy();
 	}
 
-	private void saveLastEditText() {
-		// TODO:
-		// Preferences preferences = this.getSharedPreferences(,0);
-		// preferences.setStr
-		String lastEditText = mTweetEdit.getText();
-
-		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putString("lastEditText", lastEditText);
-		editor.commit();
-	}
-
-	private void resumeLastEditTexxt() {
-		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-		String text = settings.getString("lastEditText", "");
-		mTweetEdit.setText(text);
-	}
-
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -352,7 +345,6 @@ public class WriteActivity extends WithHeaderActivity {
 
 		@Override
 		public void afterTextChanged(Editable s) {
-			// TODO Auto-generated method stub
 			if (s.length() == 0) {
 				_activity._reply_id = null;
 			}
@@ -423,7 +415,6 @@ public class WriteActivity extends WithHeaderActivity {
 				
 				// Update Status
 				if (withPic) {
-					debug(String.format("[WriteActivity]mFile=", mFile.toString()));
 					api.updateStatus(status, mFile);
 				} else {
 					api.updateStatus(status);
