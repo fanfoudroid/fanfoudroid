@@ -45,6 +45,18 @@ public class DmActivity extends WithHeaderActivity {
   // Views.
   private ListView mTweetList;
   private Adapter mAdapter;
+  private Adapter mInboxAdapter;
+  private Adapter mSendboxAdapter;
+
+  Button inbox;
+  Button sendbox;
+  Button newMsg;
+  
+  
+  private int mDMType;
+  private static final int DM_TYPE_ALL = 0;
+  private static final int DM_TYPE_INBOX = 1;
+  private static final int DM_TYPE_SENDBOX = 2;
   
   private TextView mProgressText;
 
@@ -167,11 +179,40 @@ public class DmActivity extends WithHeaderActivity {
   // UI helpers.
   
   private void bindFooterButtonEvent() {
+	  inbox   = (Button) findViewById(R.id.inbox);
+	  sendbox = (Button) findViewById(R.id.sendbox);
+	  newMsg  = (Button) findViewById(R.id.new_message);
+
 	  // TODO: 绑定私信收信箱/发信箱切换按钮的监听器
-	  Button inbox   = (Button) findViewById(R.id.inbox);
-	  Button sendbox = (Button) findViewById(R.id.sendbox);
-	  Button newMsg  = (Button) findViewById(R.id.new_message);
+	  inbox.setOnClickListener(new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			if (mDMType != DM_TYPE_INBOX){
+				mDMType = DM_TYPE_INBOX;
+				inbox.setEnabled(false);
+				sendbox.setEnabled(true);
+				mTweetList.setAdapter(mInboxAdapter);
+				mInboxAdapter.refresh();
+			}
+		}
+	});
 	  
+	  sendbox.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if (mDMType != DM_TYPE_SENDBOX){
+					mDMType = DM_TYPE_SENDBOX;
+					inbox.setEnabled(true);
+					sendbox.setEnabled(false);
+					mTweetList.setAdapter(mSendboxAdapter);
+					mSendboxAdapter.refresh();
+				}
+			}
+		});
+		  
+
 	  newMsg.setOnClickListener(new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
@@ -190,14 +231,24 @@ public class DmActivity extends WithHeaderActivity {
   private void setupAdapter() {
     Cursor cursor = getDb().fetchAllDms();
     startManagingCursor(cursor);
-
     mAdapter = new Adapter(this, cursor);
-    mTweetList.setAdapter(mAdapter);
+    
+    Cursor inboxCursor = getDb().fetchInboxDms();
+    startManagingCursor(inboxCursor);
+    mInboxAdapter = new Adapter(this, inboxCursor);
+
+    Cursor sendboxCursor = getDb().fetchSendboxDms();
+    startManagingCursor(sendboxCursor);
+    mSendboxAdapter = new Adapter(this, sendboxCursor);
+    
+    mTweetList.setAdapter(mInboxAdapter);
     registerForContextMenu(mTweetList);
   }
 
   private void draw() {
     mAdapter.refresh();
+    mInboxAdapter.refresh();
+    mSendboxAdapter.refresh();
   }
 
   private void goTop() {
@@ -283,9 +334,9 @@ public class DmActivity extends WithHeaderActivity {
       try {
     	  if (maxId != null){
     		  Paging paging = new Paging(maxId);
-    		  dmList = getApi().getDirectMessages(paging);
+    		  dmList = getApi().getSentDirectMessages(paging);
     	  }else{
-    		  dmList = getApi().getDirectMessages();    		  
+    		  dmList = getApi().getSentDirectMessages();    		  
     	  }
       } catch (WeiboException e) {
         Log.e(TAG, e.getMessage(), e);

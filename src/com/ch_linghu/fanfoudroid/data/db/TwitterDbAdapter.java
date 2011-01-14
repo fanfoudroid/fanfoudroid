@@ -292,6 +292,16 @@ public class TwitterDbAdapter {
         + " DESC");
   }
 
+  public Cursor fetchInboxDms() {
+	    return mDb.query(TABLE_DIRECTMESSAGE, DM_COLUMNS, KEY_IS_SENT + " = ?", new String[]{"0"}, null, null, KEY_CREATED_AT
+	        + " DESC");
+	  }
+
+  public Cursor fetchSendboxDms() {
+	    return mDb.query(TABLE_DIRECTMESSAGE, DM_COLUMNS, KEY_IS_SENT + " = ?", new String[]{"1"}, null, null, KEY_CREATED_AT
+	        + " DESC");
+	  }
+
   public Cursor fetchAllFollowers() {
     return mDb.query(TABLE_FOLLOWER, FOLLOWER_COLUMNS, null, null, null, null,
         null);

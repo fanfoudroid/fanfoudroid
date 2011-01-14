@@ -42,6 +42,7 @@ import com.ch_linghu.fanfoudroid.StatusActivity;
 import com.ch_linghu.fanfoudroid.TwitterActivity;
 import com.ch_linghu.fanfoudroid.UserActivity;
 import com.ch_linghu.fanfoudroid.WriteActivity;
+import com.ch_linghu.fanfoudroid.WriteDmActivity;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
@@ -187,7 +188,7 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity {
 
 			return true;
 		case CONTEXT_DM_ID:
-			launchActivity(DmActivity.createIntent(tweet.userId));
+			launchActivity(WriteDmActivity.createIntent(tweet.userId));
 			return true;
 		case CONTEXT_ADD_FAV_ID: 
 			doFavorite("add", tweet.id);
