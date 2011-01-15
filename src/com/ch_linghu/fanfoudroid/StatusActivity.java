@@ -78,8 +78,8 @@ public class StatusActivity extends WithHeaderActivity
 		// init View
 		setContentView(R.layout.status);
 		initHeader(HEADER_STYLE_BACK);
-		refreshButton.setEnabled(false);
-		refreshButton.setVisibility(View.GONE);
+//		refreshButton.setEnabled(false);
+//		refreshButton.setVisibility(View.GONE);
 		
 		// Intent & Action & Extras
 		Intent intent = getIntent();
@@ -124,12 +124,14 @@ public class StatusActivity extends WithHeaderActivity
 		TextView footer_btn_more = (TextView) findViewById(R.id.footer_btn_more);
 		
 		// 刷新
-		footer_btn_refresh.setOnClickListener(new View.OnClickListener() {
+		View.OnClickListener refreshListener =  new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 doGetStatus(tweet.id, false);
             }
-        });
+        };
+		footer_btn_refresh.setOnClickListener(refreshListener);
+		refreshButton.setOnClickListener(refreshListener);
 		
 		// 回复
 		footer_btn_reply.setOnClickListener(new View.OnClickListener() {
@@ -197,8 +199,13 @@ public class StatusActivity extends WithHeaderActivity
 
 	@Override
 	protected void onDestroy() {
-		Log.i(TAG, "onDestroy.");
-		
+        Log.i(TAG, "onDestroy.");
+
+        if (getStatusTask != null
+                && getStatusTask.getStatus() == AsyncTask.Status.RUNNING) {
+            getStatusTask.cancel(true);
+        }
+
 		super.onDestroy();
 	}
 	
@@ -226,14 +233,26 @@ public class StatusActivity extends WithHeaderActivity
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
+		
+		if (getStatusTask != null
+                && getStatusTask.getStatus() == AsyncTask.Status.RUNNING) {
+            outState.putBoolean(SIS_RUNNING_KEY, true);
+		}
 	}
 	
 	private void doGetStatus(String status_id, boolean isReply) {
-        getStatusTask = new GetStatusTask();
-        if (isReply) {
-            getStatusTask.execute(status_id);
+	    Log.i(TAG, "Attempting get status task.");
+
+        // 旋转刷新按钮
+        animRotate(refreshButton);
+	    
+	    if (getStatusTask != null
+                && getStatusTask.getStatus() == AsyncTask.Status.RUNNING) {
+            Log.w(TAG, "Already retrieving.");
         } else {
-            getStatusTask.execute();
+            getStatusTask = new GetStatusTask();
+            if (isReply) getStatusTask.execute(status_id);
+            else getStatusTask.execute();
         }
     }
 	
@@ -270,6 +289,7 @@ public class StatusActivity extends WithHeaderActivity
             } else {
                 draw();
             }
+            StatusActivity.this.refreshButton.clearAnimation();
         }
 
         @Override
