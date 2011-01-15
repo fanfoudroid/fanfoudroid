@@ -89,5 +89,9 @@ public class TweetEdit {
   public void requestFocus() {
     mEditText.requestFocus();
   }
+  
+  public EditText getEditText() {
+      return mEditText;
+  }
     
 }

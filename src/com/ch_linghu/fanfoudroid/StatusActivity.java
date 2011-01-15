@@ -37,7 +37,7 @@ import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 public class StatusActivity extends WithHeaderActivity 
 	implements Deletable {
 
-	private static final String TAG = "WriteActivity";
+	private static final String TAG = "StatusActivity";
 	private static final String SIS_RUNNING_KEY = "running";
 	private static final String PREFS_NAME = "com.ch_linghu.fanfoudroid";
 	
@@ -54,7 +54,7 @@ public class StatusActivity extends WithHeaderActivity
 	private ImageView profile_image;
 	private TextView tweet_source;
 	private TextView tweet_created_at;
-	private ImageButton person_more;
+	private ImageButton btn_person_more;
 	private ImageView status_photo = null; //if exists
 	private TextView reply_status_text = null; //if exists
 	private TextView reply_status_date = null; //if exists
@@ -74,17 +74,22 @@ public class StatusActivity extends WithHeaderActivity
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "onCreate.");
 		super.onCreate(savedInstanceState);
-
-		// init View
-		setContentView(R.layout.status);
-		initHeader(HEADER_STYLE_BACK);
-//		refreshButton.setEnabled(false);
-//		refreshButton.setVisibility(View.GONE);
 		
 		// Intent & Action & Extras
 		Intent intent = getIntent();
 		String action = intent.getAction();
 		Bundle extras = intent.getExtras();
+		
+		// Must has extras
+		if (null == extras) {
+		    Log.e(TAG, this.getClass().getName()  + " must has extras.");
+		    finish();
+		    return;
+		}
+		
+		// init View
+        setContentView(R.layout.status);
+        initHeader(HEADER_STYLE_BACK);
 
 		// View
 		tweet_screen_name	= (TextView)	findViewById(R.id.tweet_screen_name);
@@ -93,10 +98,10 @@ public class StatusActivity extends WithHeaderActivity
 		tweet_source		= (TextView)	findViewById(R.id.tweet_source);
 		profile_image		= (ImageView)	findViewById(R.id.profile_image);
 		tweet_created_at 	= (TextView)	findViewById(R.id.tweet_created_at);
-		person_more 		= (ImageButton)	findViewById(R.id.person_more);
+		btn_person_more 	= (ImageButton)	findViewById(R.id.person_more);
 		
 		// Set view with intent data
-		tweet = extras.getParcelable(EXTRA_TWEET);
+		this.tweet = extras.getParcelable(EXTRA_TWEET);
 		draw(); 
 		
 		// 绑定按钮监听器
@@ -107,7 +112,6 @@ public class StatusActivity extends WithHeaderActivity
 	private void bindButtonListener() {
 	    
 	    // person_more
-	    ImageButton btn_person_more = (ImageButton) findViewById(R.id.person_more);
 	    btn_person_more.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

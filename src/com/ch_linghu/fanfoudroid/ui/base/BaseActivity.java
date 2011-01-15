@@ -1,9 +1,6 @@
 package com.ch_linghu.fanfoudroid.ui.base;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
 
 import android.app.Activity;
 import android.app.SearchManager;
@@ -21,12 +18,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.Window;
-import android.widget.Toast;
 
-import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.AboutDialog;
 import com.ch_linghu.fanfoudroid.LoginActivity;
 import com.ch_linghu.fanfoudroid.PreferencesActivity;
+import com.ch_linghu.fanfoudroid.R;
+import com.ch_linghu.fanfoudroid.TwitterActivity;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.WriteActivity;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
@@ -252,6 +249,12 @@ public class BaseActivity extends Activity {
     // TODO: probably don't need this result chaining to finish upon logout.
     // since the subclasses have to check in onResume.
     startActivityForResult(intent, REQUEST_CODE_LAUNCH_ACTIVITY);
+  }
+  
+  protected void launchDefaultActivity() {
+      Intent intent = new Intent();
+      intent.setClass(this, TwitterActivity.class);
+      startActivity(intent);
   }
 
   private String getRealPathFromURI(Uri contentUri) {

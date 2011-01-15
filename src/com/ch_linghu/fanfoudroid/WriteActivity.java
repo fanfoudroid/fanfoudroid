@@ -34,6 +34,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.text.Editable;
+import android.text.Selection;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -270,8 +271,17 @@ public class WriteActivity extends WithHeaderActivity {
 		}
 		
 		if (REPOST_TWEET_ACTION.equals(action)) {
-			mTweetEdit.setText(intent.getStringExtra(EXTRA_TEXT));
-		    _repost_id = intent.getStringExtra(EXTRA_REPOST_ID);
+		    
+		    // 根据用户习惯，将光标放置在转发消息的头部或尾部
+		    SharedPreferences prefereces = getPreferences();
+		    boolean isAppendToTheEnd = prefereces.getBoolean(Preferences.RT_INSERT_APPEND, false);
+		    
+		    EditText inputField = mTweetEdit.getEditText();
+			inputField.setTextKeepState(intent.getStringExtra(EXTRA_TEXT));
+		    
+		    Editable etext = inputField.getText();
+		    int position = (isAppendToTheEnd) ? etext.length() : 1;  
+		    Selection.setSelection(etext, position);
 		}
 
 		mSendButton = (Button) findViewById(R.id.send_button);
