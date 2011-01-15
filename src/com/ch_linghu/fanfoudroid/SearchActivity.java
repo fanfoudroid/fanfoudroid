@@ -72,6 +72,7 @@ public class SearchActivity extends TwitterListBaseActivity implements
 			mSearchQuery = intent.getData().getLastPathSegment();
 		}
 
+		setHeaderTitle(mSearchQuery);
 		setTitle(mSearchQuery);
 
 
@@ -157,9 +158,9 @@ public class SearchActivity extends TwitterListBaseActivity implements
 		@Override
 		public void onPreExecute() {
 			if (mNextPage == 1) {
-				updateProgress("Searching...");
+				updateProgress(getString(R.string.page_status_refreshing));
 			} else {
-				updateProgress("Getting more...");
+				updateProgress(getString(R.string.page_status_refreshing));
 			}
 		}
 
