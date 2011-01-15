@@ -28,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
+import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.Deletable;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
@@ -237,11 +238,18 @@ public class StatusActivity extends WithHeaderActivity
             try {
                 if (params.length > 0) {
                     isReply = true;
-                    status = getApi().showStatus(params[0]);
-                    replyTweet = Tweet.create(status);
+                    //先看看本地缓存有没有
+                    replyTweet = getDb().getTweet(TwitterDbAdapter.TABLE_TWEET, params[0]);
+                    
+                    //如果没有再去获取
+                    if (replyTweet == null){
+                    	status = getApi().showStatus(params[0]);
+                    	replyTweet = Tweet.create(status);
+                    }
                 } else {
-                    status = getApi().showStatus(tweet.id);
-                    tweet = Tweet.create(status);
+                	//FIXME：这段没看明白，似乎白白做了一次重复的请求？
+                    //status = getApi().showStatus(tweet.id);
+                    //tweet = Tweet.create(status);
                 }
             } catch (WeiboException e) {
                 Log.e(TAG, e.getMessage(), e);

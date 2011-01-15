@@ -503,7 +503,7 @@ public class TwitterDbAdapter {
 		  tweet.text = cursor.getString(cursor.getColumnIndex(KEY_TEXT));
 		  tweet.source = cursor.getString(cursor.getColumnIndex(KEY_SOURCE));
 		  tweet.favorited = cursor.getString(cursor.getColumnIndex(KEY_FAVORITED));
-		  tweet.createdAt = Utils.parseDateTime(cursor.getString(cursor.getColumnIndex(KEY_CREATED_AT)));
+		  tweet.createdAt = Utils.parseDateTimeFromSqlite(cursor.getString(cursor.getColumnIndex(KEY_CREATED_AT)));
 		  tweet.profileImageUrl = cursor.getString(cursor.getColumnIndex(KEY_PROFILE_IMAGE_URL));
 		  tweet.screenName = cursor.getString(cursor.getColumnIndex(KEY_USER));
 		  tweet.userId = cursor.getString(cursor.getColumnIndex(KEY_USER_ID));
