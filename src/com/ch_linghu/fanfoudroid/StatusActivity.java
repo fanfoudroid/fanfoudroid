@@ -87,7 +87,7 @@ public class StatusActivity extends WithHeaderActivity
 		Log.i(TAG, "onCreate.");
 		super.onCreate(savedInstanceState);
 
-		mClient = new HttpClient(getApi().getUserId(), getApi().getPassword());
+		mClient = getApi().getHttpClient();
 		
 		// init View
 		setContentView(R.layout.status);
@@ -252,9 +252,9 @@ public class StatusActivity extends WithHeaderActivity
 		Log.i(TAG, "Fetching Photo: " + url);
 		Response res = mClient.get(url);
 
-		InputStream bis = res.asStream();
-		Bitmap bitmap = BitmapFactory.decodeStream(bis);
-		//bis.close();
+		InputStream is = res.asStream();
+		Bitmap bitmap = BitmapFactory.decodeStream(is);
+		is.close();
 
 		return bitmap;
 	}

@@ -197,7 +197,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 	protected void onResume() {
 		super.onResume();
 
-		if (!getApi().isLoggedIn()) {
+		if (!getApi().getHttpClient().isLoggedIn()) {
 			Log.i(TAG, "Not logged in.");
 			handleLoggedOut();
 			return;

@@ -312,6 +312,7 @@ public class HttpClient {
 	
 			// log responseContent
 			log("StatusCode : " + statusCode);
+			//FIXME：这个调用会使得Stream被close，从而使Response的asStream方法失效
 			//log("Response : " + res.asString());
 			
 			log("----------------- HTTP Request END ----------------------");

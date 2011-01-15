@@ -65,16 +65,8 @@ import com.ch_linghu.fanfoudroid.http.HttpClient;
         return http.getPassword();
     }
     
-    //Added for compatibility
-    public boolean isLoggedIn(){
-    	return http.isLoggedIn();
-    }
-
-    public void logout(){
-    	http.logout();
-    }
-    
-    public void login(String username, String password) throws IOException, WeiboException{
-    	http.login(username, password);
+    //Low-level interface
+    public HttpClient getHttpClient(){
+    	return http;
     }
 }

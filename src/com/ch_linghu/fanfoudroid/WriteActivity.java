@@ -443,13 +443,11 @@ public class WriteActivity extends WithHeaderActivity {
 				String _reply_to = params[0];
 				String status = mTweetEdit.getText().toString();
 				
-				Weibo api = TwitterApplication.nApi;
-				
 				// Update Status
 				if (withPic) {
-					api.updateStatus(status, mFile);
+					getApi().updateStatus(status, mFile);
 				} else {
-					api.updateStatus(status, _reply_to);
+					getApi().updateStatus(status, _reply_to);
 				}
 				
 			} catch (WeiboException e) {
