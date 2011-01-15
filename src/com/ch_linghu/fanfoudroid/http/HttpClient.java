@@ -312,7 +312,7 @@ public class HttpClient {
 	
 			// log responseContent
 			log("StatusCode : " + statusCode);
-			log("Response : " + res.asString());
+			//log("Response : " + res.asString());
 			
 			log("----------------- HTTP Request END ----------------------");
 		}

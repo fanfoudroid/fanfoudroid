@@ -16,8 +16,12 @@
 
 package com.ch_linghu.fanfoudroid;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,8 +31,11 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ch_linghu.fanfoudroid.http.HttpClient;
+import com.ch_linghu.fanfoudroid.http.Response;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
+import com.ch_linghu.fanfoudroid.helper.ImageCache;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.Deletable;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
@@ -47,6 +54,7 @@ public class StatusActivity extends WithHeaderActivity
 	
 	// Task TODO: tasks 
 	private AsyncTask<String, Void, TaskResult> getStatusTask; 
+	private AsyncTask<String, Void, TaskResult> getPhotoTask; 
 	
 	// View
 	private TextView tweet_screen_name; 
@@ -63,6 +71,9 @@ public class StatusActivity extends WithHeaderActivity
 	private Tweet tweet = null;
 	private Tweet replyTweet = null; //if exists
 	
+	private HttpClient mClient;
+	private Bitmap mPhotoBitmap = ImageCache.mDefaultBitmap;	//if exists
+	
 	
 	public static Intent createIntent(Tweet tweet) {
 	    Intent intent = new Intent(LAUNCH_ACTION);
@@ -76,6 +87,8 @@ public class StatusActivity extends WithHeaderActivity
 		Log.i(TAG, "onCreate.");
 		super.onCreate(savedInstanceState);
 
+		mClient = new HttpClient(getApi().getUserId(), getApi().getPassword());
+		
 		// init View
 		setContentView(R.layout.status);
 		initHeader(HEADER_STYLE_BACK);
@@ -204,6 +217,15 @@ public class StatusActivity extends WithHeaderActivity
         Bitmap mProfileBitmap = TwitterApplication.mImageManager.get(tweet.profileImageUrl);
         profile_image.setImageBitmap(mProfileBitmap);
         
+        // has photo
+        String photoPageLink = Utils.getPhotoPageLink(tweet.text); 
+        if (photoPageLink != null){
+        	status_photo = (ImageView)findViewById(R.id.status_photo);
+        	status_photo.setVisibility(View.VISIBLE);
+        	status_photo.setImageBitmap(mPhotoBitmap);
+        	doGetPhoto(photoPageLink);
+        }
+        
         // has reply
         if (! Utils.isEmpty(tweet.inReplyToStatusId) ) {
             ViewGroup reply_wrap = (ViewGroup) findViewById(R.id.reply_wrap);
@@ -217,6 +239,24 @@ public class StatusActivity extends WithHeaderActivity
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
+	}
+
+	private String fetchWebPage(String url) throws WeiboException {
+		Log.i(TAG, "Fetching WebPage: " + url);
+
+		Response res = mClient.get(url);
+		return res.asString();
+	}
+
+	private Bitmap fetchPhotoBitmap(String url) throws WeiboException, IOException {
+		Log.i(TAG, "Fetching Photo: " + url);
+		Response res = mClient.get(url);
+
+		InputStream bis = res.asStream();
+		Bitmap bitmap = BitmapFactory.decodeStream(bis);
+		//bis.close();
+
+		return bitmap;
 	}
 	
 	private void doGetStatus(String status_id, boolean isReply) {
@@ -283,6 +323,58 @@ public class StatusActivity extends WithHeaderActivity
         }
 	}
 	
+	private void doGetPhoto(String photoPageURL) {
+        getPhotoTask = new GetPhotoTask();
+        getPhotoTask.execute(photoPageURL);
+    }
+	
+
+	private class GetPhotoTask extends AsyncTask<String, Void, TaskResult> {
+
+        @Override
+        protected TaskResult doInBackground(String... params) {
+            try {
+                if (params.length > 0) {
+                	String photoPageURL = params[0];
+                	String pageHtml = fetchWebPage(photoPageURL);
+                	String photoSrcURL = Utils.getPhotoURL(pageHtml);
+                	if (photoSrcURL != null){
+                		mPhotoBitmap = fetchPhotoBitmap(photoSrcURL);
+                	}
+                } 
+            } catch (WeiboException e) {
+                Log.e(TAG, e.getMessage(), e);
+                return TaskResult.IO_ERROR;
+            } catch (IOException e) {
+                Log.e(TAG, e.getMessage(), e);
+                return TaskResult.IO_ERROR;
+            }
+            return TaskResult.OK;
+        }
+
+        @Override
+        protected void onPostExecute(TaskResult result) {
+            super.onPostExecute(result);
+            if(result == TaskResult.OK){
+            	status_photo.setImageBitmap(mPhotoBitmap);		
+            }else{
+            	status_photo.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {
+            // TODO Auto-generated method stub
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            // TODO Auto-generated method stub
+            super.onProgressUpdate(values);
+        }
+	}
+
 	private void showReplyStatus(Tweet tweet) {
 		if (tweet != null){
 			String text = tweet.screenName + " : " + tweet.text;
