@@ -224,13 +224,17 @@ public class Utils {
 	  return sb.toString();
   }
   
+  public static String getSimpleTweetText(String text){
+	  return text.replaceAll("<.*?>", "")
+	     		 .replace("&lt;", "<")
+	     		 .replace("&gt;", ">")
+	     		 .replace("&nbsp;", " ")
+	     		 .replace("&amp;", "&")
+	     		 .replace("&quot;", "\"");
+  }
+  
   public static void setSimpleTweetText(TextView textView, String text){
-	  String processedText = text.replaceAll("<.*?>", "")
-	  						     .replace("&lt;", "<")
-	  						     .replace("&gt;", ">")
-	  						     .replace("&nbsp;", " ")
-	  						     .replace("&amp;", "&")
-	  						     .replace("&quot;", "\"");
+	  String processedText = getSimpleTweetText(text);
 	  textView.setText(processedText);
   }
 
