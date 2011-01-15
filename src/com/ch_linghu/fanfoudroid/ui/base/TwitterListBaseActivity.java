@@ -187,10 +187,6 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case OPTIONS_MENU_ID_REFRESH:
-			//FIXME: 菜单中的刷新项是否可以删除了？
-//			doRetrieve();
-			return true;
 		case OPTIONS_MENU_ID_TWEETS:
 			launchActivity(TwitterActivity.createIntent(this));
 			return true;

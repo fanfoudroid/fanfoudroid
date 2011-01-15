@@ -90,9 +90,9 @@ public class Tweet extends Message implements Parcelable {
     builder.append(source);
     
 	if (!Utils.isEmpty(replyTo)) {
-		builder.append(" " + TwitterApplication.mContext.getString(R.string.tweet_reply_to_prefix_to));
+		builder.append(" " + TwitterApplication.mContext.getString(R.string.tweet_reply_to_prefix));
 		builder.append(replyTo);
-		builder.append(TwitterApplication.mContext.getString(R.string.tweet_reply_to_prefix));
+		builder.append(TwitterApplication.mContext.getString(R.string.tweet_reply_to_suffix));
 	}
 
     return builder.toString();

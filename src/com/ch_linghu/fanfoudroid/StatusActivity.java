@@ -16,6 +16,7 @@
 
 package com.ch_linghu.fanfoudroid;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -28,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
+import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.Deletable;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
@@ -57,7 +59,8 @@ public class StatusActivity extends WithHeaderActivity
 	private ImageButton btn_person_more;
 	private ImageView status_photo = null; //if exists
 	private TextView reply_status_text = null; //if exists
-	private TextView reply_status_date = null; //if exists
+	private TextView reply_status_date = null; //if existso
+	private ProgressDialog progressDialog;
 	
 	private Tweet tweet = null;
 	private Tweet replyTweet = null; //if exists
@@ -249,7 +252,7 @@ public class StatusActivity extends WithHeaderActivity
 
         // 旋转刷新按钮
         animRotate(refreshButton);
-	    
+        
 	    if (getStatusTask != null
                 && getStatusTask.getStatus() == AsyncTask.Status.RUNNING) {
             Log.w(TAG, "Already retrieving.");
@@ -263,6 +266,7 @@ public class StatusActivity extends WithHeaderActivity
 	private class GetStatusTask extends AsyncTask<String, Void, TaskResult> {
 	    
 	    private boolean isReply = false;
+	    private boolean isLocal = true;
 
         @Override
         protected TaskResult doInBackground(String... params) {
@@ -270,11 +274,19 @@ public class StatusActivity extends WithHeaderActivity
             try {
                 if (params.length > 0) {
                     isReply = true;
-                    status = getApi().showStatus(params[0]);
-                    replyTweet = Tweet.create(status);
+                    //先看看本地缓存有没有
+                    replyTweet = getDb().getTweet(TwitterDbAdapter.TABLE_TWEET, params[0]);
+                    
+                    //如果没有再去获取
+                    if (replyTweet == null){
+                        isLocal = false;
+                    	status = getApi().showStatus(params[0]);
+                    	replyTweet = Tweet.create(status);
+                    }
                 } else {
-                    status = getApi().showStatus(tweet.id);
-                    tweet = Tweet.create(status);
+                	//FIXME：这段没看明白，似乎白白做了一次重复的请求？
+                    //status = getApi().showStatus(tweet.id);
+                    //tweet = Tweet.create(status);
                 }
             } catch (WeiboException e) {
                 Log.e(TAG, e.getMessage(), e);
@@ -294,6 +306,7 @@ public class StatusActivity extends WithHeaderActivity
                 draw();
             }
             StatusActivity.this.refreshButton.clearAnimation();
+            progressDialog.dismiss();         
         }
 
         @Override
@@ -310,9 +323,14 @@ public class StatusActivity extends WithHeaderActivity
 	}
 	
 	private void showReplyStatus(Tweet tweet) {
-        String text = tweet.screenName + " : " + tweet.text;
-        reply_status_text.setText(text);
-        reply_status_date.setText(Utils.getRelativeDate(tweet.createdAt));
+		if (tweet != null){
+			String text = tweet.screenName + " : " + tweet.text;
+			Utils.setTweetText(reply_status_text, text);
+			reply_status_date.setText(Utils.getRelativeDate(tweet.createdAt));
+		}else{
+			//FIXME: 这里需要有更好的处理方法
+			reply_status_text.setText("【消息获取未成功】");
+		}
     }
 	
 	// For interface Deletable

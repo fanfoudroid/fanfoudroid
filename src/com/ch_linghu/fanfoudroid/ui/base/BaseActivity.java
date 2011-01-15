@@ -141,16 +141,15 @@ public class BaseActivity extends Activity {
   protected static final int OPTIONS_MENU_ID_LOGOUT = 1;
   protected static final int OPTIONS_MENU_ID_PREFERENCES = 2;
   protected static final int OPTIONS_MENU_ID_ABOUT = 3;
-  protected static final int OPTIONS_MENU_ID_REFRESH = 4;
+  protected static final int OPTIONS_MENU_ID_SEARCH = 4;
   protected static final int OPTIONS_MENU_ID_REPLIES = 5;
   protected static final int OPTIONS_MENU_ID_DM = 6;
   protected static final int OPTIONS_MENU_ID_TWEETS = 7;
   protected static final int OPTIONS_MENU_ID_TOGGLE_REPLIES = 8;
   protected static final int OPTIONS_MENU_ID_FOLLOW = 9;
   protected static final int OPTIONS_MENU_ID_UNFOLLOW = 10;
-  protected static final int OPTIONS_MENU_ID_SEARCH = 11;
-  protected static final int OPTIONS_MENU_ID_IMAGE_CAPTURE = 12;
-  protected static final int OPTIONS_MENU_ID_PHOTO_LIBRARY = 13;
+  protected static final int OPTIONS_MENU_ID_IMAGE_CAPTURE = 11;
+  protected static final int OPTIONS_MENU_ID_PHOTO_LIBRARY = 12;
   
   /**
    * 如果增加了Option Menu常量的数量，则必须重载此方法，

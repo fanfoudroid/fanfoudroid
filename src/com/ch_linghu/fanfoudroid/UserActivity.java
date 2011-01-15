@@ -521,10 +521,7 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
-    MenuItem item = menu.add(0, OPTIONS_MENU_ID_REFRESH, 0, R.string.omenu_refresh);
-    item.setIcon(R.drawable.refresh);
-
-    item = menu.add(0, OPTIONS_MENU_ID_DM, 0, R.string.page_title_direct_messages);
+    MenuItem item = menu.add(0, OPTIONS_MENU_ID_DM, 0, R.string.page_title_direct_messages);
     item.setIcon(android.R.drawable.ic_menu_send);
 
     item = menu.add(0, OPTIONS_MENU_ID_FOLLOW, 0, R.string.user_label_follow);

@@ -41,6 +41,7 @@
     <string name="cmenu_add_fav">收藏</string>
     <string name="cmenu_del_fav">取消收藏</string>
     <string name="cmenu_delete">删除</string>
+    <string name="cmenu_more">更多</string>
     <string name="cmenu_user_profile_prefix">的空间</string>
     
     <!-- Login页面 -->
@@ -69,6 +70,11 @@
     
     <string name="write_label_you_can_type_prefix">可以输入</string>
     <string name="write_label_you_can_type_suffix">字</string>
+	
+	<!-- 私信页面 -->
+    <string name="direct_meesage_status_texting_is_null">请输入私信内容.</string>
+    <string name="direct_meesage_status_user_is_null">请输入收信人.</string>
+    <string name="direct_meesage_status_the_person_not_following_you">无法发送私信，通过客户端只能给互相关注的人发私信。</string>
 
 	<!-- 设置页面  -->
     <string name="pref_title_notifications">后台提示</string>
@@ -110,8 +116,8 @@
     
     <!-- Tweet Item相关 -->
     <string name="tweet_source_prefix">来自</string>
-    <string name="tweet_reply_to_prefix_to">给</string>
-    <string name="tweet_reply_to_prefix">的回复</string>
+    <string name="tweet_reply_to_prefix">给</string>
+    <string name="tweet_reply_to_suffix">的回复</string>
     <string name="tweet_created_at_beautify_prefix">大约</string>
     <string name="tweet_created_at_beautify_sec">秒</string>
     <string name="tweet_created_at_beautify_min">分钟</string>

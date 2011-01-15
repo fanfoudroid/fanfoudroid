@@ -57,7 +57,7 @@ public final class R {
         public static final int icon_a=0x7f02001a;
         public static final int iphone_button_disabled=0x7f02001b;
         public static final int iphone_button_selector=0x7f02001c;
-        public static final int label_color=0x7f020037;
+        public static final int label_color=0x7f020039;
         public static final int list_selector=0x7f02001d;
         public static final int list_selector_selected=0x7f02001e;
         public static final int maintab_toolbar_bg=0x7f02001f;
@@ -77,17 +77,19 @@ public final class R {
         public static final int simple_button_background_pressed=0x7f02002d;
         public static final int simple_button_blue_selector=0x7f02002e;
         public static final int simple_button_selector=0x7f02002f;
-        public static final int status_color=0x7f020038;
+        public static final int status_color=0x7f02003a;
         public static final int tiny_square=0x7f020030;
         public static final int tiny_square_pressed=0x7f020031;
         public static final int tiny_square_selector=0x7f020032;
         public static final int top_home=0x7f020033;
         public static final int top_refresh=0x7f020034;
-        public static final int tweet_color=0x7f02003a;
-        public static final int tweet_meta_color=0x7f02003b;
-        public static final int tweet_user_color=0x7f020039;
-        public static final int twitter_follow_me=0x7f020035;
-        public static final int user_default_photo=0x7f020036;
+        public static final int top_refresh_pressed=0x7f020035;
+        public static final int top_refresh_selector=0x7f020036;
+        public static final int tweet_color=0x7f02003c;
+        public static final int tweet_meta_color=0x7f02003d;
+        public static final int tweet_user_color=0x7f02003b;
+        public static final int twitter_follow_me=0x7f020037;
+        public static final int user_default_photo=0x7f020038;
     }
     public static final class id {
         public static final int LinearLayout01=0x7f0a000f;
@@ -173,33 +175,39 @@ public final class R {
         public static final int write_dm=0x7f030014;
     }
     public static final class string {
-        public static final int about_label_ok=0x7f080059;
+        public static final int about_label_ok=0x7f08005d;
         /**  About 
          */
-        public static final int about_message=0x7f080058;
+        public static final int about_message=0x7f08005c;
         public static final int app_name=0x7f080000;
         public static final int cmenu_add_fav=0x7f08001c;
         public static final int cmenu_del_fav=0x7f08001d;
         public static final int cmenu_delete=0x7f08001e;
         public static final int cmenu_direct_message=0x7f08001b;
+        public static final int cmenu_more=0x7f08001f;
         /**  context menu 
          */
         public static final int cmenu_reply=0x7f080019;
         public static final int cmenu_retweet=0x7f08001a;
-        public static final int cmenu_user_profile_prefix=0x7f08001f;
-        public static final int general_lable_cancel=0x7f08005d;
+        public static final int cmenu_user_profile_prefix=0x7f080020;
+        /**  私信页面 
+         */
+        public static final int direct_meesage_status_texting_is_null=0x7f080035;
+        public static final int direct_meesage_status_the_person_not_following_you=0x7f080037;
+        public static final int direct_meesage_status_user_is_null=0x7f080036;
+        public static final int general_lable_cancel=0x7f080061;
         /**  通用 
          */
-        public static final int general_lable_ok=0x7f08005c;
-        public static final int login_label_password=0x7f080021;
-        public static final int login_label_signin=0x7f080022;
+        public static final int general_lable_ok=0x7f080060;
+        public static final int login_label_password=0x7f080022;
+        public static final int login_label_signin=0x7f080023;
         /**  Login页面 
          */
-        public static final int login_label_username=0x7f080020;
-        public static final int login_register_link=0x7f080026;
-        public static final int login_status_invalid_username_or_password=0x7f080024;
-        public static final int login_status_logging_in=0x7f080023;
-        public static final int login_status_network_or_connection_error=0x7f080025;
+        public static final int login_label_username=0x7f080021;
+        public static final int login_register_link=0x7f080027;
+        public static final int login_status_invalid_username_or_password=0x7f080025;
+        public static final int login_status_logging_in=0x7f080024;
+        public static final int login_status_network_or_connection_error=0x7f080026;
         public static final int omenu_about=0x7f080018;
         public static final int omenu_preferences=0x7f080015;
         public static final int omenu_refresh=0x7f080014;
@@ -232,69 +240,69 @@ public final class R {
         public static final int page_title_home=0x7f080001;
         public static final int page_title_mentions=0x7f080004;
         public static final int page_title_write=0x7f080005;
-        public static final int pref_check_updates_direct_message_only_summary=0x7f08003d;
-        public static final int pref_check_updates_direct_message_only_title=0x7f08003c;
-        public static final int pref_check_updates_interval_default=0x7f080041;
-        public static final int pref_check_updates_interval_dialog_title=0x7f080040;
-        public static final int pref_check_updates_interval_summary=0x7f08003f;
-        public static final int pref_check_updates_interval_title=0x7f08003e;
-        public static final int pref_check_updates_replies_only_summary=0x7f08003b;
-        public static final int pref_check_updates_replies_only_title=0x7f08003a;
-        public static final int pref_check_updates_ringtone_summary=0x7f080045;
-        public static final int pref_check_updates_ringtone_title=0x7f080044;
-        public static final int pref_check_updates_summary=0x7f080037;
-        public static final int pref_check_updates_timeline_only_summary=0x7f080039;
-        public static final int pref_check_updates_timeline_only_title=0x7f080038;
-        public static final int pref_check_updates_title=0x7f080036;
-        public static final int pref_check_updates_vibrate_summary=0x7f080043;
-        public static final int pref_check_updates_vibrate_title=0x7f080042;
-        public static final int pref_rt_prefix_default=0x7f080048;
-        public static final int pref_rt_prefix_summary=0x7f080047;
-        public static final int pref_rt_prefix_title=0x7f080046;
-        public static final int pref_title_misc=0x7f080035;
+        public static final int pref_check_updates_direct_message_only_summary=0x7f080041;
+        public static final int pref_check_updates_direct_message_only_title=0x7f080040;
+        public static final int pref_check_updates_interval_default=0x7f080045;
+        public static final int pref_check_updates_interval_dialog_title=0x7f080044;
+        public static final int pref_check_updates_interval_summary=0x7f080043;
+        public static final int pref_check_updates_interval_title=0x7f080042;
+        public static final int pref_check_updates_replies_only_summary=0x7f08003f;
+        public static final int pref_check_updates_replies_only_title=0x7f08003e;
+        public static final int pref_check_updates_ringtone_summary=0x7f080049;
+        public static final int pref_check_updates_ringtone_title=0x7f080048;
+        public static final int pref_check_updates_summary=0x7f08003b;
+        public static final int pref_check_updates_timeline_only_summary=0x7f08003d;
+        public static final int pref_check_updates_timeline_only_title=0x7f08003c;
+        public static final int pref_check_updates_title=0x7f08003a;
+        public static final int pref_check_updates_vibrate_summary=0x7f080047;
+        public static final int pref_check_updates_vibrate_title=0x7f080046;
+        public static final int pref_rt_prefix_default=0x7f08004c;
+        public static final int pref_rt_prefix_summary=0x7f08004b;
+        public static final int pref_rt_prefix_title=0x7f08004a;
+        public static final int pref_title_misc=0x7f080039;
         /**  设置页面  
          */
-        public static final int pref_title_notifications=0x7f080034;
-        public static final int search_hint=0x7f08005b;
+        public static final int pref_title_notifications=0x7f080038;
+        public static final int search_hint=0x7f08005f;
         /**  搜索  
          */
-        public static final int search_label=0x7f08005a;
-        public static final int service_new_direct_message_updates=0x7f08004d;
-        public static final int service_new_mention_updates=0x7f08004b;
+        public static final int search_label=0x7f08005e;
+        public static final int service_new_direct_message_updates=0x7f080051;
+        public static final int service_new_mention_updates=0x7f08004f;
         /**  Service 
          */
-        public static final int service_new_twitter_updates=0x7f080049;
-        public static final int service_x_new_direct_messages=0x7f08004e;
-        public static final int service_x_new_mentions=0x7f08004c;
-        public static final int service_x_new_tweets=0x7f08004a;
-        public static final int tweet_created_at_beautify_day=0x7f080056;
-        public static final int tweet_created_at_beautify_hour=0x7f080055;
-        public static final int tweet_created_at_beautify_min=0x7f080054;
-        public static final int tweet_created_at_beautify_prefix=0x7f080052;
-        public static final int tweet_created_at_beautify_sec=0x7f080053;
-        public static final int tweet_created_at_beautify_suffix=0x7f080057;
-        public static final int tweet_reply_to_prefix=0x7f080051;
-        public static final int tweet_reply_to_prefix_to=0x7f080050;
+        public static final int service_new_twitter_updates=0x7f08004d;
+        public static final int service_x_new_direct_messages=0x7f080052;
+        public static final int service_x_new_mentions=0x7f080050;
+        public static final int service_x_new_tweets=0x7f08004e;
+        public static final int tweet_created_at_beautify_day=0x7f08005a;
+        public static final int tweet_created_at_beautify_hour=0x7f080059;
+        public static final int tweet_created_at_beautify_min=0x7f080058;
+        public static final int tweet_created_at_beautify_prefix=0x7f080056;
+        public static final int tweet_created_at_beautify_sec=0x7f080057;
+        public static final int tweet_created_at_beautify_suffix=0x7f08005b;
+        public static final int tweet_reply_to_prefix=0x7f080054;
+        public static final int tweet_reply_to_suffix=0x7f080055;
         /**  Tweet Item相关 
          */
-        public static final int tweet_source_prefix=0x7f08004f;
+        public static final int tweet_source_prefix=0x7f080053;
         /**  User页面 
          */
-        public static final int user_label_follow=0x7f080027;
-        public static final int user_label_unfollow=0x7f080028;
-        public static final int user_prompt_this_person_has_protected_their_updates=0x7f08002b;
-        public static final int user_status_following=0x7f080029;
-        public static final int user_status_unfollowing=0x7f08002a;
-        public static final int write_label_choose_a_picture=0x7f080030;
-        public static final int write_label_choose_images=0x7f08002d;
-        public static final int write_label_insert_picture=0x7f080031;
+        public static final int user_label_follow=0x7f080028;
+        public static final int user_label_unfollow=0x7f080029;
+        public static final int user_prompt_this_person_has_protected_their_updates=0x7f08002c;
+        public static final int user_status_following=0x7f08002a;
+        public static final int user_status_unfollowing=0x7f08002b;
+        public static final int write_label_choose_a_picture=0x7f080031;
+        public static final int write_label_choose_images=0x7f08002e;
+        public static final int write_label_insert_picture=0x7f080032;
         /**  Write页面 
          */
-        public static final int write_label_send=0x7f08002c;
-        public static final int write_label_send_in_background=0x7f08002e;
-        public static final int write_label_take_a_picture=0x7f08002f;
-        public static final int write_label_you_can_type_prefix=0x7f080032;
-        public static final int write_label_you_can_type_suffix=0x7f080033;
+        public static final int write_label_send=0x7f08002d;
+        public static final int write_label_send_in_background=0x7f08002f;
+        public static final int write_label_take_a_picture=0x7f080030;
+        public static final int write_label_you_can_type_prefix=0x7f080033;
+        public static final int write_label_you_can_type_suffix=0x7f080034;
     }
     public static final class style {
         /**  fonts 

@@ -50,7 +50,7 @@
         <!-- 刷新按钮 -->
         <ImageButton android:id="@+id/top_refresh"
            android:background="@null"
-           android:src="@drawable/top_refresh"
+           android:src="@drawable/top_refresh_selector"
            android:layout_width="wrap_content"
            android:layout_height="fill_parent"
            android:layout_toLeftOf="@id/writeMessage"
