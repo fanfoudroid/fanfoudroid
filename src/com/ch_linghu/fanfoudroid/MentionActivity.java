@@ -68,18 +68,6 @@ public class MentionActivity extends TwitterCursorBaseActivity
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuItem item = menu.add(0, OPTIONS_MENU_ID_TWEETS, 0, R.string.page_title_home);
-		item.setIcon(android.R.drawable.ic_menu_view);
-
-		item = menu.add(0, OPTIONS_MENU_ID_DM, 0, R.string.page_title_direct_messages);
-		item.setIcon(android.R.drawable.ic_menu_send);
-
-		/*
-		 * item = menu.add(0, OPTIONS_MENU_ID_TOGGLE_REPLIES, 0,
-		 * R.string.show_at_replies);
-		 * item.setIcon(android.R.drawable.ic_menu_zoom);
-		 */
-
 		return super.onCreateOptionsMenu(menu);
 	}
 	

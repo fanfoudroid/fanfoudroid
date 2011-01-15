@@ -490,20 +490,16 @@ public class DmActivity extends WithHeaderActivity {
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
-    MenuItem item = menu.add(0, OPTIONS_MENU_ID_TWEETS, 0, R.string.page_title_home);
-    item.setIcon(android.R.drawable.ic_menu_view);
-
-    item = menu.add(0, OPTIONS_MENU_ID_REPLIES, 0,
-            R.string.page_title_mentions);
-        item.setIcon(android.R.drawable.ic_menu_revert);
-        
-
     return super.onCreateOptionsMenu(menu);
   }
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
+    // FIXME: 将刷新功能绑定到顶部的刷新按钮上，主菜单中的刷新选项已删除
+//  case OPTIONS_MENU_ID_REFRESH:
+//      doRetrieve();
+//      return true;
     case OPTIONS_MENU_ID_TWEETS:
       launchActivity(TwitterActivity.createIntent(this));
       return true;

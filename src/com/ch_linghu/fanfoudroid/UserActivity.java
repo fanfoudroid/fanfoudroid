@@ -521,7 +521,7 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
-    MenuItem item = menu.add(0, OPTIONS_MENU_ID_DM, 0, R.string.page_title_direct_messages);
+    MenuItem item = menu.add(0, OPTIONS_MENU_ID_DM, 0, R.string.cmenu_direct_message);
     item.setIcon(android.R.drawable.ic_menu_send);
 
     item = menu.add(0, OPTIONS_MENU_ID_FOLLOW, 0, R.string.user_label_follow);
@@ -532,19 +532,23 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
 
   @Override
   public boolean onPrepareOptionsMenu(Menu menu) {
-    MenuItem item = menu.findItem(OPTIONS_MENU_ID_DM);
-    item.setEnabled(mIsFollower);
-
-    item = menu.findItem(OPTIONS_MENU_ID_FOLLOW);
+	  //FIXME: 暂时去掉私信菜单可用性判断，保持和弹出菜单一致的行为
+	  
+//    MenuItem item = menu.findItem(OPTIONS_MENU_ID_DM);
+//    item.setEnabled(mIsFollower);
+//
+    MenuItem item = menu.findItem(OPTIONS_MENU_ID_FOLLOW);
 
     if (mIsFollowing == null) {
       item.setEnabled(false);
       item.setTitle(R.string.user_label_follow);
       item.setIcon(android.R.drawable.ic_menu_add);
     } else if (mIsFollowing) {
+      item.setEnabled(true);
       item.setTitle(R.string.user_label_unfollow);
       item.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
     } else {
+      item.setEnabled(true);
       item.setTitle(R.string.user_label_follow);
       item.setIcon(android.R.drawable.ic_menu_add);
     }
