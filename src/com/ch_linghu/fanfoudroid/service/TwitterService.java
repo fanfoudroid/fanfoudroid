@@ -202,7 +202,8 @@ public class TwitterService extends Service {
 		PendingIntent intent = PendingIntent.getActivity(this, 0,
 				MentionActivity.createIntent(this), 0);
 
-		notify(intent, MENTION_NOTIFICATION_ID, R.drawable.notify_tweet,
+		// @我的
+		notify(intent, MENTION_NOTIFICATION_ID, R.drawable.notify_mentions,
 				latestTweet.text, title, text);
 	}
 

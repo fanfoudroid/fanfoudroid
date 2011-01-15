@@ -274,7 +274,7 @@ public class WriteActivity extends WithHeaderActivity {
 		    
 		    // 根据用户习惯，将光标放置在转发消息的头部或尾部
 		    SharedPreferences prefereces = getPreferences();
-		    boolean isAppendToTheEnd = prefereces.getBoolean(Preferences.RT_INSERT_APPEND, false);
+		    boolean isAppendToTheEnd = prefereces.getBoolean(Preferences.RT_INSERT_APPEND, true);
 		    
 		    EditText inputField = mTweetEdit.getEditText();
 			inputField.setTextKeepState(intent.getStringExtra(EXTRA_TEXT));

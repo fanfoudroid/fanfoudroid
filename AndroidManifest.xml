@@ -6,7 +6,7 @@
 	          
     <application
         android:name="TwitterApplication"    
-        android:icon="@drawable/icon_a"
+        android:icon="@drawable/icon"
         android:label="@string/app_name">
         
         <meta-data android:name="android.app.default_searchable"
