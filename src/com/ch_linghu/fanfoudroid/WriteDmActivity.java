@@ -277,9 +277,9 @@ public class WriteDmActivity extends WithHeaderActivity {
 	      if (!Utils.isEmpty(status) && !Utils.isEmpty(to)) {
 	        mSendTask = new SendTask().execute();
 	      } else if (Utils.isEmpty(status)) {
-	    	  updateProgress(getString(R.string.page_dm_texting_is_null));
+	    	  updateProgress(getString(R.string.direct_meesage_status_texting_is_null));
 	      } else if (Utils.isEmpty(to)) {
-	    	  updateProgress(getString(R.string.page_dm_user_is_null));
+	    	  updateProgress(getString(R.string.direct_meesage_status_user_is_null));
 	      }
 	    }
 	} 
@@ -336,7 +336,7 @@ public class WriteDmActivity extends WithHeaderActivity {
 	        updateProgress("");
 	        enableEntry();
 	      } else if (result == TaskResult.NOT_FOLLOWED_ERROR) {
-	        updateProgress(getString(R.string.page_is_the_person_following_you));
+	        updateProgress(getString(R.string.direct_meesage_status_the_person_not_following_you));
 	        enableEntry();
 	      } else if (result == TaskResult.IO_ERROR) {
             //TODO: 什么情况下会抛出IO_ERROR？需要给用户更为具体的失败原因

@@ -276,9 +276,14 @@ public class StatusActivity extends WithHeaderActivity
 	}
 	
 	private void showReplyStatus(Tweet tweet) {
-        String text = tweet.screenName + " : " + tweet.text;
-        reply_status_text.setText(text);
-        reply_status_date.setText(Utils.getRelativeDate(tweet.createdAt));
+		if (tweet != null){
+			String text = tweet.screenName + " : " + tweet.text;
+			Utils.setTweetText(reply_status_text, text);
+			reply_status_date.setText(Utils.getRelativeDate(tweet.createdAt));
+		}else{
+			//FIXME: 这里需要有更好的处理方法
+			reply_status_text.setText("【消息获取未成功】");
+		}
     }
 	
 	// For interface Deletable
