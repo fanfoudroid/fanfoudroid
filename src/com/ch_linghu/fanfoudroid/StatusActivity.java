@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -65,6 +66,7 @@ public class StatusActivity extends WithHeaderActivity
 	private TextView tweet_created_at;
 	private ImageButton person_more;
 	private ImageView status_photo = null; //if exists
+	private ViewGroup reply_wrap;
 	private TextView reply_status_text = null; //if exists
 	private TextView reply_status_date = null; //if exists
 	
@@ -109,13 +111,18 @@ public class StatusActivity extends WithHeaderActivity
 		tweet_created_at 	= (TextView)	findViewById(R.id.tweet_created_at);
 		person_more 		= (ImageButton)	findViewById(R.id.person_more);
 		
-		// Set view with intent data
+        reply_wrap = (ViewGroup) findViewById(R.id.reply_wrap);
+        reply_status_text = (TextView) findViewById(R.id.reply_status_text);
+        reply_status_date = (TextView) findViewById(R.id.reply_tweet_created_at);
+    	status_photo = (ImageView)findViewById(R.id.status_photo);
+
+    	// Set view with intent data
 		tweet = extras.getParcelable(EXTRA_TWEET);
 		draw(); 
 		
-		// 绑定顶部按钮监听器
+		// 绑定监听器
 		bindFooterBarListener();
-	
+		bindReplyViewListener();
 	}
 	
 	private void bindFooterBarListener() {
@@ -169,6 +176,26 @@ public class StatusActivity extends WithHeaderActivity
         });
 	}
 
+
+	private void bindReplyViewListener() {
+		// 点击回复消息打开新的Status界面
+		OnClickListener listener = new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+		        if (! Utils.isEmpty(tweet.inReplyToStatusId) ) {
+					if (replyTweet == null) {
+						Log.w(TAG, "Selected item not available.");
+					}
+					
+					// TODO: launch statusActivity with real data
+					launchActivity(StatusActivity.createIntent(replyTweet));
+		        }
+			}
+		};
+        reply_wrap.setOnClickListener(listener);
+	}
+
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -220,7 +247,6 @@ public class StatusActivity extends WithHeaderActivity
         // has photo
         String photoPageLink = Utils.getPhotoPageLink(tweet.text); 
         if (photoPageLink != null){
-        	status_photo = (ImageView)findViewById(R.id.status_photo);
         	status_photo.setVisibility(View.VISIBLE);
         	status_photo.setImageBitmap(mPhotoBitmap);
         	doGetPhoto(photoPageLink);
@@ -228,10 +254,7 @@ public class StatusActivity extends WithHeaderActivity
         
         // has reply
         if (! Utils.isEmpty(tweet.inReplyToStatusId) ) {
-            ViewGroup reply_wrap = (ViewGroup) findViewById(R.id.reply_wrap);
             reply_wrap.setVisibility(View.VISIBLE);
-            reply_status_text = (TextView) findViewById(R.id.reply_status_text);
-            reply_status_date = (TextView) findViewById(R.id.reply_tweet_created_at);
             doGetStatus(tweet.inReplyToStatusId, true);
         }
 	}
@@ -378,7 +401,7 @@ public class StatusActivity extends WithHeaderActivity
 	private void showReplyStatus(Tweet tweet) {
 		if (tweet != null){
 			String text = tweet.screenName + " : " + tweet.text;
-			Utils.setTweetText(reply_status_text, text);
+			Utils.setSimpleTweetText(reply_status_text, text);
 			reply_status_date.setText(Utils.getRelativeDate(tweet.createdAt));
 		}else{
 			//FIXME: 这里需要有更好的处理方法

@@ -24,11 +24,7 @@
 	  android:layout_width="wrap_content"
 	  android:layout_height="wrap_content"
 	  android:layout_toRightOf="@id/profile_image"
-	  android:textColor="@color/link_color"
-	  android:shadowColor="#666"
-      android:shadowRadius="1"
-      android:shadowDx="0"
-      android:shadowDy="1"
+	  style="@style/LinkText.Bold.Big"
 	/>
 	<!-- Tweet context -->
     <com.ch_linghu.fanfoudroid.ui.module.MyTextView
