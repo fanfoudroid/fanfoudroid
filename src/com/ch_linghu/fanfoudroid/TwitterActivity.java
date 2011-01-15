@@ -74,17 +74,6 @@ public class TwitterActivity extends TwitterCursorBaseActivity
 	// Menu.
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuItem item = menu.add(0, OPTIONS_MENU_ID_REFRESH, 0,
-				R.string.omenu_refresh);
-		item.setIcon(R.drawable.refresh);
-
-		item = menu
-				.add(0, OPTIONS_MENU_ID_REPLIES, 0, R.string.page_title_mentions);
-		item.setIcon(android.R.drawable.ic_menu_revert);
-
-		item = menu.add(0, OPTIONS_MENU_ID_DM, 0, R.string.page_title_direct_messages);
-		item.setIcon(android.R.drawable.ic_menu_send);
-
 		return super.onCreateOptionsMenu(menu);
 	}
 	

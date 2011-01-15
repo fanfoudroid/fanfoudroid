@@ -251,10 +251,6 @@ public class SearchActivity extends TwitterListBaseActivity implements
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuItem item = menu.add(0, OPTIONS_MENU_ID_REFRESH, 0,
-				R.string.omenu_refresh);
-		item.setIcon(R.drawable.refresh);
-
 		return super.onCreateOptionsMenu(menu);
 	}
 
