@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+  <item android:state_focused="true"  android:drawable="@drawable/detail_fav_normal" />
+  <item android:state_pressed="true"  android:drawable="@drawable/detail_fav_normal" />
+  <item android:state_enabled="false" android:drawable="@android:drawable/star_off" />
+  <item android:drawable="@drawable/detail_fav_normal" />      
+</selector>

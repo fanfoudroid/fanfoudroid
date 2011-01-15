@@ -2,8 +2,11 @@ package com.ch_linghu.fanfoudroid.task;
 
 import android.app.Activity;
 import android.os.AsyncTask;
+import android.util.Log;
 
 public class TaskFactory {
+    
+    public static final String TAG = "TaskFactory";
 
 	public static final int FOLLOWERS_TASK_TYPE = 1;
 	public static final int RETRIEVE_LIST_TASK_TYPE = 2;
@@ -36,6 +39,8 @@ public class TaskFactory {
 			break;
 		}
 
+		Log.e(TAG, "Can't create task. Maybe the type(" + taskType + ") is not exsits or  " 
+		        + activity.getClass().getName() + " is not implement this task's interface.");
 		return null;
 	}
 }

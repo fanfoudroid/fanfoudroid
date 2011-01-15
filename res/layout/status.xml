@@ -88,7 +88,6 @@
             android:paddingTop="5dp"
             android:paddingBottom="10dp"
             >
-            
             <TextView android:id="@+id/tweet_source"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -100,15 +99,15 @@
                 android:layout_alignParentRight="true"
                 style="@style/normalText.span"/>
             <!-- favorited icon -->
-            <ImageView
+            <ImageButton
                 android:id="@+id/tweet_fav"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
+                android:layout_width="27dp"
+                android:layout_height="27dp"
                 android:scaleType="center"
-                android:src="@android:drawable/star_off"
+                android:src="@drawable/fav_button_selector"
+                android:background="@null"
                 android:layout_toLeftOf="@id/tweet_created_at"
                 android:layout_marginRight="5dp"
-                android:visibility="visible"
             />
          </RelativeLayout>
          <!-- 回复原文 -->

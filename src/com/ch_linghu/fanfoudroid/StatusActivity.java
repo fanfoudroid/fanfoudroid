@@ -26,25 +26,28 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.ch_linghu.fanfoudroid.http.HttpClient;
-import com.ch_linghu.fanfoudroid.http.Response;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.helper.ImageCache;
 import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.http.HttpClient;
+import com.ch_linghu.fanfoudroid.http.Response;
 import com.ch_linghu.fanfoudroid.task.Deletable;
+import com.ch_linghu.fanfoudroid.task.FavoriteTask;
+import com.ch_linghu.fanfoudroid.task.HasFavorite;
+import com.ch_linghu.fanfoudroid.task.TaskFactory;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 public class StatusActivity extends WithHeaderActivity 
-	implements Deletable {
+	implements Deletable, HasFavorite {
 
 	private static final String TAG = "StatusActivity";
 	private static final String SIS_RUNNING_KEY = "running";
@@ -56,6 +59,7 @@ public class StatusActivity extends WithHeaderActivity
 	// Task TODO: tasks 
 	private AsyncTask<String, Void, TaskResult> getStatusTask; 
 	private AsyncTask<String, Void, TaskResult> getPhotoTask; 
+	private AsyncTask<String, Void, TaskResult> mFavTask;
 	
 	// View
 	private TextView tweet_screen_name; 
@@ -68,7 +72,8 @@ public class StatusActivity extends WithHeaderActivity
 	private ImageView status_photo = null; //if exists
 	private ViewGroup reply_wrap;
 	private TextView reply_status_text = null; //if exists
-	private TextView reply_status_date = null; //if existso
+	private TextView reply_status_date = null; //if exists
+	private ImageButton tweet_fav;
 	
 	private Tweet tweet = null;
 	private Tweet replyTweet = null; //if exists
@@ -90,12 +95,6 @@ public class StatusActivity extends WithHeaderActivity
 		super.onCreate(savedInstanceState);
 
 		mClient = getApi().getHttpClient();
-		
-		// init View
-		setContentView(R.layout.status);
-		initHeader(HEADER_STYLE_BACK);
-		refreshButton.setEnabled(false);
-		refreshButton.setVisibility(View.GONE);
 		
 		// Intent & Action & Extras
 		Intent intent = getIntent();
@@ -121,6 +120,7 @@ public class StatusActivity extends WithHeaderActivity
 		profile_image		= (ImageView)	findViewById(R.id.profile_image);
 		tweet_created_at 	= (TextView)	findViewById(R.id.tweet_created_at);
 		btn_person_more 	= (ImageButton)	findViewById(R.id.person_more);
+		tweet_fav           = (ImageButton)   findViewById(R.id.tweet_fav);
 		
         reply_wrap = (ViewGroup) findViewById(R.id.reply_wrap);
         reply_status_text = (TextView) findViewById(R.id.reply_status_text);
@@ -187,6 +187,11 @@ public class StatusActivity extends WithHeaderActivity
 		footer_btn_fav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (tweet.favorited.equals("true")) {
+                    doFavorite("del", tweet.id);
+                } else {
+                    doFavorite("add", tweet.id);
+                }
             }
         });
 		
@@ -256,6 +261,10 @@ public class StatusActivity extends WithHeaderActivity
                 && getStatusTask.getStatus() == AsyncTask.Status.RUNNING) {
             getStatusTask.cancel(true);
         }
+        if (mFavTask != null
+                && mFavTask.getStatus() == AsyncTask.Status.RUNNING) {
+            mFavTask.cancel(true);
+        }
 
 		super.onDestroy();
 	}
@@ -267,6 +276,8 @@ public class StatusActivity extends WithHeaderActivity
         tweet_created_at.setText(Utils.getRelativeDate(tweet.createdAt));
         tweet_source.setText(getString(R.string.tweet_source_prefix) + tweet.source);
         tweet_user_info.setText(tweet.userId);
+        boolean isFav = (tweet.favorited.equals("true")) ? true : false;
+        tweet_fav.setEnabled(isFav);
         
         Bitmap mProfileBitmap = TwitterApplication.mImageManager.get(tweet.profileImageUrl);
         profile_image.setImageBitmap(mProfileBitmap);
@@ -288,6 +299,7 @@ public class StatusActivity extends WithHeaderActivity
             doGetStatus(tweet.inReplyToStatusId, true);
         }
 	}
+	
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
@@ -462,6 +474,37 @@ public class StatusActivity extends WithHeaderActivity
     @Override
     public void onDeleteSuccess() {
         finish();
+    }
+    
+// for HasFavorite interface
+    
+    public void doFavorite(String action, String id) {
+        if (mFavTask != null && mFavTask.getStatus() == AsyncTask.Status.RUNNING) {
+            Log.w(TAG, "FavTask still running");
+        } else {
+            if (!Utils.isEmpty(id)) {
+                Log.i(TAG, "doFavorite.");
+                AsyncTask<String,Void,TaskResult> task = TaskFactory.create(TaskFactory.FAVORITE_TASK_TYPE, this);
+                if (null != task) {
+                    mFavTask = task.execute(action, id);
+                }
+            }
+        }
+    }
+    
+    public void onFavSuccess() {
+        // updateProgress(getString(R.string.refreshing));
+        if ( ((FavoriteTask) mFavTask).getType().equals(FavoriteTask.TYPE_ADD) ) {
+            tweet.favorited = "true";
+            tweet_fav.setEnabled(true);
+        } else {
+            tweet.favorited = "false";
+            tweet_fav.setEnabled(false);
+        }
+    }
+
+    public void onFavFailure() {
+        // updateProgress(getString(R.string.refreshing));
     }
 
 }

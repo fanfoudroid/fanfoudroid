@@ -15,6 +15,14 @@ public class FavoriteTask extends AsyncTask<String, Void, TaskResult> {
 	private static final String TAG = "FavoriteTask";
 	private HasFavorite activity = null;
 	
+    public static final String TYPE_ADD = "add";
+    public static final String TYPE_DEL = "del";
+    public String type = TYPE_ADD;
+    
+    public String getType() {
+        return type;
+    }
+	
 	public FavoriteTask(HasFavorite activity) {
 		super();
 		this.activity = activity;
@@ -31,9 +39,10 @@ public class FavoriteTask extends AsyncTask<String, Void, TaskResult> {
 			String action = params[0];
 			String id = params[1];
 			com.ch_linghu.fanfoudroid.weibo.Status status = null;
-			if (action.equals("add")) {
+			if (action.equals(TYPE_ADD)) {
 				status = HasFavorite.nApi.createFavorite(id);
 			} else {
+			    this.type = TYPE_DEL;
 				status = HasFavorite.nApi.destroyFavorite(id);
 			}
 
