@@ -187,7 +187,7 @@ public class LoginActivity extends Activity {
     editor.commit();
 
     try {
-		TwitterApplication.nApi.login(username, password);
+		TwitterApplication.nApi.getHttpClient().login(username, password);
 	} catch (IOException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
@@ -229,7 +229,7 @@ public class LoginActivity extends Activity {
       publishProgress(getString(R.string.login_status_logging_in) + "...");
 
       try {
-		TwitterApplication.nApi.login(username, password);
+		TwitterApplication.nApi.getHttpClient().login(username, password);
       } catch (IOException e) {
           Log.e(TAG, e.getMessage(), e);
           publishProgress(getString(R.string.login_status_network_or_connection_error));

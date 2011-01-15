@@ -90,7 +90,7 @@ public class DmActivity extends WithHeaderActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    if (!getApi().isLoggedIn()) {
+    if (!getApi().getHttpClient().isLoggedIn()) {
       Log.i(TAG, "Not logged in.");
       handleLoggedOut();
       return;
@@ -145,7 +145,7 @@ public class DmActivity extends WithHeaderActivity {
   protected void onResume() {
     super.onResume();
 
-    if (!getApi().isLoggedIn()) {
+    if (!getApi().getHttpClient().isLoggedIn()) {
       Log.i(TAG, "Not logged in.");
       handleLoggedOut();
       return;

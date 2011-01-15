@@ -99,7 +99,7 @@ public class TwitterService extends Service {
 			return;
 		}
 
-		if (!getApi().isLoggedIn()) {
+		if (!getApi().getHttpClient().isLoggedIn()) {
 			Log.i(TAG, "Not logged in.");
 			stopSelf();
 			return;
@@ -147,7 +147,7 @@ public class TwitterService extends Service {
 
 		if (count == 1) {
 			title = latestTweet.screenName;
-			text = latestTweet.text.replaceAll("<.*?>", "");
+			text = Utils.getSimpleTweetText(latestTweet.text);
 		} else {
 			title = getString(R.string.service_new_twitter_updates);
 			text = getString(R.string.service_x_new_tweets);
@@ -158,7 +158,7 @@ public class TwitterService extends Service {
 				TwitterActivity.createIntent(this), 0);
 
 		notify(intent, TWEET_NOTIFICATION_ID, R.drawable.notify_tweet,
-				latestTweet.text, title, text);
+				Utils.getSimpleTweetText(latestTweet.text), title, text);
 	}
 
 	private void processNewMentions() {
@@ -192,7 +192,7 @@ public class TwitterService extends Service {
 
 		if (count == 1) {
 			title = latestTweet.screenName;
-			text = latestTweet.text.replaceAll("<.*?>", "");
+			text = Utils.getSimpleTweetText(latestTweet.text);
 		} else {
 			title = getString(R.string.service_new_mention_updates);
 			text = getString(R.string.service_x_new_mentions);
@@ -202,9 +202,8 @@ public class TwitterService extends Service {
 		PendingIntent intent = PendingIntent.getActivity(this, 0,
 				MentionActivity.createIntent(this), 0);
 
-		// @我的
-		notify(intent, MENTION_NOTIFICATION_ID, R.drawable.notify_mentions,
-				latestTweet.text, title, text);
+		notify(intent, MENTION_NOTIFICATION_ID, R.drawable.notify_mention,
+				Utils.getSimpleTweetText(latestTweet.text), title, text);
 	}
 
 	private static int TWEET_NOTIFICATION_ID = 0;
@@ -282,7 +281,7 @@ public class TwitterService extends Service {
 
 		if (count == 1) {
 			title = latest.screenName;
-			text = latest.text.replaceAll("<.*?>", "");
+			text = Utils.getSimpleTweetText(latest.text);
 		} else {
 			title = getString(R.string.service_new_direct_message_updates);
 			text = getString(R.string.service_x_new_direct_messages);
@@ -293,7 +292,7 @@ public class TwitterService extends Service {
 				DmActivity.createIntent(), 0);
 
 		notify(pendingIntent, DM_NOTIFICATION_ID, R.drawable.notify_dm,
-				latest.text, title, text);
+				Utils.getSimpleTweetText(latest.text), title, text);
 	}
 
 	@Override

@@ -224,13 +224,17 @@ public class Utils {
 	  return sb.toString();
   }
   
+  public static String getSimpleTweetText(String text){
+	  return text.replaceAll("<.*?>", "")
+	     		 .replace("&lt;", "<")
+	     		 .replace("&gt;", ">")
+	     		 .replace("&nbsp;", " ")
+	     		 .replace("&amp;", "&")
+	     		 .replace("&quot;", "\"");
+  }
+  
   public static void setSimpleTweetText(TextView textView, String text){
-	  String processedText = text.replaceAll("<.*?>", "")
-	  						     .replace("&lt;", "<")
-	  						     .replace("&gt;", ">")
-	  						     .replace("&nbsp;", " ")
-	  						     .replace("&amp;", "&")
-	  						     .replace("&quot;", "\"");
+	  String processedText = getSimpleTweetText(text);
 	  textView.setText(processedText);
   }
 
@@ -255,5 +259,35 @@ public class Utils {
 	  drawable.draw(canvas);  
 	  return bitmap;  
   }   
+  
+  private static Pattern PHOTO_PAGE_LINK = Pattern.compile("http://fanfou.com/photo/[-a-zA-Z0-9+&@#%?=~_|!:,.;]*[-a-zA-Z0-9+&@#%=~_|]");
+  private static Pattern PHOTO_SRC_LINK = Pattern.compile("src=\"(http:\\/\\/photo\\.fanfou\\.com\\/.*?)\"");
+  /**
+   * 获得消息中的照片页面链接
+   * @param text 消息文本
+   * @return 照片页面的链接，若不存在，则返回null
+   */
+  public static String getPhotoPageLink(String text){
+	  Matcher m = PHOTO_PAGE_LINK.matcher(text);
+	  if(m.find()){
+		  return m.group(0);
+	  }else{
+		  return null;
+	  }
+  }
+  
+  /**
+   * 获得照片页面中的照片链接
+   * @param pageHtml 照片页面文本
+   * @return 照片链接，若不存在，则返回null
+   */
+  public static String getPhotoURL(String pageHtml){
+	  Matcher m = PHOTO_SRC_LINK.matcher(pageHtml);
+	  if(m.find()){
+		  return m.group(1);
+	  }else{
+		  return null;
+	  }
+  }
   
 }

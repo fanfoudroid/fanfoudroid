@@ -75,6 +75,7 @@
             android:layout_height="wrap_content"
             android:scaleType="center"
             android:src="@drawable/twitter_follow_me"
+            android:layout_margin="10dp"
             android:maxWidth="460px"
             android:visibility="gone"
             />

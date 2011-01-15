@@ -568,6 +568,9 @@ public class WriteActivity extends WithHeaderActivity {
 		} catch (InterruptedException e) {
 			Log.i(TAG, e.getMessage());
 		}
+		
+		//发送成功就自动关闭界面
+		finish();
 	}
 
 	private void onSendFailure() {

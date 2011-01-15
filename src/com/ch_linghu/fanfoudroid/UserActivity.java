@@ -107,7 +107,7 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
 	super.onCreate(savedInstanceState);
 
     // user name
-    mMe = TwitterApplication.nApi.getUserId();
+    mMe = getApi().getUserId();
     
     
     // 用户栏（用户名/头像）
@@ -166,7 +166,7 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
   protected void onResume() {
     super.onResume();
 
-    if (!getApi().isLoggedIn()) {
+    if (!getApi().getHttpClient().isLoggedIn()) {
       Log.i(TAG, "Not logged in.");
       handleLoggedOut();
       return;

@@ -16,20 +16,27 @@
 
 package com.ch_linghu.fanfoudroid;
 
-import android.app.ProgressDialog;
+import java.io.IOException;
+import java.io.InputStream;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ch_linghu.fanfoudroid.http.HttpClient;
+import com.ch_linghu.fanfoudroid.http.Response;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
+import com.ch_linghu.fanfoudroid.helper.ImageCache;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.Deletable;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
@@ -48,6 +55,7 @@ public class StatusActivity extends WithHeaderActivity
 	
 	// Task TODO: tasks 
 	private AsyncTask<String, Void, TaskResult> getStatusTask; 
+	private AsyncTask<String, Void, TaskResult> getPhotoTask; 
 	
 	// View
 	private TextView tweet_screen_name; 
@@ -58,12 +66,15 @@ public class StatusActivity extends WithHeaderActivity
 	private TextView tweet_created_at;
 	private ImageButton btn_person_more;
 	private ImageView status_photo = null; //if exists
+	private ViewGroup reply_wrap;
 	private TextView reply_status_text = null; //if exists
 	private TextView reply_status_date = null; //if existso
-	private ProgressDialog progressDialog;
 	
 	private Tweet tweet = null;
 	private Tweet replyTweet = null; //if exists
+	
+	private HttpClient mClient;
+	private Bitmap mPhotoBitmap = ImageCache.mDefaultBitmap;	//if exists
 	
 	
 	public static Intent createIntent(Tweet tweet) {
@@ -77,6 +88,14 @@ public class StatusActivity extends WithHeaderActivity
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "onCreate.");
 		super.onCreate(savedInstanceState);
+
+		mClient = getApi().getHttpClient();
+		
+		// init View
+		setContentView(R.layout.status);
+		initHeader(HEADER_STYLE_BACK);
+		refreshButton.setEnabled(false);
+		refreshButton.setVisibility(View.GONE);
 		
 		// Intent & Action & Extras
 		Intent intent = getIntent();
@@ -103,16 +122,21 @@ public class StatusActivity extends WithHeaderActivity
 		tweet_created_at 	= (TextView)	findViewById(R.id.tweet_created_at);
 		btn_person_more 	= (ImageButton)	findViewById(R.id.person_more);
 		
+        reply_wrap = (ViewGroup) findViewById(R.id.reply_wrap);
+        reply_status_text = (TextView) findViewById(R.id.reply_status_text);
+        reply_status_date = (TextView) findViewById(R.id.reply_tweet_created_at);
+    	status_photo = (ImageView)findViewById(R.id.status_photo);
+
 		// Set view with intent data
 		this.tweet = extras.getParcelable(EXTRA_TWEET);
 		draw(); 
 		
-		// 绑定按钮监听器
-		bindButtonListener();
-	
+		// 绑定监听器
+		bindFooterBarListener();
+		bindReplyViewListener();
 	}
 	
-	private void bindButtonListener() {
+	private void bindFooterBarListener() {
 	    
 	    // person_more
 	    btn_person_more.setOnClickListener(new View.OnClickListener() {
@@ -174,6 +198,26 @@ public class StatusActivity extends WithHeaderActivity
         });
 	}
 
+
+	private void bindReplyViewListener() {
+		// 点击回复消息打开新的Status界面
+		OnClickListener listener = new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+		        if (! Utils.isEmpty(tweet.inReplyToStatusId) ) {
+					if (replyTweet == null) {
+						Log.w(TAG, "Selected item not available.");
+					}
+					
+					// TODO: launch statusActivity with real data
+					launchActivity(StatusActivity.createIntent(replyTweet));
+		        }
+			}
+		};
+        reply_wrap.setOnClickListener(listener);
+	}
+
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -227,6 +271,14 @@ public class StatusActivity extends WithHeaderActivity
         Bitmap mProfileBitmap = TwitterApplication.mImageManager.get(tweet.profileImageUrl);
         profile_image.setImageBitmap(mProfileBitmap);
         
+        // has photo
+        String photoPageLink = Utils.getPhotoPageLink(tweet.text); 
+        if (photoPageLink != null){
+        	status_photo.setVisibility(View.VISIBLE);
+        	status_photo.setImageBitmap(mPhotoBitmap);
+        	doGetPhoto(photoPageLink);
+        }
+        
         // has reply
         if (! Utils.isEmpty(tweet.inReplyToStatusId) ) {
             ViewGroup reply_wrap = (ViewGroup) findViewById(R.id.reply_wrap);
@@ -245,6 +297,24 @@ public class StatusActivity extends WithHeaderActivity
                 && getStatusTask.getStatus() == AsyncTask.Status.RUNNING) {
             outState.putBoolean(SIS_RUNNING_KEY, true);
 		}
+	}
+
+	private String fetchWebPage(String url) throws WeiboException {
+		Log.i(TAG, "Fetching WebPage: " + url);
+
+		Response res = mClient.get(url);
+		return res.asString();
+	}
+
+	private Bitmap fetchPhotoBitmap(String url) throws WeiboException, IOException {
+		Log.i(TAG, "Fetching Photo: " + url);
+		Response res = mClient.get(url);
+
+		InputStream is = res.asStream();
+		Bitmap bitmap = BitmapFactory.decodeStream(is);
+		is.close();
+
+		return bitmap;
 	}
 	
 	private void doGetStatus(String status_id, boolean isReply) {
@@ -266,7 +336,6 @@ public class StatusActivity extends WithHeaderActivity
 	private class GetStatusTask extends AsyncTask<String, Void, TaskResult> {
 	    
 	    private boolean isReply = false;
-	    private boolean isLocal = true;
 
         @Override
         protected TaskResult doInBackground(String... params) {
@@ -279,7 +348,6 @@ public class StatusActivity extends WithHeaderActivity
                     
                     //如果没有再去获取
                     if (replyTweet == null){
-                        isLocal = false;
                     	status = getApi().showStatus(params[0]);
                     	replyTweet = Tweet.create(status);
                     }
@@ -305,8 +373,7 @@ public class StatusActivity extends WithHeaderActivity
             } else {
                 draw();
             }
-            StatusActivity.this.refreshButton.clearAnimation();
-            progressDialog.dismiss();         
+            StatusActivity.this.refreshButton.clearAnimation();   
         }
 
         @Override
@@ -322,10 +389,62 @@ public class StatusActivity extends WithHeaderActivity
         }
 	}
 	
+	private void doGetPhoto(String photoPageURL) {
+        getPhotoTask = new GetPhotoTask();
+        getPhotoTask.execute(photoPageURL);
+    }
+	
+
+	private class GetPhotoTask extends AsyncTask<String, Void, TaskResult> {
+
+        @Override
+        protected TaskResult doInBackground(String... params) {
+            try {
+                if (params.length > 0) {
+                	String photoPageURL = params[0];
+                	String pageHtml = fetchWebPage(photoPageURL);
+                	String photoSrcURL = Utils.getPhotoURL(pageHtml);
+                	if (photoSrcURL != null){
+                		mPhotoBitmap = fetchPhotoBitmap(photoSrcURL);
+                	}
+                } 
+            } catch (WeiboException e) {
+                Log.e(TAG, e.getMessage(), e);
+                return TaskResult.IO_ERROR;
+            } catch (IOException e) {
+                Log.e(TAG, e.getMessage(), e);
+                return TaskResult.IO_ERROR;
+            }
+            return TaskResult.OK;
+        }
+
+        @Override
+        protected void onPostExecute(TaskResult result) {
+            super.onPostExecute(result);
+            if(result == TaskResult.OK){
+            	status_photo.setImageBitmap(mPhotoBitmap);		
+            }else{
+            	status_photo.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {
+            // TODO Auto-generated method stub
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            // TODO Auto-generated method stub
+            super.onProgressUpdate(values);
+        }
+	}
+
 	private void showReplyStatus(Tweet tweet) {
 		if (tweet != null){
 			String text = tweet.screenName + " : " + tweet.text;
-			Utils.setTweetText(reply_status_text, text);
+			Utils.setSimpleTweetText(reply_status_text, text);
 			reply_status_date.setText(Utils.getRelativeDate(tweet.createdAt));
 		}else{
 			//FIXME: 这里需要有更好的处理方法
