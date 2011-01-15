@@ -281,6 +281,9 @@ public class BaseActivity extends Activity {
     	intent.setClass(this, WriteActivity.class);
     	intent.putExtras(bundle);
         startActivity(intent);  
+        
+        //打开发送图片界面后将自身关闭
+        finish();
     } else if (requestCode == REQUEST_PHOTO_LIBRARY && resultCode == RESULT_OK){
     	mImageUri = data.getData();
     	if (mImageUri.getScheme().equals("content")){
@@ -302,6 +305,9 @@ public class BaseActivity extends Activity {
     	intent.setClass(this, WriteActivity.class);
     	intent.putExtras(bundle);
         startActivity(intent);  	
+
+        //打开发送图片界面后将自身关闭
+        finish();
     }
   }
   

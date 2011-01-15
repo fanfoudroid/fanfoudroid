@@ -288,7 +288,7 @@ public class WriteDmActivity extends WithHeaderActivity {
 	    @Override
 	    public void onPreExecute() {
 	      disableEntry();
-	      updateProgress(getString(R.string.page_status_refreshing));
+	      updateProgress(getString(R.string.page_status_updating));
 	    }
 
 	    @Override
@@ -335,6 +335,8 @@ public class WriteDmActivity extends WithHeaderActivity {
 	        mTweetEdit.setText("");
 	        updateProgress("");
 	        enableEntry();
+	        //发送成功就直接关闭界面
+	        finish();
 	      } else if (result == TaskResult.NOT_FOLLOWED_ERROR) {
 	        updateProgress(getString(R.string.direct_meesage_status_the_person_not_following_you));
 	        enableEntry();
