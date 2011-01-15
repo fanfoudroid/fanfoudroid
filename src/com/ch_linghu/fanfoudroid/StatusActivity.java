@@ -99,12 +99,22 @@ public class StatusActivity extends WithHeaderActivity
 		tweet = extras.getParcelable(EXTRA_TWEET);
 		draw(); 
 		
-		// 绑定顶部按钮监听器
-		bindFooterBarListener();
+		// 绑定按钮监听器
+		bindButtonListener();
 	
 	}
 	
-	private void bindFooterBarListener() {
+	private void bindButtonListener() {
+	    
+	    // person_more
+	    ImageButton btn_person_more = (ImageButton) findViewById(R.id.person_more);
+	    btn_person_more.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = UserActivity.createIntent(tweet.userId, tweet.screenName);
+                startActivity(intent);
+            }
+        });
 	    	
 		// Footer bar 
 		TextView footer_btn_refresh = (TextView) findViewById(R.id.footer_btn_refresh);
@@ -134,7 +144,7 @@ public class StatusActivity extends WithHeaderActivity
 		footer_btn_retweet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = WriteActivity.createNewReTweetIntent(StatusActivity.this,
+                Intent intent = WriteActivity.createNewRepostIntent(StatusActivity.this,
                         tweet.text, tweet.screenName, tweet.id);
                 startActivity(intent);
             }

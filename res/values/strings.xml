@@ -18,6 +18,7 @@
     <string name="page_status_timeout">网络超时.</string>    
     <string name="page_status_same_page">您正在此页.</string>
     <string name="page_dm_texting_is_null">请输入私信内容.</string>
+    <string name="page_text_is_null">内容不能为空.</string>
     <string name="page_dm_user_is_null">请输入收信人.</string>
     <string name="page_is_the_person_following_you">无法发送私信，通过客户端只能给互相关注的人发私信。</string>
 

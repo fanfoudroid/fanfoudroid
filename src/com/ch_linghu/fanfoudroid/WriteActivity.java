@@ -57,8 +57,10 @@ import com.google.android.photostream.UserTask;
 public class WriteActivity extends WithHeaderActivity {
 
 	public static final String NEW_TWEET_ACTION = "com.ch_linghu.fanfoudroid.NEW";
+	public static final String REPOST_TWEET_ACTION = "com.ch_linghu.fanfoudroid.REPOST";
 	public static final String EXTRA_TEXT = "text";
-	public static final String REPLY_ID = "reply_id"; 
+	public static final String EXTRA_REPLY_ID = "reply_id"; 
+	public static final String EXTRA_REPOST_ID = "repost_status_id"; 
 
 	private static final String TAG = "WriteActivity";
 	private static final String SIS_RUNNING_KEY = "running";
@@ -80,9 +82,10 @@ public class WriteActivity extends WithHeaderActivity {
 	private static final int MAX_BITMAP_SIZE = 400;
 
 	// Task
-	private UserTask<String, Void, SendResult> mSendTask;
+	private UserTask<Integer, Void, SendResult> mSendTask;
 
 	private String _reply_id;
+	private String _repost_id;
 
 	// sub menu
 	protected void createInsertPhotoDialog() {
@@ -223,6 +226,7 @@ public class WriteActivity extends WithHeaderActivity {
 		Bundle extras = intent.getExtras();
 
 		_reply_id = null;
+		_repost_id = null;
 		
 		// View
 		mProgressText = (TextView) findViewById(R.id.progress_text);
@@ -262,7 +266,12 @@ public class WriteActivity extends WithHeaderActivity {
 
 		if (NEW_TWEET_ACTION.equals(action)) {
 			mTweetEdit.setText(intent.getStringExtra(EXTRA_TEXT));
-			_reply_id = intent.getStringExtra(REPLY_ID);
+			_reply_id = intent.getStringExtra(EXTRA_REPLY_ID);
+		}
+		
+		if (REPOST_TWEET_ACTION.equals(action)) {
+			mTweetEdit.setText(intent.getStringExtra(EXTRA_TEXT));
+		    _repost_id = intent.getStringExtra(EXTRA_REPOST_ID);
 		}
 
 		mSendButton = (Button) findViewById(R.id.send_button);
@@ -270,6 +279,7 @@ public class WriteActivity extends WithHeaderActivity {
 			public void onClick(View v) {
 				doSend(WriteActivity.this._reply_id);
 				WriteActivity.this._reply_id = null;
+				WriteActivity.this._repost_id = null;
 			}
 		});
 		
@@ -343,12 +353,12 @@ public class WriteActivity extends WithHeaderActivity {
 	    String replyTo = "@" + screenName + " ";
         Intent intent = new Intent(WriteActivity.NEW_TWEET_ACTION);
         intent.putExtra(WriteActivity.EXTRA_TEXT, replyTo);
-        intent.putExtra(WriteActivity.REPLY_ID, replyId);
+        intent.putExtra(WriteActivity.EXTRA_REPLY_ID, replyId);
         
         return intent;
 	}
 	
-	public static Intent createNewReTweetIntent(Context content, String tweetText, String screenName, String replyId) {
+	public static Intent createNewRepostIntent(Context content, String tweetText, String screenName, String repostId) {
 	    SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(content);
 	    
 	    String prefix = mPreferences.getString(Preferences.RT_PREFIX_KEY,
@@ -359,9 +369,9 @@ public class WriteActivity extends WithHeaderActivity {
                 + screenName
                 + " "
                 + tweetText.replaceAll("<.*?>", "");//TODO: 使用更好的方法对TEXT进行格式化
-        Intent intent = new Intent(WriteActivity.NEW_TWEET_ACTION);
+        Intent intent = new Intent(WriteActivity.REPOST_TWEET_ACTION);
         intent.putExtra(WriteActivity.EXTRA_TEXT, retweet);
-        intent.putExtra(WriteActivity.REPLY_ID, replyId);
+        intent.putExtra(WriteActivity.EXTRA_REPOST_ID, repostId);
         
         return intent;
     }
@@ -379,6 +389,7 @@ public class WriteActivity extends WithHeaderActivity {
 		public void afterTextChanged(Editable s) {
 			if (s.length() == 0) {
 				_activity._reply_id = null;
+				_activity._repost_id = null;
 			}
 		}
 
@@ -414,14 +425,23 @@ public class WriteActivity extends WithHeaderActivity {
 
 	private void doSend(String _reply_to) {
 		Log.i(TAG, "doSend");
+		
 		if (mSendTask != null
 				&& mSendTask.getStatus() == UserTask.Status.RUNNING) {
 			Log.w(TAG, "Already sending.");
 		} else {
 			String status = mTweetEdit.getText().toString();
 
-			if (!Utils.isEmpty(status) || withPic ) {
-				mSendTask = new SendTask().execute(_reply_to);
+			if (! Utils.isEmpty(status)) {
+			    int mode = SendTask.TYPE_NORMAL;
+			    
+			    if (withPic) mode = SendTask.TYPE_PHOTO;
+			    else if (null != _reply_id) mode = SendTask.TYPE_REPLY;
+			    else if (null != _repost_id) mode = SendTask.TYPE_REPOST;
+			    
+				mSendTask = new SendTask().execute(mode);
+			} else {
+			    updateProgress(getString(R.string.page_text_is_null));
 			}
 		}
 	}
@@ -430,28 +450,60 @@ public class WriteActivity extends WithHeaderActivity {
 		OK, IO_ERROR, AUTH_ERROR, CANCELLED, FAILURE
 	}
 
-	private class SendTask extends UserTask<String, Void, SendResult> {
+	private class SendTask extends UserTask<Integer, Void, SendResult> {
+	    
+	    public static final int TYPE_NORMAL = 0;
+	    public static final int TYPE_REPLY  = 1;
+	    public static final int TYPE_REPOST = 2;
+	    public static final int TYPE_PHOTO  = 3;
+	    
 		@Override
 		public void onPreExecute() {
 			onSendBegin();
 		}
 
+		/**
+		 * params[0] send mode
+		 */
 		@Override
-		public SendResult doInBackground(String... params) {
+		public SendResult doInBackground(Integer... params) {
 			
 			try {
-				String _reply_to = params[0];
 				String status = mTweetEdit.getText().toString();
-				
 				Weibo api = TwitterApplication.nApi;
-				
-				// Update Status
-				if (withPic) {
-					api.updateStatus(status, mFile);
-				} else {
-					api.updateStatus(status, _reply_to);
-				}
-				
+			    
+			    if (params.length > 0) {
+			        Log.i(TAG, "Send Status. Mode : " + params[0]);
+			        
+			        // Send status in different way
+			        switch (params[0]) {
+			        case TYPE_REPLY:
+			            if (null !=  WriteActivity.this._reply_id) {
+                            api.updateStatus(status, WriteActivity.this._reply_id);
+                        } else {
+                            Log.e(TAG, "Cann't send status in REPLY mode, repost_id is null");
+                        }
+			            break;
+			        case TYPE_REPOST:
+			            if (null !=  WriteActivity.this._repost_id) {
+			                api.repost(status, WriteActivity.this._repost_id);
+			            } else {
+			                Log.e(TAG, "Cann't send status in REPOST mode, repost_id is null");
+			            }
+			            break;
+			        case TYPE_PHOTO:
+			            if (null != mFile) {
+			                api.updateStatus(status, mFile);
+			            } else {
+			                Log.e(TAG, "Cann't send status in PICTURE mode, photo is null");
+			            }
+			            break;
+			        case TYPE_NORMAL:
+			        default:
+			            api.updateStatus(status); // just send a status
+			            break;
+			        }
+			    }
 			} catch (WeiboException e) {
 				Log.e(TAG, e.getMessage(), e);
 				
@@ -461,44 +513,6 @@ public class WriteActivity extends WithHeaderActivity {
 				return SendResult.FAILURE;
 			}
 			
-			/*
-			try {
-				String _reply_to = params[0];
-				String status = mTweetEdit.getText().toString();
-				
-				if (withPic) {
-					getApi().postTwitPic(mFile, status);
-				} else {
-					JSONObject jsonObject = getApi().update(status, _reply_to);
-					Tweet tweet = Tweet.create(jsonObject);
-
-					if (!Utils.isEmpty(tweet.profileImageUrl)) {
-						// Fetch image to cache.
-						try {
-							getImageManager().put(tweet.profileImageUrl);
-						} catch (IOException e) {
-							Log.e(TAG, e.getMessage(), e);
-						}
-					}
-				}
-
-				// getDb().createTweet(tweet, false);
-			} catch (IOException e) {
-				Log.e(TAG, e.getMessage(), e);
-				return SendResult.IO_ERROR;
-			} catch (AuthException e) {
-				Log.i(TAG, "Invalid authorization.");
-				return SendResult.AUTH_ERROR;
-			} catch (JSONException e) {
-				Log.w(TAG, "Could not parse JSON after sending update.");
-				return SendResult.IO_ERROR;
-			} catch (ApiException e) {
-				Log.e(TAG, e.getMessage(), e);
-				return SendResult.IO_ERROR;
-			}
-			
-			*/
-
 			return SendResult.OK;
 		}
 

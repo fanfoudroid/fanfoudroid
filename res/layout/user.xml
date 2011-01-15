@@ -26,6 +26,7 @@
      android:id="@+id/progress_text"
      android:layout_alignParentBottom="true"
      android:layout_alignParentRight="true"
+     android:visibility="gone"
      style="@style/statusbar"
      />
     

@@ -54,7 +54,7 @@
                 android:layout_marginRight="8dp"
                 android:src="@drawable/arrow_1" 
                 android:background="@null"
-                android:visibility="gone"/>
+                />
         </RelativeLayout>
         <!-- 分割线 -->
         <LinearLayout

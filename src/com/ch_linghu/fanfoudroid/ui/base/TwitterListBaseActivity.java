@@ -166,7 +166,7 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity {
 			return true;
 		}
 		case CONTEXT_RETWEET_ID:
-		    Intent intent = WriteActivity.createNewReTweetIntent(this,
+		    Intent intent = WriteActivity.createNewRepostIntent(this,
 		            tweet.text, tweet.screenName, tweet.id);
 			startActivity(intent);
 			return true;

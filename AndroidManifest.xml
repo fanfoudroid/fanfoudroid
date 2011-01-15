@@ -28,6 +28,10 @@
 				<action android:name="com.ch_linghu.fanfoudroid.NEW" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+             <intent-filter>
+                <action android:name="com.ch_linghu.fanfoudroid.REPOST" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
          <activity android:name=".WriteDmActivity"
                   android:windowSoftInputMode="adjustResize|stateHidden"  

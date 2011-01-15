@@ -649,13 +649,31 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
     
     /**
      * Return a status of repost
+     * @param to_user_name repost status's user name
+     * @param repost_status_id repost status id 
+     * @param repost_status_text repost status text 
+     * @param new_status the new status text 
+     * @return a single status
+     * @throws WeiboException when Weibo service or network is unavailable
+     * @since fanfoudroid 0.5.0
+     */
+    public Status repost(String new_status, String repost_status_id) throws WeiboException
+    {
+        return new Status(http.post(getBaseURL() + "statuses/update.json",
+                createParams(new BasicNameValuePair("status", new_status),
+                        new BasicNameValuePair("source", CONSUMER_KEY),
+                        new BasicNameValuePair("repost_status_id", repost_status_id)), true));
+    }
+    
+    /**
+     * Return a status of repost
      * @param repost_status_id repost status id 
      * @param repost_status_text repost status text 
      * @return a single status
      * @throws WeiboException when Weibo service or network is unavailable
      * @since fanfoudroid 0.5.0
      */
-    public Status repost(String repost_status_id, String new_status) throws WeiboException {
+    public Status repost(String repost_status_id, String new_status, boolean tmp) throws WeiboException {
         Status repost_to = showStatus(repost_status_id);
         String to_user_name = repost_to.getUser().getName();
         String repost_status_text = repost_to.getText();
