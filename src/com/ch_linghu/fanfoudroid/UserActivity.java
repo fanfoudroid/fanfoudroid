@@ -6,7 +6,6 @@ import java.util.List;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -14,32 +13,30 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.User;
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.MemoryImageCache;
 import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.ui.base.Refreshable;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterListBaseActivity;
-import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
 import com.ch_linghu.fanfoudroid.ui.module.MyListView;
 import com.ch_linghu.fanfoudroid.ui.module.TweetArrayAdapter;
 import com.ch_linghu.fanfoudroid.weibo.Paging;
+import com.ch_linghu.fanfoudroid.weibo.Weibo;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 import com.google.android.photostream.UserTask;
 
-public class UserActivity extends TwitterListBaseActivity implements MyListView.OnNeedMoreListener {
+public class UserActivity extends TwitterListBaseActivity implements MyListView.OnNeedMoreListener, Refreshable {
 
   private static final String TAG = "UserActivity";
 
@@ -106,9 +103,8 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
   protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 
-    // user name
-    mMe = getApi().getUserId();
-    
+	
+	
     
     // 用户栏（用户名/头像）
     mUserText 	  = (TextView) findViewById(R.id.tweet_user_text);
@@ -352,10 +348,15 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
       }
 
       publishProgress();
-
+      Weibo fanfou = getApi();
+      
       try {
-        mIsFollowing = getApi().existsFriendship(mMe, mUsername);
-        mIsFollower = getApi().existsFriendship(mUsername, mMe);
+//        mIsFollowing = getApi().existsFriendship(mMe, mUsername);
+        com.ch_linghu.fanfoudroid.weibo.User mCurrentUser;
+        mCurrentUser = fanfou.showUser(fanfou.getUserId());
+        
+        mIsFollowing = getApi().existsFriendship(mCurrentUser.getId(), mUsername);
+        mIsFollower = getApi().existsFriendship(mUsername, mCurrentUser.getId());
       } catch (WeiboException e) {
         Log.e(TAG, e.getMessage(), e);
         return TaskResult.IO_ERROR;

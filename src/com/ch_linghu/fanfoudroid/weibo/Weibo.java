@@ -180,7 +180,7 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
 			url += "&source=" + CONSUMER_KEY;
 		}
 		//以HTML格式获得数据，以便进一步处理
-		url += "&format=html";
+//		url += "&format=html";
     	if (null != params && params.size() > 0) {
 			url += "&" + HttpClient.encodeParameters(params);
 		}
