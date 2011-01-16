@@ -260,6 +260,10 @@ public class StatusActivity extends WithHeaderActivity
                 && getStatusTask.getStatus() == AsyncTask.Status.RUNNING) {
             getStatusTask.cancel(true);
         }
+        if (getPhotoTask != null
+                && getPhotoTask.getStatus() == AsyncTask.Status.RUNNING) {
+        	getPhotoTask.cancel(true);
+        }
         if (mFavTask != null
                 && mFavTask.getStatus() == AsyncTask.Status.RUNNING) {
             mFavTask.cancel(true);
@@ -355,17 +359,20 @@ public class StatusActivity extends WithHeaderActivity
                 if (params.length > 0) {
                     isReply = true;
                     //先看看本地缓存有没有
+                    //先看TWEET表，如果没有再看一下MENTION表
                     replyTweet = getDb().getTweet(TwitterDbAdapter.TABLE_TWEET, params[0]);
-                    
+                    if (replyTweet == null){
+                    	replyTweet = getDb().getTweet(TwitterDbAdapter.TABLE_MENTION, params[0]);
+                    }
                     //如果没有再去获取
                     if (replyTweet == null){
                     	status = getApi().showStatus(params[0]);
                     	replyTweet = Tweet.create(status);
                     }
                 } else {
-                	//FIXME：这段没看明白，似乎白白做了一次重复的请求？
-                    //status = getApi().showStatus(tweet.id);
-                    //tweet = Tweet.create(status);
+                	//用于刷新功能，再次请求
+                    status = getApi().showStatus(tweet.id);
+                    tweet = Tweet.create(status);
                 }
             } catch (WeiboException e) {
                 Log.e(TAG, e.getMessage(), e);
@@ -401,8 +408,16 @@ public class StatusActivity extends WithHeaderActivity
 	}
 	
 	private void doGetPhoto(String photoPageURL) {
-        getPhotoTask = new GetPhotoTask();
-        getPhotoTask.execute(photoPageURL);
+        // 旋转刷新按钮
+        animRotate(refreshButton);
+        
+	    if (getPhotoTask != null
+                && getPhotoTask.getStatus() == AsyncTask.Status.RUNNING) {
+            Log.w(TAG, "Already retrieving.");
+        } else {
+            getPhotoTask = new GetPhotoTask();
+            getPhotoTask.execute(photoPageURL);
+        }
     }
 	
 
@@ -437,6 +452,7 @@ public class StatusActivity extends WithHeaderActivity
             }else{
             	status_photo.setVisibility(View.GONE);
             }
+            StatusActivity.this.refreshButton.clearAnimation();   
         }
 
         @Override
@@ -459,7 +475,7 @@ public class StatusActivity extends WithHeaderActivity
 			reply_status_date.setText(Utils.getRelativeDate(tweet.createdAt));
 		}else{
 			//FIXME: 这里需要有更好的处理方法
-			reply_status_text.setText("【消息获取未成功】");
+			reply_status_text.setText("【回复消息获取未成功】");
 		}
     }
 	

@@ -221,17 +221,12 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 	
 	
 
-	private static final String SIS_RUNNING_KEY = "running";
-
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 
 		if (mRetrieveTask != null
 				&& mRetrieveTask.getStatus() == AsyncTask.Status.RUNNING) {
-			outState.putBoolean(SIS_RUNNING_KEY, true);
-		} else if (mFavTask != null
-				&& mFavTask.getStatus() == AsyncTask.Status.RUNNING) {
 			outState.putBoolean(SIS_RUNNING_KEY, true);
 		}
 	}
@@ -250,10 +245,6 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 		if (mRetrieveTask != null
 				&& mRetrieveTask.getStatus() == AsyncTask.Status.RUNNING) {
 			mRetrieveTask.cancel(true);
-		}
-
-		if (mFavTask != null && mFavTask.getStatus() == AsyncTask.Status.RUNNING) {
-			mFavTask.cancel(true);
 		}
 
 		// Don't need to cancel FollowersTask (assuming it ends properly).

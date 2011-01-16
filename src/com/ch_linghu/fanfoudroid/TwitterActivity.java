@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -69,6 +70,26 @@ public class TwitterActivity extends TwitterCursorBaseActivity
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
 		return intent;
+	}
+
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		
+		if (mDeleteTask != null && mDeleteTask.getStatus() == AsyncTask.Status.RUNNING) {
+			mDeleteTask.cancel(true);
+		}
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		// TODO Auto-generated method stub
+		super.onSaveInstanceState(outState);
+		if (mDeleteTask != null
+				&& mDeleteTask.getStatus() == AsyncTask.Status.RUNNING) {
+			outState.putBoolean(SIS_RUNNING_KEY, true);
+		}	
 	}
 
 	// Menu.

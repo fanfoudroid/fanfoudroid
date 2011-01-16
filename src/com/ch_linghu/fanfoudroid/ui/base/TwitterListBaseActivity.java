@@ -56,6 +56,8 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity {
 	protected TextView mProgressText;
 
 	protected static final int STATE_ALL = 0;
+	protected static final String SIS_RUNNING_KEY = "running";
+
 
 	// Tasks.
 	protected AsyncTask<String, Void, TaskResult> mFavTask;
@@ -116,6 +118,14 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity {
 		checkIsLogedIn();
 	}
 
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+
+		if (mFavTask != null && mFavTask.getStatus() == AsyncTask.Status.RUNNING) {
+			mFavTask.cancel(true);
+		}
+	}
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
@@ -254,5 +264,14 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity {
 			}
 		});
 
+	}
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		// TODO Auto-generated method stub
+		super.onSaveInstanceState(outState);
+		if (mFavTask != null
+				&& mFavTask.getStatus() == AsyncTask.Status.RUNNING) {
+			outState.putBoolean(SIS_RUNNING_KEY, true);
+		}
 	}
 }
