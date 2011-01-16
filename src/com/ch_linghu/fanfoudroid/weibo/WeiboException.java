@@ -19,7 +19,6 @@ public class WeiboException extends Exception {
     public WeiboException(String msg, int statusCode) {
         super(msg);
         this.statusCode = statusCode;
-
     }
 
     public WeiboException(String msg, Exception cause) {
@@ -35,4 +34,5 @@ public class WeiboException extends Exception {
     public int getStatusCode() {
         return this.statusCode;
     }
+        
 }

@@ -2,16 +2,17 @@ package com.ch_linghu.fanfoudroid;
 
 import java.util.HashSet;
 
-import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
-import com.ch_linghu.fanfoudroid.helper.ImageManager;
-import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.weibo.Weibo;
-
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.preference.PreferenceManager;
+
+import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
+import com.ch_linghu.fanfoudroid.helper.ImageManager;
+import com.ch_linghu.fanfoudroid.helper.Preferences;
+import com.ch_linghu.fanfoudroid.weibo.User;
+import com.ch_linghu.fanfoudroid.weibo.Weibo;
 
 public class TwitterApplication extends Application {
   
@@ -22,6 +23,7 @@ public class TwitterApplication extends Application {
   public static TwitterDbAdapter mDb; 
   public static Weibo nApi; // new API
   public static Context mContext;
+  private User mUser; // current user
 
   @Override
   public void onCreate() {
@@ -80,6 +82,14 @@ public class TwitterApplication extends Application {
     cursor.close();
     
     mImageManager.cleanup(keepers);
+  }
+  
+  public User getUser() {
+      return mUser;
+  }
+  
+  public void setUser(User user) {
+      mUser = user;
   }
     
 }

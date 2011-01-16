@@ -99,7 +99,7 @@ public class TwitterService extends Service {
 			return;
 		}
 
-		if (!getApi().getHttpClient().isLoggedIn()) {
+		if (!getApi().isLoggedIn()) {
 			Log.i(TAG, "Not logged in.");
 			stopSelf();
 			return;

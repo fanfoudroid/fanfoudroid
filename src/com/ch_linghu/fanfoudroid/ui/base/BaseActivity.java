@@ -87,7 +87,7 @@ public class BaseActivity extends Activity {
   }
 
   protected boolean isLoggedIn() {
-    return getApi().getHttpClient().isLoggedIn();
+    return getApi().isLoggedIn();
   }
 
   private static final int RESULT_LOGOUT = RESULT_FIRST_USER + 1;
@@ -102,7 +102,7 @@ public class BaseActivity extends Activity {
     TwitterService.unschedule(this);
 
     getDb().clearData();
-    getApi().getHttpClient().logout();
+    getApi().logout();
 
     SharedPreferences.Editor editor = mPreferences.edit();
     editor.clear();
@@ -314,12 +314,12 @@ public class BaseActivity extends Activity {
   }
   
   protected boolean checkIsLogedIn() {
-	  if (!getApi().getHttpClient().isLoggedIn()) {
+	  if (!getApi().isLoggedIn()) {
 			Log.i(TAG, "Not logged in.");
 			handleLoggedOut();
 			return false;
 		}
 	  return true;
   }
-
+  
 }

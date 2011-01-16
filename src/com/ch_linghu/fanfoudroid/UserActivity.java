@@ -158,544 +158,542 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
 
   }
 
-  @Override
-  protected void onResume() {
-    super.onResume();
-
-    if (!getApi().getHttpClient().isLoggedIn()) {
-      Log.i(TAG, "Not logged in.");
-      handleLoggedOut();
-      return;
-    }
-  }
-
-  @Override
-  public Object onRetainNonConfigurationInstance() {
-    return createState();
-  }
-
-  private synchronized State createState() {
-    return new State(this);
-  }
-
-  private static final String SIS_RUNNING_KEY = "running";
-
-  @Override
-  protected void onSaveInstanceState(Bundle outState) {
-    super.onSaveInstanceState(outState);
-
-    if (mRetrieveTask != null
-        && mRetrieveTask.getStatus() == UserTask.Status.RUNNING) {
-      outState.putBoolean(SIS_RUNNING_KEY, true);
-    }
-  }
-
-  @Override
-  protected void onDestroy() {
-    Log.i(TAG, "onDestroy.");
-
-    if (mRetrieveTask != null
-        && mRetrieveTask.getStatus() == UserTask.Status.RUNNING) {
-      mRetrieveTask.cancel(true);
-    }
-
-    if (mFriendshipTask != null
-        && mFriendshipTask.getStatus() == UserTask.Status.RUNNING) {
-      mFriendshipTask.cancel(true);
-    }
-
-    if (mLoadMoreTask != null
-        && mLoadMoreTask.getStatus() == UserTask.Status.RUNNING) {
-      mLoadMoreTask.cancel(true);
-    }
-
-    super.onDestroy();
-  }
-
-
-  // UI helpers.
-
-  private void updateProgress(String progress) {
-    mProgressText.setText(progress);
-  }
-
-  private void draw() {
-    if (mProfileBitmap != null) {
-      mProfileImage.setImageBitmap(mProfileBitmap);
-    }
-
-    mAdapter.refresh(mTweets, mImageCache);
-
-    if (mUser != null) {
-      mNameText.setText(mUser.name);
-    }
-
-    if (mUsername.equalsIgnoreCase(mMe)) {
-      mFollowButton.setVisibility(View.GONE);
-    } else if (mIsFollowing != null) {
-      mFollowButton.setVisibility(View.VISIBLE);
-
-      if (mIsFollowing) {
-        mFollowButton.setText(R.string.user_label_unfollow);
-      } else {
-        mFollowButton.setText(R.string.user_label_follow);
-      }
-    }
-  }
-
-
-  private enum TaskResult {
-    OK, IO_ERROR, AUTH_ERROR, CANCELLED
-  }
-
-
-  public void doRetrieve() {
-    Log.i(TAG, "Attempting retrieve.");
-    
-    // 旋转刷新按钮
-	animRotate(refreshButton);
-
-    if (mRetrieveTask != null
-        && mRetrieveTask.getStatus() == UserTask.Status.RUNNING) {
-      Log.w(TAG, "Already retrieving.");
-    } else {
-      mRetrieveTask = new RetrieveTask().execute();
-    }
-  }
-
-  private void doLoadMore() {
-    Log.i(TAG, "Attempting load more.");
-
-    if (mLoadMoreTask != null
-        && mLoadMoreTask.getStatus() == UserTask.Status.RUNNING) {
-      Log.w(TAG, "Already loading more.");
-    } else {
-      mLoadMoreTask = new LoadMoreTask().execute();
-    }
-  }
-
-  private void onRetrieveBegin() {
-    updateProgress(getString(R.string.page_status_refreshing));
-  }
-
-  private void onLoadMoreBegin() {
-    updateProgress(getString(R.string.page_status_refreshing));
-    animRotate(refreshButton);
-  }
-
-  private class RetrieveTask extends UserTask<Void, Void, TaskResult> {
     @Override
-    public void onPreExecute() {
-      onRetrieveBegin();
+    protected void onResume() {
+        super.onResume();
+        checkIsLogedIn();
     }
-
-    ArrayList<Tweet> mTweets = new ArrayList<Tweet>();
 
     @Override
-    public TaskResult doInBackground(Void... params) {
-      List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
+    public Object onRetainNonConfigurationInstance() {
+        return createState();
+    }
 
-      ImageManager imageManager = getImageManager();
+    private synchronized State createState() {
+        return new State(this);
+    }
 
-      try {
-        statusList = getApi().getUserTimeline(mUsername, new Paging(mNextPage));
-        
-      } catch (WeiboException e) {
-        Log.e(TAG, e.getMessage(), e);
-        return TaskResult.IO_ERROR;
-      } 
+    private static final String SIS_RUNNING_KEY = "running";
 
-      for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
-        if (isCancelled()) {
-          return TaskResult.CANCELLED;
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (mRetrieveTask != null
+                && mRetrieveTask.getStatus() == UserTask.Status.RUNNING) {
+            outState.putBoolean(SIS_RUNNING_KEY, true);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.i(TAG, "onDestroy.");
+
+        if (mRetrieveTask != null
+                && mRetrieveTask.getStatus() == UserTask.Status.RUNNING) {
+            mRetrieveTask.cancel(true);
         }
 
-        Tweet tweet;
-
-        tweet = Tweet.create(status);
-        mTweets.add(tweet);
-
-        if (mUser == null) {
-          mUser = User.create(status.getUser());
-        }
-      
-        if (isCancelled()) {
-          return TaskResult.CANCELLED;
-        }
-      }
-
-      addTweets(mTweets);
-
-      if (isCancelled()) {
-        return TaskResult.CANCELLED;
-      }
-
-      publishProgress();
-
-	 mImageCache = new MemoryImageCache();
-     if (!Utils.isEmpty(mUser.profileImageUrl)) {
-        try {
-          Bitmap bitmap = imageManager.fetchImage(mUser.profileImageUrl);
-          setProfileBitmap(bitmap);
-      	  mImageCache.put(mUser.profileImageUrl, bitmap);
-        } catch (IOException e) {
-          Log.e(TAG, e.getMessage(), e);
-        }
-      }
-
-      if (isCancelled()) {
-        return TaskResult.CANCELLED;
-      }
-
-      publishProgress();
-      Weibo fanfou = getApi();
-      
-      try {
-//        mIsFollowing = getApi().existsFriendship(mMe, mUsername);
-        com.ch_linghu.fanfoudroid.weibo.User mCurrentUser;
-        mCurrentUser = fanfou.showUser(fanfou.getUserId());
-        
-        mIsFollowing = getApi().existsFriendship(mCurrentUser.getId(), mUsername);
-        mIsFollower = getApi().existsFriendship(mUsername, mCurrentUser.getId());
-      } catch (WeiboException e) {
-        Log.e(TAG, e.getMessage(), e);
-        return TaskResult.IO_ERROR;
-      }
-
-      if (isCancelled()) {
-        return TaskResult.CANCELLED;
-      }
-
-      return TaskResult.OK;
-    }
-
-    @Override
-    public void onProgressUpdate(Void... progress) {
-      draw();
-    }
-
-    @Override
-    public void onPostExecute(TaskResult result) {
-      if (result == TaskResult.AUTH_ERROR) {
-        updateProgress(getString(R.string.user_prompt_this_person_has_protected_their_updates));
-
-        return;
-      } else if (result == TaskResult.OK) {
-    	refreshButton.clearAnimation();
-        draw();
-      } else {
-        // Do nothing.
-      }
-
-      updateProgress("");
-    }
-  }
-
-  private class LoadMoreTask extends UserTask<Void, Void, TaskResult> {
-    @Override
-    public void onPreExecute() {
-      onLoadMoreBegin();
-    }
-
-    ArrayList<Tweet> mTweets = new ArrayList<Tweet>();
-
-    @Override
-    public TaskResult doInBackground(Void... params) {
-      List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
-
-      try {
-        statusList = getApi().getUserTimeline(mUsername, new Paging(mNextPage));
-      } catch (WeiboException e) {
-        Log.e(TAG, e.getMessage(), e);
-        return TaskResult.IO_ERROR;
-      }
-
-      for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
-        if (isCancelled()) {
-          return TaskResult.CANCELLED;
+        if (mFriendshipTask != null
+                && mFriendshipTask.getStatus() == UserTask.Status.RUNNING) {
+            mFriendshipTask.cancel(true);
         }
 
-        Tweet tweet;
+        if (mLoadMoreTask != null
+                && mLoadMoreTask.getStatus() == UserTask.Status.RUNNING) {
+            mLoadMoreTask.cancel(true);
+        }
 
-        tweet = Tweet.create(status);
-        mTweets.add(tweet);
-      }
-
-      if (isCancelled()) {
-        return TaskResult.CANCELLED;
-      }
-
-      addTweets(mTweets);
-
-      if (isCancelled()) {
-        return TaskResult.CANCELLED;
-      }
-
-      return TaskResult.OK;
+        super.onDestroy();
     }
 
-    @Override
-    public void onProgressUpdate(Void... progress) {
-      draw();
+    // UI helpers.
+
+    private void updateProgress(String progress) {
+        mProgressText.setText(progress);
     }
 
-    @Override
-    public void onPostExecute(TaskResult result) {
-      if (result == TaskResult.AUTH_ERROR) {
-        logout();
-      } else if (result == TaskResult.OK) {
-    	refreshButton.clearAnimation();
-        draw();
-      } else {
-        // Do nothing.
-      }
+    private void draw() {
+        if (mProfileBitmap != null) {
+            mProfileImage.setImageBitmap(mProfileBitmap);
+        }
 
-      updateProgress("");
-    }
-  }
+        mAdapter.refresh(mTweets, mImageCache);
 
-  private class FriendshipTask extends UserTask<Void, Void, TaskResult> {
+        if (mUser != null) {
+            mNameText.setText(mUser.name);
+        }
 
-    private boolean mIsDestroy;
+        if (mUsername.equalsIgnoreCase(mMe)) {
+            mFollowButton.setVisibility(View.GONE);
+        } else if (mIsFollowing != null) {
+            mFollowButton.setVisibility(View.VISIBLE);
 
-    public FriendshipTask(boolean isDestroy) {
-      mIsDestroy = isDestroy;
-    }
-
-    @Override
-    public void onPreExecute() {
-      mFollowButton.setEnabled(false);
-
-      if (mIsDestroy) {
-        updateProgress(getString(R.string.user_status_unfollowing));
-      } else {
-        updateProgress(getString(R.string.user_status_following));
-      }
+            if (mIsFollowing) {
+                mFollowButton.setText(R.string.user_label_unfollow);
+            } else {
+                mFollowButton.setText(R.string.user_label_follow);
+            }
+        }
     }
 
-    @Override
-    public TaskResult doInBackground(Void... params) {
-      com.ch_linghu.fanfoudroid.weibo.User user;
+    private enum TaskResult {
+        OK, IO_ERROR, AUTH_ERROR, CANCELLED
+    }
 
-      String id = mUser.id;
+    public void doRetrieve() {
+        Log.i(TAG, "Attempting retrieve.");
 
-      try {
-        if (mIsDestroy) {
-          user = getApi().destroyFriendship(id);
+        // 旋转刷新按钮
+        animRotate(refreshButton);
+
+        if (mRetrieveTask != null
+                && mRetrieveTask.getStatus() == UserTask.Status.RUNNING) {
+            Log.w(TAG, "Already retrieving.");
         } else {
-          user = getApi().createFriendship(id);
+            mRetrieveTask = new RetrieveTask().execute();
         }
-      } catch (WeiboException e) {
-        Log.e(TAG, e.getMessage(), e);
-        return TaskResult.IO_ERROR;
-      }
+    }
 
-      if (isCancelled()) {
-        return TaskResult.CANCELLED;
-      }
+    private void doLoadMore() {
+        Log.i(TAG, "Attempting load more.");
 
-      User.create(user);
+        if (mLoadMoreTask != null
+                && mLoadMoreTask.getStatus() == UserTask.Status.RUNNING) {
+            Log.w(TAG, "Already loading more.");
+        } else {
+            mLoadMoreTask = new LoadMoreTask().execute();
+        }
+    }
 
-      if (isCancelled()) {
-        return TaskResult.CANCELLED;
-      }
+    private void onRetrieveBegin() {
+        updateProgress(getString(R.string.page_status_refreshing));
+    }
 
-      return TaskResult.OK;
+    private void onLoadMoreBegin() {
+        updateProgress(getString(R.string.page_status_refreshing));
+        animRotate(refreshButton);
+    }
+
+    private class RetrieveTask extends UserTask<Void, Void, TaskResult> {
+        @Override
+        public void onPreExecute() {
+            onRetrieveBegin();
+        }
+
+        ArrayList<Tweet> mTweets = new ArrayList<Tweet>();
+
+        @Override
+        public TaskResult doInBackground(Void... params) {
+            List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
+
+            ImageManager imageManager = getImageManager();
+
+            try {
+                statusList = getApi().getUserTimeline(mUsername,
+                        new Paging(mNextPage));
+
+            } catch (WeiboException e) {
+                Log.e(TAG, e.getMessage(), e);
+                return TaskResult.IO_ERROR;
+            }
+
+            for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
+                if (isCancelled()) {
+                    return TaskResult.CANCELLED;
+                }
+
+                Tweet tweet;
+
+                tweet = Tweet.create(status);
+                mTweets.add(tweet);
+
+                if (mUser == null) {
+                    mUser = User.create(status.getUser());
+                }
+
+                if (isCancelled()) {
+                    return TaskResult.CANCELLED;
+                }
+            }
+
+            addTweets(mTweets);
+
+            if (isCancelled()) {
+                return TaskResult.CANCELLED;
+            }
+
+            publishProgress();
+
+            mImageCache = new MemoryImageCache();
+            if (!Utils.isEmpty(mUser.profileImageUrl)) {
+                try {
+                    Bitmap bitmap = imageManager
+                            .fetchImage(mUser.profileImageUrl);
+                    setProfileBitmap(bitmap);
+                    mImageCache.put(mUser.profileImageUrl, bitmap);
+                } catch (IOException e) {
+                    Log.e(TAG, e.getMessage(), e);
+                }
+            }
+
+            if (isCancelled()) {
+                return TaskResult.CANCELLED;
+            }
+
+            publishProgress();
+            Weibo fanfou = getApi();
+
+            try {
+                // mIsFollowing = getApi().existsFriendship(mMe, mUsername);
+                com.ch_linghu.fanfoudroid.weibo.User mCurrentUser;
+                mCurrentUser = fanfou.showUser(fanfou.getUserId());
+
+                mIsFollowing = getApi().existsFriendship(mCurrentUser.getId(),
+                        mUsername);
+                mIsFollower = getApi().existsFriendship(mUsername,
+                        mCurrentUser.getId());
+            } catch (WeiboException e) {
+                Log.e(TAG, e.getMessage(), e);
+                return TaskResult.IO_ERROR;
+            }
+
+            if (isCancelled()) {
+                return TaskResult.CANCELLED;
+            }
+
+            return TaskResult.OK;
+        }
+
+        @Override
+        public void onProgressUpdate(Void... progress) {
+            draw();
+        }
+
+        @Override
+        public void onPostExecute(TaskResult result) {
+            if (result == TaskResult.AUTH_ERROR) {
+                updateProgress(getString(R.string.user_prompt_this_person_has_protected_their_updates));
+
+                return;
+            } else if (result == TaskResult.OK) {
+                refreshButton.clearAnimation();
+                draw();
+            } else {
+                // Do nothing.
+            }
+
+            updateProgress("");
+        }
+    }
+
+    private class LoadMoreTask extends UserTask<Void, Void, TaskResult> {
+        @Override
+        public void onPreExecute() {
+            onLoadMoreBegin();
+        }
+
+        ArrayList<Tweet> mTweets = new ArrayList<Tweet>();
+
+        @Override
+        public TaskResult doInBackground(Void... params) {
+            List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
+
+            try {
+                statusList = getApi().getUserTimeline(mUsername,
+                        new Paging(mNextPage));
+            } catch (WeiboException e) {
+                Log.e(TAG, e.getMessage(), e);
+                return TaskResult.IO_ERROR;
+            }
+
+            for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
+                if (isCancelled()) {
+                    return TaskResult.CANCELLED;
+                }
+
+                Tweet tweet;
+
+                tweet = Tweet.create(status);
+                mTweets.add(tweet);
+            }
+
+            if (isCancelled()) {
+                return TaskResult.CANCELLED;
+            }
+
+            addTweets(mTweets);
+
+            if (isCancelled()) {
+                return TaskResult.CANCELLED;
+            }
+
+            return TaskResult.OK;
+        }
+
+        @Override
+        public void onProgressUpdate(Void... progress) {
+            draw();
+        }
+
+        @Override
+        public void onPostExecute(TaskResult result) {
+            if (result == TaskResult.AUTH_ERROR) {
+                logout();
+            } else if (result == TaskResult.OK) {
+                refreshButton.clearAnimation();
+                draw();
+            } else {
+                // Do nothing.
+            }
+
+            updateProgress("");
+        }
+    }
+
+    private class FriendshipTask extends UserTask<Void, Void, TaskResult> {
+
+        private boolean mIsDestroy;
+
+        public FriendshipTask(boolean isDestroy) {
+            mIsDestroy = isDestroy;
+        }
+
+        @Override
+        public void onPreExecute() {
+            mFollowButton.setEnabled(false);
+
+            if (mIsDestroy) {
+                updateProgress(getString(R.string.user_status_unfollowing));
+            } else {
+                updateProgress(getString(R.string.user_status_following));
+            }
+        }
+
+        @Override
+        public TaskResult doInBackground(Void... params) {
+            com.ch_linghu.fanfoudroid.weibo.User user;
+
+            String id = mUser.id;
+
+            try {
+                if (mIsDestroy) {
+                    user = getApi().destroyFriendship(id);
+                } else {
+                    user = getApi().createFriendship(id);
+                }
+            } catch (WeiboException e) {
+                Log.e(TAG, e.getMessage(), e);
+                return TaskResult.IO_ERROR;
+            }
+
+            if (isCancelled()) {
+                return TaskResult.CANCELLED;
+            }
+
+            User.create(user);
+
+            if (isCancelled()) {
+                return TaskResult.CANCELLED;
+            }
+
+            return TaskResult.OK;
+        }
+
+        @Override
+        public void onPostExecute(TaskResult result) {
+            if (result == TaskResult.AUTH_ERROR) {
+                logout();
+            } else if (result == TaskResult.OK) {
+                mIsFollowing = !mIsFollowing;
+                draw();
+            } else {
+                // Do nothing.
+            }
+
+            mFollowButton.setEnabled(true);
+            updateProgress("");
+        }
     }
 
     @Override
-    public void onPostExecute(TaskResult result) {
-      if (result == TaskResult.AUTH_ERROR) {
-        logout();
-      } else if (result == TaskResult.OK) {
-        mIsFollowing = !mIsFollowing;
-        draw();
-      } else {
-        // Do nothing.
-      }
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuItem item = menu.add(0, OPTIONS_MENU_ID_DM, 0,
+                R.string.cmenu_direct_message);
+        item.setIcon(android.R.drawable.ic_menu_send);
 
-      mFollowButton.setEnabled(true);
-      updateProgress("");
-    }
-  }
+        item = menu.add(0, OPTIONS_MENU_ID_FOLLOW, 0,
+                R.string.user_label_follow);
+        item.setIcon(android.R.drawable.ic_menu_add);
 
-
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    MenuItem item = menu.add(0, OPTIONS_MENU_ID_DM, 0, R.string.cmenu_direct_message);
-    item.setIcon(android.R.drawable.ic_menu_send);
-
-    item = menu.add(0, OPTIONS_MENU_ID_FOLLOW, 0, R.string.user_label_follow);
-    item.setIcon(android.R.drawable.ic_menu_add);
-
-    return super.onCreateOptionsMenu(menu);
-  }
-
-  @Override
-  public boolean onPrepareOptionsMenu(Menu menu) {
-	  //FIXME: 暂时去掉私信菜单可用性判断，保持和弹出菜单一致的行为
-	  
-//    MenuItem item = menu.findItem(OPTIONS_MENU_ID_DM);
-//    item.setEnabled(mIsFollower);
-//
-    MenuItem item = menu.findItem(OPTIONS_MENU_ID_FOLLOW);
-
-    if (mIsFollowing == null) {
-      item.setEnabled(false);
-      item.setTitle(R.string.user_label_follow);
-      item.setIcon(android.R.drawable.ic_menu_add);
-    } else if (mIsFollowing) {
-      item.setEnabled(true);
-      item.setTitle(R.string.user_label_unfollow);
-      item.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
-    } else {
-      item.setEnabled(true);
-      item.setTitle(R.string.user_label_follow);
-      item.setIcon(android.R.drawable.ic_menu_add);
+        return super.onCreateOptionsMenu(menu);
     }
 
-    return super.onPrepareOptionsMenu(menu);
-  }
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // FIXME: 暂时去掉私信菜单可用性判断，保持和弹出菜单一致的行为
 
-  private static final int DIALOG_CONFIRM = 0;
+        // MenuItem item = menu.findItem(OPTIONS_MENU_ID_DM);
+        // item.setEnabled(mIsFollower);
+        //
+        MenuItem item = menu.findItem(OPTIONS_MENU_ID_FOLLOW);
 
-  private void confirmFollow() {
-    showDialog(DIALOG_CONFIRM);
-  }
+        if (mIsFollowing == null) {
+            item.setEnabled(false);
+            item.setTitle(R.string.user_label_follow);
+            item.setIcon(android.R.drawable.ic_menu_add);
+        } else if (mIsFollowing) {
+            item.setEnabled(true);
+            item.setTitle(R.string.user_label_unfollow);
+            item.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
+        } else {
+            item.setEnabled(true);
+            item.setTitle(R.string.user_label_follow);
+            item.setIcon(android.R.drawable.ic_menu_add);
+        }
 
-  @Override
-  protected Dialog onCreateDialog(int id) {
-    AlertDialog dialog = new AlertDialog.Builder(this).create();
-
-    dialog.setTitle(R.string.user_label_follow);
-    dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Doesn't matter", mConfirmListener);
-    dialog.setButton(DialogInterface.BUTTON_NEUTRAL,
-        getString(R.string.general_lable_cancel), mCancelListener);
-    dialog.setMessage("FOO");
-
-    return dialog;
-  }
-
-  @Override
-  protected void onPrepareDialog(int id, Dialog dialog) {
-    super.onPrepareDialog(id, dialog);
-
-    AlertDialog confirmDialog = (AlertDialog) dialog;
-
-    String action = mIsFollowing ? getString(R.string.user_label_unfollow) :
-        getString(R.string.user_label_follow);
-    String message = action + " " + mUsername + "?";
-
-    (confirmDialog.getButton(DialogInterface.BUTTON_POSITIVE)).setText(action);
-    confirmDialog.setMessage(message);
-  }
-
-  private DialogInterface.OnClickListener mConfirmListener = new DialogInterface.OnClickListener() {
-    public void onClick(DialogInterface dialog, int whichButton) {
-      toggleFollow();
-    }
-  };
-
-  private DialogInterface.OnClickListener mCancelListener = new DialogInterface.OnClickListener() {
-    public void onClick(DialogInterface dialog, int whichButton) {
-    }
-  };
-
-  private void toggleFollow() {
-    if (mFriendshipTask != null
-        && mFriendshipTask.getStatus() == UserTask.Status.RUNNING) {
-      Log.w(TAG, "Already updating friendship.");
-      return;
+        return super.onPrepareOptionsMenu(menu);
     }
 
-    mFriendshipTask = new FriendshipTask(mIsFollowing).execute();
+    private static final int DIALOG_CONFIRM = 0;
 
-    // TODO: should we do a timeline refresh here?
-  }
-
-  @Override
-  public void needMore() {
-    if (!isLastPage()) {
-      doLoadMore();
-    }
-  }
-
-  public boolean isLastPage() {
-    return mNextPage == -1;
-  }
-
-  private synchronized void addTweets(ArrayList<Tweet> tweets) {
-    if (tweets.size() == 0) {
-      mNextPage = -1;
-      return;
+    private void confirmFollow() {
+        showDialog(DIALOG_CONFIRM);
     }
 
-    mTweets.addAll(tweets);
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        AlertDialog dialog = new AlertDialog.Builder(this).create();
 
-    ++mNextPage;
-  }
+        dialog.setTitle(R.string.user_label_follow);
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Doesn't matter",
+                mConfirmListener);
+        dialog.setButton(DialogInterface.BUTTON_NEUTRAL,
+                getString(R.string.general_lable_cancel), mCancelListener);
+        dialog.setMessage("FOO");
 
-  private synchronized void setProfileBitmap(Bitmap bitmap) {
-    mProfileBitmap = bitmap;
-  }
+        return dialog;
+    }
 
-@Override
-protected String getActivityTitle() {
-	return "@" + mUsername;
-}
+    @Override
+    protected void onPrepareDialog(int id, Dialog dialog) {
+        super.onPrepareDialog(id, dialog);
 
-@Override
-protected Tweet getContextItemTweet(int position) {
-	if (position >= 1){
-		return (Tweet)mAdapter.getItem(position-1);
-	}else{
-		return null;
-	}
-}
+        AlertDialog confirmDialog = (AlertDialog) dialog;
 
-@Override
-protected int getLayoutId() {
-	return R.layout.user;
-}
+        String action = mIsFollowing ? getString(R.string.user_label_unfollow)
+                : getString(R.string.user_label_follow);
+        String message = action + " " + mUsername + "?";
 
-@Override
-protected com.ch_linghu.fanfoudroid.ui.module.TweetAdapter getTweetAdapter() {
-	return mAdapter;
-}
+        (confirmDialog.getButton(DialogInterface.BUTTON_POSITIVE))
+                .setText(action);
+        confirmDialog.setMessage(message);
+    }
 
-@Override
-protected ListView getTweetList() {
-	return mTweetList;
-}
+    private DialogInterface.OnClickListener mConfirmListener = new DialogInterface.OnClickListener() {
+        public void onClick(DialogInterface dialog, int whichButton) {
+            toggleFollow();
+        }
+    };
 
-@Override
-protected void setupState() {
-    mTweets = new ArrayList<Tweet>();
-    mAdapter = new TweetArrayAdapter(this, mImageCache);
-    // Add Header to ListView
-    mTweetList 	  = (MyListView) findViewById(R.id.tweet_list);
-    View header = View.inflate(this, R.layout.user_header, null);
-    mTweetList.addHeaderView(header);
-    mTweetList.setAdapter(mAdapter);
-    mTweetList.setOnNeedMoreListener(this);
-}
+    private DialogInterface.OnClickListener mCancelListener = new DialogInterface.OnClickListener() {
+        public void onClick(DialogInterface dialog, int whichButton) {
+        }
+    };
 
-@Override
-protected void updateTweet(Tweet tweet) {
-	// TODO Simple and stupid implementation
-	for (Tweet t : mTweets){
-		if (t.id.equals(tweet.id)){
-			t.favorited = tweet.favorited;
-			break;
-		}
-	}
-}
+    private void toggleFollow() {
+        if (mFriendshipTask != null
+                && mFriendshipTask.getStatus() == UserTask.Status.RUNNING) {
+            Log.w(TAG, "Already updating friendship.");
+            return;
+        }
 
-@Override
-protected boolean useBasicMenu() {
-	return true;
-}
-  
- 
+        mFriendshipTask = new FriendshipTask(mIsFollowing).execute();
+
+        // TODO: should we do a timeline refresh here?
+    }
+
+    @Override
+    public void needMore() {
+        if (!isLastPage()) {
+            doLoadMore();
+        }
+    }
+
+    public boolean isLastPage() {
+        return mNextPage == -1;
+    }
+
+    private synchronized void addTweets(ArrayList<Tweet> tweets) {
+        if (tweets.size() == 0) {
+            mNextPage = -1;
+            return;
+        }
+
+        mTweets.addAll(tweets);
+
+        ++mNextPage;
+    }
+
+    private synchronized void setProfileBitmap(Bitmap bitmap) {
+        mProfileBitmap = bitmap;
+    }
+
+    @Override
+    protected String getActivityTitle() {
+        return "@" + mUsername;
+    }
+
+    @Override
+    protected Tweet getContextItemTweet(int position) {
+        if (position >= 1) {
+            return (Tweet) mAdapter.getItem(position - 1);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.user;
+    }
+
+    @Override
+    protected com.ch_linghu.fanfoudroid.ui.module.TweetAdapter getTweetAdapter() {
+        return mAdapter;
+    }
+
+    @Override
+    protected ListView getTweetList() {
+        return mTweetList;
+    }
+
+    @Override
+    protected void setupState() {
+        mTweets = new ArrayList<Tweet>();
+        mAdapter = new TweetArrayAdapter(this, mImageCache);
+        // Add Header to ListView
+        mTweetList = (MyListView) findViewById(R.id.tweet_list);
+        View header = View.inflate(this, R.layout.user_header, null);
+        mTweetList.addHeaderView(header);
+        mTweetList.setAdapter(mAdapter);
+        mTweetList.setOnNeedMoreListener(this);
+    }
+
+    @Override
+    protected void updateTweet(Tweet tweet) {
+        // TODO Simple and stupid implementation
+        for (Tweet t : mTweets) {
+            if (t.id.equals(tweet.id)) {
+                t.favorited = tweet.favorited;
+                break;
+            }
+        }
+    }
+
+    @Override
+    protected boolean useBasicMenu() {
+        return true;
+    }
 
 }

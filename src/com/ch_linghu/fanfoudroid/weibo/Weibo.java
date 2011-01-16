@@ -37,17 +37,25 @@ import java.util.TimeZone;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 
+import android.util.Log;
+
 import com.ch_linghu.fanfoudroid.R;
+import com.ch_linghu.fanfoudroid.TwitterApplication;
+import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
 import com.ch_linghu.fanfoudroid.http.Response;
 
 public class Weibo extends WeiboSupport implements java.io.Serializable {
+	public static final String TAG = "Weibo_API";
+	
 	public static final String CONSUMER_KEY = Configuration.getSource();
 	public static final String CONSUMER_SECRET = "";
 	
 	private String baseURL = Configuration.getScheme() + "api.fanfou.com/";
 	private String searchBaseURL = Configuration.getScheme() + "api.fanfou.com/";
     private static final long serialVersionUID = -1486360080128882436L;
+    
+    private boolean isLoggedIn;
 
     public Weibo(String userId, String password) {
         super(userId, password);
@@ -57,6 +65,35 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
     public Weibo(String userId, String password, String baseURL) {
         this(userId, password);
         this.baseURL = baseURL;
+    }
+    
+    public static boolean isValidCredentials(String username, String password) {
+        return !Utils.isEmpty(username) && !Utils.isEmpty(password);
+    }
+    
+    public User login(String username, String password) throws WeiboException {
+        Log.i(TAG, "Login attempt for " + username);
+        http.setCredentials(username, password);
+        
+        // Verify username and password. 
+        // failure : throw WeiboException
+        // success : return verified user 
+        User user = verifyCredentials();
+        
+        if (null != user && user.getId().length() > 0) {
+            isLoggedIn = true;
+        }
+        
+        return user;
+    }
+    
+    public void logout() {
+        http.reset(); // clean username and password
+        this.isLoggedIn = false;
+    }
+
+    public boolean isLoggedIn() {
+        return isLoggedIn;
     }
 
     /**

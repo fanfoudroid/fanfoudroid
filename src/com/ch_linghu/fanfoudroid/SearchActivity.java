@@ -96,11 +96,7 @@ public class SearchActivity extends TwitterListBaseActivity implements
 	protected void onResume() {
 		super.onResume();
 
-		if (!getApi().getHttpClient().isLoggedIn()) {
-			Log.i(TAG, "Not logged in.");
-			handleLoggedOut();
-			return;
-		}
+		checkIsLogedIn();
 	}
 
 	@Override

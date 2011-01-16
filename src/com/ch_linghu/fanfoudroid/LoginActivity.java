@@ -192,13 +192,9 @@ public class LoginActivity extends Activity {
     editor.commit();
 
     try {
-		TwitterApplication.nApi.getHttpClient().login(username, password);
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+		TwitterApplication.nApi.login(username, password);
 	} catch (WeiboException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+		// TODO catch if fail, if type time too much
 	}
 
     Intent intent = getIntent().getParcelableExtra(Intent.EXTRA_INTENT);
@@ -234,13 +230,10 @@ public class LoginActivity extends Activity {
       publishProgress(getString(R.string.login_status_logging_in) + "...");
 
       try {
-		TwitterApplication.nApi.getHttpClient().login(username, password);
-      } catch (IOException e) {
-          Log.e(TAG, e.getMessage(), e);
-          publishProgress(getString(R.string.login_status_network_or_connection_error));
-          return false;      
+		TwitterApplication.nApi.login(username, password);   
       } catch (WeiboException e) {
         Log.e(TAG, e.getMessage(), e);
+        //TODO: 捕捉statusCode，是密码错误，还是帐号被锁
         publishProgress(getString(R.string.login_status_network_or_connection_error));
         return false;
       }

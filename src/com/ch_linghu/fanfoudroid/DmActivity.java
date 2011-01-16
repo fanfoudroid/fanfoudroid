@@ -92,7 +92,7 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (!getApi().getHttpClient().isLoggedIn()) {
+		if (!getApi().isLoggedIn()) {
 			Log.i(TAG, "Not logged in.");
 			handleLoggedOut();
 			return;
@@ -148,12 +148,7 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 	@Override
 	protected void onResume() {
 		super.onResume();
-
-		if (!getApi().getHttpClient().isLoggedIn()) {
-			Log.i(TAG, "Not logged in.");
-			handleLoggedOut();
-			return;
-		}
+		checkIsLogedIn();
 	}
 
 	private static final String SIS_RUNNING_KEY = "running";
