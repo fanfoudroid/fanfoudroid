@@ -378,7 +378,7 @@ public class WriteActivity extends WithHeaderActivity {
                 + " @"
                 + screenName
                 + " "
-                + tweetText.replaceAll("<.*?>", "");//TODO: 使用更好的方法对TEXT进行格式化
+                + Utils.getSimpleTweetText(tweetText);
         Intent intent = new Intent(WriteActivity.REPOST_TWEET_ACTION);
         intent.putExtra(WriteActivity.EXTRA_TEXT, retweet);
         intent.putExtra(WriteActivity.EXTRA_REPOST_ID, repostId);
