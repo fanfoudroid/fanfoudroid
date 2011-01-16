@@ -287,9 +287,7 @@ public class WriteActivity extends WithHeaderActivity {
 		mSendButton = (Button) findViewById(R.id.send_button);
 		mSendButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				doSend(WriteActivity.this._reply_id);
-				WriteActivity.this._reply_id = null;
-				WriteActivity.this._repost_id = null;
+				doSend();
 			}
 		});
 		
@@ -360,7 +358,7 @@ public class WriteActivity extends WithHeaderActivity {
 	}
 	
 	public static Intent createNewReplyIntent(String screenName, String replyId) {
-	    String replyTo = "@" + screenName + " ";
+		String replyTo = "@" + screenName + " ";
         Intent intent = new Intent(WriteActivity.NEW_TWEET_ACTION);
         intent.putExtra(WriteActivity.EXTRA_TEXT, replyTo);
         intent.putExtra(WriteActivity.EXTRA_REPLY_ID, replyId);
@@ -425,7 +423,7 @@ public class WriteActivity extends WithHeaderActivity {
 					|| keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
 				if (event.getAction() == KeyEvent.ACTION_UP) {
 					WriteActivity t = (WriteActivity) (v.getContext());
-					doSend(t._reply_id);
+					doSend();
 				}
 				return true;
 			}
@@ -433,8 +431,8 @@ public class WriteActivity extends WithHeaderActivity {
 		}
 	};
 
-	private void doSend(String _reply_to) {
-		Log.i(TAG, "doSend");
+	private void doSend() {
+		Log.i(TAG, String.format("doSend, reply_id=%s", _reply_id));
 		
 		if (mSendTask != null
 				&& mSendTask.getStatus() == UserTask.Status.RUNNING) {
@@ -480,7 +478,6 @@ public class WriteActivity extends WithHeaderActivity {
 			
 			try {
 				String status = mTweetEdit.getText().toString();
-				Weibo api = TwitterApplication.nApi;
 			    
 			    if (params.length > 0) {
 			        Log.i(TAG, "Send Status. Mode : " + params[0]);
@@ -488,29 +485,29 @@ public class WriteActivity extends WithHeaderActivity {
 			        // Send status in different way
 			        switch (params[0]) {
 			        case TYPE_REPLY:
-			            if (null !=  WriteActivity.this._reply_id) {
-                            api.updateStatus(status, WriteActivity.this._reply_id);
-                        } else {
-                            Log.e(TAG, "Cann't send status in REPLY mode, repost_id is null");
+			        	//增加容错性，即使reply_id为空依然允许发送
+			            if (null ==  WriteActivity.this._reply_id) {
+                            Log.e(TAG, "Cann't send status in REPLY mode, reply_id is null");
                         }
+                        getApi().updateStatus(status, WriteActivity.this._reply_id);
 			            break;
 			        case TYPE_REPOST:
-			            if (null !=  WriteActivity.this._repost_id) {
-			                api.repost(status, WriteActivity.this._repost_id);
-			            } else {
+			        	//增加容错性，即使repost_id为空依然允许发送
+			            if (null ==  WriteActivity.this._repost_id) {
 			                Log.e(TAG, "Cann't send status in REPOST mode, repost_id is null");
 			            }
+		            	getApi().repost(status, WriteActivity.this._repost_id);
 			            break;
 			        case TYPE_PHOTO:
 			            if (null != mFile) {
-			                api.updateStatus(status, mFile);
+			            	getApi().updateStatus(status, mFile);
 			            } else {
 			                Log.e(TAG, "Cann't send status in PICTURE mode, photo is null");
 			            }
 			            break;
 			        case TYPE_NORMAL:
 			        default:
-			            api.updateStatus(status); // just send a status
+			        	getApi().updateStatus(status); // just send a status
 			            break;
 			        }
 			    }
@@ -555,6 +552,8 @@ public class WriteActivity extends WithHeaderActivity {
 
 	private void onSendSuccess() {
 		mTweetEdit.setText("");
+		_reply_id = null;
+		_repost_id = null;
 		updateProgress(getString(R.string.page_status_update_success));
 		backgroundButton.setVisibility(View.INVISIBLE);
 		enableEntry();

@@ -117,7 +117,12 @@ public class LoginActivity extends Activity {
     if (mLoginTask != null && mLoginTask.getStatus() == UserTask.Status.RUNNING) {
       mLoginTask.cancel(true);
     }
-
+    
+	// dismiss dialog before destroy 
+	// to avoid android.view.WindowLeaked Exception
+	if (dialog != null){
+		dialog.dismiss();
+	}
     super.onDestroy();
   }
 

@@ -567,6 +567,7 @@ public class TwitterDbAdapter {
 			                      new String[]{id});
 	  if (cursor != null && cursor.moveToFirst()){
 		  int count = cursor.getInt(0);
+		  cursor.close();
 		  if (count > 0){
 			  Log.d(TAG, String.format("[isTweetExists], id=%s, tableName=%s, count = %d, return true", id, tableName, count));
 			  return true;
