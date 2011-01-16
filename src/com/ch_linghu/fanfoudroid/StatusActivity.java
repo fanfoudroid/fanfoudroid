@@ -58,7 +58,7 @@ public class StatusActivity extends WithHeaderActivity
 	
 	// Task TODO: tasks 
 	private AsyncTask<String, Void, TaskResult> getStatusTask; 
-	private AsyncTask<String, Void, TaskResult> getPhotoTask; 
+	private AsyncTask<String, Void, TaskResult> getPhotoTask; //TODO: 压缩图片，提供获取图片的过程中可取消获取
 	private AsyncTask<String, Void, TaskResult> mFavTask;
 	
 	// View
@@ -475,7 +475,9 @@ public class StatusActivity extends WithHeaderActivity
 			reply_status_date.setText(Utils.getRelativeDate(tweet.createdAt));
 		}else{
 			//FIXME: 这里需要有更好的处理方法
-			reply_status_text.setText("【回复消息获取未成功】");
+		    String msg = "本条消息是给 " + this.tweet.inReplyToScreenName 
+		        + " 的回复。可能你没有通过 " + this.tweet.inReplyToScreenName + " 的验证.所以无法查看该回复消息。";
+			reply_status_text.setText(msg);
 		}
     }
 	
