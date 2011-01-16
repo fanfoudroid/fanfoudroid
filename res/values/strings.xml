@@ -75,6 +75,8 @@
     <string name="direct_meesage_status_texting_is_null">请输入私信内容.</string>
     <string name="direct_meesage_status_user_is_null">请输入收信人.</string>
     <string name="direct_meesage_status_the_person_not_following_you">无法发送私信，通过客户端只能给互相关注的人发私信。</string>
+	<string name="direct_message_label_from_prefix">来自: </string>
+	<string name="direct_message_label_to_prefix">发给: </string>
 
 	<!-- 设置页面  -->
     <string name="pref_title_notifications">后台提示</string>
