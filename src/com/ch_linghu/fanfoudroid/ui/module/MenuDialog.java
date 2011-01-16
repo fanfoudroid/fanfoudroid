@@ -88,10 +88,10 @@ public class MenuDialog extends Dialog {
 	
 	private void goTo(Class<?> cls) {
 		if (getOwnerActivity().getClass() != cls) {
+			dismiss();
 			Intent intent = new Intent();
 			intent.setClass(getContext(), cls);
 			getContext().startActivity(intent);
-			dismiss();
 		} else {
 			String msg = getContext().getString(R.string.page_status_same_page);
 			Toast.makeText(getContext(), msg,
