@@ -213,10 +213,9 @@ public class StatusActivity extends WithHeaderActivity
 		        if (! Utils.isEmpty(tweet.inReplyToStatusId) ) {
 					if (replyTweet == null) {
 						Log.w(TAG, "Selected item not available.");
+					}else{
+						launchActivity(StatusActivity.createIntent(replyTweet));
 					}
-					
-					// TODO: launch statusActivity with real data
-					launchActivity(StatusActivity.createIntent(replyTweet));
 		        }
 			}
 		};

@@ -248,10 +248,9 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity {
 		
 				if (tweet == null) {
 					Log.w(TAG, "Selected item not available.");
+				}else{
+					launchActivity(StatusActivity.createIntent(tweet));
 				}
-				
-				// TODO: launch statusActivity with real data
-				launchActivity(StatusActivity.createIntent(tweet));
 			}
 		});
 
