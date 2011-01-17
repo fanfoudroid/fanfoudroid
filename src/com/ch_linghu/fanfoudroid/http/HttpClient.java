@@ -236,6 +236,7 @@ public class HttpClient {
 		HttpConnectionParams.setConnectionTimeout(method.getParams(), CONNECTION_TIMEOUT_MS);
 		HttpConnectionParams.setSoTimeout(method.getParams(), SOCKET_TIMEOUT_MS);
 		mClient.setHttpRequestRetryHandler(requestRetryHandler);
+		method.addHeader("Accept-Encoding", "gzip, deflate");
 
 		HttpResponse response = null;
 		Response res = null;

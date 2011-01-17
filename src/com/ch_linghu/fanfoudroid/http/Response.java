@@ -59,6 +59,8 @@ public class Response {
     private HttpResponse response;
     private StatusLine statusLine;
     private Header[] responseHeader;
+    
+    private String contentEncoding; 
 
     public Response()  {
     	
@@ -72,8 +74,11 @@ public class Response {
         
         HttpEntity entity = response.getEntity();
         this.is = entity.getContent();
-        if (null != is && "gzip".equals(entity.getContentEncoding())) {
+        contentEncoding = entity.getContentEncoding().getValue();
+        Log.i("LDS", contentEncoding + " encoding");
+        if (null != is && "gzip".equals(contentEncoding)) {
             // the response is gzipped
+            Log.i("LDS", "use gzip");
             is = new GZIPInputStream(is);
         }
     }
