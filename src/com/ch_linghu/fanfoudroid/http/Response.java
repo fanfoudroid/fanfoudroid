@@ -71,14 +71,12 @@ public class Response {
         this.statusCode = statusLine.getStatusCode();
         this.responseHeader = response.getAllHeaders();
         
-        
         HttpEntity entity = response.getEntity();
         this.is = entity.getContent();
-        contentEncoding = entity.getContentEncoding().getValue();
-        Log.i("LDS", contentEncoding + " encoding");
-        if (null != is && "gzip".equals(contentEncoding)) {
+        Header contentEncoding = entity.getContentEncoding();
+        if (null != is && contentEncoding != null
+                && "gzip".equals(contentEncoding.getValue())) {
             // the response is gzipped
-            Log.i("LDS", "use gzip");
             is = new GZIPInputStream(is);
         }
     }

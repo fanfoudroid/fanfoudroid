@@ -6,9 +6,9 @@ import android.widget.Toast;
 
 import com.ch_linghu.fanfoudroid.LoginActivity;
 import com.ch_linghu.fanfoudroid.R;
-import com.ch_linghu.fanfoudroid.weibo.HttpAuthException;
-import com.ch_linghu.fanfoudroid.weibo.HttpRefusedException;
-import com.ch_linghu.fanfoudroid.weibo.HttpServerException;
+import com.ch_linghu.fanfoudroid.http.HttpAuthException;
+import com.ch_linghu.fanfoudroid.http.HttpRefusedException;
+import com.ch_linghu.fanfoudroid.http.HttpServerException;
 import com.ch_linghu.fanfoudroid.weibo.RefuseError;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
@@ -35,6 +35,8 @@ public class ExceptionHandler {
         } else if (cause instanceof HttpServerException) {
             // 服务器暂时无法响应
             Toast.makeText(mActivity, R.string.error_not_authorized, Toast.LENGTH_LONG).show();
+        } else if (cause instanceof HttpAuthException) {
+            //FIXME: 集中处理用户名/密码验证错误，返回到登录界面
         } else if (cause instanceof HttpRefusedException) {
             // 服务器拒绝请求，如没有权限查看某用户信息
             RefuseError error = ((HttpRefusedException) cause).getError();

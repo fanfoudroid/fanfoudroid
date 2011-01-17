@@ -26,7 +26,7 @@ public class FollowersTask extends AsyncTask<Void, Void, TaskResult> {
 	public TaskResult doInBackground(Void... params) {
 		try {
 			//TODO: 目前仅做新API兼容性改动，待完善Follower处理
-			IDs followers = Followable.nApi.getFollowersIDs();
+			IDs followers = Followable.mApi.getFollowersIDs();
 			List<String> followerIds = Arrays.asList(followers.getIDs());
 			Followable.mDb.syncFollowers(followerIds);
 		} catch (WeiboException e) {

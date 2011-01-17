@@ -156,6 +156,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 
 		boolean shouldRetrieve = false;
 
+		//FIXME： 该子类页面全部使用了这个统一的计时器，导致进入Mention等分页面后经常不会自动刷新
 		long lastRefreshTime = mPreferences.getLong(
 				Preferences.LAST_TWEET_REFRESH_KEY, 0);
 		long nowTime = Utils.getNowTime();

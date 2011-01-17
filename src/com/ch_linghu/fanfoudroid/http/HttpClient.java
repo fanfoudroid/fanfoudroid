@@ -44,17 +44,16 @@ import org.apache.http.protocol.HttpContext;
 import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.weibo.Configuration;
-import com.ch_linghu.fanfoudroid.weibo.HttpAuthException;
-import com.ch_linghu.fanfoudroid.weibo.HttpRefusedException;
-import com.ch_linghu.fanfoudroid.weibo.HttpRequestException;
-import com.ch_linghu.fanfoudroid.weibo.HttpServerException;
 import com.ch_linghu.fanfoudroid.weibo.RefuseError;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
+/**
+ * @author lds
+ *
+ */
 public class HttpClient {
 	
 	private static final String TAG = "HttpClient";
-	
 	private final static boolean DEBUG = Configuration.getDebug();
 
 	public static final int OK = 200;// OK: Success!
@@ -78,16 +77,16 @@ public class HttpClient {
 	
 	private static boolean isAuthenticationEnabled = false;
 
-	public static final String METHOD_GET = "GET";
-	public static final String METHOD_POST = "POST";
-	public static final String METHOD_DELETE = "DELETE";
-
 	private static final int CONNECTION_TIMEOUT_MS = 30 * 1000;
 	private static final int SOCKET_TIMEOUT_MS = 30 * 1000;
 	
 	public static final int RETRIEVE_LIMIT = 20;
 	public static final int RETRIED_TIME = 3;
 
+	public HttpClient() {
+        prepareHttpClient();
+    }
+	
 	public HttpClient(String user_id, String password) {
 		prepareHttpClient();
 		setCredentials(user_id, password);
@@ -105,6 +104,9 @@ public class HttpClient {
 		return mPassword;
 	}
 
+	/**
+	 * 实例化内置的DefaultHttpClient
+	 */
 	private void prepareHttpClient() {
 		mAuthScope = new AuthScope(TWITTER_HOST, AuthScope.ANY_PORT);
 		mClient = new DefaultHttpClient();
@@ -116,6 +118,11 @@ public class HttpClient {
 		mClient.setCredentialsProvider(new BasicCredentialsProvider());
 	}
 
+	/**
+	 * Setup Basic auth
+	 * @param username
+	 * @param password
+	 */
 	public void setCredentials(String username, String password) {
 		mUserId = username;
 		mPassword = password;
@@ -129,48 +136,48 @@ public class HttpClient {
 		 if (null == postParams) {
 			 postParams = new ArrayList<BasicNameValuePair>();
 		 }
-		 return httpRequest(url, postParams, authenticated, METHOD_POST);
+		 return httpRequest(url, postParams, authenticated, HttpPost.METHOD_NAME);
 	}
 	
 	public Response post(String url, ArrayList<BasicNameValuePair> params) 
 			throws WeiboException {
-		return httpRequest(url, params, false, METHOD_POST);
+		return httpRequest(url, params, false, HttpPost.METHOD_NAME);
 	}
 	
 	public Response post(String url, boolean authenticated) throws WeiboException {
-        return httpRequest(url, null, authenticated, METHOD_POST);
+        return httpRequest(url, null, authenticated, HttpPost.METHOD_NAME);
     }
 
     public Response post(String url) throws WeiboException {
-        return httpRequest(url, null, false, METHOD_POST);
+        return httpRequest(url, null, false, HttpPost.METHOD_NAME);
     }
     
     public Response post(String url, File file) throws WeiboException {
-    	return httpRequest(url, null, file, false, METHOD_POST);
+    	return httpRequest(url, null, file, false, HttpPost.METHOD_NAME);
     }
     
     public Response post(String url, File file, boolean authenticate) throws WeiboException {
-    	return httpRequest(url, null, file, authenticate, METHOD_POST);
+    	return httpRequest(url, null, file, authenticate, HttpPost.METHOD_NAME);
 }
 
 	public Response get(String url, ArrayList<BasicNameValuePair> params, boolean authenticated) 
 			throws WeiboException {
-		return httpRequest(url, params, authenticated, METHOD_GET);
+		return httpRequest(url, params, authenticated, HttpGet.METHOD_NAME);
 	}
 	
 	public Response get(String url, ArrayList<BasicNameValuePair> params) 
 			throws WeiboException {
-		return httpRequest(url, params, false, METHOD_GET);
+		return httpRequest(url, params, false, HttpGet.METHOD_NAME);
 	}
 	
 	public Response get(String url) 
 			throws WeiboException {
-		return httpRequest(url, null, false, METHOD_GET);
+		return httpRequest(url, null, false, HttpGet.METHOD_NAME);
 	}
 	
 	public Response get(String url,  boolean authenticated) 
 			throws WeiboException {
-		return httpRequest(url, null, authenticated, METHOD_GET);
+		return httpRequest(url, null, authenticated, HttpGet.METHOD_NAME);
 	}
 
 	public Response httpRequest(String url, ArrayList<BasicNameValuePair> postParams,
@@ -183,7 +190,6 @@ public class HttpClient {
     			throws WeiboException {
 		Log.i(TAG, "Sending " + httpMethod + " request to " + url);
 
-		// Init URL
 		URI uri;
 		try {
 			uri = new URI(url);
@@ -197,42 +203,36 @@ public class HttpClient {
 		log("----------------- HTTP Request Start ----------------------");
 		log("[Request]");
 
-		// Handle different request method 
-		if (METHOD_POST.equals(httpMethod)) {
+		// Handle different request method, such as POST, GET, DELETE
+		if (httpMethod.equalsIgnoreCase(HttpPost.METHOD_NAME)) {
+		    // POST METHOD
+		    
 			HttpPost post = new HttpPost(uri);
 			// See this: http://groups.google.com/group/twitter-development-talk/browse_thread/thread/e178b1d3d63d8e3b
 			post.getParams().setBooleanParameter("http.protocol.expect-continue", false);
 			
 			try {
+			    HttpEntity entity = null;
 				if (null != file) {
-					// Has a file
-					
-					MultipartEntity entity = new MultipartEntity();
-					// Don't try this. Server does not appear to support chunking.
-					// entity.addPart("media", new InputStreamBody(imageStream, "media"));
-					
-					entity.addPart("photo", new FileBody(file)); 
-					for (BasicNameValuePair param : postParams) {
-						entity.addPart(param.getName(), new StringBody(param.getValue()));
-					}
+				    entity = createMultipartEntity("photo", file, postParams);
 					post.setEntity(entity);
 				} else if (null != postParams) {
-					post.setEntity(new UrlEncodedFormEntity(postParams, HTTP.UTF_8));
+					entity = new UrlEncodedFormEntity(postParams, HTTP.UTF_8);
 				}
-				method = post;
+				post.setEntity(entity);
 			} catch (IOException ioe) {
 				throw new WeiboException(ioe.getMessage(), ioe);
 			}
 			
 			logPostForDebug(postParams, post, file);
-
-		} else if (METHOD_DELETE.equals(httpMethod)) {
+			method = post;
+		} else if (httpMethod.equalsIgnoreCase(HttpDelete.METHOD_NAME)) {
 			method = new HttpDelete(uri);
 		} else {
 			method = new HttpGet(uri);
 		}
 
-		// Setup the HTTP connection Params
+		// Setup the HTTP connection
 		HttpConnectionParams.setConnectionTimeout(method.getParams(), CONNECTION_TIMEOUT_MS);
 		HttpConnectionParams.setSoTimeout(method.getParams(), SOCKET_TIMEOUT_MS);
 		mClient.setHttpRequestRetryHandler(requestRetryHandler);
@@ -252,48 +252,41 @@ public class HttpClient {
             throw new WeiboException(ioe.getMessage(), ioe);
 		}
 
-        // Handle Response Status Code
 		
 		int statusCode = response.getStatusLine().getStatusCode();
+		// It will throw a weiboException while status code is not 200
+		HandleResponseStatusCode(statusCode, res);
 		logResponseForDebug(method, response, statusCode);
-		
-        String msg = getCause(statusCode) + "\n" + res.asString();
-        switch (statusCode) {
-        // It's OK, do nothing
-        case OK:
-            break;
-
-        // Mine mistake, Check the Log
-        case NOT_MODIFIED:
-        case BAD_REQUEST:
-        case NOT_FOUND:
-        case NOT_ACCEPTABLE:
-            throw new WeiboException(msg, new HttpRequestException(),
-                    statusCode);
-            
-        // UserName/Password incorrect
-        case NOT_AUTHORIZED:
-            throw new WeiboException(msg, new HttpAuthException(), statusCode);
-
-        // Server will return a error message, use HttpRefusedException#getError() to see.
-        case FORBIDDEN:
-            RefuseError error = new RefuseError(res);
-            throw new WeiboException(msg, new HttpRefusedException(error), statusCode);
-
-        // Something wrong with server
-        case INTERNAL_SERVER_ERROR:
-        case BAD_GATEWAY:
-        case SERVICE_UNAVAILABLE:
-            throw new WeiboException(msg, new HttpServerException(), statusCode);
-
-        // Others
-        default:
-            throw new WeiboException(msg, statusCode);
-        }
 		
         return res;
 	}
     
+    /**
+     * 创建可带一个File的MultipartEntity
+     * @param filename 文件名
+     * @param file 文件
+     * @param postParams 其他POST参数
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    private MultipartEntity createMultipartEntity(String filename, File file,
+            ArrayList<BasicNameValuePair> postParams) throws UnsupportedEncodingException {
+        MultipartEntity entity = new MultipartEntity();
+        // Don't try this. Server does not appear to support chunking.
+        // entity.addPart("media", new InputStreamBody(imageStream, "media"));
+        
+        entity.addPart(filename, new FileBody(file)); 
+        for (BasicNameValuePair param : postParams) {
+            entity.addPart(param.getName(), new StringBody(param.getValue()));
+        }
+        return entity;
+    }
+    
+    /**
+     * 解析HTTP错误码
+     * @param statusCode
+     * @return
+     */
     private static String getCause(int statusCode){
         String cause = null;
         switch(statusCode){
@@ -337,6 +330,51 @@ public class HttpClient {
 		if (DEBUG) {
 			Log.d(TAG,msg);
 		}
+	}
+	
+	/**
+	 * Handle Status code, it will throw weiboException while status code is not 200
+	 * @param statusCode
+	 * @param res
+	 * @throws WeiboException
+	 */
+	private void HandleResponseStatusCode(int statusCode, Response res) throws WeiboException {
+	    String msg = getCause(statusCode) + "\n";
+	    RefuseError error = null;
+	    
+        switch (statusCode) {
+        // It's OK, do nothing
+        case OK:
+            break;
+
+        // Mine mistake, Check the Log
+        case NOT_MODIFIED:
+        case BAD_REQUEST:
+        case NOT_FOUND:
+        case NOT_ACCEPTABLE:
+            throw new WeiboException(msg + res.asString(), new HttpRequestException(),
+                    statusCode);
+            
+        // UserName/Password incorrect
+        case NOT_AUTHORIZED:
+            error = new RefuseError(res);
+            throw new WeiboException(msg + res.asString(), new HttpAuthException(error), statusCode);
+
+        // Server will return a error message, use HttpRefusedException#getError() to see.
+        case FORBIDDEN:
+            error = new RefuseError(res);
+            throw new WeiboException(msg + res.asString(), new HttpRefusedException(error), statusCode);
+
+        // Something wrong with server
+        case INTERNAL_SERVER_ERROR:
+        case BAD_GATEWAY:
+        case SERVICE_UNAVAILABLE:
+            throw new WeiboException(msg + res.asString(), new HttpServerException(), statusCode);
+
+        // Others
+        default:
+            throw new WeiboException(msg + res.asString(), statusCode);
+        }
 	}
 	
 	// ignore me, it's only for debug

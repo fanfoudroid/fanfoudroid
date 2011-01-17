@@ -80,7 +80,7 @@ public class TwitterService extends Service {
 	}
 
 	private Weibo getApi() {
-		return TwitterApplication.nApi;
+		return TwitterApplication.mApi;
 	}
 
 	@Override

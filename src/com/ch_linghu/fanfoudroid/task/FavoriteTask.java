@@ -40,10 +40,10 @@ public class FavoriteTask extends AsyncTask<String, Void, TaskResult> {
 			String id = params[1];
 			com.ch_linghu.fanfoudroid.weibo.Status status = null;
 			if (action.equals(TYPE_ADD)) {
-				status = HasFavorite.nApi.createFavorite(id);
+				status = HasFavorite.mApi.createFavorite(id);
 			} else {
 			    this.type = TYPE_DEL;
-				status = HasFavorite.nApi.destroyFavorite(id);
+				status = HasFavorite.mApi.destroyFavorite(id);
 			}
 
 			Tweet tweet = Tweet.create(status);

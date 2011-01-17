@@ -440,12 +440,16 @@ public class WriteActivity extends WithHeaderActivity {
 		} else {
 			String status = mTweetEdit.getText().toString();
 
-			if (! Utils.isEmpty(status)) {
+			if (! Utils.isEmpty(status) || withPic) {
 			    int mode = SendTask.TYPE_NORMAL;
 			    
-			    if (withPic) mode = SendTask.TYPE_PHOTO;
-			    else if (null != _reply_id) mode = SendTask.TYPE_REPLY;
-			    else if (null != _repost_id) mode = SendTask.TYPE_REPOST;
+			    if (withPic)  {
+			        mode = SendTask.TYPE_PHOTO;
+			    } else if (null != _reply_id) {
+			        mode = SendTask.TYPE_REPLY;
+			    } else if (null != _repost_id) {
+			        mode = SendTask.TYPE_REPOST;
+			    }
 			    
 				mSendTask = new SendTask().execute(mode);
 			} else {

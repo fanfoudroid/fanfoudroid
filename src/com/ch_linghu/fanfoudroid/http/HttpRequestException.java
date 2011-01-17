@@ -1,4 +1,4 @@
-package com.ch_linghu.fanfoudroid.weibo;
+package com.ch_linghu.fanfoudroid.http;
 
 
 /**

@@ -74,7 +74,7 @@ public class BaseActivity extends Activity {
   }
 
   protected Weibo getApi() {
-    return TwitterApplication.nApi;
+    return TwitterApplication.mApi;
   }
   
   public SharedPreferences getPreferences() {
@@ -102,8 +102,9 @@ public class BaseActivity extends Activity {
     TwitterService.unschedule(this);
 
     getDb().clearData();
-    getApi().logout();
+    getApi().reset();
 
+    // Clear SharedPreferences
     SharedPreferences.Editor editor = mPreferences.edit();
     editor.clear();
     editor.commit();

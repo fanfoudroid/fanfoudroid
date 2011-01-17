@@ -39,12 +39,12 @@ import com.ch_linghu.fanfoudroid.http.HttpClient;
     protected final boolean USE_SSL;
 
     /*package*/ WeiboSupport(){
-        this(null, null);
+        USE_SSL = Configuration.useSSL();
+        http = new HttpClient(); // In case that the user is not logged in
     }
     /*package*/ WeiboSupport(String userId, String password){
         USE_SSL = Configuration.useSSL();
         http = new HttpClient(userId, password);
-        
     }
 
     /**

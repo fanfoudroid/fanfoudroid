@@ -53,9 +53,11 @@
     <string name="login_label_password">密码</string>
     <string name="login_label_signin">登 录</string>
     <string name="login_status_logging_in">登录中...</string>
+    <string name="login_status_null_username_or_password">帐号和密码不能为空。</string>
     <string name="login_status_invalid_username_or_password">帐号或密码错误，请重新输入。</string>
     <string name="login_status_network_or_connection_error">网络错误，请稍后再试。</string>
     <string name="login_register_link">没有帐号？ <a href="http://fanfou.com/register">注册</a></string>
+    <string name="login_status_failure">登录失败。</string>
     
     <!-- User页面 -->
     <string name="user_label_follow">关注此人</string>

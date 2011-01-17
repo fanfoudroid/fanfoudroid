@@ -34,13 +34,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 
 import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.R;
-import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
 import com.ch_linghu.fanfoudroid.http.Response;
@@ -55,8 +55,11 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
 	private String searchBaseURL = Configuration.getScheme() + "api.fanfou.com/";
     private static final long serialVersionUID = -1486360080128882436L;
     
-    private boolean isLoggedIn;
-
+    public Weibo() {
+        super(); // In case that the user is not logged in
+        format.setTimeZone(TimeZone.getTimeZone("GMT"));
+    }
+    
     public Weibo(String userId, String password) {
         super(userId, password);
         format.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -67,33 +70,61 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
         this.baseURL = baseURL;
     }
     
+    /**
+     * 设置HttpClient的Auth，为请求做准备
+     * @param username
+     * @param password
+     */
+    public void setCredentials(String username, String password) {
+        http.setCredentials(username, password);
+    }
+    
+    /**
+     * 仅判断是否为空
+     * @param username
+     * @param password
+     * @return
+     */
     public static boolean isValidCredentials(String username, String password) {
         return !Utils.isEmpty(username) && !Utils.isEmpty(password);
     }
     
+    /**
+     * 在服务器上验证用户名/密码是否正确，成功则返回该用户信息，失败则抛出异常。
+     * @param username
+     * @param password
+     * @return Verified User
+     * @throws WeiboException 验证失败及其他非200响应均抛出异常
+     */
     public User login(String username, String password) throws WeiboException {
         Log.i(TAG, "Login attempt for " + username);
         http.setCredentials(username, password);
         
-        // Verify username and password. 
-        // failure : throw WeiboException
-        // success : return verified user 
+        // Verify userName and password on the server. 
         User user = verifyCredentials();
         
         if (null != user && user.getId().length() > 0) {
-            isLoggedIn = true;
         }
         
         return user;
     }
     
-    public void logout() {
-        http.reset(); // clean username and password
-        this.isLoggedIn = false;
+    /**
+     * Reset HttpClient's Credentials
+     */
+    public void reset() {
+        http.reset(); 
     }
 
+    /**
+     * Whether Logged-in
+     * @return 
+     */
     public boolean isLoggedIn() {
-        return isLoggedIn;
+        // HttpClient的userName&password是由TwitterApplication#onCreate
+        // 从SharedPreferences中取出的，他们为空则表示尚未登录，因为他们只在验证
+        // 账户成功后才会被储存，且注销时被清空。
+       return isValidCredentials(http.getUserId(), http.getPassword());
     }
 
     /**
@@ -135,6 +166,8 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
     
     /**
      * Returns authenticating userid
+     * 注意：此userId不一定等同与饭否用户的user_id参数
+     * 它可能是任意一种当前用户所使用的ID类型（如邮箱，用户名等），
      *
      * @return userid
      */
@@ -622,7 +655,7 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
         return new Status(http.httpRequest(getBaseURL() + "photos/upload.json",
         		createParams(new BasicNameValuePair("status", status),
         					 new BasicNameValuePair("source", source)),
-        		file, true, http.METHOD_POST));
+        		file, true, HttpPost.METHOD_NAME));
     }
 
     public Status updateStatus(String status, File file) throws WeiboException {
@@ -1243,7 +1276,8 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
     
     /**
      * Returns an HTTP 200 OK response code and a representation of the requesting user if authentication was successful; returns a 401 status code and an error message if not.  Use this method to test if supplied user credentials are valid.
-     * 注意： 如果使用 错误的用户名/密码 多次登录后，饭否会锁住帐号，必须去fandou.com登录（输入验证码）
+     * 注意： 如果使用 错误的用户名/密码 多次登录后，饭否会锁IP
+     * 返回提示为“尝试次数过多，请去 http://fandou.com 登录“,且需输入验证码
      * 
      * 登录成功返回 200 code
      * 登录失败返回 401 code

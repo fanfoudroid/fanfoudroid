@@ -31,7 +31,7 @@ public class DeleteTask extends AsyncTask<String, Void, TaskResult> {
 			String id = params[0];
 			com.ch_linghu.fanfoudroid.weibo.Status status = null;
 
-			status = HasFavorite.nApi.destroyStatus(id);
+			status = HasFavorite.mApi.destroyStatus(id);
 
 			//对所有相关表的对应消息都进行删除（如果存在的话）
 			Deletable.mDb.destoryStatus(TwitterDbAdapter.TABLE_FAVORITE, status.getId());

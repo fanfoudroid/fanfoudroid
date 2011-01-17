@@ -9,7 +9,7 @@ import com.ch_linghu.fanfoudroid.weibo.Weibo;
 
 public interface HasFavorite {
 	// Global
-	static Weibo nApi = TwitterApplication.nApi;
+	static Weibo mApi = TwitterApplication.mApi;
 	static TwitterDbAdapter mDb = TwitterApplication.mDb; 
 	SharedPreferences getPreferences();
 	ImageManager getImageManager();

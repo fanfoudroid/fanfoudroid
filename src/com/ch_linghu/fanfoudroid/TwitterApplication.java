@@ -18,31 +18,28 @@ public class TwitterApplication extends Application {
   
   public static final String TAG = "TwitterApplication";
   
-  // public ?
   public static ImageManager mImageManager;
   public static TwitterDbAdapter mDb; 
-  public static Weibo nApi; // new API
+  public static Weibo mApi; // new API
   public static Context mContext;
-  private User mUser; // current user
 
   @Override
   public void onCreate() {
     super.onCreate();
 
+    mContext = this.getApplicationContext();
     mImageManager = new ImageManager(this);
+    mApi = new Weibo();
     mDb = new TwitterDbAdapter(this);
     mDb.open();
     
-    
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);        
-
     String username = preferences.getString(Preferences.USERNAME_KEY, "");
     String password = preferences.getString(Preferences.PASSWORD_KEY, "");
     
-    // Init API with username and password
-    nApi = new Weibo(username, password);
-    
-    mContext = this.getApplicationContext();
+    if (Weibo.isValidCredentials(username, password)) {
+        mApi.setCredentials(username, password); // Setup API and HttpClient 
+    }
   }
 
   @Override
@@ -83,13 +80,4 @@ public class TwitterApplication extends Application {
     
     mImageManager.cleanup(keepers);
   }
-  
-  public User getUser() {
-      return mUser;
-  }
-  
-  public void setUser(User user) {
-      mUser = user;
-  }
-    
 }

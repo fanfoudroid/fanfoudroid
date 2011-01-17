@@ -76,8 +76,9 @@
 	    android:gravity="bottom"
 	    android:textSize="13dp"
 	    android:textColor="#888"
-	    android:singleLine="true"
-	    />       
+	    android:autoLink="web"
+	    android:clickable="true"
+	    />
 	</RelativeLayout>
 	
 	<RelativeLayout 

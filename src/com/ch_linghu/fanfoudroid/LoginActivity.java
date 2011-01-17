@@ -16,8 +16,6 @@
 
 package com.ch_linghu.fanfoudroid;
 
-import java.io.IOException;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -32,232 +30,245 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ch_linghu.fanfoudroid.helper.Preferences;
+import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.http.HttpAuthException;
+import com.ch_linghu.fanfoudroid.http.HttpRefusedException;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 import com.google.android.photostream.UserTask;
 
 public class LoginActivity extends Activity {
-  private static final String TAG = "LoginActivity";
+    private static final String TAG = "LoginActivity";
+    private static final String SIS_RUNNING_KEY = "running";
 
-  // Views.
-  private EditText mUsernameEdit;
-  private EditText mPasswordEdit;
-  private TextView mProgressText;
-  private Button mSigninButton;
-  private ProgressDialog dialog;
+    private String mUsername;
+    private String mPassword;
 
-  private View.OnKeyListener enterKeyHandler = new View.OnKeyListener() {
-    public boolean onKey(View v, int keyCode, KeyEvent event) {
-      if (keyCode == KeyEvent.KEYCODE_ENTER
-          || keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
-        if (event.getAction() == KeyEvent.ACTION_UP) {
-          doLogin();
+    // Views.
+    private EditText mUsernameEdit;
+    private EditText mPasswordEdit;
+    private TextView mProgressText;
+    private Button mSigninButton;
+    private ProgressDialog dialog;
+
+    // Preferences.
+    private SharedPreferences mPreferences;
+
+    // Tasks.
+    private UserTask<String, String, Boolean> mLoginTask;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        Log.i(TAG, "onCreate");
+        super.onCreate(savedInstanceState);
+
+        // No Title bar
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        requestWindowFeature(Window.FEATURE_PROGRESS);
+
+        mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        setContentView(R.layout.login);
+
+        // TextView中嵌入HTML链接
+        TextView registerLink = (TextView) findViewById(R.id.register_link);
+        registerLink.setMovementMethod(LinkMovementMethod.getInstance());
+
+        mUsernameEdit = (EditText) findViewById(R.id.username_edit);
+        mPasswordEdit = (EditText) findViewById(R.id.password_edit);
+        // mUsernameEdit.setOnKeyListener(enterKeyHandler);
+        mPasswordEdit.setOnKeyListener(enterKeyHandler);
+
+        mProgressText = (TextView) findViewById(R.id.progress_text);
+        mProgressText.setFreezesText(true);
+        mSigninButton = (Button) findViewById(R.id.signin_button);
+
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(SIS_RUNNING_KEY)) {
+                if (savedInstanceState.getBoolean(SIS_RUNNING_KEY)) {
+                    Log.i(TAG, "Was previously logging in. Restart action.");
+                    doLogin();
+                }
+            }
         }
-        return true;
-      }
-      return false;
+
+        mSigninButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                doLogin();
+            }
+        });
     }
-  };
 
-  // Preferences.
-  private SharedPreferences mPreferences;
-
-  // Tasks.
-  private UserTask<Void, String, Boolean> mLoginTask;
-
-  private static final String SIS_RUNNING_KEY = "running";
-
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-	Log.i(TAG, "onCreate");
-    super.onCreate(savedInstanceState);
-    
-    // No Titlebar
-	requestWindowFeature(Window.FEATURE_NO_TITLE);
-	requestWindowFeature(Window.FEATURE_PROGRESS);
-
-    mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-    setContentView(R.layout.login);
-    
-    // TextView中嵌入HTML链接
-    TextView registerLink = (TextView) findViewById(R.id.register_link);
-    registerLink.setMovementMethod(LinkMovementMethod.getInstance());
-
-    mUsernameEdit = (EditText) findViewById(R.id.username_edit);
-    mPasswordEdit = (EditText) findViewById(R.id.password_edit);
-//    mUsernameEdit.setOnKeyListener(enterKeyHandler);
-    mPasswordEdit.setOnKeyListener(enterKeyHandler);
-
-    mProgressText = (TextView) findViewById(R.id.progress_text);
-    mProgressText.setFreezesText(true);
-
-    mSigninButton = (Button) findViewById(R.id.signin_button);
-
-    if (savedInstanceState != null) {
-      if (savedInstanceState.containsKey(SIS_RUNNING_KEY)) {
-        if (savedInstanceState.getBoolean(SIS_RUNNING_KEY)) {
-          Log.i(TAG, "Was previously logging in. Restart action.");
-          doLogin();
+    @Override
+    protected void onDestroy() {
+        Log.i(TAG, "onDestory");
+        if (mLoginTask != null && mLoginTask.getStatus() == UserTask.Status.RUNNING) {
+            mLoginTask.cancel(true);
         }
-      }
+
+        // dismiss dialog before destroy
+        // to avoid android.view.WindowLeaked Exception
+        if (dialog != null) {
+            dialog.dismiss();
+        }
+        super.onDestroy();
     }
 
-    mSigninButton.setOnClickListener(new View.OnClickListener() {
-      public void onClick(View v) {
-        doLogin();
-      }
-    });
-  }
+    @Override
+    protected void onStop() {
+        Log.i(TAG, "onStop");
+        // TODO Auto-generated method stub
+        super.onStop();
+    }
 
-  @Override
-  protected void onDestroy() {
-	Log.i(TAG, "onDestory");
-    if (mLoginTask != null && mLoginTask.getStatus() == UserTask.Status.RUNNING) {
-      mLoginTask.cancel(true);
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (mLoginTask != null
+                && mLoginTask.getStatus() == UserTask.Status.RUNNING) {
+            // If the task was running, want to start it anew when the
+            // Activity restarts.
+            // This addresses the case where you user changes orientation
+            // in the middle of execution.
+            outState.putBoolean(SIS_RUNNING_KEY, true);
+        }
+    }
+
+    // UI helpers.
+
+    private void updateProgress(String progress) {
+        mProgressText.setText(progress);
+    }
+
+    private void enableLogin() {
+        mUsernameEdit.setEnabled(true);
+        mPasswordEdit.setEnabled(true);
+        mSigninButton.setEnabled(true);
+    }
+
+    private void disableLogin() {
+        mUsernameEdit.setEnabled(false);
+        mPasswordEdit.setEnabled(false);
+        mSigninButton.setEnabled(false);
+    }
+
+    // Login task.
+
+    private void doLogin() {
+        mUsername = mUsernameEdit.getText().toString();
+        mPassword = mPasswordEdit.getText().toString();
+        
+        if (!Utils.isEmpty(mUsername) & !Utils.isEmpty(mPassword) ) {
+            mLoginTask = new LoginTask().execute(mUsername, mPassword);
+        } else {
+            updateProgress(getString(R.string.login_status_null_username_or_password));
+        }
+    }
+
+    private void onLoginBegin() {
+        disableLogin();
+        dialog = ProgressDialog.show(LoginActivity.this, "",
+                getString(R.string.login_status_logging_in), true);
+    }
+
+    private void onLoginSuccess() {
+        dialog.dismiss();
+        updateProgress("");
+        mUsernameEdit.setText("");
+        mPasswordEdit.setText("");
+
+        Log.i(TAG, "Storing credentials.");
+        SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putString(Preferences.USERNAME_KEY, mUsername);
+        editor.putString(Preferences.PASSWORD_KEY, mPassword);
+        editor.commit();
+
+        TwitterApplication.mApi.setCredentials(mUsername, mPassword);
+
+        Intent intent = getIntent().getParcelableExtra(Intent.EXTRA_INTENT);
+        String action = intent.getAction();
+
+        if (intent.getAction() == null || !Intent.ACTION_SEND.equals(action)) {
+            // We only want to reuse the intent if it was photo send.
+            // Or else default to the main activity.
+            intent = new Intent(this, TwitterActivity.class);
+        }
+
+        startActivity(intent);
+        finish();
+    }
+
+    private void onLoginFailure(String reason) {
+        Toast.makeText(this, reason, Toast.LENGTH_SHORT).show();
+        dialog.dismiss();
+        enableLogin();
+    }
+
+    private class LoginTask extends UserTask<String, String, Boolean> {
+        
+        private String msg = getString(R.string.login_status_failure);
+        
+        @Override
+        public void onPreExecute() {
+            onLoginBegin();
+        }
+
+        @Override
+        public Boolean doInBackground(String... params) {
+            publishProgress(getString(R.string.login_status_logging_in) + "...");
+
+            try {
+                TwitterApplication.mApi.login(params[0], params[1]);
+            } catch (WeiboException e) {
+                Log.e(TAG, e.getMessage(), e);
+
+                Throwable cause = e.getCause(); // Maybe null
+                if (cause instanceof HttpAuthException) {
+                    // Invalid userName/password
+                    msg = ((HttpRefusedException) cause).getError().getMessage();
+                } else {
+                    msg = getString(R.string.login_status_network_or_connection_error);
+                }
+                publishProgress(msg);
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public void onProgressUpdate(String... progress) {
+            updateProgress(progress[0]);
+        }
+
+        @Override
+        public void onPostExecute(Boolean result) {
+            if (isCancelled()) {
+                return;
+            }
+
+            if (result) {
+                onLoginSuccess();
+            } else {
+                onLoginFailure(msg);
+            }
+        }
     }
     
-	// dismiss dialog before destroy 
-	// to avoid android.view.WindowLeaked Exception
-	if (dialog != null){
-		dialog.dismiss();
-	}
-    super.onDestroy();
-  }
-
-  @Override
-  protected void onStop() {
-	Log.i(TAG, "onStop");
-	// TODO Auto-generated method stub
-	super.onStop();
-  }
-
-@Override
-  protected void onSaveInstanceState(Bundle outState) {
-    super.onSaveInstanceState(outState);
-
-    if (mLoginTask != null && mLoginTask.getStatus() == UserTask.Status.RUNNING) {
-      // If the task was running, want to start it anew when the
-      // Activity restarts.
-      // This addresses the case where you user changes orientation
-      // in the middle of execution.
-      outState.putBoolean(SIS_RUNNING_KEY, true);
-    }
-  }
-
-  // UI helpers.
-
-  private void updateProgress(String progress) {
-    mProgressText.setText(progress);
-  }
-
-  private void enableLogin() {
-    mUsernameEdit.setEnabled(true);
-    mPasswordEdit.setEnabled(true);
-    mSigninButton.setEnabled(true);
-  }
-
-  private void disableLogin() {
-    mUsernameEdit.setEnabled(false);
-    mPasswordEdit.setEnabled(false);
-    mSigninButton.setEnabled(false);
-  }
-
-  // Login task.
-
-  private void doLogin() {
-    mLoginTask = new LoginTask().execute();
-  }
-
-  private void onLoginBegin() {
-    disableLogin();
-    dialog = ProgressDialog.show(LoginActivity.this, "", 
-            getString(R.string.login_status_logging_in), true);
-  }
-
-  private void onLoginSuccess() {
-    dialog.dismiss();
-    updateProgress("");
-
-    String username = mUsernameEdit.getText().toString();
-    String password = mPasswordEdit.getText().toString();
-    mUsernameEdit.setText("");
-    mPasswordEdit.setText("");
-
-    Log.i(TAG, "Storing credentials.");
-    SharedPreferences.Editor editor = mPreferences.edit();
-    editor.putString(Preferences.USERNAME_KEY, username);
-    editor.putString(Preferences.PASSWORD_KEY, password);
-    editor.commit();
-
-    try {
-		TwitterApplication.nApi.login(username, password);
-	} catch (WeiboException e) {
-		// TODO catch if fail, if type time too much
-	}
-
-    Intent intent = getIntent().getParcelableExtra(Intent.EXTRA_INTENT);
-    String action = intent.getAction();
-
-    if (intent.getAction() == null
-        || !Intent.ACTION_SEND.equals(action)) {
-      // We only want to reuse the intent if it was photo send.
-      // Or else default to the main activity.
-      intent = new Intent(this, TwitterActivity.class);
-    }
-
-    startActivity(intent);
-    finish();
-  }
-
-  private void onLoginFailure() {
-    dialog.dismiss();
-    enableLogin();
-  }
-
-  private class LoginTask extends UserTask<Void, String, Boolean> {
-    @Override
-    public void onPreExecute() {
-      onLoginBegin();
-    }
-
-    @Override
-    public Boolean doInBackground(Void... params) {
-      String username = mUsernameEdit.getText().toString();
-      String password = mPasswordEdit.getText().toString();
-
-      publishProgress(getString(R.string.login_status_logging_in) + "...");
-
-      try {
-		TwitterApplication.nApi.login(username, password);   
-      } catch (WeiboException e) {
-        Log.e(TAG, e.getMessage(), e);
-        //TODO: 捕捉statusCode，是密码错误，还是帐号被锁
-        publishProgress(getString(R.string.login_status_network_or_connection_error));
-        return false;
-      }
-
-      return true;
-    }
-
-    @Override
-    public void onProgressUpdate(String... progress) {
-      updateProgress(progress[0]);
-    }
-
-    @Override
-    public void onPostExecute(Boolean result) {
-      if (isCancelled()) {
-        return;
-      }
-
-      if (result) {
-        onLoginSuccess();
-      } else {
-        onLoginFailure();
-      }
-    }
-  }
+    private View.OnKeyListener enterKeyHandler = new View.OnKeyListener() {
+        public boolean onKey(View v, int keyCode, KeyEvent event) {
+            if (keyCode == KeyEvent.KEYCODE_ENTER
+                    || keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
+                if (event.getAction() == KeyEvent.ACTION_UP) {
+                    doLogin();
+                }
+                return true;
+            }
+            return false;
+        }
+    };
 
 }
