@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -40,6 +41,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -51,11 +53,14 @@ import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
 import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
 import com.ch_linghu.fanfoudroid.ui.module.TweetEdit;
-import com.ch_linghu.fanfoudroid.weibo.Weibo;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 import com.google.android.photostream.UserTask;
 
 public class WriteActivity extends WithHeaderActivity {
+    
+    //FIXME: for debug, delete me
+    private long startTime = -1;
+    private long endTime = -1;
 
 	public static final String NEW_TWEET_ACTION = "com.ch_linghu.fanfoudroid.NEW";
 	public static final String REPOST_TWEET_ACTION = "com.ch_linghu.fanfoudroid.REPOST";
@@ -72,8 +77,8 @@ public class WriteActivity extends WithHeaderActivity {
 	private EditText mTweetEditText;
 	private TextView mProgressText;
 	private Button mSendButton;
-	private Button backgroundButton;
 	private Button chooseImagesButton;
+	private ProgressDialog dialog;
 
 	// Picture
 	private boolean withPic = false;
@@ -98,8 +103,6 @@ public class WriteActivity extends WithHeaderActivity {
 		builder.setTitle(getString(R.string.write_label_insert_picture));
 		builder.setItems(items, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int item) {
-				// Toast.makeText(getApplicationContext(), items[item],
-				// Toast.LENGTH_SHORT).show();
 				switch (item) {
 				case 0:
 					openImageCaptureMenu();
@@ -242,16 +245,6 @@ public class WriteActivity extends WithHeaderActivity {
 			}
 		});
 
-		// 后台发送
-		backgroundButton = (Button) findViewById(R.id.send_in_backgroud_button);
-		backgroundButton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				Intent intent = new Intent();
-				intent.setClass(WriteActivity.this, TwitterActivity.class);
-				startActivity(intent);
-			}
-		});
-		
 		// With picture
 		mPreview = (ImageView) findViewById(R.id.preview);
 		if (Intent.ACTION_SEND.equals(intent.getAction()) && extras != null) {
@@ -432,6 +425,7 @@ public class WriteActivity extends WithHeaderActivity {
 	};
 
 	private void doSend() {
+	    startTime =  System.currentTimeMillis() ;
 		Log.i(TAG, String.format("doSend, reply_id=%s", _reply_id));
 		
 		if (mSendTask != null
@@ -483,49 +477,52 @@ public class WriteActivity extends WithHeaderActivity {
 			try {
 				String status = mTweetEdit.getText().toString();
 			    
-			    if (params.length > 0) {
-			        Log.i(TAG, "Send Status. Mode : " + params[0]);
-			        
-			        // Send status in different way
-			        switch (params[0]) {
-			        
-			        case TYPE_REPLY:
-			        	//增加容错性，即使reply_id为空依然允许发送
-			            if (null ==  WriteActivity.this._reply_id) {
-                            Log.e(TAG, "Cann't send status in REPLY mode, reply_id is null");
-                        }
-                        getApi().updateStatus(status, WriteActivity.this._reply_id);
-			            break;
-			            
-			        case TYPE_REPOST:
-			        	//增加容错性，即使repost_id为空依然允许发送
-			            if (null ==  WriteActivity.this._repost_id) {
-			                Log.e(TAG, "Cann't send status in REPOST mode, repost_id is null");
-			            }
-		            	getApi().repost(status, WriteActivity.this._repost_id);
-			            break;
-			            
-			        case TYPE_PHOTO:
-			            if (null != mFile) {
-			                // Compress image
-			                try {
-			                    mFile = getImageManager().compressImage(mFile, 90);
-			                } catch (IOException ioe) {
-			                    Log.e(TAG, "Cann't compress images.");
-			                }
-			                getApi().updateStatus(status, mFile); 
-			                
-			            } else {
-			                Log.e(TAG, "Cann't send status in PICTURE mode, photo is null");
-			            }
-			            break;
-			            
-			        case TYPE_NORMAL:
-			        default:
-			        	getApi().updateStatus(status); // just send a status
-			            break;
-			        }
+			    if (0 == params.length) {
+			        Log.e(TAG, "Send TYPE can't be null");
+			        return SendResult.FAILURE;
 			    }
+		    
+		        Log.i(TAG, "Send Status. Mode : " + params[0]);
+		        
+		        // Send status in different way
+		        switch (params[0]) {
+		        
+		        case TYPE_REPLY:
+		        	//增加容错性，即使reply_id为空依然允许发送
+		            if (null ==  WriteActivity.this._reply_id) {
+                        Log.e(TAG, "Cann't send status in REPLY mode, reply_id is null");
+                    }
+                    getApi().updateStatus(status, WriteActivity.this._reply_id);
+		            break;
+		            
+		        case TYPE_REPOST:
+		        	//增加容错性，即使repost_id为空依然允许发送
+		            if (null ==  WriteActivity.this._repost_id) {
+		                Log.e(TAG, "Cann't send status in REPOST mode, repost_id is null");
+		            }
+	            	getApi().repost(status, WriteActivity.this._repost_id);
+		            break;
+		            
+		        case TYPE_PHOTO:
+		            if (null != mFile) {
+		                // Compress image
+		                try {
+		                    mFile = getImageManager().compressImage(mFile, 90);
+		                } catch (IOException ioe) {
+		                    Log.e(TAG, "Cann't compress images.");
+		                }
+		                getApi().updateStatus(status, mFile); 
+		                
+		            } else {
+		                Log.e(TAG, "Cann't send status in PICTURE mode, photo is null");
+		            }
+		            break;
+		            
+		        case TYPE_NORMAL:
+		        default:
+		        	getApi().updateStatus(status); // just send a status
+		            break;
+		        }
 			} catch (WeiboException e) {
 				Log.e(TAG, e.getMessage(), e);
 				
@@ -540,6 +537,9 @@ public class WriteActivity extends WithHeaderActivity {
 
 		@Override
 		public void onPostExecute(SendResult result) {
+		    endTime = System.currentTimeMillis();
+	        Log.d("LDS", "Sended a status in " + (endTime - startTime));
+	        
 			if (isCancelled()) {
 				// Canceled doesn't really mean "canceled" in this task.
 				// We want the request to complete, but don't want to update the
@@ -561,16 +561,18 @@ public class WriteActivity extends WithHeaderActivity {
 
 	private void onSendBegin() {
 		disableEntry();
+		dialog = ProgressDialog.show(WriteActivity.this, "", 
+		        getString(R.string.page_status_updating), true);
+	    dialog.setCancelable(false);
 		updateProgress(getString(R.string.page_status_updating));
-		backgroundButton.setVisibility(View.VISIBLE);
 	}
 
 	private void onSendSuccess() {
-		mTweetEdit.setText("");
+	    dialog.setMessage(getString(R.string.page_status_update_success));
+	    dialog.dismiss();
 		_reply_id = null;
 		_repost_id = null;
 		updateProgress(getString(R.string.page_status_update_success));
-		backgroundButton.setVisibility(View.INVISIBLE);
 		enableEntry();
 		// doRetrieve();
 		// draw();
@@ -585,9 +587,16 @@ public class WriteActivity extends WithHeaderActivity {
 		
 		//发送成功就自动关闭界面
 		finish();
+		
+		// 关闭软件盘
+		InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE); 
+		imm.hideSoftInputFromWindow(mTweetEdit.getEditText().getWindowToken(), 0); 
+		
 	}
 
 	private void onSendFailure() {
+	    dialog.setMessage(getString(R.string.page_status_unable_to_update));
+	    dialog.dismiss();
 		updateProgress(getString(R.string.page_status_unable_to_update));
 		enableEntry();
 	}

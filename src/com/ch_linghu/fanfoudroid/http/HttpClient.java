@@ -188,7 +188,8 @@ public class HttpClient {
     public Response httpRequest(String url, ArrayList<BasicNameValuePair> postParams,
             File file, boolean authenticated, String httpMethod) throws WeiboException {
         Log.i(TAG, "Sending " + httpMethod + " request to " + url);
-
+        long startTime = System.currentTimeMillis();
+        
         URI uri = createURI(url);
 
         HttpResponse response = null;
@@ -210,15 +211,22 @@ public class HttpClient {
             } catch (IOException ioe) {
                 throw new WeiboException(ioe.getMessage(), ioe);
             }
-        }// end for synchronized
+        }// end of synchronized
 
         if (response != null) {
             int statusCode = response.getStatusLine().getStatusCode();
             // It will throw a weiboException while status code is not 200
             HandleResponseStatusCode(statusCode, res);
             logResponseForDebug(method, response, statusCode);
+        } else {
+            Log.e(TAG, "response is null");
         }
+        
+        long endTime = System.currentTimeMillis();
+        Log.d("LDS", "Http request in " + (endTime - startTime));
+        
         return res;
+        
     }
     
     /**
