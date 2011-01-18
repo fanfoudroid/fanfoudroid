@@ -185,83 +185,60 @@ public class HttpClient {
 		 return httpRequest(url, postParams, null, authenticated, httpMethod);
 	}
 	 
-    public Response httpRequest(String url, ArrayList<BasicNameValuePair> postParams, File file,
-            boolean authenticated, String httpMethod) 
-    			throws WeiboException {
-		Log.i(TAG, "Sending " + httpMethod + " request to " + url);
+    public Response httpRequest(String url, ArrayList<BasicNameValuePair> postParams,
+            File file, boolean authenticated, String httpMethod) throws WeiboException {
+        Log.i(TAG, "Sending " + httpMethod + " request to " + url);
 
-		URI uri;
-		try {
-			uri = new URI(url);
-		} catch (URISyntaxException e) {
-			Log.e(TAG, e.getMessage(), e);
-			throw new WeiboException("Invalid URL.");
-		}
+        URI uri = createURI(url);
 
-		HttpUriRequest method;
-		
-		log("----------------- HTTP Request Start ----------------------");
-		log("[Request]");
+        HttpResponse response = null;
+        Response res = null;
+        HttpUriRequest method = null;
 
-		//避免并发调用
-		HttpResponse response = null;
-		Response res = null;
-		synchronized(mClient){ 
-			// Handle different request method, such as POST, GET, DELETE
-			if (httpMethod.equalsIgnoreCase(HttpPost.METHOD_NAME)) {
-			    // POST METHOD
-			    
-				HttpPost post = new HttpPost(uri);
-				// See this: http://groups.google.com/group/twitter-development-talk/browse_thread/thread/e178b1d3d63d8e3b
-				post.getParams().setBooleanParameter("http.protocol.expect-continue", false);
-				
-				try {
-				    HttpEntity entity = null;
-					if (null != file) {
-					    entity = createMultipartEntity("photo", file, postParams);
-						post.setEntity(entity);
-					} else if (null != postParams) {
-						entity = new UrlEncodedFormEntity(postParams, HTTP.UTF_8);
-					}
-					post.setEntity(entity);
-				} catch (IOException ioe) {
-					throw new WeiboException(ioe.getMessage(), ioe);
-				}
-				
-				logPostForDebug(postParams, post, file);
-				method = post;
-			} else if (httpMethod.equalsIgnoreCase(HttpDelete.METHOD_NAME)) {
-				method = new HttpDelete(uri);
-			} else {
-				method = new HttpGet(uri);
-			}
-	
-			// Setup the HTTP connection
-			HttpConnectionParams.setConnectionTimeout(method.getParams(), CONNECTION_TIMEOUT_MS);
-			HttpConnectionParams.setSoTimeout(method.getParams(), SOCKET_TIMEOUT_MS);
-			mClient.setHttpRequestRetryHandler(requestRetryHandler);
-			method.addHeader("Accept-Encoding", "gzip, deflate");
-			
-			// Execute Request
-			try {
-				response = mClient.execute(method);
-				res = new Response(response);
-			} catch (ClientProtocolException e) {
-				Log.e(TAG, e.getMessage(), e);
-	            throw new WeiboException(e.getMessage(), e);
-			} catch (IOException ioe) {
-	            throw new WeiboException(ioe.getMessage(), ioe);
-			}
-		}
+        synchronized (mClient) {
+            // Setup the HTTP Method and ConnectionParams
+            method = createMethod(httpMethod, uri, file, postParams);
+            SetupHTTPConnectionParams(method);
 
-		if (response != null){
-			int statusCode = response.getStatusLine().getStatusCode();
-			// It will throw a weiboException while status code is not 200
-			HandleResponseStatusCode(statusCode, res);
-			logResponseForDebug(method, response, statusCode);
-		}
+            // Execute Request
+            try {
+                response = mClient.execute(method);
+                res = new Response(response);
+            } catch (ClientProtocolException e) {
+                Log.e(TAG, e.getMessage(), e);
+                throw new WeiboException(e.getMessage(), e);
+            } catch (IOException ioe) {
+                throw new WeiboException(ioe.getMessage(), ioe);
+            }
+        }// end for synchronized
+
+        if (response != null) {
+            int statusCode = response.getStatusLine().getStatusCode();
+            // It will throw a weiboException while status code is not 200
+            HandleResponseStatusCode(statusCode, res);
+            logResponseForDebug(method, response, statusCode);
+        }
         return res;
-	}
+    }
+    
+    /**
+     * CreateURI from URL string
+     * @param url
+     * @return
+     * @throws WeiboException
+     */
+    private URI createURI(String url) throws WeiboException {
+        URI uri;
+
+        try {
+            uri = new URI(url);
+        } catch (URISyntaxException e) {
+            Log.e(TAG, e.getMessage(), e);
+            throw new WeiboException("Invalid URL.");
+        }
+
+        return uri;
+    }
     
     /**
      * 创建可带一个File的MultipartEntity
@@ -272,16 +249,78 @@ public class HttpClient {
      * @throws UnsupportedEncodingException
      */
     private MultipartEntity createMultipartEntity(String filename, File file,
-            ArrayList<BasicNameValuePair> postParams) throws UnsupportedEncodingException {
+            ArrayList<BasicNameValuePair> postParams)
+            throws UnsupportedEncodingException {
         MultipartEntity entity = new MultipartEntity();
         // Don't try this. Server does not appear to support chunking.
         // entity.addPart("media", new InputStreamBody(imageStream, "media"));
-        
-        entity.addPart(filename, new FileBody(file)); 
+
+        entity.addPart(filename, new FileBody(file));
         for (BasicNameValuePair param : postParams) {
             entity.addPart(param.getName(), new StringBody(param.getValue()));
         }
         return entity;
+    }
+
+    /**
+     * Setup HTTPConncetionParams
+     * 
+     * @param method
+     */
+    private void SetupHTTPConnectionParams(HttpUriRequest method) {
+        HttpConnectionParams.setConnectionTimeout(method.getParams(),
+                CONNECTION_TIMEOUT_MS);
+        HttpConnectionParams
+                .setSoTimeout(method.getParams(), SOCKET_TIMEOUT_MS);
+        mClient.setHttpRequestRetryHandler(requestRetryHandler);
+        method.addHeader("Accept-Encoding", "gzip, deflate");
+    }
+    
+    /**
+     * Create request method, such as POST, GET, DELETE
+     * @param httpMethod "GET","POST","DELETE"
+     * @param uri
+     * @param file 可为空
+     * @param postParams
+     * @return
+     * @throws WeiboException
+     */
+    private HttpUriRequest createMethod(String httpMethod, URI uri, File file,
+            ArrayList<BasicNameValuePair> postParams) throws WeiboException {
+        HttpUriRequest method;
+        
+        log("----------------- HTTP Request Start ----------------------");
+        log("[Request]");
+
+        if (httpMethod.equalsIgnoreCase(HttpPost.METHOD_NAME)) {
+            // POST METHOD
+            
+            HttpPost post = new HttpPost(uri);
+            // See this: http://groups.google.com/group/twitter-development-talk/browse_thread/thread/e178b1d3d63d8e3b
+            post.getParams().setBooleanParameter("http.protocol.expect-continue", false);
+            
+            try {
+                HttpEntity entity = null;
+                if (null != file) {
+                    entity = createMultipartEntity("photo", file, postParams);
+                    post.setEntity(entity);
+                } else if (null != postParams) {
+                    entity = new UrlEncodedFormEntity(postParams, HTTP.UTF_8);
+                }
+                post.setEntity(entity);
+            } catch (IOException ioe) {
+                throw new WeiboException(ioe.getMessage(), ioe);
+            }
+            
+            logPostForDebug(postParams, post, file);
+            method = post;
+        } else if (httpMethod.equalsIgnoreCase(HttpDelete.METHOD_NAME)) {
+            method = new HttpDelete(uri);
+        } else {
+            method = new HttpGet(uri);
+        }
+        
+        return method;
     }
     
     /**
@@ -323,16 +362,16 @@ public class HttpClient {
         }
         return statusCode + ":" + cause;
     }
-    
-    public boolean isAuthenticationEnabled(){
+
+    public boolean isAuthenticationEnabled() {
         return isAuthenticationEnabled;
     }
 
-	public static void log(String msg){
-		if (DEBUG) {
-			Log.d(TAG,msg);
-		}
-	}
+    public static void log(String msg) {
+        if (DEBUG) {
+            Log.d(TAG, msg);
+        }
+    }
 	
 	/**
 	 * Handle Status code, it will throw weiboException while status code is not 200
@@ -379,37 +418,38 @@ public class HttpClient {
         }
 	}
 	
-	// ignore me, it's only for debug
-	private void logPostForDebug(ArrayList<BasicNameValuePair> postParams,
-	        HttpPost post, File file) throws WeiboException {
-	 // log post data
+    // ignore me, it's only for debug
+    private void logPostForDebug(ArrayList<BasicNameValuePair> postParams,
+            HttpPost post, File file) throws WeiboException {
+        // log post data
         if (DEBUG) {
             if (postParams != null) {
-                
+
                 log("POST Params : " + postParams.toString());
-                
+
                 try {
                     HttpEntity entity = post.getEntity();
                     if (null == file) {
-                        BufferedReader in = new BufferedReader(new InputStreamReader(
-                                entity.getContent()));
+                        BufferedReader in = new BufferedReader(
+                                new InputStreamReader(entity.getContent()));
                         String line;
                         while ((line = in.readLine()) != null) {
                             log("POST Entity : " + line);
                         }
                     } else {
-                        log("POST File : " + file.getParent() + "/" + file.getName()) ;
+                        log("POST File : " + file.getParent() + "/"
+                                + file.getName());
                     }
                 } catch (IOException ioe) {
                     throw new WeiboException(ioe.getMessage(), ioe);
                 }
-            }  
-            if (file != null) {
-                
             }
-            
+            if (file != null) {
+
+            }
+
         }
-	}
+    }
 	
 	// ignore me, it's only for debug
 	private void logResponseForDebug(HttpUriRequest method, HttpResponse response, int statusCode) {
@@ -447,7 +487,8 @@ public class HttpClient {
 		}
 	}
 	
-	public static String encodeParameters(ArrayList<BasicNameValuePair> params) throws WeiboException {
+    public static String encodeParameters(ArrayList<BasicNameValuePair> params)
+            throws WeiboException {
         StringBuffer buf = new StringBuffer();
         for (int j = 0; j < params.size(); j++) {
             if (j != 0) { buf.append("&"); }
@@ -455,40 +496,40 @@ public class HttpClient {
                 buf.append(URLEncoder.encode(params.get(j).getName(), "UTF-8"))
                         .append("=").append(URLEncoder.encode(params.get(j).getValue(), "UTF-8"));
             } catch (java.io.UnsupportedEncodingException neverHappen) {
-            	throw new WeiboException(neverHappen.getMessage(), neverHappen);
+                throw new WeiboException(neverHappen.getMessage(), neverHappen);
             }
         }
         return buf.toString();
-	}
-	
-	
-	// 异常自动恢复处理, 使用HttpRequestRetryHandler接口实现请求的异常恢复
-	private static HttpRequestRetryHandler requestRetryHandler = new HttpRequestRetryHandler() {
-	   // 自定义的恢复策略
-	   public boolean retryRequest(IOException exception, int executionCount, HttpContext context) {
-	    // 设置恢复策略，在发生异常时候将自动重试N次
-	    if (executionCount >= RETRIED_TIME) {
-	     // Do not retry if over max retry count
-	     return false;
-	    }
-	    if (exception instanceof NoHttpResponseException) {
-	     // Retry if the server dropped connection on us
-	     return true;
-	    }
-	    if (exception instanceof SSLHandshakeException) {
-	     // Do not retry on SSL handshake exception
-	     return false;
-	    }
-	    HttpRequest request = (HttpRequest) context.getAttribute(ExecutionContext.HTTP_REQUEST);
-	    boolean idempotent = (request instanceof HttpEntityEnclosingRequest);
-	    if (!idempotent) {
-	     // Retry if the request is considered idempotent
-	     return true;
-	    }
-	    return false;
-	   }
-	};
-	
+    }
+
+    // 异常自动恢复处理, 使用HttpRequestRetryHandler接口实现请求的异常恢复
+    private static HttpRequestRetryHandler requestRetryHandler = new HttpRequestRetryHandler() {
+        // 自定义的恢复策略
+        public boolean retryRequest(IOException exception, int executionCount,
+                HttpContext context) {
+            // 设置恢复策略，在发生异常时候将自动重试N次
+            if (executionCount >= RETRIED_TIME) {
+                // Do not retry if over max retry count
+                return false;
+            }
+            if (exception instanceof NoHttpResponseException) {
+                // Retry if the server dropped connection on us
+                return true;
+            }
+            if (exception instanceof SSLHandshakeException) {
+                // Do not retry on SSL handshake exception
+                return false;
+            }
+            HttpRequest request = (HttpRequest) context
+                    .getAttribute(ExecutionContext.HTTP_REQUEST);
+            boolean idempotent = (request instanceof HttpEntityEnclosingRequest);
+            if (!idempotent) {
+                // Retry if the request is considered idempotent
+                return true;
+            }
+            return false;
+        }
+    };
 
 
 }

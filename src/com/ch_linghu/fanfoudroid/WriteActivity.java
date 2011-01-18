@@ -488,6 +488,7 @@ public class WriteActivity extends WithHeaderActivity {
 			        
 			        // Send status in different way
 			        switch (params[0]) {
+			        
 			        case TYPE_REPLY:
 			        	//增加容错性，即使reply_id为空依然允许发送
 			            if (null ==  WriteActivity.this._reply_id) {
@@ -495,6 +496,7 @@ public class WriteActivity extends WithHeaderActivity {
                         }
                         getApi().updateStatus(status, WriteActivity.this._reply_id);
 			            break;
+			            
 			        case TYPE_REPOST:
 			        	//增加容错性，即使repost_id为空依然允许发送
 			            if (null ==  WriteActivity.this._repost_id) {
@@ -502,13 +504,22 @@ public class WriteActivity extends WithHeaderActivity {
 			            }
 		            	getApi().repost(status, WriteActivity.this._repost_id);
 			            break;
+			            
 			        case TYPE_PHOTO:
 			            if (null != mFile) {
-			            	getApi().updateStatus(status, mFile);
+			                // Compress image
+			                try {
+			                    mFile = getImageManager().compressImage(mFile, 90);
+			                } catch (IOException ioe) {
+			                    Log.e(TAG, "Cann't compress images.");
+			                }
+			                getApi().updateStatus(status, mFile); 
+			                
 			            } else {
 			                Log.e(TAG, "Cann't send status in PICTURE mode, photo is null");
 			            }
 			            break;
+			            
 			        case TYPE_NORMAL:
 			        default:
 			        	getApi().updateStatus(status); // just send a status
