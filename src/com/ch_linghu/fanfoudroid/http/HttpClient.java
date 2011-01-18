@@ -203,61 +203,63 @@ public class HttpClient {
 		log("----------------- HTTP Request Start ----------------------");
 		log("[Request]");
 
-		// Handle different request method, such as POST, GET, DELETE
-		if (httpMethod.equalsIgnoreCase(HttpPost.METHOD_NAME)) {
-		    // POST METHOD
-		    
-			HttpPost post = new HttpPost(uri);
-			// See this: http://groups.google.com/group/twitter-development-talk/browse_thread/thread/e178b1d3d63d8e3b
-			post.getParams().setBooleanParameter("http.protocol.expect-continue", false);
-			
-			try {
-			    HttpEntity entity = null;
-				if (null != file) {
-				    entity = createMultipartEntity("photo", file, postParams);
-					post.setEntity(entity);
-				} else if (null != postParams) {
-					entity = new UrlEncodedFormEntity(postParams, HTTP.UTF_8);
-				}
-				post.setEntity(entity);
-			} catch (IOException ioe) {
-				throw new WeiboException(ioe.getMessage(), ioe);
-			}
-			
-			logPostForDebug(postParams, post, file);
-			method = post;
-		} else if (httpMethod.equalsIgnoreCase(HttpDelete.METHOD_NAME)) {
-			method = new HttpDelete(uri);
-		} else {
-			method = new HttpGet(uri);
-		}
-
-		// Setup the HTTP connection
-		HttpConnectionParams.setConnectionTimeout(method.getParams(), CONNECTION_TIMEOUT_MS);
-		HttpConnectionParams.setSoTimeout(method.getParams(), SOCKET_TIMEOUT_MS);
-		mClient.setHttpRequestRetryHandler(requestRetryHandler);
-		method.addHeader("Accept-Encoding", "gzip, deflate");
-
+		//避免并发调用
 		HttpResponse response = null;
 		Response res = null;
-		
-		// Execute Request
-		try {
-			response = mClient.execute(method);
-			res = new Response(response);
-		} catch (ClientProtocolException e) {
-			Log.e(TAG, e.getMessage(), e);
-            throw new WeiboException(e.getMessage(), e);
-		} catch (IOException ioe) {
-            throw new WeiboException(ioe.getMessage(), ioe);
+		synchronized(mClient){ 
+			// Handle different request method, such as POST, GET, DELETE
+			if (httpMethod.equalsIgnoreCase(HttpPost.METHOD_NAME)) {
+			    // POST METHOD
+			    
+				HttpPost post = new HttpPost(uri);
+				// See this: http://groups.google.com/group/twitter-development-talk/browse_thread/thread/e178b1d3d63d8e3b
+				post.getParams().setBooleanParameter("http.protocol.expect-continue", false);
+				
+				try {
+				    HttpEntity entity = null;
+					if (null != file) {
+					    entity = createMultipartEntity("photo", file, postParams);
+						post.setEntity(entity);
+					} else if (null != postParams) {
+						entity = new UrlEncodedFormEntity(postParams, HTTP.UTF_8);
+					}
+					post.setEntity(entity);
+				} catch (IOException ioe) {
+					throw new WeiboException(ioe.getMessage(), ioe);
+				}
+				
+				logPostForDebug(postParams, post, file);
+				method = post;
+			} else if (httpMethod.equalsIgnoreCase(HttpDelete.METHOD_NAME)) {
+				method = new HttpDelete(uri);
+			} else {
+				method = new HttpGet(uri);
+			}
+	
+			// Setup the HTTP connection
+			HttpConnectionParams.setConnectionTimeout(method.getParams(), CONNECTION_TIMEOUT_MS);
+			HttpConnectionParams.setSoTimeout(method.getParams(), SOCKET_TIMEOUT_MS);
+			mClient.setHttpRequestRetryHandler(requestRetryHandler);
+			method.addHeader("Accept-Encoding", "gzip, deflate");
+			
+			// Execute Request
+			try {
+				response = mClient.execute(method);
+				res = new Response(response);
+			} catch (ClientProtocolException e) {
+				Log.e(TAG, e.getMessage(), e);
+	            throw new WeiboException(e.getMessage(), e);
+			} catch (IOException ioe) {
+	            throw new WeiboException(ioe.getMessage(), ioe);
+			}
 		}
 
-		
-		int statusCode = response.getStatusLine().getStatusCode();
-		// It will throw a weiboException while status code is not 200
-		HandleResponseStatusCode(statusCode, res);
-		logResponseForDebug(method, response, statusCode);
-		
+		if (response != null){
+			int statusCode = response.getStatusLine().getStatusCode();
+			// It will throw a weiboException while status code is not 200
+			HandleResponseStatusCode(statusCode, res);
+			logResponseForDebug(method, response, statusCode);
+		}
         return res;
 	}
     

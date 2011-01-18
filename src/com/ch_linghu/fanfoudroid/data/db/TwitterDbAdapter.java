@@ -512,6 +512,7 @@ public class TwitterDbAdapter {
 		  tweet.inReplyToStatusId = cursor.getString(cursor.getColumnIndex(KEY_IN_REPLY_TO_STATUS_ID));
 		  
 		  tweet.prevId = cursor.getString(cursor.getColumnIndex(KEY_PREV_ID));
+		  cursor.close();
 
 		  return tweet;
 	  }else{
@@ -588,7 +589,9 @@ public class TwitterDbAdapter {
               + " WHERE " + KEY_ID + " = ?",
               new String[]{id});
 	  if (cursor != null && cursor.moveToFirst()){
-		  return cursor.getString(0);
+		  String result = cursor.getString(0);
+		  cursor.close();
+		  return result;
 	  }else{
 		  return "";
 	  }
