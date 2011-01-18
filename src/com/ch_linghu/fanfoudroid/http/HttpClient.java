@@ -190,53 +190,11 @@ public class HttpClient {
     			throws WeiboException {
 		Log.i(TAG, "Sending " + httpMethod + " request to " + url);
 
-		URI uri;
-		try {
-			uri = new URI(url);
-		} catch (URISyntaxException e) {
-			Log.e(TAG, e.getMessage(), e);
-			throw new WeiboException("Invalid URL.");
-		}
-
-		HttpUriRequest method;
+		URI uri = createURI(url);
 		
-		log("----------------- HTTP Request Start ----------------------");
-		log("[Request]");
-
-		// Handle different request method, such as POST, GET, DELETE
-		if (httpMethod.equalsIgnoreCase(HttpPost.METHOD_NAME)) {
-		    // POST METHOD
-		    
-			HttpPost post = new HttpPost(uri);
-			// See this: http://groups.google.com/group/twitter-development-talk/browse_thread/thread/e178b1d3d63d8e3b
-			post.getParams().setBooleanParameter("http.protocol.expect-continue", false);
-			
-			try {
-			    HttpEntity entity = null;
-				if (null != file) {
-				    entity = createMultipartEntity("photo", file, postParams);
-					post.setEntity(entity);
-				} else if (null != postParams) {
-					entity = new UrlEncodedFormEntity(postParams, HTTP.UTF_8);
-				}
-				post.setEntity(entity);
-			} catch (IOException ioe) {
-				throw new WeiboException(ioe.getMessage(), ioe);
-			}
-			
-			logPostForDebug(postParams, post, file);
-			method = post;
-		} else if (httpMethod.equalsIgnoreCase(HttpDelete.METHOD_NAME)) {
-			method = new HttpDelete(uri);
-		} else {
-			method = new HttpGet(uri);
-		}
-
-		// Setup the HTTP connection
-		HttpConnectionParams.setConnectionTimeout(method.getParams(), CONNECTION_TIMEOUT_MS);
-		HttpConnectionParams.setSoTimeout(method.getParams(), SOCKET_TIMEOUT_MS);
-		mClient.setHttpRequestRetryHandler(requestRetryHandler);
-		method.addHeader("Accept-Encoding", "gzip, deflate");
+		// Setup the HTTP Method and ConnectionParams
+		HttpUriRequest method = createMethod(httpMethod, uri, file, postParams);
+		SetupHTTPConnectionParams(method);
 
 		HttpResponse response = null;
 		Response res = null;
@@ -262,6 +220,25 @@ public class HttpClient {
 	}
     
     /**
+     * CreateURI from URL string
+     * @param url
+     * @return
+     * @throws WeiboException
+     */
+    private URI createURI(String url) throws WeiboException {
+        URI uri;
+        
+        try {
+            uri = new URI(url);
+        } catch (URISyntaxException e) {
+            Log.e(TAG, e.getMessage(), e);
+            throw new WeiboException("Invalid URL.");
+        }
+        
+        return uri;
+    }
+    
+    /**
      * 创建可带一个File的MultipartEntity
      * @param filename 文件名
      * @param file 文件
@@ -280,6 +257,64 @@ public class HttpClient {
             entity.addPart(param.getName(), new StringBody(param.getValue()));
         }
         return entity;
+    }
+    
+    /**
+     * Setup HTTPConncetionParams
+     * @param method
+     */
+    private void SetupHTTPConnectionParams(HttpUriRequest method) {
+        HttpConnectionParams.setConnectionTimeout(method.getParams(), CONNECTION_TIMEOUT_MS);
+        HttpConnectionParams.setSoTimeout(method.getParams(), SOCKET_TIMEOUT_MS);
+        mClient.setHttpRequestRetryHandler(requestRetryHandler);
+        method.addHeader("Accept-Encoding", "gzip, deflate");
+    }
+    
+    /**
+     * Create request method, such as POST, GET, DELETE
+     * @param httpMethod "GET","POST","DELETE"
+     * @param uri
+     * @param file 可为空
+     * @param postParams
+     * @return
+     * @throws WeiboException
+     */
+    private HttpUriRequest createMethod(String httpMethod, URI uri, File file,
+            ArrayList<BasicNameValuePair> postParams) throws WeiboException {
+        HttpUriRequest method;
+        
+        log("----------------- HTTP Request Start ----------------------");
+        log("[Request]");
+
+        if (httpMethod.equalsIgnoreCase(HttpPost.METHOD_NAME)) {
+            // POST METHOD
+            
+            HttpPost post = new HttpPost(uri);
+            // See this: http://groups.google.com/group/twitter-development-talk/browse_thread/thread/e178b1d3d63d8e3b
+            post.getParams().setBooleanParameter("http.protocol.expect-continue", false);
+            
+            try {
+                HttpEntity entity = null;
+                if (null != file) {
+                    entity = createMultipartEntity("photo", file, postParams);
+                    post.setEntity(entity);
+                } else if (null != postParams) {
+                    entity = new UrlEncodedFormEntity(postParams, HTTP.UTF_8);
+                }
+                post.setEntity(entity);
+            } catch (IOException ioe) {
+                throw new WeiboException(ioe.getMessage(), ioe);
+            }
+            
+            logPostForDebug(postParams, post, file);
+            method = post;
+        } else if (httpMethod.equalsIgnoreCase(HttpDelete.METHOD_NAME)) {
+            method = new HttpDelete(uri);
+        } else {
+            method = new HttpGet(uri);
+        }
+        
+        return method;
     }
     
     /**

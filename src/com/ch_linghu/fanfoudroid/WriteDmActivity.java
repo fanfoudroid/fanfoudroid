@@ -39,6 +39,7 @@ import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.data.Dm;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
+import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
 import com.ch_linghu.fanfoudroid.ui.module.TweetEdit;
