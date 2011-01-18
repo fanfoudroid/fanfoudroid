@@ -10,10 +10,14 @@ import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
+import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,9 +28,12 @@ import android.widget.TextView;
 
 public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 	private static final String TAG = "TweetCursorAdapter";
+	
+	private Context mContext;
 
 	public TweetCursorAdapter(Context context, Cursor cursor) {
 		super(context, cursor);
+		mContext = context;
 
 		if (context != null) {
 			mInflater = LayoutInflater.from(context);
@@ -91,17 +98,23 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 	public void bindView(View view, Context context, Cursor cursor) {
 		TweetCursorAdapter.ViewHolder holder = (TweetCursorAdapter.ViewHolder) view
 				.getTag();
-
+		
+		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(mContext);;
+		boolean useProfileImage = pref.getBoolean(Preferences.USE_PROFILE_IMAGE, true);
 		holder.tweetUserText.setText(cursor.getString(mUserTextColumn));
 		Utils.setSimpleTweetText(holder.tweetText, cursor.getString(mTextColumn));
 
 		String profileImageUrl = cursor.getString(mProfileImageUrlColumn);
 
-		if (!Utils.isEmpty(profileImageUrl)) {
-			holder.profileImage.setImageBitmap(TwitterApplication.mImageManager
-					.get(profileImageUrl));
+		if (useProfileImage){
+			if (!Utils.isEmpty(profileImageUrl)) {
+				holder.profileImage.setImageBitmap(TwitterApplication.mImageManager
+						.get(profileImageUrl));
+			}
+		}else{
+			holder.profileImage.setVisibility(View.GONE);
 		}
-
+		
 		if (cursor.getString(mFavorited).equals("true")) {
 			holder.fav.setVisibility(View.VISIBLE);
 		} else {

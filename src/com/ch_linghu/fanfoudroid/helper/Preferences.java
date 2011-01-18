@@ -39,6 +39,9 @@ public class Preferences {
   public static final String TWITTER_ACTIVITY_STATE_KEY =
       "twitter_activity_state";
   
+  public static final String USE_PROFILE_IMAGE = "use_profile_image";
+  public static final String USE_PHOTO_PREVIEW = "use_photo_preview";
+  
   public static final String RT_PREFIX_KEY = "rt_prefix";
   public static final String RT_INSERT_APPEND = "rt_insert_append"; //转发时光标放置在开始还是结尾 
 }

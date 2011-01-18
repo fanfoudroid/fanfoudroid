@@ -86,6 +86,7 @@
 
 	<!-- 设置页面  -->
     <string name="pref_title_notifications">后台提示</string>
+    <string name="pref_title_apperance">外观</string>
     <string name="pref_title_misc">杂项</string>
     
     <string name="pref_check_updates_title">设置后台提醒</string>
@@ -109,6 +110,11 @@
 
     <string name="pref_check_updates_ringtone_title">选择提示铃音</string>
     <string name="pref_check_updates_ringtone_summary"></string>
+    
+    <string name="pref_use_profile_image">用户头像</string>
+    <string name="pref_use_profile_image_summary">是否显示用户头像</string>
+    <string name="pref_use_photo_preview">图片预览</string>
+    <string name="pref_use_photo_preview_summary">是否显示图片预览</string>
         
     <string name="pref_rt_prefix_title">转发前缀</string>
     <string name="pref_rt_prefix_summary">转发消息时的前缀</string>
