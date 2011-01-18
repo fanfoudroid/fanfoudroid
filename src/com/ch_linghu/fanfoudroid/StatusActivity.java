@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -35,6 +36,7 @@ import android.widget.TextView;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.helper.ImageCache;
+import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
 import com.ch_linghu.fanfoudroid.http.Response;
@@ -274,6 +276,10 @@ public class StatusActivity extends WithHeaderActivity
 	
 	private void draw() {
 	    Log.i(TAG, "draw");
+	    
+	    SharedPreferences pref = getPreferences();
+	    boolean usePhotoPreview = pref.getBoolean(Preferences.USE_PHOTO_PREVIEW, true);
+	    
 	    tweet_screen_name.setText(tweet.screenName);
         Utils.setTweetText(tweet_text, tweet.text);
         tweet_created_at.setText(Utils.getRelativeDate(tweet.createdAt));
@@ -286,13 +292,16 @@ public class StatusActivity extends WithHeaderActivity
         profile_image.setImageBitmap(mProfileBitmap);
         
         // has photo
-        String photoPageLink = Utils.getPhotoPageLink(tweet.text); 
-        if (photoPageLink != null){
-        	status_photo.setVisibility(View.VISIBLE);
-        	status_photo.setImageBitmap(mPhotoBitmap);
-        	doGetPhoto(photoPageLink);
+        if (usePhotoPreview){
+	        String photoPageLink = Utils.getPhotoPageLink(tweet.text); 
+	        if (photoPageLink != null){
+	        	status_photo.setVisibility(View.VISIBLE);
+	        	status_photo.setImageBitmap(mPhotoBitmap);
+	        	doGetPhoto(photoPageLink);
+	        }
+        }else{
+        	status_photo.setVisibility(View.GONE);        	
         }
-        
         // has reply
         if (! Utils.isEmpty(tweet.inReplyToStatusId) ) {
             ViewGroup reply_wrap = (ViewGroup) findViewById(R.id.reply_wrap);

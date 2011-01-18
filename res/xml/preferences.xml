@@ -63,6 +63,20 @@
             />  
 
   </PreferenceCategory>
+
+  <PreferenceCategory android:title="@string/pref_title_apperance">
+    <CheckBoxPreference
+    android:key="use_profile_image"
+    android:title="@string/pref_use_profile_image"
+    android:summary="@string/pref_use_profile_image_summary"
+    android:defaultValue="true" />
+    <CheckBoxPreference
+    android:key="use_photo_preview"
+    android:title="@string/pref_use_photo_preview"
+    android:summary="@string/pref_use_photo_preview_summary"
+    android:defaultValue="true" />
+  </PreferenceCategory>
+
   <PreferenceCategory android:title="@string/pref_title_misc">
     <EditTextPreference
     android:key="rt_prefix"

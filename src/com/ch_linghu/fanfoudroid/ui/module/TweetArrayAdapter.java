@@ -5,9 +5,13 @@ import java.util.ArrayList;
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.helper.ImageCache;
+import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,7 +62,10 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View view;
-
+		
+		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(mContext);
+		boolean useProfileImage = pref.getBoolean(Preferences.USE_PROFILE_IMAGE, true);
+		
 		if (convertView == null) {
 			view = mInflater.inflate(R.layout.tweet, parent, false);
 
@@ -87,9 +94,13 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 		if (mImageCache != null) {
 			String profileImageUrl = tweet.profileImageUrl;
 
-			if (!Utils.isEmpty(profileImageUrl)) {
-				holder.profileImage.setImageBitmap(mImageCache
-						.get(profileImageUrl));
+			if (useProfileImage){
+				if (!Utils.isEmpty(profileImageUrl)) {
+					holder.profileImage.setImageBitmap(mImageCache
+							.get(profileImageUrl));
+				}
+			}else{
+				holder.profileImage.setVisibility(View.GONE);
 			}
 		}else{
 			holder.profileImage.setImageBitmap(ImageCache.mDefaultBitmap);

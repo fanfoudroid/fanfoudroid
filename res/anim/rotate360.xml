@@ -4,11 +4,11 @@
 <rotate   
         android:interpolator="@android:anim/accelerate_decelerate_interpolator"  
         android:fromDegrees="0"   
-        android:toDegrees="+360"  
+        android:toDegrees="-360"  
         android:pivotX="50%"
         android:pivotY="50%"
         android:duration="2000"
-        android:repeatCount="10" />  
+        android:repeatCount="30" />  
           
 <!-- rotate 旋转动画效果  
        属性：interpolator 指定一个动画的插入器，用来控制动画的速度变化  
