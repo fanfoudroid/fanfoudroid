@@ -18,7 +18,6 @@ package com.ch_linghu.fanfoudroid.ui.base;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -29,7 +28,6 @@ import android.widget.ListView;
 
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.data.db.DatabaseHelper;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
@@ -122,7 +120,9 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 		if (cursor == null){
 			return null;
 		}else{
-			return DatabaseHelper.StatusTable.parseTweetFromCursor(cursor);
+		    //FIXME: temp
+//			return DatabaseHelper.StatusTable.parseTweetFromCursor(cursor);
+		    return new Tweet();
 		}
 	}
 

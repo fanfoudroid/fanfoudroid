@@ -36,16 +36,11 @@ public class Tweet extends Message implements Parcelable {
   public com.ch_linghu.fanfoudroid.weibo.User user;
   public String source;
   public String prevId;
-  private String statusType = "";
-  public void setStatusType(String type) {
+  private int statusType = -1;
+  public void setStatusType(int type) {
       statusType = type;
   }
-  public void addStatusType(String type) {
-      if (statusType != "") {
-          statusType += type + ",";
-      }
-  }
-  public String getStatusType() {
+  public int getStatusType() {
       return statusType;
   }
   
