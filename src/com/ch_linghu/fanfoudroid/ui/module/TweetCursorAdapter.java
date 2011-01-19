@@ -26,6 +26,13 @@ import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ch_linghu.fanfoudroid.R;
+import com.ch_linghu.fanfoudroid.TwitterApplication;
+import com.ch_linghu.fanfoudroid.data.Tweet;
+import com.ch_linghu.fanfoudroid.data.db.DatabaseHelper.StatusTable;
+import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
+import com.ch_linghu.fanfoudroid.helper.Utils;
+
 public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 	private static final String TAG = "TweetCursorAdapter";
 	
@@ -41,19 +48,19 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 
 		if (cursor != null) {
 			mUserTextColumn = cursor
-					.getColumnIndexOrThrow(TwitterDbAdapter.KEY_USER);
+					.getColumnIndexOrThrow(StatusTable.FIELD_USER_SCREEN_NAME);
 			mTextColumn = cursor
-					.getColumnIndexOrThrow(TwitterDbAdapter.KEY_TEXT);
+					.getColumnIndexOrThrow(StatusTable.FIELD_TEXT);
 			mProfileImageUrlColumn = cursor
-					.getColumnIndexOrThrow(TwitterDbAdapter.KEY_PROFILE_IMAGE_URL);
+					.getColumnIndexOrThrow(StatusTable.FIELD_PROFILE_IMAGE_URL);
 			mCreatedAtColumn = cursor
-					.getColumnIndexOrThrow(TwitterDbAdapter.KEY_CREATED_AT);
+					.getColumnIndexOrThrow(StatusTable.FIELD_CREATED_AT);
 			mSourceColumn = cursor
-					.getColumnIndexOrThrow(TwitterDbAdapter.KEY_SOURCE);
+					.getColumnIndexOrThrow(StatusTable.FIELD_SOURCE);
 			mInReplyToScreenName = cursor
-					.getColumnIndexOrThrow(TwitterDbAdapter.KEY_IN_REPLY_TO_SCREEN_NAME);
+					.getColumnIndexOrThrow(StatusTable.FIELD_IN_REPLY_TO_SCREEN_NAME);
 			mFavorited = cursor
-					.getColumnIndexOrThrow(TwitterDbAdapter.KEY_FAVORITED);
+					.getColumnIndexOrThrow(StatusTable.FIELD_FAVORITED);
 		}
 		mMetaBuilder = new StringBuilder();
 	}
