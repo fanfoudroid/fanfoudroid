@@ -6,14 +6,6 @@ package com.ch_linghu.fanfoudroid.ui.module;
 import java.text.ParseException;
 import java.util.Date;
 
-import com.ch_linghu.fanfoudroid.R;
-import com.ch_linghu.fanfoudroid.TwitterApplication;
-import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
-import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.Utils;
-
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -25,6 +17,13 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.ch_linghu.fanfoudroid.R;
+import com.ch_linghu.fanfoudroid.TwitterApplication;
+import com.ch_linghu.fanfoudroid.data.Tweet;
+import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
+import com.ch_linghu.fanfoudroid.helper.Preferences;
+import com.ch_linghu.fanfoudroid.helper.Utils;
 
 public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 	private static final String TAG = "TweetCursorAdapter";
@@ -54,7 +53,7 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 					.getColumnIndexOrThrow(TwitterDbAdapter.KEY_IN_REPLY_TO_SCREEN_NAME);
 			mFavorited = cursor
 					.getColumnIndexOrThrow(TwitterDbAdapter.KEY_FAVORITED);
-		}
+		} 
 		mMetaBuilder = new StringBuilder();
 	}
 

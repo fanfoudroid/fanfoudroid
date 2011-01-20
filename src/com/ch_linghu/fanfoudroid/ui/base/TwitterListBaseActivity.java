@@ -58,7 +58,6 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity {
 	protected static final int STATE_ALL = 0;
 	protected static final String SIS_RUNNING_KEY = "running";
 
-
 	// Tasks.
 	protected AsyncTask<String, Void, TaskResult> mFavTask;
 
@@ -254,7 +253,7 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
-				Tweet tweet = getContextItemTweet(position);
+				Tweet tweet = getContextItemTweet(position - 1); // skip the header
 		
 				if (tweet == null) {
 					Log.w(TAG, "Selected item not available.");

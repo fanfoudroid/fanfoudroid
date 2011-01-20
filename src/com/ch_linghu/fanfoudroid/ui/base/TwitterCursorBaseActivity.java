@@ -18,14 +18,17 @@ package com.ch_linghu.fanfoudroid.ui.base;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.data.Tweet;
@@ -42,13 +45,19 @@ import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 /**
  * TwitterCursorBaseLine用于带有静态数据来源（对应数据库的，与twitter表同构的特定表）的展现
  */
-public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
-		{
+public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity {
 	static final String TAG = "TwitterListBaseActivity";
 
 	// Views.
 	protected ListView mTweetList;
 	protected TweetCursorAdapter mTweetAdapter;
+	
+	protected TextView loadMoreBtn;
+	protected ProgressBar loadMoreGIF;
+	// use setOneShot(true) to stop this animation,
+	protected AnimationDrawable loadMoreAnimation; 
+	
+	protected static int lastPosition = 0;
 
 	// Tasks.
 	private AsyncTask<Void, Void, TaskResult> mRetrieveTask;
@@ -90,10 +99,43 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 		startManagingCursor(cursor);
 
 		mTweetList = (ListView) findViewById(R.id.tweet_list);
+		setupListHeader(true);
+	    
 		mTweetAdapter = new TweetCursorAdapter(this, cursor);
 		mTweetList.setAdapter(mTweetAdapter);
 		//registerOnClickListener(mTweetList);
 	}
+	
+	/**
+	 * 绑定listView底部 - 载入更多
+	 * NOTE: 必须在listView#setAdapter之前调用
+	 */
+	protected void setupListHeader(boolean addFooter) {
+        // Add Header to ListView
+        View header = View.inflate(this, R.layout.listview_header, null);
+        mTweetList.addHeaderView(header, null, false);
+        header.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadMoreBtn.setVisibility(View.GONE);
+                loadMoreGIF.setVisibility(View.VISIBLE);
+                //frameAnimation.setOneShot(true);
+                //frameAnimation.stop();
+            }
+        });
+        
+        View footer = View.inflate(this, R.layout.listview_footer, null);
+        mTweetList.addFooterView(footer, null, false);
+        footer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadMoreBtn.setVisibility(View.GONE);
+                loadMoreGIF.setVisibility(View.VISIBLE);
+                //frameAnimation.setOneShot(true);
+                //frameAnimation.stop();
+            }
+        });
+    }
 	
 	@Override
 	protected int getLayoutId(){
@@ -147,8 +189,16 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		Log.i(TAG, "onCreate.");
 		super.onCreate(savedInstanceState);
 		if (!checkIsLogedIn()) return;
+		
+		goTop(); // skip the header
+		
+		// Find View
+		loadMoreBtn = (TextView)findViewById(R.id.ask_for_more);
+		loadMoreGIF = (ProgressBar)findViewById(R.id.rectangleProgressBar);
+        loadMoreAnimation = (AnimationDrawable) loadMoreGIF.getIndeterminateDrawable();
 
 		// Mark all as read.
 		// getDb().markAllMentionsRead();
@@ -196,26 +246,13 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 
 	@Override
 	protected void onResume() {
+		Log.i(TAG, "onResume.");
+		if (lastPosition != 0) {
+		    mTweetList.setSelection(lastPosition);
+		}
 		super.onResume();
 		checkIsLogedIn();
 	}
-
-	private void doRetrieveFollowers() {
-		Log.i(TAG, "Attempting followers retrieve.");
-
-		if (mFollowersRetrieveTask != null
-				&& mFollowersRetrieveTask.getStatus() == AsyncTask.Status.RUNNING) {
-			Log.w(TAG, "Already retrieving.");
-		} else {
-//			mFollowersRetrieveTask = new FollowersTask().execute();
-			AsyncTask<Void,Void,TaskResult> task = TaskFactory.create(TaskFactory.FOLLOWERS_TASK_TYPE, this);
-			if (null != task) {
-				mFollowersRetrieveTask = task.execute();
-			}
-		}
-	}
-	
-	
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
@@ -230,7 +267,6 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 	@Override
 	protected void onRestoreInstanceState(Bundle bundle) {
 		super.onRestoreInstanceState(bundle);
-
 		// mTweetEdit.updateCharsRemain();
 	}
 
@@ -247,10 +283,41 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 
 		super.onDestroy();
 	}
+	
+	@Override
+    protected void onPause() {
+		Log.i(TAG, "onPause.");
+        super.onPause();
+        lastPosition = mTweetList.getFirstVisiblePosition();
+    }
+
+    @Override
+    protected void onRestart() {
+		Log.i(TAG, "onRestart.");
+        super.onRestart();
+    }
+
+    @Override
+    protected void onStart() {
+		Log.i(TAG, "onStart.");
+        super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+		Log.i(TAG, "onStop.");
+        super.onStop();
+    }
 
 	// UI helpers.
 	
 	@Override
+    protected String getActivityTitle() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
 	protected void adapterRefresh() {
 		mTweetAdapter.notifyDataSetChanged();
 		mTweetAdapter.refresh();
@@ -264,8 +331,24 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 		mTweetAdapter.refresh();
 	}
 	public void goTop() {
-		mTweetList.setSelection(0);
+        Log.i(TAG, "goTop.");
+		mTweetList.setSelectionAfterHeaderView();
 	}
+	
+	private void doRetrieveFollowers() {
+        Log.i(TAG, "Attempting followers retrieve.");
+
+        if (mFollowersRetrieveTask != null
+                && mFollowersRetrieveTask.getStatus() == AsyncTask.Status.RUNNING) {
+            Log.w(TAG, "Already retrieving.");
+        } else {
+//          mFollowersRetrieveTask = new FollowersTask().execute();
+            AsyncTask<Void,Void,TaskResult> task = TaskFactory.create(TaskFactory.FOLLOWERS_TASK_TYPE, this);
+            if (null != task) {
+                mFollowersRetrieveTask = task.execute();
+            }
+        }
+    }
 	
 	public void onRetrieveBegin() {
 		updateProgress(getString(R.string.page_status_refreshing));
