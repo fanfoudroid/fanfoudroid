@@ -111,11 +111,12 @@ public class StatusDatabase {
      * @param tweetId
      * @return 将Cursor转换过的Tweet对象
      */
-    public Tweet queryTweet(String tweetId) {
+    public Tweet queryTweet(String tweetId, int type) {
         SQLiteDatabase Db = mOpenHelper.getWritableDatabase();
 
         Cursor cursor = Db.query(StatusTable.TABLE_NAME,
-                StatusTable.TABLE_STATUS_COLUMNS, StatusTable._ID + "=?",
+                StatusTable.TABLE_STATUS_COLUMNS, StatusTable._ID + "=? AND "
+                + StatusTable.FIELD_STATUS_TYPE + "=" + type,
                 new String[] { tweetId }, null, null, null);
 
         Tweet tweet = null;
@@ -166,8 +167,8 @@ public class StatusDatabase {
     public int deleteTweet(String tweetId) {
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 
-        return db.delete(StatusTable.TABLE_NAME, StatusTable._ID + " = "
-                + tweetId, null);
+        return db.delete(StatusTable.TABLE_NAME, StatusTable._ID + "=?"
+                , new String[]{tweetId});
     }
 
     /**
@@ -370,7 +371,7 @@ public class StatusDatabase {
      * @param isFavorited
      * @return Is Succeed
      */
-    public boolean setFavorited(String tweetId, boolean isFavorited) {
+    public boolean setFavorited(String tweetId, String isFavorited) {
         ContentValues values = new ContentValues();
         values.put(StatusTable.FIELD_FAVORITED, isFavorited);
         int i = updateTweet(tweetId, values);

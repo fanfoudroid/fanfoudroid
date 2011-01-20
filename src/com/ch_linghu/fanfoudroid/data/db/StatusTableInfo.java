@@ -63,7 +63,7 @@ public final class StatusTableInfo {
             + FIELD_PROFILE_IMAGE_URL + " text not null, "
             + FIELD_IS_UNREAD + " boolean not null, "
             + FIELD_CREATED_AT + " date not null, "
-            + FIELD_FAVORITED + " boolean, "
+            + FIELD_FAVORITED + " text, "
             + FIELD_IN_REPLY_TO_STATUS_ID + " text, "
             + FIELD_IN_REPLY_TO_USER_ID + " text, "
             + FIELD_IN_REPLY_TO_SCREEN_NAME + " text, "
