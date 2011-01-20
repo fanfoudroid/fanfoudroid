@@ -97,6 +97,13 @@ public class StatusDatabase {
         }
         return instance;
     }
+    
+    public void close() {
+        if (null != instance) {
+            mOpenHelper.close();
+            instance = null;
+        }
+    }
 
     /**
      * 取出一条消息
@@ -116,11 +123,36 @@ public class StatusDatabase {
         if (cursor != null) {
             cursor.moveToFirst();
             if (cursor.getCount() > 0) {
-                tweet = StatusTable.parseCursor(cursor); // and close cursor
+                tweet = StatusTable.parseCursor(cursor); 
             }
         }
 
+        cursor.close();
         return tweet;
+    }
+    
+    /**
+     * 快速检查某条消息是否存在(指定类型)
+     * 
+     * @param tweetId
+     * @param type
+     * @return is exists
+     */
+    public boolean isExists(String tweetId, int type) {
+        SQLiteDatabase Db = mOpenHelper.getWritableDatabase();
+        boolean result = false;
+        
+        Cursor cursor = Db.query(StatusTable.TABLE_NAME,
+                new String[] {StatusTable._ID}, StatusTable._ID + " =? AND " 
+                + StatusTable.FIELD_STATUS_TYPE + " = " + type,
+                new String[] { tweetId }, null, null, null);
+        
+        if (cursor != null && cursor.getCount() > 0) {
+            result = true;
+        }
+
+        cursor.close();
+        return result;
     }
 
     /**
@@ -152,9 +184,9 @@ public class StatusDatabase {
                 + " (SELECT " + StatusTable._ID // 子句
                 + " FROM " + StatusTable.TABLE_NAME 
                 + " WHERE " + StatusTable.FIELD_STATUS_TYPE + " = " + type + " " 
-                + " ORDER BY " + StatusTable._ID + " DESC LIMIT "
+                + " ORDER BY " + StatusTable.FIELD_CREATED_AT + " DESC LIMIT "
                 + StatusTable.MAX_STATUS_NUM + ")";
-        // Log.d(TAG, sql);
+         Log.d(TAG, sql);
         mDb.execSQL(sql);
     }
 
@@ -167,8 +199,13 @@ public class StatusDatabase {
      * @param tweet 需要写入的单条消息
      * @return the row ID of the newly inserted row, or -1 if an error occurred
      */
-    private long insertTweet(Tweet tweet, boolean isUnread, int type) {
+    private long insertTweet(Tweet tweet, int type, boolean isUnread) {
         SQLiteDatabase Db = mOpenHelper.getWritableDatabase();
+        
+        if (isExists(tweet.id, type)) {
+            Log.i(TAG, tweet.id + "is exists.");
+            return -1;
+        }
 
         // 插入一条新消息
         ContentValues initialValues = new ContentValues();
@@ -238,7 +275,7 @@ public class StatusDatabase {
 
             for (int i = tweets.size() - 1; i >= 0; i--) {
                 Tweet tweet = tweets.get(i);
-                insertTweet(tweet, isUnread, type);
+                insertTweet(tweet, type, isUnread);
             }
 
             tidyTable(type); // 保持总量
@@ -286,13 +323,28 @@ public class StatusDatabase {
      * @return The newest Status Id
      */
     public String fetchMaxTweetId(int type) {
+        return fetchMaxOrMixTweetId(type, true);
+    }
+    
+    /**
+     * 取出本地某类型最新消息ID
+     * 
+     * @param tableName
+     * @return The oldest Status Id
+     */
+    public String fetchMixTweetId(int type) {
+        return fetchMaxOrMixTweetId(type, false);
+    }
+    
+    private String fetchMaxOrMixTweetId(int type, boolean isMax) {
         SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
-
-        Cursor mCursor = mDb.rawQuery("SELECT " + StatusTable._ID 
-                + " FROM " + StatusTable.TABLE_NAME 
-                + " WHRER " + StatusTable.FIELD_STATUS_TYPE + " = " + type
-                + " ORDER BY " + StatusTable.FIELD_CREATED_AT
-                + " DESC LIMIT 1", null);
+        
+        String sql = "SELECT " + StatusTable._ID 
+            + " FROM " + StatusTable.TABLE_NAME 
+            + " WHERE " + StatusTable.FIELD_STATUS_TYPE + "=" + type
+            + " ORDER BY " + StatusTable.FIELD_CREATED_AT;
+        if (isMax) sql += " DESC ";
+        Cursor mCursor = mDb.rawQuery(sql + " LIMIT 1", null);
 
         String result = null;
 

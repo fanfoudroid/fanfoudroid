@@ -2,7 +2,6 @@ package com.ch_linghu.fanfoudroid.data.db;
 
 import android.database.Cursor;
 import android.provider.BaseColumns;
-import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.helper.Utils;

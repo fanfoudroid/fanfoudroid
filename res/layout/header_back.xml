@@ -9,7 +9,7 @@
     <RelativeLayout android:id="@+id/LinearLayout01"
       android:layout_width="fill_parent"
       android:layout_height="45dp"
-      android:background="#0CF"
+      android:background="@drawable/bg_twitter_titlebar"
       android:gravity="center_vertical"
       android:layout_alignParentTop="true"
       >

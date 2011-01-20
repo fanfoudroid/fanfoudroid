@@ -18,6 +18,7 @@ package com.ch_linghu.fanfoudroid.ui.base;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -120,9 +121,19 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 		if (cursor == null){
 			return null;
 		}else{
-		    //FIXME: temp
-//			return DatabaseHelper.StatusTable.parseTweetFromCursor(cursor);
-		    return new Tweet();
+			Tweet tweet = new Tweet();
+			tweet.id = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_ID));
+			tweet.createdAt = Utils.parseDateTimeFromSqlite(cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_CREATED_AT)));
+			tweet.favorited = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_FAVORITED));
+			tweet.screenName = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_USER));
+			tweet.userId = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_USER_ID));
+			tweet.text = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_TEXT));
+			tweet.source = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_SOURCE));
+			tweet.profileImageUrl = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_PROFILE_IMAGE_URL));
+			tweet.inReplyToScreenName = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_IN_REPLY_TO_SCREEN_NAME));
+			tweet.inReplyToStatusId = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_IN_REPLY_TO_STATUS_ID));
+			tweet.inReplyToUserId = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_IN_REPLY_TO_USER_ID));
+			return tweet;
 		}
 	}
 

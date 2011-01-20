@@ -35,6 +35,7 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.data.Tweet;
+import com.ch_linghu.fanfoudroid.data.db.StatusTableInfo.StatusTable;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.Deletable;
@@ -140,7 +141,8 @@ public class TwitterActivity extends TwitterCursorBaseActivity
 
 	@Override
 	protected Cursor fetchMessages() {
-		return getDb().fetchAllTweets(TwitterDbAdapter.TABLE_TWEET);
+//		return getDb().fetchAllTweets(TwitterDbAdapter.TABLE_TWEET);
+		return TwitterApplication.dbh.fetchAllTweets(StatusTable.TYPE_HOME);
 	}
 
 	@Override
@@ -153,17 +155,18 @@ public class TwitterActivity extends TwitterCursorBaseActivity
 		getDb().markAllTweetsRead(TwitterDbAdapter.TABLE_TWEET);
 	}
 	
-	
 	// hasRetrieveListTask interface
 	@Override
 	public void addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
-		getDb().addTweets(TwitterDbAdapter.TABLE_TWEET, tweets, isUnread);
+//		getDb().addTweets(TwitterDbAdapter.TABLE_TWEET, tweets, isUnread);
+	    TwitterApplication.dbh.putTweets(tweets, StatusTable.TYPE_HOME, isUnread);
 	}
 	
 	@Override
 	public String fetchMaxId() {
 		// TODO Auto-generated method stub
-		return getDb().fetchMaxId(TwitterDbAdapter.TABLE_TWEET);
+//		return getDb().fetchMaxId(TwitterDbAdapter.TABLE_TWEET);
+	    return TwitterApplication.dbh.fetchMaxTweetId(StatusTable.TYPE_HOME);
 	}
 	
 	@Override

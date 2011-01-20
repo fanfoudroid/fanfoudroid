@@ -23,7 +23,6 @@ import org.json.JSONObject;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.TwitterApplication;

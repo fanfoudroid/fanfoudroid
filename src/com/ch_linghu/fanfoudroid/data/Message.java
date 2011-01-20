@@ -11,7 +11,6 @@ public class Message {
   public Date createdAt;
   public String userId;
   public String favorited;
-  public String truncated;
   public String inReplyToStatusId;
   public String inReplyToUserId;
   public String inReplyToScreenName;
