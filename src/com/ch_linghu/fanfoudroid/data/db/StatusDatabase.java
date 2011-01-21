@@ -11,10 +11,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteTransactionListener;
 import android.util.Log;
 
+import com.ch_linghu.fanfoudroid.data.Dm;
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.data.db.StatusTableInfo.StatusTable;
+import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.FollowTable;
+import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.MessageTable;
+import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
 
 /**
  * A Database which contains all statuses and direct-messages, use
@@ -64,7 +68,9 @@ public class StatusDatabase {
         public void onCreate(SQLiteDatabase db) {
             Log.i(TAG, "Create Database.");
             // Log.i(TAG, StatusTable.STATUS_TABLE_CREATE);
-            db.execSQL(StatusTable.STATUS_TABLE_CREATE);
+            db.execSQL(StatusTable.CREATE_TABLE);
+            db.execSQL(MessageTable.CREATE_TABLE);
+            db.execSQL(FollowTable.CREATE_TABLE);
         }
 
         @Override
@@ -98,6 +104,11 @@ public class StatusDatabase {
         return instance;
     }
     
+    // 测试用
+    public SQLiteOpenHelper getSQLiteOpenHelper() {
+        return mOpenHelper;
+    }
+    
     public void close() {
         if (null != instance) {
             mOpenHelper.close();
@@ -115,7 +126,7 @@ public class StatusDatabase {
         SQLiteDatabase Db = mOpenHelper.getWritableDatabase();
 
         Cursor cursor = Db.query(StatusTable.TABLE_NAME,
-                StatusTable.TABLE_STATUS_COLUMNS, StatusTable._ID + "=? AND "
+                StatusTable.TABLE_COLUMNS, StatusTable._ID + "=? AND "
                 + StatusTable.FIELD_STATUS_TYPE + "=" + type,
                 new String[] { tweetId }, null, null, null);
 
@@ -186,7 +197,7 @@ public class StatusDatabase {
                 + " FROM " + StatusTable.TABLE_NAME 
                 + " WHERE " + StatusTable.FIELD_STATUS_TYPE + " = " + type + " " 
                 + " ORDER BY " + StatusTable.FIELD_CREATED_AT + " DESC LIMIT "
-                + StatusTable.MAX_STATUS_NUM + ")";
+                + StatusTable.MAX_ROW_NUM + ")";
          Log.d(TAG, sql);
         mDb.execSQL(sql);
     }
@@ -296,7 +307,7 @@ public class StatusDatabase {
         SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
 
         return mDb.query(StatusTable.TABLE_NAME,
-                StatusTable.TABLE_STATUS_COLUMNS,
+                StatusTable.TABLE_COLUMNS,
                 StatusTable.FIELD_STATUS_TYPE + " = " + type,
                 null, null, null,
                 StatusTable.FIELD_CREATED_AT + " DESC");
@@ -335,6 +346,38 @@ public class StatusDatabase {
      */
     public String fetchMixTweetId(int type) {
         return fetchMaxOrMixTweetId(type, false);
+    }
+    
+    /**
+     * Count unread tweet
+     * @param tableName
+     * @return
+     */
+    public int fetchUnreadCount(int type) {
+        SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
+
+        Cursor mCursor = mDb.rawQuery("SELECT COUNT(" + StatusTable._ID + ")"
+                + " FROM " + StatusTable.TABLE_NAME 
+        		+ " WHERE " + StatusTable.FIELD_STATUS_TYPE + " = " + type 
+        		+ " AND " + StatusTable.FIELD_IS_UNREAD + " = 1", null);
+
+        int result = 0;
+
+        if (mCursor == null) {
+            return result;
+        }
+
+        mCursor.moveToFirst();
+        result = mCursor.getInt(0);
+        mCursor.close();
+
+        return result;
+    }
+
+    public int addNewTweetsAndCountUnread(List<Tweet> tweets, int type) {
+        putTweets(tweets, type, true);
+
+        return fetchUnreadCount(type);
     }
     
     private String fetchMaxOrMixTweetId(int type, boolean isMax) {
@@ -377,6 +420,271 @@ public class StatusDatabase {
         int i = updateTweet(tweetId, values);
 
         return (i > 0) ? true : false;
+    }
+    
+    // Table
+    
+    /**
+     * @param dm
+     * @param isUnread
+     * @return the row ID of the newly inserted row, or -1 if an error occurred, 测试得出并不是返回 _ID 的值, 而是一个自增长的 row_id
+     */
+    public long createDm(Dm dm, boolean isUnread) {
+        SQLiteDatabase mDb = mOpenHelper.getWritableDatabase();
+        
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(MessageTable._ID, dm.id);
+        initialValues.put(MessageTable.FIELD_USER_SCREEN_NAME, dm.screenName);
+        initialValues.put(MessageTable.FIELD_TEXT, dm.text);
+        initialValues.put(MessageTable.FIELD_PROFILE_IMAGE_URL, dm.profileImageUrl);
+        initialValues.put(MessageTable.FIELD_IS_UNREAD, isUnread);
+        initialValues.put(MessageTable.FIELD_IS_SENT, dm.isSent);
+        initialValues.put(MessageTable.FIELD_CREATED_AT,
+                DB_DATE_FORMATTER.format(dm.createdAt));
+        initialValues.put(MessageTable.FIELD_USER_ID, dm.userId);
+
+        return mDb.insert(MessageTable.TABLE_NAME, null, initialValues);
+    }
+
+    //
+
+    /**
+     * @param userId
+     * @return the row ID of the newly inserted row, or -1 if an error occurred 
+     */
+    public long createFollower(String userId) {
+        SQLiteDatabase mDb = mOpenHelper.getWritableDatabase();
+        
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(FollowTable._ID, userId);
+        long rowId = mDb.insert(FollowTable.TABLE_NAME, null, initialValues);
+        if (-1 == rowId) {
+            Log.e(TAG, "Cann't create Follower : " + userId);
+        } else {
+            Log.i(TAG, "create create follower : " + userId);
+        }
+        return rowId;
+    }
+
+    /**
+     * 清空Followers并添加新内容
+     * 
+     * @param followers
+     */
+    public void syncFollowers(List<String> followers) {
+        SQLiteDatabase mDb = mOpenHelper.getWritableDatabase();
+        
+        try {
+            mDb.beginTransaction();
+
+            deleteAllFollowers();
+
+            for (String userId : followers) {
+                createFollower(userId);
+            }
+
+            mDb.setTransactionSuccessful();
+        } finally {
+            mDb.endTransaction();
+        }
+    }
+
+    public Cursor fetchAllDms() {
+        SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
+        
+        return mDb.query(MessageTable.TABLE_NAME, MessageTable.TABLE_COLUMNS, null, null, null,
+                null, MessageTable.FIELD_CREATED_AT + " DESC");
+    }
+
+    public Cursor fetchInboxDms() {
+        SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
+        
+        return mDb.query(MessageTable.TABLE_NAME, MessageTable.TABLE_COLUMNS, 
+                MessageTable.FIELD_IS_SENT + " = ?",
+                new String[] { "0" }, null, null, MessageTable.FIELD_CREATED_AT 
+                + " DESC");
+    }
+
+    public Cursor fetchSendboxDms() {
+        SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
+        
+        return mDb.query(MessageTable.TABLE_NAME, MessageTable.TABLE_COLUMNS, 
+                MessageTable.FIELD_IS_SENT + " = ?",
+                new String[] { "1" }, null, null, MessageTable.FIELD_CREATED_AT
+                + " DESC");
+    }
+
+    public Cursor fetchAllFollowers() {
+        SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
+        
+        return mDb.query(FollowTable.TABLE_NAME, FollowTable.TABLE_COLUMNS, null, null, null,
+                null, null);
+    }
+
+    public Cursor getFollowerUsernames(String filter) {
+        SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
+        
+        String likeFilter = '%' + filter + '%';
+
+        // TODO: clean this up. 新版中失效, 表名, 列名
+        return mDb.rawQuery("SELECT user_id AS _id, user" +
+        		" FROM (SELECT user_id, user FROM tweets" +
+        		" INNER JOIN followers on tweets.user_id = followers._id UNION" +
+        		" SELECT user_id, user FROM dms INNER JOIN followers" +
+        		" on dms.user_id = followers._id)" +
+        		" WHERE user LIKE ?" +
+        		" ORDER BY user COLLATE NOCASE", new String[] { likeFilter });
+    }
+
+    public boolean isFollower(long userId) {
+        SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
+        
+        Cursor cursor = mDb.query(FollowTable.TABLE_NAME,
+                FollowTable.TABLE_COLUMNS, FollowTable._ID
+                + "=" + userId, null, null, null, null);
+
+        boolean result = false;
+
+        if (cursor != null && cursor.moveToFirst()) {
+            result = true;
+        }
+
+        cursor.close();
+
+        return result;
+    }
+
+    public boolean deleteAllFollowers() {
+        SQLiteDatabase mDb = mOpenHelper.getWritableDatabase();
+        
+        return mDb.delete(FollowTable.TABLE_NAME, null, null) > 0;
+    }
+    
+
+    public boolean deleteDm(String id) {
+        SQLiteDatabase mDb = mOpenHelper.getWritableDatabase();
+        
+        return mDb.delete(MessageTable.TABLE_NAME,
+                String.format("%s = '%s'", MessageTable._ID, id), null) > 0;
+
+    }
+
+    /**
+     * TODO: type?
+     * @param tableName
+     * @return the number of rows affected 
+     */
+    public int markAllTweetsRead(String tableName) {
+        SQLiteDatabase mDb = mOpenHelper.getWritableDatabase();
+        
+        ContentValues values = new ContentValues();
+        values.put(StatusTable.FIELD_IS_UNREAD, 0);
+        
+        return mDb.update(tableName, values, null, null);
+    }
+    
+    public boolean deleteAllDms() {
+        SQLiteDatabase mDb = mOpenHelper.getWritableDatabase();
+        
+        return mDb.delete(MessageTable.TABLE_NAME, null, null) > 0;
+    }
+
+    public int markAllDmsRead() {
+        SQLiteDatabase mDb = mOpenHelper.getWritableDatabase();
+        
+        ContentValues values = new ContentValues();
+        values.put(MessageTable.FIELD_IS_UNREAD, 0);
+        
+        return mDb.update(MessageTable.TABLE_NAME, values, null, null);
+    }
+
+    public String fetchMaxDmId(boolean isSent) {
+        SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
+        
+        Cursor mCursor = mDb.rawQuery("SELECT " + MessageTable._ID + " FROM "
+                + MessageTable.TABLE_NAME + " WHERE " 
+                + MessageTable.FIELD_IS_SENT + " = ? "
+                + " ORDER BY " + MessageTable.FIELD_CREATED_AT 
+                + " DESC   LIMIT 1",
+                new String[] { isSent ? "1" : "0" });
+
+        String result = null;
+
+        if (mCursor == null) {
+            return result;
+        }
+
+        mCursor.moveToFirst();
+        if (mCursor.getCount() == 0) {
+            result = null;
+        } else {
+            result = mCursor.getString(0);
+        }
+        mCursor.close();
+
+        return result;
+    }
+
+    public int addNewDmsAndCountUnread(List<Dm> dms) {
+        addDms(dms, true);
+
+        return fetchUnreadDmCount();
+    }
+
+    public int fetchDmCount() {
+        SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
+        
+        Cursor mCursor = mDb.rawQuery("SELECT COUNT(" + MessageTable._ID + ") FROM "
+                + MessageTable.TABLE_NAME, null);
+
+        int result = 0;
+
+        if (mCursor == null) {
+            return result;
+        }
+
+        mCursor.moveToFirst();
+        result = mCursor.getInt(0);
+        mCursor.close();
+
+        return result;
+    }
+
+    private int fetchUnreadDmCount() {
+        SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
+        
+        Cursor mCursor = mDb.rawQuery("SELECT COUNT(" + MessageTable._ID + ") FROM "
+                + MessageTable.TABLE_NAME + " WHERE " + MessageTable.FIELD_IS_UNREAD + " = 1",
+                null);
+
+        int result = 0;
+
+        if (mCursor == null) {
+            return result;
+        }
+
+        mCursor.moveToFirst();
+        result = mCursor.getInt(0);
+        mCursor.close();
+
+        return result;
+    }
+
+    public void addDms(List<Dm> dms, boolean isUnread) {
+        SQLiteDatabase mDb = mOpenHelper.getWritableDatabase();
+        
+        try {
+            mDb.beginTransaction();
+
+            for (Dm dm : dms) {
+                createDm(dm, isUnread);
+            }
+
+            // limitRows(TABLE_DIRECTMESSAGE, TwitterApi.RETRIEVE_LIMIT);
+            mDb.setTransactionSuccessful();
+        } finally {
+            mDb.endTransaction();
+        }
     }
 
 }
