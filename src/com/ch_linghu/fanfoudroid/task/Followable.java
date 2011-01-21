@@ -3,12 +3,12 @@ package com.ch_linghu.fanfoudroid.task;
 import android.content.SharedPreferences;
 
 import com.ch_linghu.fanfoudroid.TwitterApplication;
-import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
+import com.ch_linghu.fanfoudroid.data.db.StatusDatabase;
 import com.ch_linghu.fanfoudroid.weibo.Weibo;
 
 public interface Followable {
 	// Global
 	static Weibo mApi = TwitterApplication.mApi;
-	static TwitterDbAdapter mDb = TwitterApplication.mDb; 
+	static StatusDatabase mDb = TwitterApplication.mDb; 
 	SharedPreferences getPreferences();
 }

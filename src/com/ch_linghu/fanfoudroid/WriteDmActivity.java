@@ -38,8 +38,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.data.Dm;
-import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
-import com.ch_linghu.fanfoudroid.helper.ImageManager;
+import com.ch_linghu.fanfoudroid.data.db.StatusDatabase;
+import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
 import com.ch_linghu.fanfoudroid.ui.module.TweetEdit;
@@ -131,7 +131,7 @@ public class WriteDmActivity extends WithHeaderActivity {
 		mProgressText = (TextView) findViewById(R.id.progress_text);
 		mTweetEditText = (EditText) findViewById(R.id.tweet_edit);
 		
-		TwitterDbAdapter db = getDb();
+		StatusDatabase db = getDb();
 
 	    mToEdit = (AutoCompleteTextView) findViewById(R.id.to_edit);
 	    Cursor cursor = db.getFollowerUsernames("");
@@ -356,7 +356,7 @@ public class WriteDmActivity extends WithHeaderActivity {
 
 	      mInflater = LayoutInflater.from(context);
 
-	      mUserTextColumn = cursor.getColumnIndexOrThrow(TwitterDbAdapter.KEY_USER);
+	      mUserTextColumn = cursor.getColumnIndexOrThrow(StatusTable.FIELD_USER_SCREEN_NAME);
 	    }
 
 	    private LayoutInflater mInflater;

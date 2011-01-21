@@ -24,10 +24,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuItem;
-import com.ch_linghu.fanfoudroid.R;
+
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
+import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
 import com.ch_linghu.fanfoudroid.task.Followable;
 import com.ch_linghu.fanfoudroid.task.HasFavorite;
 import com.ch_linghu.fanfoudroid.task.Retrievable;
@@ -77,7 +76,7 @@ public class FavoritesActivity extends TwitterCursorBaseActivity
 	@Override
 	protected Cursor fetchMessages() {
 		// TODO Auto-generated method stub
-		return getDb().fetchAllTweets(TwitterDbAdapter.TABLE_FAVORITE);
+		return getDb().fetchAllTweets(StatusTable.TYPE_FAVORITE);
 	}
 
 	@Override
@@ -90,7 +89,7 @@ public class FavoritesActivity extends TwitterCursorBaseActivity
 	@Override
 	protected void markAllRead() {
 		// TODO Auto-generated method stub
-		getDb().markAllTweetsRead(TwitterDbAdapter.TABLE_FAVORITE);
+		getDb().markAllTweetsRead(StatusTable.TYPE_FAVORITE);
 	}
 	
 	
@@ -98,12 +97,12 @@ public class FavoritesActivity extends TwitterCursorBaseActivity
 	
 	@Override
 	public void addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
-		getDb().addTweets(TwitterDbAdapter.TABLE_FAVORITE, tweets, isUnread);
+		getDb().putTweets(tweets, StatusTable.TYPE_FAVORITE, isUnread);
 	}
 	
 	@Override
 	public String fetchMaxId() {
-		return getDb().fetchMaxId(TwitterDbAdapter.TABLE_FAVORITE);
+		return getDb().fetchMaxTweetId(StatusTable.TYPE_FAVORITE);
 	}
 
 	@Override

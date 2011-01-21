@@ -146,17 +146,22 @@ public class StatusDatabase {
     }
 
     /**
-     * 取出一条消息
+     * 取出某类型的一条消息
      * 
-     * @param tweetId
+     * @param tweetId 
+     * @int status type, -1为所有类型
      * @return 将Cursor转换过的Tweet对象
      */
     public Tweet queryTweet(String tweetId, int type) {
         SQLiteDatabase Db = mOpenHelper.getWritableDatabase();
-
+        
+        String selection =  StatusTable._ID + "=? ";
+        if (-1 != type) {
+            selection += " AND " + StatusTable.FIELD_STATUS_TYPE + "=" + type;
+        } 
+        
         Cursor cursor = Db.query(StatusTable.TABLE_NAME,
-                StatusTable.TABLE_COLUMNS, StatusTable._ID + "=? AND "
-                + StatusTable.FIELD_STATUS_TYPE + "=" + type,
+                StatusTable.TABLE_COLUMNS, selection,
                 new String[] { tweetId }, null, null, null);
 
         Tweet tweet = null;
@@ -301,7 +306,7 @@ public class StatusDatabase {
         return Db.update(StatusTable.TABLE_NAME, values,
                 StatusTable._ID + "=?", new String[] { tweetId });
     }
-
+    
     /**
      * 写入N条消息
      * 
@@ -565,7 +570,7 @@ public class StatusDatabase {
         
         String likeFilter = '%' + filter + '%';
 
-        // TODO: clean this up. 新数据库中失效, 表名, 列名
+        // FIXME: clean this up. 新数据库中失效, 表名, 列名
         return mDb.rawQuery("SELECT user_id AS _id, user" +
         		" FROM (SELECT user_id, user FROM tweets" +
         		" INNER JOIN followers on tweets.user_id = followers._id UNION" +

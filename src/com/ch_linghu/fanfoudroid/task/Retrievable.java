@@ -8,7 +8,7 @@ import android.widget.ImageButton;
 
 import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
+import com.ch_linghu.fanfoudroid.data.db.StatusDatabase;
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.weibo.Status;
 import com.ch_linghu.fanfoudroid.weibo.Weibo;
@@ -17,7 +17,7 @@ import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 public interface Retrievable {
 	// Global
 	static Weibo mApi = TwitterApplication.mApi;
-	static TwitterDbAdapter mDb = TwitterApplication.mDb; 
+	static StatusDatabase mDb = TwitterApplication.mDb; 
 	SharedPreferences getPreferences();
 	
 	void draw();

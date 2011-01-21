@@ -26,7 +26,7 @@ import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.TwitterActivity;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.WriteActivity;
-import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
+import com.ch_linghu.fanfoudroid.data.db.StatusDatabase;
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.service.TwitterService;
@@ -69,7 +69,7 @@ public class BaseActivity extends Activity {
     finish();
   }
 
-  protected TwitterDbAdapter getDb() {
+  protected StatusDatabase getDb() {
     return TwitterApplication.mDb;
   }
 
@@ -101,7 +101,6 @@ public class BaseActivity extends Activity {
   public void logout() {
     TwitterService.unschedule(this);
 
-    TwitterApplication.dbh.clearData();
     getDb().clearData();
     getApi().reset();
 

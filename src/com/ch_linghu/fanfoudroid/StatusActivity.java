@@ -35,7 +35,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.helper.ImageCache;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
@@ -186,7 +185,7 @@ public class StatusActivity extends WithHeaderActivity
             }
         });
 		
-		//TODO: 收藏/取消收藏
+		// 收藏/取消收藏
 		footer_btn_fav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -368,17 +367,8 @@ public class StatusActivity extends WithHeaderActivity
             try {
                 if (params.length > 0) {
                     isReply = true;
-                    //先看看本地缓存有没有
-                    //先看TWEET表，如果没有再看一下MENTION表
-                    replyTweet = getDb().getTweet(TwitterDbAdapter.TABLE_TWEET, params[0]);
-                    if (replyTweet == null){
-                    	replyTweet = getDb().getTweet(TwitterDbAdapter.TABLE_MENTION, params[0]);
-                    }
-                    //如果没有再去获取
-                    if (replyTweet == null){
-                    	status = getApi().showStatus(params[0]);
-                    	replyTweet = Tweet.create(status);
-                    }
+                    // TODO: 未测试
+                    replyTweet = getDb().queryTweet(params[0], -1);
                 } else {
                 	//用于刷新功能，再次请求
                     status = getApi().showStatus(tweet.id);
@@ -431,6 +421,7 @@ public class StatusActivity extends WithHeaderActivity
     }
 	
 
+	//FIXME: 换数据库后, 图片无法显示
 	private class GetPhotoTask extends AsyncTask<String, Void, TaskResult> {
 
         @Override

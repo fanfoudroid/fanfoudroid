@@ -6,8 +6,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
-import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
@@ -42,9 +40,11 @@ public class FavoriteTask extends AsyncTask<String, Void, TaskResult> {
 			com.ch_linghu.fanfoudroid.weibo.Status status = null;
 			if (action.equals(TYPE_ADD)) {
 				status = HasFavorite.mApi.createFavorite(id);
+				HasFavorite.mDb.setFavorited(id, "true");
 			} else {
 			    this.type = TYPE_DEL;
 				status = HasFavorite.mApi.destroyFavorite(id);
+				HasFavorite.mDb.setFavorited(id, "false");
 			}
 
 			Tweet tweet = Tweet.create(status);
@@ -58,13 +58,15 @@ public class FavoriteTask extends AsyncTask<String, Void, TaskResult> {
 				}
 			}
 
+			//TODO: 新数据库暂时没有favorite类型
+			
 			//对所有相关表的对应消息都进行刷新（如果存在的话）
-			HasFavorite.mDb.updateTweet(TwitterDbAdapter.TABLE_FAVORITE, tweet);
-			HasFavorite.mDb.updateTweet(TwitterDbAdapter.TABLE_MENTION, tweet);
-			HasFavorite.mDb.updateTweet(TwitterDbAdapter.TABLE_TWEET, tweet);
-			if(action.equals("del")){
-				HasFavorite.mDb.destoryStatus(TwitterDbAdapter.TABLE_FAVORITE, tweet.id);
-			}
+//			HasFavorite.mDb.updateTweet(TwitterDbAdapter.TABLE_FAVORITE, tweet);
+//			HasFavorite.mDb.updateTweet(TwitterDbAdapter.TABLE_MENTION, tweet);
+//			HasFavorite.mDb.updateTweet(TwitterDbAdapter.TABLE_TWEET, tweet);
+//			if(action.equals("del")){
+//				HasFavorite.mDb.destoryStatus(TwitterDbAdapter.TABLE_FAVORITE, tweet.id);
+//			}
 		} catch (WeiboException e) {
 			Log.e(TAG, e.getMessage(), e);
 			return TaskResult.IO_ERROR;

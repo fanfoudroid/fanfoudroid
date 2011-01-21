@@ -33,7 +33,7 @@ import android.widget.Toast;
 
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
+import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.TaskFactory;
@@ -100,13 +100,9 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 		
 	    mTweetList = (ListView) findViewById(R.id.tweet_list);
 
+	    //TODO: 需处理没有数据时的情况
 	    Log.i("LDS", cursor.getCount()+"");
-		if (cursor.getCount() > 0) {
-		    setupListHeader(true);
-		} else {
-		    Toast.makeText(this, "暂无内容, 刷新试试?", Toast.LENGTH_LONG);
-		}
-		
+	    setupListHeader(true);
 	    
 		mTweetAdapter = new TweetCursorAdapter(this, cursor);
 		mTweetList.setAdapter(mTweetAdapter);
@@ -177,28 +173,22 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 		if (cursor == null){
 			return null;
 		}else{
-			Tweet tweet = new Tweet();
-			tweet.id = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_ID));
-			tweet.createdAt = Utils.parseDateTimeFromSqlite(cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_CREATED_AT)));
-			tweet.favorited = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_FAVORITED));
-			tweet.screenName = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_USER));
-			tweet.userId = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_USER_ID));
-			tweet.text = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_TEXT));
-			tweet.source = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_SOURCE));
-			tweet.profileImageUrl = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_PROFILE_IMAGE_URL));
-			tweet.inReplyToScreenName = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_IN_REPLY_TO_SCREEN_NAME));
-			tweet.inReplyToStatusId = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_IN_REPLY_TO_STATUS_ID));
-			tweet.inReplyToUserId = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_IN_REPLY_TO_USER_ID));
-			return tweet;
+		    cursor.moveToFirst();
+			return StatusTable.parseCursor(cursor);
 		}
 	}
 
 	@Override
 	protected void updateTweet(Tweet tweet){
+	    // TODO: updateTweet() 在哪里调用的? 目前尚只支持:
+	    // updateTweet(String tweetId, ContentValues values) 
+	    // setFavorited(String tweetId, String isFavorited)
+	    // 看是否还需要增加updateTweet(Tweet tweet)方法
+	    
 		//对所有相关表的对应消息都进行刷新（如果存在的话）
-		getDb().updateTweet(TwitterDbAdapter.TABLE_FAVORITE, tweet);
-		getDb().updateTweet(TwitterDbAdapter.TABLE_MENTION, tweet);
-		getDb().updateTweet(TwitterDbAdapter.TABLE_TWEET, tweet);
+//		getDb().updateTweet(TwitterDbAdapter.TABLE_FAVORITE, tweet);
+//		getDb().updateTweet(TwitterDbAdapter.TABLE_MENTION, tweet);
+//		getDb().updateTweet(TwitterDbAdapter.TABLE_TWEET, tweet);
 	}
 
 	@Override

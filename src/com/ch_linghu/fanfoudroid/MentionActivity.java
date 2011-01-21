@@ -24,11 +24,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuItem;
 
-import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
+import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
 import com.ch_linghu.fanfoudroid.task.Followable;
 import com.ch_linghu.fanfoudroid.task.HasFavorite;
 import com.ch_linghu.fanfoudroid.task.Retrievable;
@@ -74,13 +72,13 @@ public class MentionActivity extends TwitterCursorBaseActivity
 	@Override
 	protected Cursor fetchMessages() {
 		// TODO Auto-generated method stub
-		return getDb().fetchAllTweets(TwitterDbAdapter.TABLE_MENTION);
+		return getDb().fetchAllTweets(StatusTable.TYPE_MENTION);
 	}
 	
 	@Override
 	protected void markAllRead() {
 		// TODO Auto-generated method stub
-		getDb().markAllTweetsRead(TwitterDbAdapter.TABLE_MENTION);
+		getDb().markAllTweetsRead(StatusTable.TYPE_MENTION);
 	}
 	
 	@Override
@@ -95,7 +93,7 @@ public class MentionActivity extends TwitterCursorBaseActivity
 	@Override
 	public String fetchMaxId() {
 		// TODO Auto-generated method stub
-		return getDb().fetchMaxId(TwitterDbAdapter.TABLE_MENTION);
+		return getDb().fetchMaxTweetId(StatusTable.TYPE_MENTION);
 	}
 
 	@Override
@@ -110,6 +108,6 @@ public class MentionActivity extends TwitterCursorBaseActivity
 	@Override
 	public void addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
 		// TODO Auto-generated method stub
-		getDb().addTweets(TwitterDbAdapter.TABLE_MENTION, tweets, isUnread);
+		getDb().putTweets(tweets, StatusTable.TYPE_MENTION, isUnread);
 	}
 }

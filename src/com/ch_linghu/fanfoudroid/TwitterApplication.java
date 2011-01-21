@@ -9,7 +9,7 @@ import android.database.Cursor;
 import android.preference.PreferenceManager;
 
 import com.ch_linghu.fanfoudroid.data.db.StatusDatabase;
-import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
+import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.weibo.Weibo;
@@ -19,23 +19,20 @@ public class TwitterApplication extends Application {
   public static final String TAG = "TwitterApplication";
   
   public static ImageManager mImageManager;
-  public static TwitterDbAdapter mDb; 
+  public static StatusDatabase mDb;
   public static Weibo mApi; // new API
   public static Context mContext;
   
-  public static StatusDatabase dbh;
 
   @Override
   public void onCreate() {
     super.onCreate();
     
-    dbh = StatusDatabase.getInstance(this);
 
     mContext = this.getApplicationContext();
     mImageManager = new ImageManager(this);
     mApi = new Weibo();
-    mDb = new TwitterDbAdapter(this);
-    mDb.open();
+    mDb = StatusDatabase.getInstance(this);
     
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);        
     String username = preferences.getString(Preferences.USERNAME_KEY, "");
@@ -50,7 +47,6 @@ public class TwitterApplication extends Application {
   public void onTerminate() {
     cleanupImages();
     mDb.close();
-    dbh.close();
 //    Toast.makeText(this, "exit app", Toast.LENGTH_LONG);
     
     super.onTerminate();
@@ -59,11 +55,11 @@ public class TwitterApplication extends Application {
   private void cleanupImages() {
     HashSet<String> keepers = new HashSet<String>();
     
-    Cursor cursor = mDb.fetchAllTweets(TwitterDbAdapter.TABLE_TWEET);
+    Cursor cursor = mDb.fetchAllTweets(StatusTable.TYPE_HOME);
     
     if (cursor.moveToFirst()) {
       int imageIndex = cursor.getColumnIndexOrThrow(
-          TwitterDbAdapter.KEY_PROFILE_IMAGE_URL);
+          StatusTable.FIELD_PROFILE_IMAGE_URL);
       do {
         keepers.add(cursor.getString(imageIndex));
       } while (cursor.moveToNext());
@@ -71,11 +67,11 @@ public class TwitterApplication extends Application {
     
     cursor.close();
     
-    cursor = mDb.fetchAllDms();
+    cursor = mDb.fetchAllDms(-1);
     
     if (cursor.moveToFirst()) {
       int imageIndex = cursor.getColumnIndexOrThrow(
-          TwitterDbAdapter.KEY_PROFILE_IMAGE_URL);
+            StatusTable.FIELD_PROFILE_IMAGE_URL);
       do {
         keepers.add(cursor.getString(imageIndex));
       } while (cursor.moveToNext());

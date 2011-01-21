@@ -29,7 +29,8 @@ import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.data.Dm;
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
+import com.ch_linghu.fanfoudroid.data.db.StatusDatabase;
+import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.MessageTable;
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
@@ -109,7 +110,7 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 
 		mProgressText = (TextView) findViewById(R.id.progress_text);
 
-		TwitterDbAdapter db = getDb();
+		StatusDatabase db = getDb();
 		// Mark all as read.
 		db.markAllDmsRead();
 
@@ -224,7 +225,7 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 	}
 
 	private void setupAdapter() {
-		Cursor cursor = getDb().fetchAllDms();
+		Cursor cursor = getDb().fetchAllDms(-1);
 		startManagingCursor(cursor);
 		mAdapter = new Adapter(this, cursor);
 
@@ -263,7 +264,7 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 
 			ArrayList<Dm> dms = new ArrayList<Dm>();
 
-			TwitterDbAdapter db = getDb();
+			StatusDatabase db = getDb();
 			ImageManager imageManager = getImageManager();
 
 			String maxId = db.fetchMaxDmId(false);
@@ -382,16 +383,18 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 
 			mInflater = LayoutInflater.from(context);
 
+			// TODO: 可使用:
+			//DM dm = MessageTable.parseCursor(cursor);
 			mUserTextColumn = cursor
-					.getColumnIndexOrThrow(TwitterDbAdapter.KEY_USER);
+					.getColumnIndexOrThrow(MessageTable.FIELD_USER_SCREEN_NAME);
 			mTextColumn = cursor
-					.getColumnIndexOrThrow(TwitterDbAdapter.KEY_TEXT);
+					.getColumnIndexOrThrow(MessageTable.FIELD_TEXT);
 			mProfileImageUrlColumn = cursor
-					.getColumnIndexOrThrow(TwitterDbAdapter.KEY_PROFILE_IMAGE_URL);
+					.getColumnIndexOrThrow(MessageTable.FIELD_PROFILE_IMAGE_URL);
 			mCreatedAtColumn = cursor
-					.getColumnIndexOrThrow(TwitterDbAdapter.KEY_CREATED_AT);
+					.getColumnIndexOrThrow(MessageTable.FIELD_CREATED_AT);
 			mIsSentColumn = cursor
-					.getColumnIndexOrThrow(TwitterDbAdapter.KEY_IS_SENT);
+					.getColumnIndexOrThrow(MessageTable.FIELD_IS_SENT);
 		}
 
 		private LayoutInflater mInflater;
@@ -456,7 +459,7 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 
 			try {
 				holder.metaText.setText(Utils
-						.getRelativeDate(TwitterDbAdapter.DB_DATE_FORMATTER
+						.getRelativeDate(StatusDatabase.DB_DATE_FORMATTER
 								.parse(cursor.getString(mCreatedAtColumn))));
 			} catch (ParseException e) {
 				Log.w(TAG, "Invalid created at data.");
@@ -519,13 +522,13 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 		switch (item.getItemId()) {
 		case CONTEXT_REPLY_ID:
 			String user_id = cursor.getString(cursor
-					.getColumnIndexOrThrow(TwitterDbAdapter.KEY_USER_ID));
+					.getColumnIndexOrThrow(MessageTable.FIELD_USER_ID));
 			Intent intent = WriteDmActivity.createIntent(user_id);
 			startActivity(intent);
 
 			return true;
 		case CONTEXT_DELETE_ID:
-			int idIndex = cursor.getColumnIndexOrThrow(TwitterDbAdapter.KEY_ID);
+			int idIndex = cursor.getColumnIndexOrThrow(MessageTable._ID);
 			String id = cursor.getString(idIndex);
 			doDestroy(id);
 

@@ -21,8 +21,8 @@ import android.widget.TextView;
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.data.Tweet;
+import com.ch_linghu.fanfoudroid.data.db.StatusDatabase;
 import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
-import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 
@@ -40,6 +40,9 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		}
 
 		if (cursor != null) {
+		    //TODO: 可使用:
+		    //Tweet tweet = StatusTable.parseCursor(cursor);
+		    
 			mUserTextColumn = cursor
 					.getColumnIndexOrThrow(StatusTable.FIELD_USER_SCREEN_NAME);
 			mTextColumn = cursor
@@ -122,7 +125,7 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		}
 
 		try {
-			Date createdAt = TwitterDbAdapter.DB_DATE_FORMATTER.parse(cursor
+			Date createdAt = StatusDatabase.DB_DATE_FORMATTER.parse(cursor
 					.getString(mCreatedAtColumn));
 			holder.metaText.setText(Tweet.buildMetaText(mMetaBuilder,
 					createdAt, cursor.getString(mSourceColumn), cursor
