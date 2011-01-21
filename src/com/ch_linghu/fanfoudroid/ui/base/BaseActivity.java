@@ -101,6 +101,7 @@ public class BaseActivity extends Activity {
   public void logout() {
     TwitterService.unschedule(this);
 
+    TwitterApplication.dbh.clearData();
     getDb().clearData();
     getApi().reset();
 

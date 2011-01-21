@@ -25,6 +25,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -86,7 +87,7 @@ public class StatusActivity extends WithHeaderActivity
 	
 	public static Intent createIntent(Tweet tweet) {
 	    Intent intent = new Intent(LAUNCH_ACTION);
-	    intent.putExtra(EXTRA_TWEET, tweet);
+	    intent.putExtra(EXTRA_TWEET, (Parcelable) tweet);
 	    return intent;
 	}
 

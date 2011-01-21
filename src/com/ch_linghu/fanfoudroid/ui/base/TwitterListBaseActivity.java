@@ -215,7 +215,7 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity {
 	}
 
 	private void goTop() {
-		getTweetList().setSelection(0);
+		getTweetList().setSelection(1);
 	}
 	
 	protected void adapterRefresh(){

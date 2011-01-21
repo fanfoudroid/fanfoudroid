@@ -29,6 +29,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.data.Tweet;
@@ -95,11 +96,17 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 
 		cursor = fetchMessages(); // getDb().fetchMentions();
 		setTitle(getActivityTitle());
-
 		startManagingCursor(cursor);
+		
+	    mTweetList = (ListView) findViewById(R.id.tweet_list);
 
-		mTweetList = (ListView) findViewById(R.id.tweet_list);
-		setupListHeader(true);
+	    Log.i("LDS", cursor.getCount()+"");
+		if (cursor.getCount() > 0) {
+		    setupListHeader(true);
+		} else {
+		    Toast.makeText(this, "暂无内容, 刷新试试?", Toast.LENGTH_LONG);
+		}
+		
 	    
 		mTweetAdapter = new TweetCursorAdapter(this, cursor);
 		mTweetList.setAdapter(mTweetAdapter);
@@ -111,6 +118,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 	 * NOTE: 必须在listView#setAdapter之前调用
 	 */
 	protected void setupListHeader(boolean addFooter) {
+        
         // Add Header to ListView
         View header = View.inflate(this, R.layout.listview_header, null);
         mTweetList.addHeaderView(header, null, false);
@@ -124,6 +132,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
             }
         });
         
+        //TODO: 完成listView顶部和底部的事件绑定
         View footer = View.inflate(this, R.layout.listview_footer, null);
         mTweetList.addFooterView(footer, null, false);
         footer.setOnClickListener(new View.OnClickListener() {
@@ -135,6 +144,11 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
                 //frameAnimation.stop();
             }
         });
+        
+        // Find View
+        loadMoreBtn = (TextView)findViewById(R.id.ask_for_more);
+        loadMoreGIF = (ProgressBar)findViewById(R.id.rectangleProgressBar);
+        loadMoreAnimation = (AnimationDrawable) loadMoreGIF.getIndeterminateDrawable();
     }
 	
 	@Override
@@ -195,10 +209,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 		
 		goTop(); // skip the header
 		
-		// Find View
-		loadMoreBtn = (TextView)findViewById(R.id.ask_for_more);
-		loadMoreGIF = (ProgressBar)findViewById(R.id.rectangleProgressBar);
-        loadMoreAnimation = (AnimationDrawable) loadMoreGIF.getIndeterminateDrawable();
+		
 
 		// Mark all as read.
 		// getDb().markAllMentionsRead();
@@ -248,7 +259,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 	protected void onResume() {
 		Log.i(TAG, "onResume.");
 		if (lastPosition != 0) {
-		    mTweetList.setSelection(lastPosition);
+//		    mTweetList.setSelection(lastPosition);
 		}
 		super.onResume();
 		checkIsLogedIn();
@@ -332,7 +343,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 	}
 	public void goTop() {
         Log.i(TAG, "goTop.");
-		mTweetList.setSelectionAfterHeaderView();
+		mTweetList.setSelection(1);
 	}
 	
 	private void doRetrieveFollowers() {

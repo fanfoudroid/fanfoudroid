@@ -8,10 +8,10 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.preference.PreferenceManager;
 
+import com.ch_linghu.fanfoudroid.data.db.StatusDatabase;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.weibo.User;
 import com.ch_linghu.fanfoudroid.weibo.Weibo;
 
 public class TwitterApplication extends Application {
@@ -22,10 +22,14 @@ public class TwitterApplication extends Application {
   public static TwitterDbAdapter mDb; 
   public static Weibo mApi; // new API
   public static Context mContext;
+  
+  public static StatusDatabase dbh;
 
   @Override
   public void onCreate() {
     super.onCreate();
+    
+    dbh = StatusDatabase.getInstance(this);
 
     mContext = this.getApplicationContext();
     mImageManager = new ImageManager(this);
@@ -46,6 +50,7 @@ public class TwitterApplication extends Application {
   public void onTerminate() {
     cleanupImages();
     mDb.close();
+    dbh.close();
 //    Toast.makeText(this, "exit app", Toast.LENGTH_LONG);
     
     super.onTerminate();
