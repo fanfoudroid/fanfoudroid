@@ -9,19 +9,29 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.ch_linghu.fanfoudroid.weibo.Status;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 
-public class RetrieveListTask extends AsyncTask<Void, Integer, TaskResult> {
+public class RetrieveListTaskListener implements TaskListener {
+	
+    private static RetrieveListTaskListener instance = null; 
+    public static RetrieveListTaskListener getInstance(Retrievable activity){
+    	if (instance == null){
+    		instance = new RetrieveListTaskListener();
+    	}
+    	instance.setRetrievable(activity);
+    	return instance;
+    }
 	
 	private static final String TAG = "RetrieveListTask";
 	private Retrievable activity = null;
+	private GenericTask task;
 	
-	public RetrieveListTask(Retrievable activity) {
-		super();
+	public void setRetrievable(Retrievable activity) {
 		this.activity = activity;
 	}
 	
@@ -31,13 +41,13 @@ public class RetrieveListTask extends AsyncTask<Void, Integer, TaskResult> {
 	}
 
 	@Override
-	public void onProgressUpdate(Integer... progress) {
+	public void onProgressUpdate(Object param) {
 		activity.draw();
 	}
 
 	@Override
-	public TaskResult doInBackground(Void... params) {
-		List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
+	public TaskResult doInBackground(TaskParams params) {
+		List<Status> statusList;
 
 		String maxId = activity.fetchMaxId(); // getDb().fetchMaxMentionId();
 
@@ -50,9 +60,9 @@ public class RetrieveListTask extends AsyncTask<Void, Integer, TaskResult> {
 
 		ArrayList<Tweet> tweets = new ArrayList<Tweet>();
 		HashSet<String> imageUrls = new HashSet<String>();
-
-		for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
-			if (isCancelled()) {
+		
+		for (Status status : statusList) {
+			if (task.isCancelled()) {
 				return TaskResult.CANCELLED;
 			}
 
@@ -63,18 +73,18 @@ public class RetrieveListTask extends AsyncTask<Void, Integer, TaskResult> {
 
 			imageUrls.add(tweet.profileImageUrl);
 
-			if (isCancelled()) {
+			if (task.isCancelled()) {
 				return TaskResult.CANCELLED;
 			}
 		}
 
 		activity.addMessages(tweets, false); // getDb().addMentions(tweets, false);
 
-		if (isCancelled()) {
+		if (task.isCancelled()) {
 			return TaskResult.CANCELLED;
 		}
 
-		publishProgress();
+		//task.publishProgress();
 
 		for (String imageUrl : imageUrls) {
 			if (!Utils.isEmpty(imageUrl)) {
@@ -86,7 +96,7 @@ public class RetrieveListTask extends AsyncTask<Void, Integer, TaskResult> {
 				}
 			}
 
-			if (isCancelled()) {
+			if (task.isCancelled()) {
 				return TaskResult.CANCELLED;
 			}
 		}
@@ -112,5 +122,23 @@ public class RetrieveListTask extends AsyncTask<Void, Integer, TaskResult> {
 		// 刷新按钮停止旋转
 		activity.getRefreshButton().clearAnimation();
 		activity.updateProgress("");
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void onCancelled() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setTask(GenericTask task) {
+		// TODO Auto-generated method stub
+		this.task = task;
 	}
 }

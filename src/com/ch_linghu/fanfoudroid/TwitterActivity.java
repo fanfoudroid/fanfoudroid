@@ -38,10 +38,13 @@ import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.Deletable;
+import com.ch_linghu.fanfoudroid.task.DeleteTaskListener;
 import com.ch_linghu.fanfoudroid.task.Followable;
+import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.HasFavorite;
 import com.ch_linghu.fanfoudroid.task.Retrievable;
 import com.ch_linghu.fanfoudroid.task.TaskFactory;
+import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterCursorBaseActivity;
 import com.ch_linghu.fanfoudroid.weibo.Paging;
@@ -54,7 +57,7 @@ public class TwitterActivity extends TwitterCursorBaseActivity
 	private static final String TAG = "TwitterActivity";
 
 	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.TWEETS";
-	protected AsyncTask<String,Void,TaskResult> mDeleteTask;
+	protected GenericTask mDeleteTask;
 	
 	static final int DIALOG_WRITE_ID = 0;
 
@@ -190,11 +193,11 @@ public class TwitterActivity extends TwitterCursorBaseActivity
 			Log.w(TAG, "DeleteTask still running");
 		} else {
 			if (!Utils.isEmpty(id)) {
-//				mFavTask = new FavTask().execute(action, id);
-				AsyncTask<String,Void,TaskResult> task = TaskFactory.create(TaskFactory.DELETE_TASK_TYPE, this);
-				if (null != task) {
-					mDeleteTask = task.execute(id);
-				}
+				mDeleteTask = TaskFactory.create(DeleteTaskListener.getInstance(this));
+				
+				TaskParams params = new TaskParams();
+				params.put("id", id);
+				mDeleteTask.execute(params);
 			}
 		}
 	}

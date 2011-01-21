@@ -9,23 +9,34 @@ import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.weibo.Status;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
-public class FavoriteTask extends AsyncTask<String, Void, TaskResult> {
+public class FavoriteTaskListener implements TaskListener {
 
+    private static FavoriteTaskListener instance = null; 
+    public static FavoriteTaskListener getInstance(HasFavorite activity){
+    	if (instance == null){
+    		instance = new FavoriteTaskListener();
+    	}
+    	instance.setHasFavorite(activity);
+    	return instance;
+    }
+
+	
 	private static final String TAG = "FavoriteTask";
 	private HasFavorite activity = null;
 	
-    public static final String TYPE_ADD = "add";
+	public static final String TYPE_ADD = "add";
     public static final String TYPE_DEL = "del";
     public String type = TYPE_ADD;
+    
     
     public String getType() {
         return type;
     }
 	
-	public FavoriteTask(HasFavorite activity) {
-		super();
+	public void setHasFavorite(HasFavorite activity) {
 		this.activity = activity;
 	}
 	
@@ -35,11 +46,12 @@ public class FavoriteTask extends AsyncTask<String, Void, TaskResult> {
 	}
 
 	@Override
-	public TaskResult doInBackground(String... params) {
+	public TaskResult doInBackground(TaskParams params) {
 		try {
-			String action = params[0];
-			String id = params[1];
-			com.ch_linghu.fanfoudroid.weibo.Status status = null;
+			String action = params.getString("action");
+			String id = params.getString("id");
+			
+			Status status = null;
 			if (action.equals(TYPE_ADD)) {
 				status = HasFavorite.mApi.createFavorite(id);
 			} else {
@@ -75,13 +87,6 @@ public class FavoriteTask extends AsyncTask<String, Void, TaskResult> {
 
 	@Override
 	public void onPostExecute(TaskResult result) {
-		if (isCancelled()) {
-			// Canceled doesn't really mean "canceled" in this task.
-			// We want the request to complete, but don't want to update the
-			// activity (it's probably dead).
-			return;
-		}
-
 		if (result == TaskResult.AUTH_ERROR) {
 			activity.logout();
 		} else if (result == TaskResult.OK) {
@@ -89,6 +94,28 @@ public class FavoriteTask extends AsyncTask<String, Void, TaskResult> {
 		} else if (result == TaskResult.IO_ERROR) {
 			activity.onFavFailure();
 		}
+	}
+
+	@Override
+	public String getName() {
+		return "Favorite";
+	}
+
+	@Override
+	public void setTask(GenericTask task){
+		// TODO Auto-generated method stub
+	}
+	
+	@Override
+	public void onCancelled() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onProgressUpdate(Object param) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -10,13 +10,20 @@ import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
-public class DeleteTask extends AsyncTask<String, Void, TaskResult> {
+public class DeleteTaskListener implements TaskListener {
+	private static DeleteTaskListener instance = null;
+	public static DeleteTaskListener getInstance(Deletable activity){
+		if (instance == null){
+			instance = new DeleteTaskListener();
+		}
+		instance.setDeletable(activity);
+		return instance;
+	}
 
 	private static final String TAG = "FavoriteTask";
 	private Deletable activity = null;
 	
-	public DeleteTask(Deletable activity) {
-		super();
+	public void setDeletable(Deletable activity){
 		this.activity = activity;
 	}
 	
@@ -26,9 +33,9 @@ public class DeleteTask extends AsyncTask<String, Void, TaskResult> {
 	}
 
 	@Override
-	public TaskResult doInBackground(String... params) {
+	public TaskResult doInBackground(TaskParams params) {
 		try {
-			String id = params[0];
+			String id = params.getString("id");
 			com.ch_linghu.fanfoudroid.weibo.Status status = null;
 
 			status = HasFavorite.mApi.destroyStatus(id);
@@ -47,13 +54,6 @@ public class DeleteTask extends AsyncTask<String, Void, TaskResult> {
 
 	@Override
 	public void onPostExecute(TaskResult result) {
-		if (isCancelled()) {
-			// Canceled doesn't really mean "canceled" in this task.
-			// We want the request to complete, but don't want to update the
-			// activity (it's probably dead).
-			return;
-		}
-
 		if (result == TaskResult.AUTH_ERROR) {
 			activity.logout();
 		} else if (result == TaskResult.OK) {
@@ -61,6 +61,30 @@ public class DeleteTask extends AsyncTask<String, Void, TaskResult> {
 		} else if (result == TaskResult.IO_ERROR) {
 			activity.onDeleteFailure();
 		}
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return "Delete";
+	}
+
+	@Override
+	public void onCancelled() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onProgressUpdate(Object param) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setTask(GenericTask task) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

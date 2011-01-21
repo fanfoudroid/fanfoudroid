@@ -46,11 +46,16 @@ import com.ch_linghu.fanfoudroid.WriteDmActivity;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.task.FavoriteTaskListener;
+import com.ch_linghu.fanfoudroid.task.GenericTask;
+import com.ch_linghu.fanfoudroid.task.HasFavorite;
 import com.ch_linghu.fanfoudroid.task.TaskFactory;
+import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 
-public abstract class TwitterListBaseActivity extends WithHeaderActivity {
+public abstract class TwitterListBaseActivity extends WithHeaderActivity
+	implements HasFavorite {
 	static final String TAG = "TwitterListBaseActivity";
 
 	protected TextView mProgressText;
@@ -59,7 +64,7 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity {
 	protected static final String SIS_RUNNING_KEY = "running";
 
 	// Tasks.
-	protected AsyncTask<String, Void, TaskResult> mFavTask;
+	protected GenericTask mFavTask;
 
 	static final int DIALOG_WRITE_ID = 0;
 	
@@ -225,16 +230,13 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity {
 	// for HasFavorite interface
 	
 	public void doFavorite(String action, String id) {
-        if (mFavTask != null && mFavTask.getStatus() == AsyncTask.Status.RUNNING) {
-            Log.w(TAG, "FavTask still running");
-        } else {
-            if (!Utils.isEmpty(id)) {
-//              mFavTask = new FavTask().execute(action, id);
-                AsyncTask<String,Void,TaskResult> task = TaskFactory.create(TaskFactory.FAVORITE_TASK_TYPE, this);
-                if (null != task) {
-                    mFavTask = task.execute(action, id);
-                }
-            }
+        if (!Utils.isEmpty(id)) {
+        	mFavTask = TaskFactory.create(FavoriteTaskListener.getInstance(this));
+
+        	TaskParams params = new TaskParams();
+        	params.put("action", action);
+        	params.put("id", id);
+        	mFavTask.execute(params);
         }
     }
 	

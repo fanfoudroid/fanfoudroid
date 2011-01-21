@@ -41,11 +41,15 @@ import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
 import com.ch_linghu.fanfoudroid.http.Response;
 import com.ch_linghu.fanfoudroid.task.Deletable;
-import com.ch_linghu.fanfoudroid.task.FavoriteTask;
+import com.ch_linghu.fanfoudroid.task.FavoriteTaskListener;
+import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.HasFavorite;
 import com.ch_linghu.fanfoudroid.task.TaskFactory;
+import com.ch_linghu.fanfoudroid.task.TaskListener;
+import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
+import com.ch_linghu.fanfoudroid.weibo.Status;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 public class StatusActivity extends WithHeaderActivity 
@@ -59,9 +63,9 @@ public class StatusActivity extends WithHeaderActivity
 	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.STATUS";
 	
 	// Task TODO: tasks 
-	private AsyncTask<String, Void, TaskResult> getStatusTask; 
-	private AsyncTask<String, Void, TaskResult> getPhotoTask; //TODO: 压缩图片，提供获取图片的过程中可取消获取
-	private AsyncTask<String, Void, TaskResult> mFavTask;
+	private GenericTask mStatusTask; 
+	private GenericTask mPhotoTask; //TODO: 压缩图片，提供获取图片的过程中可取消获取
+	private GenericTask mFavTask;
 	
 	// View
 	private TextView tweet_screen_name; 
@@ -258,18 +262,18 @@ public class StatusActivity extends WithHeaderActivity
 	protected void onDestroy() {
         Log.i(TAG, "onDestroy.");
 
-        if (getStatusTask != null
-                && getStatusTask.getStatus() == AsyncTask.Status.RUNNING) {
-            getStatusTask.cancel(true);
-        }
-        if (getPhotoTask != null
-                && getPhotoTask.getStatus() == AsyncTask.Status.RUNNING) {
-        	getPhotoTask.cancel(true);
-        }
-        if (mFavTask != null
-                && mFavTask.getStatus() == AsyncTask.Status.RUNNING) {
-            mFavTask.cancel(true);
-        }
+//        if (mStatusTask != null
+//                && mStatusTask.getStatus() == AsyncTask.Status.RUNNING) {
+//            mStatusTask.cancel(true);
+//        }
+//        if (mPhotoTask != null
+//                && mPhotoTask.getStatus() == AsyncTask.Status.RUNNING) {
+//        	mPhotoTask.cancel(true);
+//        }
+//        if (mFavTask != null
+//                && mFavTask.getStatus() == AsyncTask.Status.RUNNING) {
+//            mFavTask.cancel(true);
+//        }
 
 		super.onDestroy();
 	}
@@ -317,8 +321,8 @@ public class StatusActivity extends WithHeaderActivity
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		
-		if (getStatusTask != null
-                && getStatusTask.getStatus() == AsyncTask.Status.RUNNING) {
+		if (mStatusTask != null
+                && mStatusTask.getStatus() == AsyncTask.Status.RUNNING) {
             outState.putBoolean(SIS_RUNNING_KEY, true);
 		}
 	}
@@ -346,36 +350,36 @@ public class StatusActivity extends WithHeaderActivity
 
         // 旋转刷新按钮
         animRotate(refreshButton);
+
+        mStatusTask = TaskFactory.create(new GetStatusTaskListener());
         
-	    if (getStatusTask != null
-                && getStatusTask.getStatus() == AsyncTask.Status.RUNNING) {
-            Log.w(TAG, "Already retrieving.");
-        } else {
-            getStatusTask = new GetStatusTask();
-            if (isReply) getStatusTask.execute(status_id);
-            else getStatusTask.execute();
+        TaskParams params = new TaskParams();
+        if (isReply){ 
+        	params.put("reply_id", status_id);
         }
+    	mStatusTask.execute(params);
     }
 	
-	private class GetStatusTask extends AsyncTask<String, Void, TaskResult> {
+	private class GetStatusTaskListener implements TaskListener {
 	    
 	    private boolean isReply = false;
-
+	    
         @Override
-        protected TaskResult doInBackground(String... params) {
-            com.ch_linghu.fanfoudroid.weibo.Status status;
+		public TaskResult doInBackground(TaskParams params) {
+            Status status;
             try {
-                if (params.length > 0) {
+                String reply_id = params.getString("reply_id");
+                if (!Utils.isEmpty(reply_id)) {
                     isReply = true;
                     //先看看本地缓存有没有
                     //先看TWEET表，如果没有再看一下MENTION表
-                    replyTweet = getDb().getTweet(TwitterDbAdapter.TABLE_TWEET, params[0]);
+                    replyTweet = getDb().getTweet(TwitterDbAdapter.TABLE_TWEET, reply_id);
                     if (replyTweet == null){
-                    	replyTweet = getDb().getTweet(TwitterDbAdapter.TABLE_MENTION, params[0]);
+                    	replyTweet = getDb().getTweet(TwitterDbAdapter.TABLE_MENTION, reply_id);
                     }
                     //如果没有再去获取
                     if (replyTweet == null){
-                    	status = getApi().showStatus(params[0]);
+                    	status = getApi().showStatus(reply_id);
                     	replyTweet = Tweet.create(status);
                     }
                 } else {
@@ -393,8 +397,7 @@ public class StatusActivity extends WithHeaderActivity
         }
 
         @Override
-        protected void onPostExecute(TaskResult result) {
-            super.onPostExecute(result);
+		public void onPostExecute(TaskResult result) {
             if (isReply) {
                 showReplyStatus(replyTweet);
             } else {
@@ -404,45 +407,56 @@ public class StatusActivity extends WithHeaderActivity
         }
 
         @Override
-        protected void onPreExecute() {
+		public void onPreExecute() {
             // TODO Auto-generated method stub
-            super.onPreExecute();
         }
 
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            // TODO Auto-generated method stub
-            super.onProgressUpdate(values);
-        }
+		@Override
+		public String getName() {
+			// TODO Auto-generated method stub
+			return "GetStatus";
+		}
+
+		@Override
+		public void onCancelled() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onProgressUpdate(Object param) {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void setTask(GenericTask task) {
+			// TODO Auto-generated method stub
+		}
 	}
 	
 	private void doGetPhoto(String photoPageURL) {
         // 旋转刷新按钮
         animRotate(refreshButton);
         
-	    if (getPhotoTask != null
-                && getPhotoTask.getStatus() == AsyncTask.Status.RUNNING) {
-            Log.w(TAG, "Already retrieving.");
-        } else {
-            getPhotoTask = new GetPhotoTask();
-            getPhotoTask.execute(photoPageURL);
-        }
+        mPhotoTask = TaskFactory.create(new GetPhotoTaskListener());
+        
+        TaskParams params = new TaskParams();
+        params.put("photo_page_url", photoPageURL);
+        mPhotoTask.execute(params);
     }
 	
 
-	private class GetPhotoTask extends AsyncTask<String, Void, TaskResult> {
+	private class GetPhotoTaskListener implements TaskListener {
 
         @Override
-        protected TaskResult doInBackground(String... params) {
+		public TaskResult doInBackground(TaskParams params) {
             try {
-                if (params.length > 0) {
-                	String photoPageURL = params[0];
-                	String pageHtml = fetchWebPage(photoPageURL);
-                	String photoSrcURL = Utils.getPhotoURL(pageHtml);
-                	if (photoSrcURL != null){
-                		mPhotoBitmap = fetchPhotoBitmap(photoSrcURL);
-                	}
-                } 
+            	String photoPageURL = params.getString("photo_page_url");
+            	String pageHtml = fetchWebPage(photoPageURL);
+            	String photoSrcURL = Utils.getPhotoURL(pageHtml);
+            	if (photoSrcURL != null){
+            		mPhotoBitmap = fetchPhotoBitmap(photoSrcURL);
+            	}
             } catch (WeiboException e) {
                 Log.e(TAG, e.getMessage(), e);
                 return TaskResult.IO_ERROR;
@@ -454,9 +468,8 @@ public class StatusActivity extends WithHeaderActivity
         }
 
         @Override
-        protected void onPostExecute(TaskResult result) {
-            super.onPostExecute(result);
-            if(result == TaskResult.OK){
+		public void onPostExecute(TaskResult result) {
+               if(result == TaskResult.OK){
             	status_photo.setImageBitmap(mPhotoBitmap);		
             }else{
             	status_photo.setVisibility(View.GONE);
@@ -465,16 +478,33 @@ public class StatusActivity extends WithHeaderActivity
         }
 
         @Override
-        protected void onPreExecute() {
+		public void onPreExecute() {
             // TODO Auto-generated method stub
-            super.onPreExecute();
         }
 
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            // TODO Auto-generated method stub
-            super.onProgressUpdate(values);
-        }
+		@Override
+		public String getName() {
+			// TODO Auto-generated method stub
+			return "GetPhoto";
+		}
+
+		@Override
+		public void onCancelled() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onProgressUpdate(Object param) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void setTask(GenericTask task) {
+			// TODO Auto-generated method stub
+			
+		}
 	}
 
 	private void showReplyStatus(Tweet tweet) {
@@ -505,22 +535,21 @@ public class StatusActivity extends WithHeaderActivity
 // for HasFavorite interface
     
     public void doFavorite(String action, String id) {
-        if (mFavTask != null && mFavTask.getStatus() == AsyncTask.Status.RUNNING) {
-            Log.w(TAG, "FavTask still running");
-        } else {
-            if (!Utils.isEmpty(id)) {
-                Log.i(TAG, "doFavorite.");
-                AsyncTask<String,Void,TaskResult> task = TaskFactory.create(TaskFactory.FAVORITE_TASK_TYPE, this);
-                if (null != task) {
-                    mFavTask = task.execute(action, id);
-                }
-            }
+        if (!Utils.isEmpty(id)) {
+            Log.i(TAG, "doFavorite.");
+            mFavTask = TaskFactory.create(FavoriteTaskListener.getInstance(this));
+            
+            TaskParams param = new TaskParams();
+            param.put("action", action);
+            param.put("id", id);
+            mFavTask.execute(param);
         }
     }
     
     public void onFavSuccess() {
         // updateProgress(getString(R.string.refreshing));
-        if ( ((FavoriteTask) mFavTask).getType().equals(FavoriteTask.TYPE_ADD) ) {
+    	FavoriteTaskListener listener = (FavoriteTaskListener) (mFavTask.getListener());
+        if (listener.getType().equals(FavoriteTaskListener.TYPE_ADD)) {
             tweet.favorited = "true";
             tweet_fav.setEnabled(true);
         } else {

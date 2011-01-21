@@ -35,7 +35,13 @@ import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.task.Followable;
+import com.ch_linghu.fanfoudroid.task.FollowersTaskListener;
+import com.ch_linghu.fanfoudroid.task.GenericTask;
+import com.ch_linghu.fanfoudroid.task.Retrievable;
+import com.ch_linghu.fanfoudroid.task.RetrieveListTaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskFactory;
+import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 import com.ch_linghu.fanfoudroid.ui.module.TweetCursorAdapter;
@@ -45,7 +51,8 @@ import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 /**
  * TwitterCursorBaseLine用于带有静态数据来源（对应数据库的，与twitter表同构的特定表）的展现
  */
-public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity {
+public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
+	implements Followable, Retrievable{
 	static final String TAG = "TwitterListBaseActivity";
 
 	// Views.
@@ -60,8 +67,8 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 	protected static int lastPosition = 0;
 
 	// Tasks.
-	private AsyncTask<Void, Void, TaskResult> mRetrieveTask;
-	private AsyncTask<Void, Void, TaskResult> mFollowersRetrieveTask;
+	private GenericTask mRetrieveTask;
+	private GenericTask mFollowersRetrieveTask;
 
 	// Refresh data at startup if last refresh was this long ago or greater.
 	private static final long REFRESH_THRESHOLD = 5 * 60 * 1000;
@@ -73,12 +80,12 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 
 	abstract protected Cursor fetchMessages();
 
-	abstract protected String fetchMaxId();
+	public abstract String fetchMaxId();
 
-	abstract protected void addMessages(ArrayList<Tweet> tweets,
+	public abstract void addMessages(ArrayList<Tweet> tweets,
 			boolean isUnread);
 
-	abstract protected List<Status> getMessageSinceId(String maxId)
+	public abstract List<Status> getMessageSinceId(String maxId)
 			throws WeiboException;
 
 	public static final int CONTEXT_REPLY_ID = Menu.FIRST + 1;
@@ -338,16 +345,10 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 	private void doRetrieveFollowers() {
         Log.i(TAG, "Attempting followers retrieve.");
 
-        if (mFollowersRetrieveTask != null
-                && mFollowersRetrieveTask.getStatus() == AsyncTask.Status.RUNNING) {
-            Log.w(TAG, "Already retrieving.");
-        } else {
-//          mFollowersRetrieveTask = new FollowersTask().execute();
-            AsyncTask<Void,Void,TaskResult> task = TaskFactory.create(TaskFactory.FOLLOWERS_TASK_TYPE, this);
-            if (null != task) {
-                mFollowersRetrieveTask = task.execute();
-            }
-        }
+        mFollowersRetrieveTask = TaskFactory.create(FollowersTaskListener.getInstance(this));
+
+        TaskParams params = new TaskParams();
+        mFollowersRetrieveTask.execute(params);
     }
 	
 	public void onRetrieveBegin() {
@@ -360,16 +361,11 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 		// 旋转刷新按钮
 		animRotate(refreshButton);
 
-		if (mRetrieveTask != null
-				&& mRetrieveTask.getStatus() == AsyncTask.Status.RUNNING) {
-			Log.w(TAG, "Already retrieving.");
-		} else {
-//			mRetrieveTask = new RetrieveTask().execute();
-			AsyncTask<Void,Void,TaskResult> task = TaskFactory.create(TaskFactory.RETRIEVE_LIST_TASK_TYPE, this);
-			if (null != task) {
-				mRetrieveTask = task.execute();
-			}
-		}
+		mRetrieveTask = TaskFactory.create(RetrieveListTaskListener.getInstance(this));
+		
+		
+        TaskParams params = new TaskParams();
+		mRetrieveTask.execute(params);
 	}
 	// for Retrievable interface
 	public ImageButton getRefreshButton() {
