@@ -183,25 +183,28 @@ public class StatusDatabase {
     }
 
     /**
-     * 将某一类型的消息数量保持在TABLE_STATUS_LENGTH
+     * 删除超过MAX_ROW_NUM垃圾数据
      * 
-     * @param type
+     * @param type 需要清理的消息类型, 传入-1删除所有类型
      */
-    private void tidyTable(int type) {
+    public void gc(int type) {
         SQLiteDatabase mDb = mOpenHelper.getWritableDatabase();
 
         String sql = "DELETE FROM " + StatusTable.TABLE_NAME + " WHERE "
                 + StatusTable.FIELD_STATUS_TYPE + " = " + type
                 + " AND " + StatusTable._ID + " NOT IN "
                 + " (SELECT " + StatusTable._ID // 子句
-                + " FROM " + StatusTable.TABLE_NAME 
-                + " WHERE " + StatusTable.FIELD_STATUS_TYPE + " = " + type + " " 
-                + " ORDER BY " + StatusTable.FIELD_CREATED_AT + " DESC LIMIT "
-                + StatusTable.MAX_ROW_NUM + ")";
-         Log.d(TAG, sql);
+                + " FROM " + StatusTable.TABLE_NAME; 
+        if (type != -1) { 
+          sql  += " WHERE " + StatusTable.FIELD_STATUS_TYPE + " = " + type + " ";
+        }
+        sql += " ORDER BY " + StatusTable.FIELD_CREATED_AT + " DESC LIMIT ";
+        sql += StatusTable.MAX_ROW_NUM + ")";
+       
+        Log.d(TAG, sql);
         mDb.execSQL(sql);
     }
-
+    
     public final static DateFormat DB_DATE_FORMATTER = new SimpleDateFormat(
             "yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US);
 
@@ -290,7 +293,7 @@ public class StatusDatabase {
                 insertTweet(tweet, type, isUnread);
             }
 
-            tidyTable(type); // 保持总量
+           // gc(type); // 保持总量
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
@@ -299,6 +302,8 @@ public class StatusDatabase {
 
     /**
      * 取出某一类型的所有消息
+     * 只返回最新的MAX_ROW_NUM条,超过部分将视为垃圾数据无法取出,
+     * 可调用gc()可清除垃圾,(并不需经常清理)
      * 
      * @param tableName
      * @return a cursor
@@ -310,7 +315,7 @@ public class StatusDatabase {
                 StatusTable.TABLE_COLUMNS,
                 StatusTable.FIELD_STATUS_TYPE + " = " + type,
                 null, null, null,
-                StatusTable.FIELD_CREATED_AT + " DESC");
+                StatusTable.FIELD_CREATED_AT + " DESC LIMIT " + StatusTable.MAX_ROW_NUM);
     }
 
     /**
@@ -342,10 +347,39 @@ public class StatusDatabase {
      * 取出本地某类型最新消息ID
      * 
      * @param tableName
+     * @deprecated 废弃
      * @return The oldest Status Id
      */
     public String fetchMixTweetId(int type) {
         return fetchMaxOrMixTweetId(type, false);
+    }
+    
+    private String fetchMaxOrMixTweetId(int type, boolean isMax) {
+        SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
+        
+        String sql = "SELECT " + StatusTable._ID 
+            + " FROM " + StatusTable.TABLE_NAME 
+            + " WHERE " + StatusTable.FIELD_STATUS_TYPE + "=" + type
+            + " ORDER BY " + StatusTable.FIELD_CREATED_AT;
+        if (isMax) sql += " DESC ";
+        
+        Cursor mCursor = mDb.rawQuery(sql + " LIMIT 1", null);
+
+        String result = null;
+
+        if (mCursor == null) {
+            return result;
+        }
+
+        mCursor.moveToFirst();
+        if (mCursor.getCount() == 0) {
+            result = null;
+        } else {
+            result = mCursor.getString(0);
+        }
+        mCursor.close();
+
+        return result;
     }
     
     /**
@@ -358,8 +392,9 @@ public class StatusDatabase {
 
         Cursor mCursor = mDb.rawQuery("SELECT COUNT(" + StatusTable._ID + ")"
                 + " FROM " + StatusTable.TABLE_NAME 
-        		+ " WHERE " + StatusTable.FIELD_STATUS_TYPE + " = " + type 
-        		+ " AND " + StatusTable.FIELD_IS_UNREAD + " = 1", null);
+                + " WHERE " + StatusTable.FIELD_STATUS_TYPE + " = " + type 
+                + " AND " + StatusTable.FIELD_IS_UNREAD + " = 1 LIMIT " +
+                StatusTable.MAX_ROW_NUM, null);
 
         int result = 0;
 
@@ -379,33 +414,6 @@ public class StatusDatabase {
 
         return fetchUnreadCount(type);
     }
-    
-    private String fetchMaxOrMixTweetId(int type, boolean isMax) {
-        SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
-        
-        String sql = "SELECT " + StatusTable._ID 
-            + " FROM " + StatusTable.TABLE_NAME 
-            + " WHERE " + StatusTable.FIELD_STATUS_TYPE + "=" + type
-            + " ORDER BY " + StatusTable.FIELD_CREATED_AT;
-        if (isMax) sql += " DESC ";
-        Cursor mCursor = mDb.rawQuery(sql + " LIMIT 1", null);
-
-        String result = null;
-
-        if (mCursor == null) {
-            return result;
-        }
-
-        mCursor.moveToFirst();
-        if (mCursor.getCount() == 0) {
-            result = null;
-        } else {
-            result = mCursor.getString(0);
-        }
-        mCursor.close();
-
-        return result;
-    }
 
     /**
      * Set isFavorited
@@ -422,7 +430,7 @@ public class StatusDatabase {
         return (i > 0) ? true : false;
     }
     
-    // Table
+    // DM & Follower 
     
     /**
      * @param dm
@@ -467,7 +475,7 @@ public class StatusDatabase {
     }
 
     /**
-     * 清空Followers并添加新内容
+     * 清空Followers表并添加新内容
      * 
      * @param followers
      */
@@ -489,29 +497,31 @@ public class StatusDatabase {
         }
     }
 
-    public Cursor fetchAllDms() {
+    /**
+     * @param type MessageTable.TYPE_SENT 或 MessageTable.TYPE_GET, 其他任何值都认为取出所有类型 
+     * @return
+     */
+    public Cursor fetchAllDms(int type) {
         SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
         
-        return mDb.query(MessageTable.TABLE_NAME, MessageTable.TABLE_COLUMNS, null, null, null,
+        String selection = null;
+        
+        if (MessageTable.TYPE_SENT == type) {
+            selection = MessageTable.FIELD_IS_SENT + " = " + MessageTable.TYPE_SENT;
+        } else if (MessageTable.TYPE_GET == type) {
+            selection = MessageTable.FIELD_IS_SENT + " = " + MessageTable.TYPE_GET;
+        }
+        
+        return mDb.query(MessageTable.TABLE_NAME, MessageTable.TABLE_COLUMNS, selection, null, null,
                 null, MessageTable.FIELD_CREATED_AT + " DESC");
     }
 
     public Cursor fetchInboxDms() {
-        SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
-        
-        return mDb.query(MessageTable.TABLE_NAME, MessageTable.TABLE_COLUMNS, 
-                MessageTable.FIELD_IS_SENT + " = ?",
-                new String[] { "0" }, null, null, MessageTable.FIELD_CREATED_AT 
-                + " DESC");
+        return fetchAllDms(MessageTable.TYPE_GET);
     }
 
     public Cursor fetchSendboxDms() {
-        SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
-        
-        return mDb.query(MessageTable.TABLE_NAME, MessageTable.TABLE_COLUMNS, 
-                MessageTable.FIELD_IS_SENT + " = ?",
-                new String[] { "1" }, null, null, MessageTable.FIELD_CREATED_AT
-                + " DESC");
+        return fetchAllDms(MessageTable.TYPE_SENT);
     }
 
     public Cursor fetchAllFollowers() {
@@ -526,7 +536,7 @@ public class StatusDatabase {
         
         String likeFilter = '%' + filter + '%';
 
-        // TODO: clean this up. 新版中失效, 表名, 列名
+        // TODO: clean this up. 新数据库中失效, 表名, 列名
         return mDb.rawQuery("SELECT user_id AS _id, user" +
         		" FROM (SELECT user_id, user FROM tweets" +
         		" INNER JOIN followers on tweets.user_id = followers._id UNION" +
@@ -536,12 +546,17 @@ public class StatusDatabase {
         		" ORDER BY user COLLATE NOCASE", new String[] { likeFilter });
     }
 
-    public boolean isFollower(long userId) {
+    /**
+     * @param userId 该用户是否follow Me
+     * @deprecated 未使用
+     * @return
+     */
+    public boolean isFollower(String userId) {
         SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
         
         Cursor cursor = mDb.query(FollowTable.TABLE_NAME,
                 FollowTable.TABLE_COLUMNS, FollowTable._ID
-                + "=" + userId, null, null, null, null);
+                + "= ?", new String[]{userId}, null, null, null);
 
         boolean result = false;
 
@@ -570,17 +585,17 @@ public class StatusDatabase {
     }
 
     /**
-     * TODO: type?
      * @param tableName
      * @return the number of rows affected 
      */
-    public int markAllTweetsRead(String tableName) {
+    public int markAllTweetsRead(int type) {
         SQLiteDatabase mDb = mOpenHelper.getWritableDatabase();
         
         ContentValues values = new ContentValues();
         values.put(StatusTable.FIELD_IS_UNREAD, 0);
         
-        return mDb.update(tableName, values, null, null);
+        return mDb.update(StatusTable.TABLE_NAME, values,
+                StatusTable.FIELD_STATUS_TYPE + "=" + type , null);
     }
     
     public boolean deleteAllDms() {

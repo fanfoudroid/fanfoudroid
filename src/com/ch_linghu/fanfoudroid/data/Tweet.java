@@ -16,6 +16,7 @@
 
 package com.ch_linghu.fanfoudroid.data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import org.json.JSONException;

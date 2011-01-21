@@ -18,9 +18,21 @@ public final class StatusTablesInfo {
     /**
      * Table - Statuses
      *  
-     * 定长表格, 使各类型的数据均总保持在MAX_STATUS_NUM以下
-     * 对于单类型的数据模拟列队形式, 遵循以先进先出的原则进行存储
-     * 即在尾部插入新数据时, 若列队超过长度, 则自动删除头部旧数据以保持列队长度
+     * 为节省流量,故此表不保证本地数据库中所有消息具有前后连贯性, 而只确保最新的MAX_ROW_NUM条
+     * 数据的连贯性, 超出部分则视为垃圾数据, 不再允许读取, 也不保证其是前后连续的.
+     * 
+     * 因为用户可能中途长时间停止使用本客户端,而换其他客户端(如网页), 
+     * 如果保证本地所有数据的连贯性, 那么就必须自动去下载所有本地缺失的中间数据,
+     * 而这些数据极有可能是用户通过其他客户端阅读过的无用信息, 浪费了用户流量.
+     *
+     * 即认为相对于旧信息而言, 新信息对于用户更为价值, 所以只会新信息进行维护, 
+     * 而旧信息一律视为无用的, 如用户需要查看超过MAX_ROW_NUM的旧数据, 可主动点击, 
+     * 从而请求服务器. 本地只缓存最有价值的MAX条信息.
+     *  
+     * 本地数据库中前MAX_ROW_NUM条的数据模拟一个定长列队, 即在头部插入N条消息, 就会使得尾部
+     * 的N条消息被标记为垃圾数据(但并不立即收回),只有在认为数据库数据过多时,
+     * 可手动调用 <code>gc()</code> 方法进行垃圾清理.
+     * 
      *
      */
     public static final class StatusTable implements BaseColumns {
@@ -118,6 +130,9 @@ public final class StatusTablesInfo {
     public static final class MessageTable implements BaseColumns {
         
         public static final String TAG = "MessageTable";
+        
+        public static final int TYPE_GET  = 0;
+        public static final int TYPE_SENT = 1;
         
         public static final String TABLE_NAME = "message";
         public static final int MAX_ROW_NUM = 20;
