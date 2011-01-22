@@ -23,7 +23,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -262,18 +261,18 @@ public class StatusActivity extends WithHeaderActivity
 	protected void onDestroy() {
         Log.i(TAG, "onDestroy.");
 
-//        if (mStatusTask != null
-//                && mStatusTask.getStatus() == AsyncTask.Status.RUNNING) {
-//            mStatusTask.cancel(true);
-//        }
-//        if (mPhotoTask != null
-//                && mPhotoTask.getStatus() == AsyncTask.Status.RUNNING) {
-//        	mPhotoTask.cancel(true);
-//        }
-//        if (mFavTask != null
-//                && mFavTask.getStatus() == AsyncTask.Status.RUNNING) {
-//            mFavTask.cancel(true);
-//        }
+        if (mStatusTask != null
+                && mStatusTask.getStatus() == GenericTask.Status.RUNNING) {
+            mStatusTask.cancel(true);
+        }
+        if (mPhotoTask != null
+                && mPhotoTask.getStatus() == GenericTask.Status.RUNNING) {
+        	mPhotoTask.cancel(true);
+        }
+        if (mFavTask != null
+                && mFavTask.getStatus() == GenericTask.Status.RUNNING) {
+            mFavTask.cancel(true);
+        }
 
 		super.onDestroy();
 	}
@@ -322,7 +321,7 @@ public class StatusActivity extends WithHeaderActivity
 		super.onSaveInstanceState(outState);
 		
 		if (mStatusTask != null
-                && mStatusTask.getStatus() == AsyncTask.Status.RUNNING) {
+                && mStatusTask.getStatus() == GenericTask.Status.RUNNING) {
             outState.putBoolean(SIS_RUNNING_KEY, true);
 		}
 	}

@@ -22,7 +22,6 @@
 package com.ch_linghu.fanfoudroid.ui.base;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -126,7 +125,7 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 	protected void onDestroy() {
 		super.onDestroy();
 
-		if (mFavTask != null && mFavTask.getStatus() == AsyncTask.Status.RUNNING) {
+		if (mFavTask != null && mFavTask.getStatus() == GenericTask.Status.RUNNING) {
 			mFavTask.cancel(true);
 		}
 	}
@@ -268,10 +267,9 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 	}
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		// TODO Auto-generated method stub
 		super.onSaveInstanceState(outState);
 		if (mFavTask != null
-				&& mFavTask.getStatus() == AsyncTask.Status.RUNNING) {
+				&& mFavTask.getStatus() == GenericTask.Status.RUNNING) {
 			outState.putBoolean(SIS_RUNNING_KEY, true);
 		}
 	}

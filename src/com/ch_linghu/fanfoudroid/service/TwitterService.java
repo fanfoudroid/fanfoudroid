@@ -45,16 +45,19 @@ import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.data.Dm;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
-import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.DmActivity;
 import com.ch_linghu.fanfoudroid.MentionActivity;
 import com.ch_linghu.fanfoudroid.TwitterActivity;
+import com.ch_linghu.fanfoudroid.task.GenericTask;
+import com.ch_linghu.fanfoudroid.task.TaskFactory;
+import com.ch_linghu.fanfoudroid.task.TaskListener;
+import com.ch_linghu.fanfoudroid.task.TaskParams;
+import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.weibo.Paging;
 import com.ch_linghu.fanfoudroid.weibo.Weibo;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
-import com.google.android.photostream.UserTask;
 
 public class TwitterService extends Service {
 	private static final String TAG = "TwitterService";
@@ -67,7 +70,7 @@ public class TwitterService extends Service {
 	private ArrayList<Tweet> mNewMentions;
 	private ArrayList<Dm> mNewDms;
 
-	private UserTask<SharedPreferences, Void, RetrieveResult> mRetrieveTask;
+	private GenericTask mRetrieveTask;
 
 	private WakeLock mWakeLock;
 
@@ -114,7 +117,11 @@ public class TwitterService extends Service {
 		mNewMentions = new ArrayList<Tweet>();
 		mNewDms = new ArrayList<Dm>();
 
-		mRetrieveTask = new RetrieveTask().execute(new SharedPreferences[] {mPreferences});
+		mRetrieveTask = TaskFactory.create(new RetrieveTaskListener());
+		
+		TaskParams params = new TaskParams();
+		params.put("pref", mPreferences);
+		mRetrieveTask.execute(params);
 	}
 
 	private void processNewTweets() {
@@ -301,7 +308,7 @@ public class TwitterService extends Service {
 		Log.i(TAG, "IM DYING!!!");
 
 		if (mRetrieveTask != null
-				&& mRetrieveTask.getStatus() == UserTask.Status.RUNNING) {
+				&& mRetrieveTask.getStatus() == GenericTask.Status.RUNNING) {
 			mRetrieveTask.cancel(true);
 		}
 
@@ -349,14 +356,12 @@ public class TwitterService extends Service {
 		alarm.cancel(pending);
 	}
 
-	private enum RetrieveResult {
-		OK, IO_ERROR, AUTH_ERROR, CANCELLED
-	}
-
-	private class RetrieveTask extends UserTask<SharedPreferences, Void, RetrieveResult> {
+	private class RetrieveTaskListener implements TaskListener {
+		private GenericTask task;
+		
 		@Override
-		public RetrieveResult doInBackground(SharedPreferences... params) {
-			SharedPreferences preferences = params[0];
+		public TaskResult doInBackground(TaskParams params) {
+			SharedPreferences preferences = (SharedPreferences)params.get("pref");
 
 			boolean timeline_only = preferences.getBoolean(Preferences.TIMELINE_ONLY_KEY, false);
 			boolean replies_only = preferences.getBoolean(Preferences.REPLIES_ONLY_KEY, true);
@@ -376,12 +381,12 @@ public class TwitterService extends Service {
 					}
 				} catch (WeiboException e) {
 					Log.e(TAG, e.getMessage(), e);
-					return RetrieveResult.IO_ERROR;
+					return TaskResult.IO_ERROR;
 				}
 	
 				for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
-					if (isCancelled()) {
-						return RetrieveResult.CANCELLED;
+					if (task.isCancelled()) {
+						return TaskResult.CANCELLED;
 					}
 	
 					Tweet tweet;
@@ -391,8 +396,8 @@ public class TwitterService extends Service {
 					mNewTweets.add(tweet);
 				}
 	
-				if (isCancelled()) {
-					return RetrieveResult.CANCELLED;
+				if (task.isCancelled()) {
+					return TaskResult.CANCELLED;
 				}
 			}
 			
@@ -410,12 +415,12 @@ public class TwitterService extends Service {
 					}
 				} catch (WeiboException e) {
 					Log.e(TAG, e.getMessage(), e);
-					return RetrieveResult.IO_ERROR;
+					return TaskResult.IO_ERROR;
 				}
 	
 				for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
-					if (isCancelled()) {
-						return RetrieveResult.CANCELLED;
+					if (task.isCancelled()) {
+						return TaskResult.CANCELLED;
 					}
 	
 					Tweet tweet;
@@ -425,8 +430,8 @@ public class TwitterService extends Service {
 					mNewMentions.add(tweet);
 				}
 	
-				if (isCancelled()) {
-					return RetrieveResult.CANCELLED;
+				if (task.isCancelled()) {
+					return TaskResult.CANCELLED;
 				}
 			}
 			
@@ -444,12 +449,12 @@ public class TwitterService extends Service {
 					}
 				} catch (WeiboException e) {
 					Log.e(TAG, e.getMessage(), e);
-					return RetrieveResult.IO_ERROR;
+					return TaskResult.IO_ERROR;
 				}
 	
 				for (com.ch_linghu.fanfoudroid.weibo.DirectMessage directMessage : dmList) {
-					if (isCancelled()) {
-						return RetrieveResult.CANCELLED;
+					if (task.isCancelled()) {
+						return TaskResult.CANCELLED;
 					}
 	
 					Dm dm;
@@ -459,22 +464,50 @@ public class TwitterService extends Service {
 					mNewDms.add(dm);
 				}
 	
-				if (isCancelled()) {
-					return RetrieveResult.CANCELLED;
+				if (task.isCancelled()) {
+					return TaskResult.CANCELLED;
 				}
 			}
-			return RetrieveResult.OK;
+			return TaskResult.OK;
 		}
 
 		@Override
-		public void onPostExecute(RetrieveResult result) {
-			if (result == RetrieveResult.OK) {
+		public void onPostExecute(TaskResult result) {
+			if (result == TaskResult.OK) {
 				processNewTweets();
 				processNewMentions();
 				processNewDms();
 			}
 
 			stopSelf();
+		}
+
+		@Override
+		public String getName() {
+			return "ServiceRetrieve";
+		}
+
+		@Override
+		public void onCancelled() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onPreExecute() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onProgressUpdate(Object param) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void setTask(GenericTask task) {
+			this.task = task;
 		}
 	}
 

@@ -27,6 +27,11 @@ import com.ch_linghu.fanfoudroid.data.User;
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.MemoryImageCache;
 import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.task.GenericTask;
+import com.ch_linghu.fanfoudroid.task.TaskFactory;
+import com.ch_linghu.fanfoudroid.task.TaskListener;
+import com.ch_linghu.fanfoudroid.task.TaskParams;
+import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.Refreshable;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterListBaseActivity;
 import com.ch_linghu.fanfoudroid.ui.module.MyListView;
@@ -34,7 +39,6 @@ import com.ch_linghu.fanfoudroid.ui.module.TweetArrayAdapter;
 import com.ch_linghu.fanfoudroid.weibo.Paging;
 import com.ch_linghu.fanfoudroid.weibo.Weibo;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
-import com.google.android.photostream.UserTask;
 
 public class UserActivity extends TwitterListBaseActivity implements MyListView.OnNeedMoreListener, Refreshable {
 
@@ -82,9 +86,9 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
   private TweetArrayAdapter mAdapter;
 
   // Tasks.
-  private UserTask<Void, Void, TaskResult> mRetrieveTask;
-  private UserTask<Void, Void, TaskResult> mFriendshipTask;
-  private UserTask<Void, Void, TaskResult> mLoadMoreTask;
+  private GenericTask mRetrieveTask;
+  private GenericTask mFriendshipTask;
+  private GenericTask mLoadMoreTask;
 
   private static final String EXTRA_USER = "user";
   private static final String EXTRA_NAME_SCREEN = "name";
@@ -180,7 +184,7 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
         super.onSaveInstanceState(outState);
 
         if (mRetrieveTask != null
-                && mRetrieveTask.getStatus() == UserTask.Status.RUNNING) {
+                && mRetrieveTask.getStatus() == GenericTask.Status.RUNNING) {
             outState.putBoolean(SIS_RUNNING_KEY, true);
         }
     }
@@ -190,17 +194,17 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
         Log.i(TAG, "onDestroy.");
 
         if (mRetrieveTask != null
-                && mRetrieveTask.getStatus() == UserTask.Status.RUNNING) {
+                && mRetrieveTask.getStatus() == GenericTask.Status.RUNNING) {
             mRetrieveTask.cancel(true);
         }
 
         if (mFriendshipTask != null
-                && mFriendshipTask.getStatus() == UserTask.Status.RUNNING) {
+                && mFriendshipTask.getStatus() == GenericTask.Status.RUNNING) {
             mFriendshipTask.cancel(true);
         }
 
         if (mLoadMoreTask != null
-                && mLoadMoreTask.getStatus() == UserTask.Status.RUNNING) {
+                && mLoadMoreTask.getStatus() == GenericTask.Status.RUNNING) {
             mLoadMoreTask.cancel(true);
         }
 
@@ -237,33 +241,21 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
         }
     }
 
-    private enum TaskResult {
-        OK, IO_ERROR, AUTH_ERROR, CANCELLED
-    }
-
     public void doRetrieve() {
         Log.i(TAG, "Attempting retrieve.");
 
         // 旋转刷新按钮
         animRotate(refreshButton);
 
-        if (mRetrieveTask != null
-                && mRetrieveTask.getStatus() == UserTask.Status.RUNNING) {
-            Log.w(TAG, "Already retrieving.");
-        } else {
-            mRetrieveTask = new RetrieveTask().execute();
-        }
+        mRetrieveTask = TaskFactory.create(new UserRetrieveTaskListener()); 
+        mRetrieveTask.execute(null);
     }
 
     private void doLoadMore() {
         Log.i(TAG, "Attempting load more.");
 
-        if (mLoadMoreTask != null
-                && mLoadMoreTask.getStatus() == UserTask.Status.RUNNING) {
-            Log.w(TAG, "Already loading more.");
-        } else {
-            mLoadMoreTask = new LoadMoreTask().execute();
-        }
+        mLoadMoreTask = TaskFactory.create(new UserLoadMoreTaskListener()); 
+        mLoadMoreTask.execute(null);
     }
 
     private void onRetrieveBegin() {
@@ -275,7 +267,9 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
         animRotate(refreshButton);
     }
 
-    private class RetrieveTask extends UserTask<Void, Void, TaskResult> {
+    private class UserRetrieveTaskListener implements TaskListener {
+    	private GenericTask task;
+    	
         @Override
         public void onPreExecute() {
             onRetrieveBegin();
@@ -284,7 +278,7 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
         ArrayList<Tweet> mTweets = new ArrayList<Tweet>();
 
         @Override
-        public TaskResult doInBackground(Void... params) {
+        public TaskResult doInBackground(TaskParams params) {
             List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
 
             ImageManager imageManager = getImageManager();
@@ -299,7 +293,7 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
             }
 
             for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
-                if (isCancelled()) {
+                if (task.isCancelled()) {
                     return TaskResult.CANCELLED;
                 }
 
@@ -312,18 +306,18 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
                     mUser = User.create(status.getUser());
                 }
 
-                if (isCancelled()) {
+                if (task.isCancelled()) {
                     return TaskResult.CANCELLED;
                 }
             }
 
             addTweets(mTweets);
 
-            if (isCancelled()) {
+            if (task.isCancelled()) {
                 return TaskResult.CANCELLED;
             }
 
-            publishProgress();
+            task.doPublishProgress(null);
 
             mImageCache = new MemoryImageCache();
             if (!Utils.isEmpty(mUser.profileImageUrl)) {
@@ -337,11 +331,11 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
                 }
             }
 
-            if (isCancelled()) {
+            if (task.isCancelled()) {
                 return TaskResult.CANCELLED;
             }
 
-            publishProgress();
+            task.doPublishProgress(null);
             Weibo fanfou = getApi();
 
             try {
@@ -358,7 +352,7 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
                 return TaskResult.IO_ERROR;
             }
 
-            if (isCancelled()) {
+            if (task.isCancelled()) {
                 return TaskResult.CANCELLED;
             }
 
@@ -366,7 +360,7 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
         }
 
         @Override
-        public void onProgressUpdate(Void... progress) {
+        public void onProgressUpdate(Object param) {
             draw();
         }
 
@@ -385,9 +379,27 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
 
             updateProgress("");
         }
+
+		@Override
+		public String getName() {
+			return "UserRetrieve";
+		}
+
+		@Override
+		public void onCancelled() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void setTask(GenericTask task) {
+			this.task = task;
+		}
     }
 
-    private class LoadMoreTask extends UserTask<Void, Void, TaskResult> {
+    private class UserLoadMoreTaskListener implements TaskListener {
+    	private GenericTask task;
+    	
         @Override
         public void onPreExecute() {
             onLoadMoreBegin();
@@ -396,7 +408,7 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
         ArrayList<Tweet> mTweets = new ArrayList<Tweet>();
 
         @Override
-        public TaskResult doInBackground(Void... params) {
+        public TaskResult doInBackground(TaskParams params) {
             List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
 
             try {
@@ -408,7 +420,7 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
             }
 
             for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
-                if (isCancelled()) {
+                if (task.isCancelled()) {
                     return TaskResult.CANCELLED;
                 }
 
@@ -418,13 +430,13 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
                 mTweets.add(tweet);
             }
 
-            if (isCancelled()) {
+            if (task.isCancelled()) {
                 return TaskResult.CANCELLED;
             }
 
             addTweets(mTweets);
 
-            if (isCancelled()) {
+            if (task.isCancelled()) {
                 return TaskResult.CANCELLED;
             }
 
@@ -432,7 +444,7 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
         }
 
         @Override
-        public void onProgressUpdate(Void... progress) {
+        public void onProgressUpdate(Object param) {
             draw();
         }
 
@@ -449,13 +461,29 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
 
             updateProgress("");
         }
+
+		@Override
+		public String getName() {
+			return "UserLoadMore";
+		}
+
+		@Override
+		public void onCancelled() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void setTask(GenericTask task) {
+			this.task = task;
+		}
     }
 
-    private class FriendshipTask extends UserTask<Void, Void, TaskResult> {
-
+    private class UserFriendshipTaskListener implements TaskListener {
         private boolean mIsDestroy;
+        private GenericTask task;
 
-        public FriendshipTask(boolean isDestroy) {
+        public UserFriendshipTaskListener(boolean isDestroy) {
             mIsDestroy = isDestroy;
         }
 
@@ -471,7 +499,7 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
         }
 
         @Override
-        public TaskResult doInBackground(Void... params) {
+        public TaskResult doInBackground(TaskParams params) {
             com.ch_linghu.fanfoudroid.weibo.User user;
 
             String id = mUser.id;
@@ -487,13 +515,13 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
                 return TaskResult.IO_ERROR;
             }
 
-            if (isCancelled()) {
+            if (task.isCancelled()) {
                 return TaskResult.CANCELLED;
             }
 
             User.create(user);
 
-            if (isCancelled()) {
+            if (task.isCancelled()) {
                 return TaskResult.CANCELLED;
             }
 
@@ -514,6 +542,28 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
             mFollowButton.setEnabled(true);
             updateProgress("");
         }
+
+		@Override
+		public String getName() {
+			return "UserFriendship";
+		}
+
+		@Override
+		public void onCancelled() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onProgressUpdate(Object param) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void setTask(GenericTask task) {
+			this.task = task;
+		}
     }
 
     @Override
@@ -602,13 +652,9 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
     };
 
     private void toggleFollow() {
-        if (mFriendshipTask != null
-                && mFriendshipTask.getStatus() == UserTask.Status.RUNNING) {
-            Log.w(TAG, "Already updating friendship.");
-            return;
-        }
-
-        mFriendshipTask = new FriendshipTask(mIsFollowing).execute();
+    	
+    	mFriendshipTask = TaskFactory.create(new UserFriendshipTaskListener(mIsFollowing));
+        mFriendshipTask.execute();
 
         // TODO: should we do a timeline refresh here?
     }

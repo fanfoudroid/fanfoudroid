@@ -138,7 +138,6 @@ public class RetrieveListTaskListener implements TaskListener {
 
 	@Override
 	public void setTask(GenericTask task) {
-		// TODO Auto-generated method stub
 		this.task = task;
 	}
 }

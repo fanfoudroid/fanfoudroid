@@ -51,10 +51,14 @@ import android.widget.TextView;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
+import com.ch_linghu.fanfoudroid.task.GenericTask;
+import com.ch_linghu.fanfoudroid.task.TaskFactory;
+import com.ch_linghu.fanfoudroid.task.TaskListener;
+import com.ch_linghu.fanfoudroid.task.TaskParams;
+import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
 import com.ch_linghu.fanfoudroid.ui.module.TweetEdit;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
-import com.google.android.photostream.UserTask;
 
 public class WriteActivity extends WithHeaderActivity {
     
@@ -88,7 +92,7 @@ public class WriteActivity extends WithHeaderActivity {
 	private static final int MAX_BITMAP_SIZE = 400;
 
 	// Task
-	private UserTask<Integer, Void, SendResult> mSendTask;
+	private GenericTask mSendTask;
 
 	private String _reply_id;
 	private String _repost_id;
@@ -322,7 +326,7 @@ public class WriteActivity extends WithHeaderActivity {
 		Log.i(TAG, "onDestroy.");
 
 		if (mSendTask != null
-				&& mSendTask.getStatus() == UserTask.Status.RUNNING) {
+				&& mSendTask.getStatus() == GenericTask.Status.RUNNING) {
 			// Doesn't really cancel execution (we let it continue running).
 			// See the SendTask code for more details.
 			mSendTask.cancel(true);
@@ -330,6 +334,9 @@ public class WriteActivity extends WithHeaderActivity {
 
 		// Don't need to cancel FollowersTask (assuming it ends properly).
 
+		if (dialog != null){
+			dialog.dismiss();
+		}
 		super.onDestroy();
 	}
 
@@ -338,7 +345,7 @@ public class WriteActivity extends WithHeaderActivity {
 		super.onSaveInstanceState(outState);
 
 		if (mSendTask != null
-				&& mSendTask.getStatus() == UserTask.Status.RUNNING) {
+				&& mSendTask.getStatus() == GenericTask.Status.RUNNING) {
 			outState.putBoolean(SIS_RUNNING_KEY, true);
 		}
 	}
@@ -428,35 +435,31 @@ public class WriteActivity extends WithHeaderActivity {
 	    startTime =  System.currentTimeMillis() ;
 		Log.i(TAG, String.format("doSend, reply_id=%s", _reply_id));
 		
-		if (mSendTask != null
-				&& mSendTask.getStatus() == UserTask.Status.RUNNING) {
-			Log.w(TAG, "Already sending.");
-		} else {
+
 			String status = mTweetEdit.getText().toString();
 
 			if (! Utils.isEmpty(status) || withPic) {
-			    int mode = SendTask.TYPE_NORMAL;
+			    int mode = SendTaskListener.TYPE_NORMAL;
 			    
 			    if (withPic)  {
-			        mode = SendTask.TYPE_PHOTO;
+			        mode = SendTaskListener.TYPE_PHOTO;
 			    } else if (null != _reply_id) {
-			        mode = SendTask.TYPE_REPLY;
+			        mode = SendTaskListener.TYPE_REPLY;
 			    } else if (null != _repost_id) {
-			        mode = SendTask.TYPE_REPOST;
+			        mode = SendTaskListener.TYPE_REPOST;
 			    }
 			    
-				mSendTask = new SendTask().execute(mode);
+				mSendTask = TaskFactory.create(new SendTaskListener());
+				
+				TaskParams params = new TaskParams();
+				params.put("mode", mode);
+				mSendTask.execute(params);
 			} else {
 			    updateProgress(getString(R.string.page_text_is_null));
 			}
-		}
 	}
 
-	private enum SendResult {
-		OK, IO_ERROR, AUTH_ERROR, CANCELLED, FAILURE
-	}
-
-	private class SendTask extends UserTask<Integer, Void, SendResult> {
+	private class SendTaskListener implements TaskListener {
 	    
 	    public static final int TYPE_NORMAL = 0;
 	    public static final int TYPE_REPLY  = 1;
@@ -468,24 +471,18 @@ public class WriteActivity extends WithHeaderActivity {
 			onSendBegin();
 		}
 
-		/**
-		 * params[0] send mode
-		 */
 		@Override
-		public SendResult doInBackground(Integer... params) {
+		public TaskResult doInBackground(TaskParams params) {
 			
 			try {
 				String status = mTweetEdit.getText().toString();
 			    
-			    if (0 == params.length) {
-			        Log.e(TAG, "Send TYPE can't be null");
-			        return SendResult.FAILURE;
-			    }
+				int mode = params.getInt("mode");
 		    
-		        Log.i(TAG, "Send Status. Mode : " + params[0]);
+		        Log.i(TAG, "Send Status. Mode : " + mode);
 		        
 		        // Send status in different way
-		        switch (params[0]) {
+		        switch (mode) {
 		        
 		        case TYPE_REPLY:
 		        	//增加容错性，即使reply_id为空依然允许发送
@@ -527,35 +524,50 @@ public class WriteActivity extends WithHeaderActivity {
 				Log.e(TAG, e.getMessage(), e);
 				
 				if (e.getStatusCode() == HttpClient.NOT_AUTHORIZED) {
-					return SendResult.AUTH_ERROR;
+					return TaskResult.AUTH_ERROR;
 				}
-				return SendResult.FAILURE;
+				return TaskResult.IO_ERROR;
 			}
 			
-			return SendResult.OK;
+			return TaskResult.OK;
 		}
 
 		@Override
-		public void onPostExecute(SendResult result) {
+		public void onPostExecute(TaskResult result) {
 		    endTime = System.currentTimeMillis();
 	        Log.d("LDS", "Sended a status in " + (endTime - startTime));
 	        
-			if (isCancelled()) {
-				// Canceled doesn't really mean "canceled" in this task.
-				// We want the request to complete, but don't want to update the
-				// activity (it's probably dead).
-				return;
-			}
-
-			if (result == SendResult.AUTH_ERROR) {
+			if (result == TaskResult.AUTH_ERROR) {
 				logout();
-			} else if (result == SendResult.OK) {
+			} else if (result == TaskResult.OK) {
 				onSendSuccess();
-			} else if (result == SendResult.IO_ERROR) {
+			} else if (result == TaskResult.IO_ERROR) {
 				onSendFailure();
-			} else if (result == SendResult.FAILURE) {
-				onSendFailure();
-			}
+			} 
+		}
+
+		@Override
+		public String getName() {
+			// TODO Auto-generated method stub
+			return "Send";
+		}
+
+		@Override
+		public void onCancelled() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onProgressUpdate(Object param) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void setTask(GenericTask task) {
+			// TODO Auto-generated method stub
+			
 		}
 	}
 
@@ -563,32 +575,36 @@ public class WriteActivity extends WithHeaderActivity {
 		disableEntry();
 		dialog = ProgressDialog.show(WriteActivity.this, "", 
 		        getString(R.string.page_status_updating), true);
-	    dialog.setCancelable(false);
+		if (dialog != null){
+			dialog.setCancelable(false);
+		}
 		updateProgress(getString(R.string.page_status_updating));
 	}
 
 	private void onSendSuccess() {
-	    dialog.setMessage(getString(R.string.page_status_update_success));
-	    dialog.dismiss();
+		if (dialog != null){
+			dialog.setMessage(getString(R.string.page_status_update_success));
+			dialog.dismiss();
+		}
 		_reply_id = null;
 		_repost_id = null;
 		updateProgress(getString(R.string.page_status_update_success));
 		enableEntry();
-		// doRetrieve();
-		// draw();
-		// goTop();
-		try {
-			Thread.currentThread();
-			Thread.sleep(500);
-			updateProgress("");
-		} catch (InterruptedException e) {
-			Log.i(TAG, e.getMessage());
-		}
+
+		//FIXME: 不理解这段代码的含义，暂时注释掉
+//		try {
+//			Thread.currentThread();
+//			Thread.sleep(500);
+//			updateProgress("");
+//		} catch (InterruptedException e) {
+//			Log.i(TAG, e.getMessage());
+//		}
+		updateProgress("");
 		
 		//发送成功就自动关闭界面
 		finish();
 		
-		// 关闭软件盘
+		// 关闭软键盘
 		InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE); 
 		imm.hideSoftInputFromWindow(mTweetEdit.getEditText().getWindowToken(), 0); 
 		

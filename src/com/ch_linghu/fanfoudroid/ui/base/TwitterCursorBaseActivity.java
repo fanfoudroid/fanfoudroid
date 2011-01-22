@@ -20,7 +20,6 @@ import java.util.List;
 
 import android.database.Cursor;
 import android.graphics.drawable.AnimationDrawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -245,7 +244,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 
 		// Should Refresh Followers
 		if (diff > FOLLOWERS_REFRESH_THRESHOLD && 
-				(mRetrieveTask == null || mRetrieveTask.getStatus() != AsyncTask.Status.RUNNING)) {
+				(mRetrieveTask == null || mRetrieveTask.getStatus() != GenericTask.Status.RUNNING)) {
 			Log.i(TAG, "Refresh followers.");
 			doRetrieveFollowers();
 		}
@@ -266,7 +265,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 		super.onSaveInstanceState(outState);
 
 		if (mRetrieveTask != null
-				&& mRetrieveTask.getStatus() == AsyncTask.Status.RUNNING) {
+				&& mRetrieveTask.getStatus() == GenericTask.Status.RUNNING) {
 			outState.putBoolean(SIS_RUNNING_KEY, true);
 		}
 	}
@@ -282,7 +281,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 		Log.i(TAG, "onDestroy.");
 
 		if (mRetrieveTask != null
-				&& mRetrieveTask.getStatus() == AsyncTask.Status.RUNNING) {
+				&& mRetrieveTask.getStatus() == GenericTask.Status.RUNNING) {
 			mRetrieveTask.cancel(true);
 		}
 
@@ -347,8 +346,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 
         mFollowersRetrieveTask = TaskFactory.create(FollowersTaskListener.getInstance(this));
 
-        TaskParams params = new TaskParams();
-        mFollowersRetrieveTask.execute(params);
+        mFollowersRetrieveTask.execute(null);
     }
 	
 	public void onRetrieveBegin() {
@@ -363,9 +361,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 
 		mRetrieveTask = TaskFactory.create(RetrieveListTaskListener.getInstance(this));
 		
-		
-        TaskParams params = new TaskParams();
-		mRetrieveTask.execute(params);
+		mRetrieveTask.execute(null);
 	}
 	// for Retrievable interface
 	public ImageButton getRefreshButton() {

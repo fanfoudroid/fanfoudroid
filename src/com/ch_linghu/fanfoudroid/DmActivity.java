@@ -33,13 +33,17 @@ import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.Retrievable;
+import com.ch_linghu.fanfoudroid.task.TaskFactory;
+import com.ch_linghu.fanfoudroid.task.TaskListener;
+import com.ch_linghu.fanfoudroid.task.TaskParams;
+import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
 import com.ch_linghu.fanfoudroid.weibo.DirectMessage;
 import com.ch_linghu.fanfoudroid.weibo.Paging;
 import com.ch_linghu.fanfoudroid.weibo.Status;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
-import com.google.android.photostream.UserTask;
 
 public class DmActivity extends WithHeaderActivity implements Retrievable {
 
@@ -63,8 +67,8 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 	private TextView mProgressText;
 
 	// Tasks.
-	private UserTask<Void, Void, TaskResult> mRetrieveTask;
-	private UserTask<String, Void, TaskResult> mDeleteTask;
+	private GenericTask mRetrieveTask;
+	private GenericTask mDeleteTask;
 
 	// Refresh data at startup if last refresh was this long ago or greater.
 	private static final long REFRESH_THRESHOLD = 5 * 60 * 1000;
@@ -158,7 +162,7 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 		super.onSaveInstanceState(outState);
 
 		if (mRetrieveTask != null
-				&& mRetrieveTask.getStatus() == UserTask.Status.RUNNING) {
+				&& mRetrieveTask.getStatus() == GenericTask.Status.RUNNING) {
 			outState.putBoolean(SIS_RUNNING_KEY, true);
 		}
 	}
@@ -168,11 +172,11 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 		Log.i(TAG, "onDestroy.");
 
 		if (mRetrieveTask != null
-				&& mRetrieveTask.getStatus() == UserTask.Status.RUNNING) {
+				&& mRetrieveTask.getStatus() == GenericTask.Status.RUNNING) {
 			mRetrieveTask.cancel(true);
 		}
 		if (mDeleteTask != null
-				&& mDeleteTask.getStatus() == UserTask.Status.RUNNING) {
+				&& mDeleteTask.getStatus() == GenericTask.Status.RUNNING) {
 			mDeleteTask.cancel(true);
 		}
 
@@ -242,23 +246,21 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 		inbox.setEnabled(false);
 	}
 
-	private enum TaskResult {
-		OK, IO_ERROR, AUTH_ERROR, CANCELLED, NOT_FOLLOWED_ERROR
-	}
-
-	private class RetrieveTask extends UserTask<Void, Void, TaskResult> {
+	private class DmRetrieveTaskListener implements TaskListener {
+		private GenericTask task;
+		
 		@Override
 		public void onPreExecute() {
 			onRetrieveBegin();
 		}
 
 		@Override
-		public void onProgressUpdate(Void... progress) {
+		public void onProgressUpdate(Object params) {
 			draw();
 		}
 
 		@Override
-		public TaskResult doInBackground(Void... params) {
+		public TaskResult doInBackground(TaskParams params) {
 			List<DirectMessage> dmList;
 
 			ArrayList<Dm> dms = new ArrayList<Dm>();
@@ -283,7 +285,7 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 			}
 
 			for (DirectMessage directMessage : dmList) {
-				if (isCancelled()) {
+				if (task.isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
 
@@ -293,7 +295,7 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 				dms.add(dm);
 				imageUrls.add(dm.profileImageUrl);
 
-				if (isCancelled()) {
+				if (task.isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
 			}
@@ -313,7 +315,7 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 			}
 
 			for (DirectMessage directMessage : dmList) {
-				if (isCancelled()) {
+				if (task.isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
 
@@ -323,18 +325,18 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 				dms.add(dm);
 				imageUrls.add(dm.profileImageUrl);
 
-				if (isCancelled()) {
+				if (task.isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
 			}
 
 			db.addDms(dms, false);
 
-			if (isCancelled()) {
+			if (task.isCancelled()) {
 				return TaskResult.CANCELLED;
 			}
 
-			publishProgress();
+			task.doPublishProgress(null);
 
 			for (String imageUrl : imageUrls) {
 				if (!Utils.isEmpty(imageUrl)) {
@@ -346,7 +348,7 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 					}
 				}
 
-				if (isCancelled()) {
+				if (task.isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
 			}
@@ -372,6 +374,22 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 			// 刷新按钮停止旋转
 			getRefreshButton().clearAnimation();
 			updateProgress("");
+		}
+
+		@Override
+		public String getName() {
+			return "DmRetrieve";
+		}
+
+		@Override
+		public void onCancelled() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void setTask(GenericTask task) {
+			this.task = task;
 		}
 	}
 
@@ -538,25 +556,25 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 	private void doDestroy(String id) {
 		Log.i(TAG, "Attempting delete.");
 
-		if (mDeleteTask != null
-				&& mDeleteTask.getStatus() == UserTask.Status.RUNNING) {
-			Log.w(TAG, "Already deleting.");
-		} else {
-			mDeleteTask = new DeleteTask().execute(new String[] { id });
-		}
+		mDeleteTask = TaskFactory.create(new DmDeleteTaskListener());
+		
+		TaskParams params = new TaskParams();
+		params.put("id", id);
+		mDeleteTask.execute(params);
 	}
 
-	private class DeleteTask extends UserTask<String, Void, TaskResult> {
+	private class DmDeleteTaskListener implements TaskListener {
+		private GenericTask task;
+		
 		@Override
 		public void onPreExecute() {
 			updateProgress(getString(R.string.page_status_deleting));
 		}
 
 		@Override
-		public TaskResult doInBackground(String... params) {
-			String id = params[0];
-
+		public TaskResult doInBackground(TaskParams params) {
 			try {
+				String id = params.getString("id");
 				DirectMessage directMessage = getApi().destroyDirectMessage(id);
 				Dm.create(directMessage, false);
 				getDb().deleteDm(id);
@@ -565,7 +583,7 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 				return TaskResult.IO_ERROR;
 			}
 
-			if (isCancelled()) {
+			if (task.isCancelled()) {
 				return TaskResult.CANCELLED;
 			}
 
@@ -583,6 +601,28 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 			}
 
 			updateProgress("");
+		}
+
+		@Override
+		public String getName() {
+			return "DmDelete";
+		}
+
+		@Override
+		public void onCancelled() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onProgressUpdate(Object param) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void setTask(GenericTask task) {
+			this.task = task;
 		}
 	}
 
@@ -604,12 +644,10 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 		// 旋转刷新按钮
 		animRotate(refreshButton);
 
-		if (mRetrieveTask != null
-				&& mRetrieveTask.getStatus() == UserTask.Status.RUNNING) {
-			Log.w(TAG, "Already retrieving.");
-		} else {
-			mRetrieveTask = new RetrieveTask().execute();
-		}
+		mRetrieveTask = TaskFactory.create(new DmRetrieveTaskListener()); 
+		
+		TaskParams params = new TaskParams();
+		mRetrieveTask.execute(params);
 	}
 
 	@Override

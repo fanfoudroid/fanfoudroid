@@ -36,8 +36,12 @@ import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.http.HttpAuthException;
 import com.ch_linghu.fanfoudroid.http.HttpRefusedException;
+import com.ch_linghu.fanfoudroid.task.GenericTask;
+import com.ch_linghu.fanfoudroid.task.TaskFactory;
+import com.ch_linghu.fanfoudroid.task.TaskListener;
+import com.ch_linghu.fanfoudroid.task.TaskParams;
+import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
-import com.google.android.photostream.UserTask;
 
 public class LoginActivity extends Activity {
     private static final String TAG = "LoginActivity";
@@ -57,7 +61,7 @@ public class LoginActivity extends Activity {
     private SharedPreferences mPreferences;
 
     // Tasks.
-    private UserTask<String, String, Boolean> mLoginTask;
+    private GenericTask mLoginTask;
 
 
     @Override
@@ -105,7 +109,7 @@ public class LoginActivity extends Activity {
     @Override
     protected void onDestroy() {
         Log.i(TAG, "onDestory");
-        if (mLoginTask != null && mLoginTask.getStatus() == UserTask.Status.RUNNING) {
+        if (mLoginTask != null && mLoginTask.getStatus() == GenericTask.Status.RUNNING) {
             mLoginTask.cancel(true);
         }
 
@@ -129,7 +133,7 @@ public class LoginActivity extends Activity {
         super.onSaveInstanceState(outState);
 
         if (mLoginTask != null
-                && mLoginTask.getStatus() == UserTask.Status.RUNNING) {
+                && mLoginTask.getStatus() == GenericTask.Status.RUNNING) {
             // If the task was running, want to start it anew when the
             // Activity restarts.
             // This addresses the case where you user changes orientation
@@ -163,7 +167,12 @@ public class LoginActivity extends Activity {
         mPassword = mPasswordEdit.getText().toString();
         
         if (!Utils.isEmpty(mUsername) & !Utils.isEmpty(mPassword) ) {
-            mLoginTask = new LoginTask().execute(mUsername, mPassword);
+            mLoginTask = TaskFactory.create(new LoginTaskListener());
+            
+            TaskParams params = new TaskParams();
+            params.put("username", mUsername);
+            params.put("password", mPassword);
+            mLoginTask.execute(params);
         } else {
             updateProgress(getString(R.string.login_status_null_username_or_password));
         }
@@ -204,13 +213,16 @@ public class LoginActivity extends Activity {
 
     private void onLoginFailure(String reason) {
         Toast.makeText(this, reason, Toast.LENGTH_SHORT).show();
-        dialog.dismiss();
+        if (dialog != null){
+        	dialog.dismiss();
+        }
         enableLogin();
     }
 
-    private class LoginTask extends UserTask<String, String, Boolean> {
+    private class LoginTaskListener implements TaskListener {
         
         private String msg = getString(R.string.login_status_failure);
+        private GenericTask task;
         
         @Override
         public void onPreExecute() {
@@ -218,11 +230,13 @@ public class LoginActivity extends Activity {
         }
 
         @Override
-        public Boolean doInBackground(String... params) {
-            publishProgress(getString(R.string.login_status_logging_in) + "...");
+        public TaskResult doInBackground(TaskParams params) {
+            task.doPublishProgress(getString(R.string.login_status_logging_in) + "...");
 
             try {
-                TwitterApplication.mApi.login(params[0], params[1]);
+            	String username = params.getString("username");
+            	String password = params.getString("password");
+                TwitterApplication.mApi.login(username, password);
             } catch (WeiboException e) {
                 Log.e(TAG, e.getMessage(), e);
 
@@ -233,29 +247,46 @@ public class LoginActivity extends Activity {
                 } else {
                     msg = getString(R.string.login_status_network_or_connection_error);
                 }
-                publishProgress(msg);
-                return false;
+                task.doPublishProgress(msg);
+                return TaskResult.FAILED;
             }
-            return true;
+            return TaskResult.OK;
         }
 
         @Override
-        public void onProgressUpdate(String... progress) {
-            updateProgress(progress[0]);
+        public void onProgressUpdate(Object param) {
+            updateProgress((String)param);
         }
 
         @Override
-        public void onPostExecute(Boolean result) {
-            if (isCancelled()) {
+        public void onPostExecute(TaskResult result) {
+            if (task.isCancelled()) {
                 return;
             }
 
-            if (result) {
+            if (result == TaskResult.OK) {
                 onLoginSuccess();
             } else {
                 onLoginFailure(msg);
             }
         }
+
+		@Override
+		public String getName() {
+			// TODO Auto-generated method stub
+			return "Login";
+		}
+
+		@Override
+		public void onCancelled() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void setTask(GenericTask task) {
+			this.task = task;
+		}
     }
     
     private View.OnKeyListener enterKeyHandler = new View.OnKeyListener() {

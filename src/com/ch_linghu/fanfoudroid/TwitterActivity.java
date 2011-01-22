@@ -22,7 +22,6 @@ import java.util.List;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -36,7 +35,6 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
-import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.Deletable;
 import com.ch_linghu.fanfoudroid.task.DeleteTaskListener;
 import com.ch_linghu.fanfoudroid.task.Followable;
@@ -45,7 +43,6 @@ import com.ch_linghu.fanfoudroid.task.HasFavorite;
 import com.ch_linghu.fanfoudroid.task.Retrievable;
 import com.ch_linghu.fanfoudroid.task.TaskFactory;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
-import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterCursorBaseActivity;
 import com.ch_linghu.fanfoudroid.weibo.Paging;
 import com.ch_linghu.fanfoudroid.weibo.Status;
@@ -80,17 +77,16 @@ public class TwitterActivity extends TwitterCursorBaseActivity
 		// TODO Auto-generated method stub
 		super.onDestroy();
 		
-		if (mDeleteTask != null && mDeleteTask.getStatus() == AsyncTask.Status.RUNNING) {
+		if (mDeleteTask != null && mDeleteTask.getStatus() == GenericTask.Status.RUNNING) {
 			mDeleteTask.cancel(true);
 		}
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		// TODO Auto-generated method stub
 		super.onSaveInstanceState(outState);
 		if (mDeleteTask != null
-				&& mDeleteTask.getStatus() == AsyncTask.Status.RUNNING) {
+				&& mDeleteTask.getStatus() == GenericTask.Status.RUNNING) {
 			outState.putBoolean(SIS_RUNNING_KEY, true);
 		}	
 	}
@@ -189,17 +185,11 @@ public class TwitterActivity extends TwitterCursorBaseActivity
 	}
 
 	private void doDelete(String id) {
-		if (mDeleteTask != null && mDeleteTask.getStatus() == AsyncTask.Status.RUNNING) {
-			Log.w(TAG, "DeleteTask still running");
-		} else {
-			if (!Utils.isEmpty(id)) {
-				mDeleteTask = TaskFactory.create(DeleteTaskListener.getInstance(this));
-				
-				TaskParams params = new TaskParams();
-				params.put("id", id);
-				mDeleteTask.execute(params);
-			}
-		}
+		mDeleteTask = TaskFactory.create(DeleteTaskListener.getInstance(this));
+		
+		TaskParams params = new TaskParams();
+		params.put("id", id);
+		mDeleteTask.execute(params);
 	}
 
 }

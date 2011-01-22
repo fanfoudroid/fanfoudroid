@@ -39,13 +39,16 @@ import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.data.Dm;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
-import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.task.GenericTask;
+import com.ch_linghu.fanfoudroid.task.TaskFactory;
+import com.ch_linghu.fanfoudroid.task.TaskListener;
+import com.ch_linghu.fanfoudroid.task.TaskParams;
+import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
 import com.ch_linghu.fanfoudroid.ui.module.TweetEdit;
 import com.ch_linghu.fanfoudroid.weibo.DirectMessage;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
-import com.google.android.photostream.UserTask;
 
 //FIXME: 将WriteDmActivity和WriteActivity进行整合。
 /**
@@ -71,7 +74,7 @@ public class WriteDmActivity extends WithHeaderActivity {
 	private AutoCompleteTextView mToEdit;
 
 	// Task
-	private UserTask<Void, Void, TaskResult> mSendTask;
+	private GenericTask mSendTask;
 	private FriendsAdapter mFriendsAdapter; // Adapter for To: recipient autocomplete.
 
 	private static final String EXTRA_USER = "user";
@@ -206,7 +209,7 @@ public class WriteDmActivity extends WithHeaderActivity {
 	protected void onDestroy() {
 		Log.i(TAG, "onDestroy.");
 
-		if (mSendTask != null && mSendTask.getStatus() == UserTask.Status.RUNNING) {
+		if (mSendTask != null && mSendTask.getStatus() == GenericTask.Status.RUNNING) {
 	      // Doesn't really cancel execution (we let it continue running).
 	      // See the SendTask code for more details.
 	      mSendTask.cancel(true);
@@ -221,7 +224,7 @@ public class WriteDmActivity extends WithHeaderActivity {
 		super.onSaveInstanceState(outState);
 
 		if (mSendTask != null
-		        && mSendTask.getStatus() == UserTask.Status.RUNNING) {
+		        && mSendTask.getStatus() == GenericTask.Status.RUNNING) {
 	      outState.putBoolean(SIS_RUNNING_KEY, true);
 	    }
 	}
@@ -264,28 +267,24 @@ public class WriteDmActivity extends WithHeaderActivity {
 
 	}
 
-	private enum TaskResult {
-		    OK, IO_ERROR, AUTH_ERROR, CANCELLED, NOT_FOLLOWED_ERROR
-	}
-
 	private void doSend() {
-	    if (mSendTask != null && mSendTask.getStatus() == UserTask.Status.RUNNING) {
-	      Log.w(TAG, "Already sending.");
-	    } else {
-	      String to = mToEdit.getText().toString();
-	      String status = mTweetEdit.getText().toString();
+      String to = mToEdit.getText().toString();
+      String status = mTweetEdit.getText().toString();
 
-	      if (!Utils.isEmpty(status) && !Utils.isEmpty(to)) {
-	        mSendTask = new SendTask().execute();
-	      } else if (Utils.isEmpty(status)) {
-	    	  updateProgress(getString(R.string.direct_meesage_status_texting_is_null));
-	      } else if (Utils.isEmpty(to)) {
-	    	  updateProgress(getString(R.string.direct_meesage_status_user_is_null));
-	      }
-	    }
+      if (!Utils.isEmpty(status) && !Utils.isEmpty(to)) {
+        mSendTask = TaskFactory.create(new DmSendTaskListener());
+        
+        mSendTask.execute(null);
+      } else if (Utils.isEmpty(status)) {
+    	  updateProgress(getString(R.string.direct_meesage_status_texting_is_null));
+      } else if (Utils.isEmpty(to)) {
+    	  updateProgress(getString(R.string.direct_meesage_status_user_is_null));
+      }
 	} 
 
-	private class SendTask extends UserTask<Void, Void, TaskResult> {
+	private class DmSendTaskListener implements TaskListener {
+		private GenericTask task;
+		
 	    @Override
 	    public void onPreExecute() {
 	      disableEntry();
@@ -293,7 +292,7 @@ public class WriteDmActivity extends WithHeaderActivity {
 	    }
 
 	    @Override
-	    public TaskResult doInBackground(Void... params) {
+	    public TaskResult doInBackground(TaskParams params) {
 	      try {
 	        String user = mToEdit.getText().toString();
 	        String text = mTweetEdit.getText().toString();
@@ -322,13 +321,6 @@ public class WriteDmActivity extends WithHeaderActivity {
 
 	    @Override
 	    public void onPostExecute(TaskResult result) {
-	      if (isCancelled()) {
-	        // Canceled doesn't really mean "canceled" in this task.
-	        // We want the request to complete, but don't want to update the
-	        // activity (it's probably dead).
-	        return;
-	      }
-
 	      if (result == TaskResult.AUTH_ERROR) {
 	        logout();
 	      } else if (result == TaskResult.OK) {
@@ -347,6 +339,28 @@ public class WriteDmActivity extends WithHeaderActivity {
 	        enableEntry();
 	      }
 	    }
+
+		@Override
+		public String getName() {
+			return "DMSend";
+		}
+
+		@Override
+		public void onCancelled() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onProgressUpdate(Object param) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void setTask(GenericTask task) {
+			this.task = task;
+		}
 	  }
 
 	  private static class FriendsAdapter extends CursorAdapter {

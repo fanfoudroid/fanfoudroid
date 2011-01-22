@@ -18,6 +18,10 @@ public class GenericTask extends AsyncTask<TaskParams, Object, TaskResult> {
 		return mListener;
 	}
 	
+	public void doPublishProgress(Object... values){
+		super.publishProgress(values);
+	}
+	
 	@Override
 	protected void onCancelled() {
 		super.onCancelled();
@@ -59,6 +63,8 @@ public class GenericTask extends AsyncTask<TaskParams, Object, TaskResult> {
 		if (mListener != null){
 			if (arg0 != null && arg0.length > 0){
 				return mListener.doInBackground(arg0[0]);
+			}else{
+				return mListener.doInBackground(null);
 			}
 		}
 		return null;
