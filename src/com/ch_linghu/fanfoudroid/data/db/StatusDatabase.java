@@ -593,21 +593,34 @@ public class StatusDatabase {
                 null, null, null, null, null);
     }
 
+    /**
+     * FIXME:
+     * @param filter
+     * @return
+     */
     public Cursor getFollowerUsernames(String filter) {
         SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
 
         String likeFilter = '%' + filter + '%';
 
+        // FIXME: 此方法的作用应该是在于在写私信时自动完成联系人的功能,
+        // 改造数据库后,因为本地tweets表中的数据有限, 所以几乎使得该功能没有实际价值(因为能从数据库中读到的联系人很少)
+        // 在完成关注者/被关注者两个界面后, 看能不能使得本地有一份 
+        // [互相关注] 的 id/name 缓存(即getFriendsIds和getFollowersIds的交集, 因为客户端只能给他们发私信, 如果按现在
+        // 只提示followers的列表则很容易造成服务器返回"只能给互相关注的人发私信"的错误信息, 这会造成用户无法理解, 因为此联系人是我们提供给他们选择的,
+        // 并且将目前的自动完成功能的基础上加一个[选择联系人]按钮, 用于启动一个新的联系人列表页面以显示所有可发送私信的联系人对象, 类似手机写短信时的选择联系人功能
+        return null;
+        
         // FIXME: clean this up. 新数据库中失效, 表名, 列名
-        return mDb.rawQuery(
-                        "SELECT user_id AS _id, user"
-                         + " FROM (SELECT user_id, user FROM tweets"
-                         + " INNER JOIN followers on tweets.user_id = followers._id UNION"
-                         + " SELECT user_id, user FROM dms INNER JOIN followers"
-                         + " on dms.user_id = followers._id)"
-                         + " WHERE user LIKE ?"
-                         + " ORDER BY user COLLATE NOCASE",
-                        new String[] { likeFilter });
+//        return mDb.rawQuery(
+//                        "SELECT user_id AS _id, user"
+//                         + " FROM (SELECT user_id, user FROM tweets"
+//                         + " INNER JOIN followers on tweets.user_id = followers._id UNION"
+//                         + " SELECT user_id, user FROM dms INNER JOIN followers"
+//                         + " on dms.user_id = followers._id)"
+//                         + " WHERE user LIKE ?"
+//                         + " ORDER BY user COLLATE NOCASE",
+//                        new String[] { likeFilter });
     }
 
     /**

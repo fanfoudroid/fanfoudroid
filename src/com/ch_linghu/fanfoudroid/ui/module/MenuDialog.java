@@ -103,21 +103,30 @@ public class MenuDialog extends Dialog {
 		// 准备要添加的数据条目
 		List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
 
-		int[] resources = {R.drawable.menu_home,
-						   R.drawable.menu_at,
-						   R.drawable.menu_mail,
-						   R.drawable.menu_star};
+        Object[] data = { R.drawable.menu_tweets, "我的空间",
+                R.drawable.menu_profile, "个人资料",
+                R.drawable.menu_followers, "关注我的",
+                R.drawable.menu_following, "我关注的",
+                R.drawable.menu_list, "首页",
+                R.drawable.menu_mentions, "提到我的",
+                R.drawable.menu_listed, "随便看看",
+                R.drawable.menu_favorites, "搜索",
+                R.drawable.menu_create_list, "我的私信" };
 		
-		for (int resource : resources) {
+        for (int i = 0; i < data.length; i+=2) {
 			Map<String, Object> item = new HashMap<String, Object>();
-			item.put("imageItem", resource);
+			item.put("image", data[i]);
+			item.put("title", data[i+1] );
 			items.add(item);
 		}
 
 		// 实例化一个适配器
-		SimpleAdapter adapter = new SimpleAdapter(getContext(), items,
-				R.layout.menu_item, new String[] { "imageItem" },
-				new int[] { R.id.image_item });
+		SimpleAdapter adapter = new SimpleAdapter(getContext(), 
+		        items, // data
+				R.layout.menu_item, // grid item layout 
+				new String[] { "title", "image" }, // data's key
+				new int[] { R.id.item_text, R.id.item_image }); // item view id
+		
 		// 获得GridView实例
 		gridview = (GridView) findViewById(R.id.mygridview);
 		// 将GridView和数据适配器关联

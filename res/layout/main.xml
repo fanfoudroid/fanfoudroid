@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
+  android:orientation='vertical'
   android:background="@color/body_background"
   >
   
@@ -14,19 +15,20 @@
     android:layout_height="fill_parent"
     android:layout_weight="1"
     android:cacheColorHint="#00000000"
-    android:fadeScrollbars="true"
+    android:fadeScrollbars="false"
     android:divider="#FFCCCCCC"
     android:dividerHeight="1dip"
+    android:fadingEdge="none"
     android:fastScrollEnabled="true"
     />          
     
-	 <!-- 提示栏 -->
+	 <!-- 提示栏-->
      <TextView
      android:id="@+id/progress_text"
      android:layout_alignParentBottom="true"
      android:layout_alignParentRight="true"
      style="@style/statusbar"
-     />
-       
-       
-</RelativeLayout>
+     android:visibility="gone"
+     /> 
+     
+</LinearLayout>

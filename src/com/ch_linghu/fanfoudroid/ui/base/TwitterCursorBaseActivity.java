@@ -198,8 +198,6 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 		if (!checkIsLogedIn()) return;
 		
 		goTop(); // skip the header
-		
-		
 
 		// Mark all as read.
 		// getDb().markAllMentionsRead();
@@ -249,7 +247,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 	protected void onResume() {
 		Log.i(TAG, "onResume.");
 		if (lastPosition != 0) {
-//		    mTweetList.setSelection(lastPosition);
+		    mTweetList.setSelection(lastPosition);
 		}
 		super.onResume();
 		checkIsLogedIn();

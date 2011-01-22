@@ -356,7 +356,8 @@ public class WriteDmActivity extends WithHeaderActivity {
 
 	      mInflater = LayoutInflater.from(context);
 
-	      mUserTextColumn = cursor.getColumnIndexOrThrow(StatusTable.FIELD_USER_SCREEN_NAME);
+	      //FIXME:
+//	      mUserTextColumn = cursor.getColumnIndexOrThrow(StatusTable.FIELD_USER_SCREEN_NAME);
 	    }
 
 	    private LayoutInflater mInflater;
@@ -382,7 +383,8 @@ public class WriteDmActivity extends WithHeaderActivity {
 	    public void bindView(View view, Context context, Cursor cursor) {
 	      ViewHolder holder = (ViewHolder) view.getTag();
 
-	      holder.userText.setText(cursor.getString(mUserTextColumn));
+	      //FIXME:
+//	      holder.userText.setText(cursor.getString(mUserTextColumn));
 	    }
 
 	    @Override
@@ -394,7 +396,9 @@ public class WriteDmActivity extends WithHeaderActivity {
 
 	    @Override
 	    public String convertToString(Cursor cursor) {
-	      return cursor.getString(mUserTextColumn);
+	        //FIXME:
+//	      return cursor.getString(mUserTextColumn);
+	        return "";
 	    }
 
 	  }

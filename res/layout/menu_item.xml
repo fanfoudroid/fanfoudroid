@@ -6,10 +6,20 @@
     android:gravity="center"
     
     > 
-   <ImageView android:id="@+id/image_item" 
-      android:layout_width="wrap_content" 
+
+      <ImageView android:id="@+id/item_image" 
+      android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:scaleType="center"
-      > 
-   </ImageView> 
+      android:layout_centerHorizontal="true"
+      />
+      
+      <TextView android:id="@+id/item_text" 
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_below="@id/item_image"
+      android:layout_centerHorizontal="true"
+      android:text="@+id/item_text"
+      style="@style/LinkText"/>
+      
+   
 </RelativeLayout> 

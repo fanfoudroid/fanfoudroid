@@ -70,6 +70,13 @@ public class TwitterActivity extends TwitterCursorBaseActivity
 
 		return intent;
 	}
+	
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setHeaderTitle("饭否fanfou.com");
+    }
 
 	@Override
 	protected void onDestroy() {
