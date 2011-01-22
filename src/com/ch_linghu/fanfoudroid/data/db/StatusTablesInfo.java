@@ -16,8 +16,8 @@ import com.ch_linghu.fanfoudroid.helper.Utils;
  */
 public final class StatusTablesInfo {
     /**
-     * Table - Statuses<br />
-     * <br /> 
+     * Table - Statuses
+     * <br /> <br />
      * 为节省流量,故此表不保证本地数据库中所有消息具有前后连贯性, 而只确保最新的MAX_ROW_NUM条<br />
      * 数据的连贯性, 超出部分则视为垃圾数据, 不再允许读取, 也不保证其是前后连续的.<br />
      * <br />
@@ -27,19 +27,19 @@ public final class StatusTablesInfo {
      * <br />
      * 即认为相对于旧信息而言, 新信息对于用户更为价值, 所以只会新信息进行维护, <br />
      * 而旧信息一律视为无用的, 如用户需要查看超过MAX_ROW_NUM的旧数据, 可主动点击, <br />
-     * 从而请求服务器. 本地只缓存最有价值的MAX条信息.<br />
+     * 从而请求服务器. 本地只缓存最有价值的MAX条最新信息.<br />
      * <br />
-     * 本地数据库中前MAX_ROW_NUM条的数据模拟一个定长列队, 即在头部插入N条消息, 就会使得尾部<br />
+     * 本地数据库中前MAX_ROW_NUM条的数据模拟一个定长列队, 即在尾部插入N条消息, 就会使得头部<br />
      * 的N条消息被标记为垃圾数据(但并不立即收回),只有在认为数据库数据过多时,<br />
-     * 可手动调用 <code>gc()</code> 方法进行垃圾清理.<br />
+     * 可手动调用 <code>StatusDatabase.gc(int type)</code> 方法进行垃圾清理.<br />
      * 
-     *
+     * 
      */
     public static final class StatusTable implements BaseColumns {
         
         public static final String TAG = "StatusTable";
         
-        // Status Type
+        // Status Types
         public static final int TYPE_HOME = 1;
         public static final int TYPE_MENTION = 2;
         public static final int TYPE_USER = 3;
