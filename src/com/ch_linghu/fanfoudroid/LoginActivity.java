@@ -173,6 +173,7 @@ public class LoginActivity extends BaseActivity { // TODO: FIXME: 登录页面�
         disableLogin();
         dialog = ProgressDialog.show(LoginActivity.this, "",
                 getString(R.string.login_status_logging_in), true);
+        dialog.setCancelable(true);
     }
 
     private void onLoginSuccess() {

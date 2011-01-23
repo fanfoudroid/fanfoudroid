@@ -19,7 +19,7 @@
       android:layout_below="@id/item_image"
       android:layout_centerHorizontal="true"
       android:text="@+id/item_text"
-      style="@style/LinkText"/>
+      style="@style/normalText"/>
       
    
 </RelativeLayout> 

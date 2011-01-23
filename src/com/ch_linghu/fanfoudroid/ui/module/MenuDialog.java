@@ -47,6 +47,38 @@ import com.ch_linghu.fanfoudroid.TwitterActivity;
  * 
  */
 public class MenuDialog extends Dialog {
+    
+    private static final int PAGE_MINE = 0;
+    private static final int PAGE_PROFILE = 1;
+    private static final int PAGE_FOLLOWERS = 2;
+    private static final int PAGE_FOLLOWING = 3;
+    private static final int PAGE_HOME = 4;
+    private static final int PAGE_MENTIONS = 5;
+    private static final int PAGE_BROWSE = 6;
+    private static final int PAGE_FAVORITES = 7;
+    private static final int PAGE_MESSAGE = 8;
+
+    private List<int[]> pages = new ArrayList<int[]>();
+    {
+        pages.add(new int[] { R.drawable.menu_tweets,
+                R.string.pages_mine });
+        pages.add(new int[] { R.drawable.menu_profile,
+                R.string.pages_profile });
+        pages.add(new int[] { R.drawable.menu_followers,
+                R.string.pages_followers });
+        pages.add(new int[] { R.drawable.menu_following,
+                R.string.pages_following });
+        pages.add(new int[] { R.drawable.menu_list,
+                R.string.pages_home });
+        pages.add(new int[] { R.drawable.menu_mentions,
+                R.string.pages_mentions });
+        pages.add(new int[] { R.drawable.menu_listed,
+                R.string.pages_browse });
+        pages.add(new int[] { R.drawable.menu_favorites,
+                R.string.pages_search });
+        pages.add(new int[] { R.drawable.menu_create_list,
+                R.string.pages_message });
+    };
 
 	private GridView gridview;
 
@@ -102,22 +134,12 @@ public class MenuDialog extends Dialog {
 	private void initMenu() {
 		// 准备要添加的数据条目
 		List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
-
-        Object[] data = { R.drawable.menu_tweets, "我的空间",
-                R.drawable.menu_profile, "个人资料",
-                R.drawable.menu_followers, "关注我的",
-                R.drawable.menu_following, "我关注的",
-                R.drawable.menu_list, "首页",
-                R.drawable.menu_mentions, "提到我的",
-                R.drawable.menu_listed, "随便看看",
-                R.drawable.menu_favorites, "搜索",
-                R.drawable.menu_create_list, "我的私信" };
-		
-        for (int i = 0; i < data.length; i+=2) {
-			Map<String, Object> item = new HashMap<String, Object>();
-			item.put("image", data[i]);
-			item.put("title", data[i+1] );
-			items.add(item);
+            
+        for (int[] item : pages) { 
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("image", item[0]);
+			map.put("title", getContext().getString(item[1]) );
+			items.add(map);
 		}
 
 		// 实例化一个适配器
@@ -142,17 +164,35 @@ public class MenuDialog extends Dialog {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
 				switch (position) {
-				case 0:
+				case PAGE_MINE:
+				    //TODO: 完成个人空间页面
+//					goTo(HomeActivity.class);
+					break;
+				case PAGE_PROFILE:
+//					goTo(ProfileActivity.class);
+					break;
+				case PAGE_FOLLOWERS:
+//					goTo(FollowersActivity.class);
+					break;
+				case PAGE_FOLLOWING:
+				    //TODO: 完成关注者页面
+//					goTo(FollowingActivity.class);
+					break;
+				case PAGE_HOME:
 					goTo(TwitterActivity.class);
 					break;
-				case 1:
+				case PAGE_MENTIONS:
 					goTo(MentionActivity.class);
 					break;
-				case 2:
-					goTo(DmActivity.class);
+				case PAGE_BROWSE:
+				    //TODO: 完成随便看看页面
+//					goTo(BrowseActivity.class);
 					break;
-				case 3:
+				case PAGE_FAVORITES:
 					goTo(FavoritesActivity.class);
+					break;
+				case PAGE_MESSAGE:
+					goTo(DmActivity.class);
 					break;
 				}
 			}

@@ -48,8 +48,10 @@ public class TwitterApplication extends Application {
             mApi.setCredentials(username, password); // Setup API and HttpClient
         }
 
-        boolean isCmwap = preferences.getBoolean("cmwap", true);
-        if (true == isCmwap) {
+        // 为cmwap用户设置代理上网
+        String type = getNetworkType();
+        if (type.equalsIgnoreCase("cmwap")) {
+            Toast.makeText(this, "您当前正在使用cmwap网络上网.", Toast.LENGTH_SHORT);
             mApi.getHttpClient().setProxy("10.0.0.172", 80, "http");
         }
     }
