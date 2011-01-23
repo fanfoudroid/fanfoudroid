@@ -82,22 +82,7 @@ public class TwitterActivity extends TwitterCursorBaseActivity
 
         setHeaderTitle("饭否fanfou.com");
         
-        // 临时
-        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService( Context.CONNECTIVITY_SERVICE ); 
-        NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo(); 
-        NetworkInfo mobNetInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE ); 
-
-        if( mobNetInfo != null ) { 
-            Toast.makeText( this, "您当前的接入点为 : " + mobNetInfo.getExtraInfo(), Toast.LENGTH_LONG ).show(); 
-        } 
-        
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);        
-        boolean isCmwap = preferences.getBoolean("cmwap", true);
-        if (true == isCmwap) {
-           
-            String proxy = getApi().getHttpClient().setProxy("10.0.0.172", 80, "http");
-            Toast.makeText( this, "您当前的使用的代理为 : " + proxy, Toast.LENGTH_LONG ).show(); 
-        }
+       
     }
 
 	@Override

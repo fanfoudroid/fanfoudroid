@@ -77,6 +77,18 @@
     android:defaultValue="true" />
   </PreferenceCategory>
 
+  <PreferenceCategory android:title="@string/pref_title_network">
+     <ListPreference  
+       android:key="network_type"
+       android:defaultValue="@string/pref_network_type_cmnet"
+       android:title="@string/pref_network_type_title"  
+       android:summary="@string/pref_network_type_summary"
+       android:entries="@array/network_type"
+       android:entryValues="@array/network_type"
+       android:dialogTitle="@string/pref_network_type_title"                        
+       />
+  </PreferenceCategory>
+
   <PreferenceCategory android:title="@string/pref_title_misc">
     <EditTextPreference
     android:key="rt_prefix"
@@ -85,11 +97,6 @@
     android:defaultValue="@string/pref_rt_prefix_default" />
   </PreferenceCategory>
   
-  <CheckBoxPreference  
-            android:key="cmwap"
-            android:defaultValue="true"
-            android:title="使用cmwap"
-            android:summary="是否使用cmwap作为接入点, DEBUG"
-            /> 
+
 
 </PreferenceScreen>

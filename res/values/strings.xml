@@ -119,6 +119,13 @@
     <string name="pref_rt_prefix_title">转发前缀</string>
     <string name="pref_rt_prefix_summary">转发消息时的前缀</string>
     <string name="pref_rt_prefix_default">热饭</string>
+    
+    <string name="pref_title_network">网络</string>
+    <string name="pref_network_type_title">网络类型</string>
+    <string name="pref_network_type_cmnet">cmnet</string>
+    <string name="pref_network_type_cmwap">cmwap</string>
+    <string name="pref_network_type_3g">3G/wifi</string>
+    <string name="pref_network_type_summary">选择当前网络的接入点或类型</string>
 
 	<!-- Service -->    
     <string name="service_new_twitter_updates">新消息</string>

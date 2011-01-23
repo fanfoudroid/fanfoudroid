@@ -44,4 +44,6 @@ public class Preferences {
   
   public static final String RT_PREFIX_KEY = "rt_prefix";
   public static final String RT_INSERT_APPEND = "rt_insert_append"; //转发时光标放置在开始还是结尾 
+  
+  public static final String NETWORK_TYPE = "network_type";
 }

@@ -122,11 +122,13 @@ public class HttpClient {
         return mPassword;
     }
     
-    public String setProxy(String host, int port, String scheme) {
+    public void setProxy(String host, int port, String scheme) {
         HttpHost proxy = new HttpHost(host, port, scheme);  
         mClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
-        
-        return mClient.getParams().getParameter(ConnRoutePNames.DEFAULT_PROXY).toString();
+    }
+    
+    public void removeProxy() {
+        mClient.getParams().removeParameter(ConnRoutePNames.DEFAULT_PROXY);
     }
 
     /**
