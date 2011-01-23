@@ -84,5 +84,12 @@
     android:summary="@string/pref_rt_prefix_summary"
     android:defaultValue="@string/pref_rt_prefix_default" />
   </PreferenceCategory>
+  
+  <CheckBoxPreference  
+            android:key="cmwap"
+            android:defaultValue="true"
+            android:title="使用cmwap"
+            android:summary="是否使用cmwap作为接入点, DEBUG"
+            /> 
 
 </PreferenceScreen>

@@ -21,9 +21,13 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -32,6 +36,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.Toast;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
@@ -76,6 +81,23 @@ public class TwitterActivity extends TwitterCursorBaseActivity
         super.onCreate(savedInstanceState);
 
         setHeaderTitle("饭否fanfou.com");
+        
+        // 临时
+        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService( Context.CONNECTIVITY_SERVICE ); 
+        NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo(); 
+        NetworkInfo mobNetInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE ); 
+
+        if( mobNetInfo != null ) { 
+            Toast.makeText( this, "您当前的接入点为 : " + mobNetInfo.getExtraInfo(), Toast.LENGTH_LONG ).show(); 
+        } 
+        
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);        
+        boolean isCmwap = preferences.getBoolean("cmwap", true);
+        if (true == isCmwap) {
+           
+            String proxy = getApi().getHttpClient().setProxy("10.0.0.172", 80, "http");
+            Toast.makeText( this, "您当前的使用的代理为 : " + proxy, Toast.LENGTH_LONG ).show(); 
+        }
     }
 
 	@Override

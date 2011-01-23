@@ -15,6 +15,7 @@ import javax.net.ssl.SSLHandshakeException;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -31,6 +32,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.params.ConnManagerParams;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -118,6 +120,13 @@ public class HttpClient {
 
     public String getPassword() {
         return mPassword;
+    }
+    
+    public String setProxy(String host, int port, String scheme) {
+        HttpHost proxy = new HttpHost(host, port, scheme);  
+        mClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+        
+        return mClient.getParams().getParameter(ConnRoutePNames.DEFAULT_PROXY).toString();
     }
 
     /**

@@ -2,11 +2,17 @@ package com.ch_linghu.fanfoudroid;
 
 import java.util.HashSet;
 
+import org.apache.http.HttpHost;
+import org.apache.http.conn.params.ConnRoutePNames;
+
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
 import com.ch_linghu.fanfoudroid.data.db.StatusDatabase;
 import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
@@ -41,6 +47,7 @@ public class TwitterApplication extends Application {
     if (Weibo.isValidCredentials(username, password)) {
         mApi.setCredentials(username, password); // Setup API and HttpClient 
     }
+    
   }
 
   @Override
