@@ -15,9 +15,13 @@
  */
 package com.ch_linghu.fanfoudroid.ui.base;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
@@ -34,24 +38,20 @@ import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
-import com.ch_linghu.fanfoudroid.task.Followable;
-import com.ch_linghu.fanfoudroid.task.FollowersTaskListener;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
-import com.ch_linghu.fanfoudroid.task.Retrievable;
-import com.ch_linghu.fanfoudroid.task.RetrieveListTaskListener;
-import com.ch_linghu.fanfoudroid.task.TaskFactory;
+import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 import com.ch_linghu.fanfoudroid.ui.module.TweetCursorAdapter;
+import com.ch_linghu.fanfoudroid.weibo.IDs;
 import com.ch_linghu.fanfoudroid.weibo.Status;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 /**
  * TwitterCursorBaseLine用于带有静态数据来源（对应数据库的，与twitter表同构的特定表）的展现
  */
-public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
-	implements Followable, Retrievable{
+public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 	static final String TAG = "TwitterListBaseActivity";
 
 	// Views.
@@ -344,9 +344,51 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 	private void doRetrieveFollowers() {
         Log.i(TAG, "Attempting followers retrieve.");
 
-        mFollowersRetrieveTask = TaskFactory.create(FollowersTaskListener.getInstance(this));
+        if (mFollowersRetrieveTask != null && mFollowersRetrieveTask.getStatus() == GenericTask.Status.RUNNING){
+        	return;
+        }else{
+        	mFollowersRetrieveTask = new FollowersRetrieveTask();
+        	mFollowersRetrieveTask.setListener(new TaskListener(){
 
-        mFollowersRetrieveTask.execute(null);
+				@Override
+				public String getName() {
+					return "FollowerRetrieve";
+				}
+
+				@Override
+				public void onCancelled(GenericTask task) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void onPostExecute(GenericTask task, TaskResult result) {
+					if (result == TaskResult.OK) {
+						SharedPreferences sp = getPreferences();
+						SharedPreferences.Editor editor = sp.edit();
+						editor.putLong(Preferences.LAST_FOLLOWERS_REFRESH_KEY,
+								Utils.getNowTime());
+						editor.commit();
+					} else {
+						// Do nothing.
+					}
+				}
+
+				@Override
+				public void onPreExecute(GenericTask task) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void onProgressUpdate(GenericTask task, Object param) {
+					// TODO Auto-generated method stub
+					
+				}
+        		
+        	});
+        	mFollowersRetrieveTask.execute();
+        }
     }
 	
 	public void onRetrieveBegin() {
@@ -359,13 +401,141 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity
 		// 旋转刷新按钮
 		animRotate(refreshButton);
 
-		mRetrieveTask = TaskFactory.create(RetrieveListTaskListener.getInstance(this));
-		
-		mRetrieveTask.execute(null);
+		if (mRetrieveTask != null && mRetrieveTask.getStatus() == GenericTask.Status.RUNNING){
+			return;
+		}else{
+			mRetrieveTask = new RetrieveTask();
+			mRetrieveTask.setListener(new TaskListener(){
+
+				@Override
+				public String getName() {
+					return "RetrieveTask";
+				}
+
+				@Override
+				public void onCancelled(GenericTask task) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void onPostExecute(GenericTask task, TaskResult result) {
+					if (result == TaskResult.AUTH_ERROR) {
+						logout();
+					} else if (result == TaskResult.OK) {
+						SharedPreferences.Editor editor = getPreferences().edit();
+						editor.putLong(Preferences.LAST_TWEET_REFRESH_KEY, Utils
+								.getNowTime());
+						editor.commit();
+						draw();
+						goTop();
+					} else {
+						// Do nothing.
+					}
+
+					// 刷新按钮停止旋转
+					getRefreshButton().clearAnimation();
+					updateProgress("");
+				}
+
+				@Override
+				public void onPreExecute(GenericTask task) {
+					onRetrieveBegin();
+				}
+
+				@Override
+				public void onProgressUpdate(GenericTask task, Object param) {
+					draw();
+				}
+				
+			});
+			mRetrieveTask.execute();
+		}
 	}
 	// for Retrievable interface
 	public ImageButton getRefreshButton() {
 		return refreshButton;
+	}
+	
+	private class RetrieveTask extends GenericTask{
+
+		@Override
+		protected TaskResult _doInBackground(TaskParams... params) {
+			List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
+
+			String maxId = fetchMaxId(); // getDb().fetchMaxMentionId();
+
+			try {
+				statusList = getMessageSinceId(maxId);
+			} catch (WeiboException e) {
+				Log.e(TAG, e.getMessage(), e);
+				return TaskResult.IO_ERROR;
+			}
+
+			ArrayList<Tweet> tweets = new ArrayList<Tweet>();
+			HashSet<String> imageUrls = new HashSet<String>();
+			
+			for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
+				if (isCancelled()) {
+					return TaskResult.CANCELLED;
+				}
+
+				Tweet tweet;
+
+				tweet = Tweet.create(status);
+				tweets.add(tweet);
+
+				imageUrls.add(tweet.profileImageUrl);
+
+				if (isCancelled()) {
+					return TaskResult.CANCELLED;
+				}
+			}
+
+			addMessages(tweets, false); // getDb().addMentions(tweets, false);
+
+			if (isCancelled()) {
+				return TaskResult.CANCELLED;
+			}
+
+			//task.publishProgress();
+
+			for (String imageUrl : imageUrls) {
+				if (!Utils.isEmpty(imageUrl)) {
+					// Fetch image to cache.
+					try {
+						getImageManager().put(imageUrl);
+					} catch (IOException e) {
+						Log.e(TAG, e.getMessage(), e);
+					}
+				}
+
+				if (isCancelled()) {
+					return TaskResult.CANCELLED;
+				}
+			}
+
+			return TaskResult.OK;
+		}
+		
+	}
+	
+	private class FollowersRetrieveTask extends GenericTask{
+
+		@Override
+		protected TaskResult _doInBackground(TaskParams... params) {
+			try {
+				// TODO: 目前仅做新API兼容性改动，待完善Follower处理
+				IDs followers = getApi().getFollowersIDs();
+				List<String> followerIds = Arrays.asList(followers.getIDs());
+				getDb().syncFollowers(followerIds);
+			} catch (WeiboException e) {
+				Log.e(TAG, e.getMessage(), e);
+				return TaskResult.IO_ERROR;
+			}
+			return TaskResult.OK;
+		}
+		
 	}
 	
 }

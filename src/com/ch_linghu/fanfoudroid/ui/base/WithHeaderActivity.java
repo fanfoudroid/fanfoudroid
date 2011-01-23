@@ -18,7 +18,6 @@ import android.widget.TextView;
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.TwitterActivity;
 import com.ch_linghu.fanfoudroid.WriteActivity;
-import com.ch_linghu.fanfoudroid.task.Retrievable;
 import com.ch_linghu.fanfoudroid.ui.module.MenuDialog;
 
 public class WithHeaderActivity extends BaseActivity {
@@ -94,9 +93,7 @@ public class WithHeaderActivity extends BaseActivity {
 				// 旋转动画
 				animRotate(v);
 				
-				if (that instanceof Retrievable) {
-					((Retrievable) that).doRetrieve();
-				} else if (that instanceof Refreshable) {
+				if (that instanceof Refreshable) {
 					((Refreshable) that).doRetrieve();
 				} else {
 					Log.e(TAG, "The current view " + that.getClass().getName() + " cann't be retrieved");

@@ -11,16 +11,13 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.ListView;
-import android.widget.TextView;
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.MemoryImageCache;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
-import com.ch_linghu.fanfoudroid.task.TaskFactory;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
@@ -139,34 +136,62 @@ public class SearchActivity extends TwitterListBaseActivity implements
 		mAdapter.refresh(mTweets, mImageCache);
 	}
 
-	private enum RetrieveResult {
-		OK, IO_ERROR, AUTH_ERROR, CANCELLED
-	}
-
 	private void doSearch() {
 		Log.i(TAG, "Attempting search.");
-
-		mSearchTask = TaskFactory.create(new SearchTaskListener()); 
 		
-		mSearchTask.execute(null);
+		if (mSearchTask != null && mSearchTask.getStatus() == GenericTask.Status.RUNNING){
+			return;
+		}else{
+			mSearchTask = new SearchTask();
+			mSearchTask.setListener(new TaskListener(){
+				@Override
+				public void onPreExecute(GenericTask task) {
+					if (mNextPage == 1) {
+						updateProgress(getString(R.string.page_status_refreshing));
+					} else {
+						updateProgress(getString(R.string.page_status_refreshing));
+					}
+				}
+
+				@Override
+				public void onProgressUpdate(GenericTask task, Object param) {
+					draw();
+				}
+
+				@Override
+				public void onPostExecute(GenericTask task, TaskResult result) {
+					if (result == TaskResult.AUTH_ERROR) {
+						logout();
+					} else if (result == TaskResult.OK) {
+						draw();
+					} else {
+						// Do nothing.
+					}
+
+					updateProgress("");
+				}
+
+				@Override
+				public String getName() {
+					return "SearchTask";
+				}
+
+				@Override
+				public void onCancelled(GenericTask task) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
+			mSearchTask.execute();
+		}
 	}
 
-	private class SearchTaskListener implements TaskListener {
-		private GenericTask task;
-		
-		@Override
-		public void onPreExecute() {
-			if (mNextPage == 1) {
-				updateProgress(getString(R.string.page_status_refreshing));
-			} else {
-				updateProgress(getString(R.string.page_status_refreshing));
-			}
-		}
-
+	private class SearchTask extends GenericTask {
+	
 		ArrayList<Tweet> mTweets = new ArrayList<Tweet>();
 
 		@Override
-		public TaskResult doInBackground(TaskParams params) {
+		protected TaskResult _doInBackground(TaskParams...params) {
 			QueryResult result;
 
 			try {
@@ -181,7 +206,7 @@ public class SearchActivity extends TwitterListBaseActivity implements
 			HashSet<String> imageUrls = new HashSet<String>();
 
 			for (com.ch_linghu.fanfoudroid.weibo.Status status : result.getStatus()) {
-				if (task.isCancelled()) {
+				if (isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
 
@@ -191,18 +216,18 @@ public class SearchActivity extends TwitterListBaseActivity implements
 				mTweets.add(tweet);
 				imageUrls.add(tweet.profileImageUrl);
 
-				if (task.isCancelled()) {
+				if (isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
 			}
 
 			addTweets(mTweets);
 
-			if (task.isCancelled()) {
+			if (isCancelled()) {
 				return TaskResult.CANCELLED;
 			}
 
-			task.doPublishProgress(null);
+			publishProgress();
 
 			// TODO: what if orientation change?
 			ImageManager imageManager = getImageManager();
@@ -219,7 +244,7 @@ public class SearchActivity extends TwitterListBaseActivity implements
 					}
 				}
 
-				if (task.isCancelled()) {
+				if (isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
 			}
@@ -228,42 +253,8 @@ public class SearchActivity extends TwitterListBaseActivity implements
 
 			return TaskResult.OK;
 		}
-
-		@Override
-		public void onProgressUpdate(Object param) {
-			draw();
-		}
-
-		@Override
-		public void onPostExecute(TaskResult result) {
-			if (result == TaskResult.AUTH_ERROR) {
-				logout();
-			} else if (result == TaskResult.OK) {
-				draw();
-			} else {
-				// Do nothing.
-			}
-
-			updateProgress("");
-		}
-
-		@Override
-		public String getName() {
-			return "Search";
-		}
-
-		@Override
-		public void onCancelled() {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void setTask(GenericTask task) {
-			this.task = task;
-		}
 	}
-
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		return super.onCreateOptionsMenu(menu);
@@ -347,6 +338,11 @@ public class SearchActivity extends TwitterListBaseActivity implements
 		mAdapter = new TweetArrayAdapter(this, mImageCache);
 		mTweetList.setAdapter(mAdapter);
 		mTweetList.setOnNeedMoreListener(this);		
+	}
+
+	@Override
+	public void doRetrieve() {
+		doSearch();
 	}
 
 

@@ -1,17 +1,20 @@
 package com.ch_linghu.fanfoudroid.task;
 
+import java.util.Map;
+
 import com.ch_linghu.fanfoudroid.TwitterApplication;
 
 import android.os.AsyncTask;
 import android.widget.Toast;
 
-public class GenericTask extends AsyncTask<TaskParams, Object, TaskResult> {
+public abstract class GenericTask extends AsyncTask<TaskParams, Object, TaskResult> {
 
 	private TaskListener mListener = null;
 	
+	abstract protected TaskResult _doInBackground(TaskParams...params);
+	
 	public void setListener(TaskListener taskListener){
 		mListener = taskListener;
-		mListener.setTask(this);
 	}
 	
 	public TaskListener getListener(){
@@ -27,7 +30,7 @@ public class GenericTask extends AsyncTask<TaskParams, Object, TaskResult> {
 		super.onCancelled();
 
 		if (mListener != null){
-			mListener.onCancelled();
+			mListener.onCancelled(this);
 		}
 		Toast.makeText(TwitterApplication.mContext, mListener.getName() + " has been cancelled", Toast.LENGTH_SHORT);
 	}
@@ -36,7 +39,7 @@ public class GenericTask extends AsyncTask<TaskParams, Object, TaskResult> {
 		super.onPostExecute(result);
 
 		if (mListener != null){
-			mListener.onPostExecute(result);
+			mListener.onPostExecute(this, result);
 		}
 		Toast.makeText(TwitterApplication.mContext, mListener.getName() + " completed", Toast.LENGTH_SHORT);
 	}
@@ -45,7 +48,7 @@ public class GenericTask extends AsyncTask<TaskParams, Object, TaskResult> {
 		super.onPreExecute();
 
 		if (mListener != null){
-			mListener.onPreExecute();
+			mListener.onPreExecute(this);
 		}
 	}
 	@Override
@@ -54,19 +57,12 @@ public class GenericTask extends AsyncTask<TaskParams, Object, TaskResult> {
 		
 		if (mListener != null){
 			if (values != null && values.length > 0){
-				mListener.onProgressUpdate(values[0]);
+				mListener.onProgressUpdate(this, values[0]);
 			}
 		}
 	}
 	@Override
-	protected TaskResult doInBackground(TaskParams... arg0) {
-		if (mListener != null){
-			if (arg0 != null && arg0.length > 0){
-				return mListener.doInBackground(arg0[0]);
-			}else{
-				return mListener.doInBackground(null);
-			}
-		}
-		return null;
+	protected TaskResult doInBackground(TaskParams... params){
+		return _doInBackground(params);
 	}
 }

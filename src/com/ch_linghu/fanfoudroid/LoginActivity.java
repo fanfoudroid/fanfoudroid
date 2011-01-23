@@ -37,7 +37,6 @@ import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.http.HttpAuthException;
 import com.ch_linghu.fanfoudroid.http.HttpRefusedException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
-import com.ch_linghu.fanfoudroid.task.TaskFactory;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
@@ -166,15 +165,52 @@ public class LoginActivity extends Activity {
         mUsername = mUsernameEdit.getText().toString();
         mPassword = mPasswordEdit.getText().toString();
         
-        if (!Utils.isEmpty(mUsername) & !Utils.isEmpty(mPassword) ) {
-            mLoginTask = TaskFactory.create(new LoginTaskListener());
-            
-            TaskParams params = new TaskParams();
-            params.put("username", mUsername);
-            params.put("password", mPassword);
-            mLoginTask.execute(params);
-        } else {
-            updateProgress(getString(R.string.login_status_null_username_or_password));
+        if (mLoginTask != null && mLoginTask.getStatus() == GenericTask.Status.RUNNING){
+        	return;
+        }else{
+	        if (!Utils.isEmpty(mUsername) & !Utils.isEmpty(mPassword) ) {
+	            mLoginTask = new LoginTask();
+	            mLoginTask.setListener(new TaskListener(){
+
+	                @Override
+	                public void onPreExecute(GenericTask task) {
+	                    onLoginBegin();
+	                }
+
+	                @Override
+	                public void onProgressUpdate(GenericTask task, Object param) {
+	                    updateProgress((String)param);
+	                }
+
+	                @Override
+	                public void onPostExecute(GenericTask task, TaskResult result) {
+	                    if (result == TaskResult.OK) {
+	                        onLoginSuccess();
+	                    } else {
+	                        onLoginFailure(((LoginTask)task).getMsg());
+	                    }
+	                }
+
+	        		@Override
+	        		public String getName() {
+	        			// TODO Auto-generated method stub
+	        			return "Login";
+	        		}
+
+	        		@Override
+	        		public void onCancelled(GenericTask task) {
+	        			// TODO Auto-generated method stub
+	        			
+	        		}
+	            });
+	            
+	            TaskParams params = new TaskParams();
+	            params.put("username", mUsername);
+	            params.put("password", mPassword);
+	            mLoginTask.execute(params);
+	        } else {
+	            updateProgress(getString(R.string.login_status_null_username_or_password));
+	        }
         }
     }
 
@@ -219,23 +255,22 @@ public class LoginActivity extends Activity {
         enableLogin();
     }
 
-    private class LoginTaskListener implements TaskListener {
+    private class LoginTask extends GenericTask {
         
         private String msg = getString(R.string.login_status_failure);
-        private GenericTask task;
+        
+        public String getMsg(){
+        	return msg;
+        }
         
         @Override
-        public void onPreExecute() {
-            onLoginBegin();
-        }
-
-        @Override
-        public TaskResult doInBackground(TaskParams params) {
-            task.doPublishProgress(getString(R.string.login_status_logging_in) + "...");
+        protected TaskResult _doInBackground(TaskParams...params) {
+        	TaskParams param = params[0];
+            publishProgress(getString(R.string.login_status_logging_in) + "...");
 
             try {
-            	String username = params.getString("username");
-            	String password = params.getString("password");
+            	String username = param.getString("username");
+            	String password = param.getString("password");
                 TwitterApplication.mApi.login(username, password);
             } catch (WeiboException e) {
                 Log.e(TAG, e.getMessage(), e);
@@ -247,48 +282,13 @@ public class LoginActivity extends Activity {
                 } else {
                     msg = getString(R.string.login_status_network_or_connection_error);
                 }
-                task.doPublishProgress(msg);
+                publishProgress(msg);
                 return TaskResult.FAILED;
             }
             return TaskResult.OK;
         }
-
-        @Override
-        public void onProgressUpdate(Object param) {
-            updateProgress((String)param);
-        }
-
-        @Override
-        public void onPostExecute(TaskResult result) {
-            if (task.isCancelled()) {
-                return;
-            }
-
-            if (result == TaskResult.OK) {
-                onLoginSuccess();
-            } else {
-                onLoginFailure(msg);
-            }
-        }
-
-		@Override
-		public String getName() {
-			// TODO Auto-generated method stub
-			return "Login";
-		}
-
-		@Override
-		public void onCancelled() {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void setTask(GenericTask task) {
-			this.task = task;
-		}
     }
-    
+
     private View.OnKeyListener enterKeyHandler = new View.OnKeyListener() {
         public boolean onKey(View v, int keyCode, KeyEvent event) {
             if (keyCode == KeyEvent.KEYCODE_ENTER

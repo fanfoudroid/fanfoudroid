@@ -1,12 +1,10 @@
 package com.ch_linghu.fanfoudroid.task;
 
 public interface TaskListener {
-	void setTask(GenericTask task);
 	String getName();
 	
-	TaskResult doInBackground(TaskParams params);
-	void onPreExecute();
-	void onPostExecute(TaskResult result);
-	void onProgressUpdate(Object param);
-	void onCancelled();
+	void onPreExecute(GenericTask task);
+	void onPostExecute(GenericTask task, TaskResult result);
+	void onProgressUpdate(GenericTask task, Object param);
+	void onCancelled(GenericTask task);
 }

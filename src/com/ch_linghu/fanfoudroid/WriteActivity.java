@@ -52,7 +52,6 @@ import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
-import com.ch_linghu.fanfoudroid.task.TaskFactory;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
@@ -434,22 +433,62 @@ public class WriteActivity extends WithHeaderActivity {
 	private void doSend() {
 	    startTime =  System.currentTimeMillis() ;
 		Log.i(TAG, String.format("doSend, reply_id=%s", _reply_id));
-		
 
+		if (mSendTask != null && mSendTask.getStatus() == GenericTask.Status.RUNNING){
+			return;
+		}else{
 			String status = mTweetEdit.getText().toString();
 
 			if (! Utils.isEmpty(status) || withPic) {
-			    int mode = SendTaskListener.TYPE_NORMAL;
+			    int mode = SendTask.TYPE_NORMAL;
 			    
 			    if (withPic)  {
-			        mode = SendTaskListener.TYPE_PHOTO;
+			        mode = SendTask.TYPE_PHOTO;
 			    } else if (null != _reply_id) {
-			        mode = SendTaskListener.TYPE_REPLY;
+			        mode = SendTask.TYPE_REPLY;
 			    } else if (null != _repost_id) {
-			        mode = SendTaskListener.TYPE_REPOST;
+			        mode = SendTask.TYPE_REPOST;
 			    }
 			    
-				mSendTask = TaskFactory.create(new SendTaskListener());
+				mSendTask = new SendTask();
+				mSendTask.setListener(new TaskListener(){
+					@Override
+					public void onPreExecute(GenericTask task) {
+						onSendBegin();
+					}
+
+					@Override
+					public void onPostExecute(GenericTask task, TaskResult result) {
+					    endTime = System.currentTimeMillis();
+				        Log.d("LDS", "Sended a status in " + (endTime - startTime));
+				        
+						if (result == TaskResult.AUTH_ERROR) {
+							logout();
+						} else if (result == TaskResult.OK) {
+							onSendSuccess();
+						} else if (result == TaskResult.IO_ERROR) {
+							onSendFailure();
+						} 
+					}
+
+					@Override
+					public String getName() {
+						// TODO Auto-generated method stub
+						return "SendTask";
+					}
+
+					@Override
+					public void onCancelled(GenericTask task) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					@Override
+					public void onProgressUpdate(GenericTask task, Object param) {
+						// TODO Auto-generated method stub
+						
+					}
+				});
 				
 				TaskParams params = new TaskParams();
 				params.put("mode", mode);
@@ -457,9 +496,10 @@ public class WriteActivity extends WithHeaderActivity {
 			} else {
 			    updateProgress(getString(R.string.page_text_is_null));
 			}
+		}
 	}
 
-	private class SendTaskListener implements TaskListener {
+	private class SendTask extends GenericTask {
 	    
 	    public static final int TYPE_NORMAL = 0;
 	    public static final int TYPE_REPLY  = 1;
@@ -467,17 +507,12 @@ public class WriteActivity extends WithHeaderActivity {
 	    public static final int TYPE_PHOTO  = 3;
 	    
 		@Override
-		public void onPreExecute() {
-			onSendBegin();
-		}
-
-		@Override
-		public TaskResult doInBackground(TaskParams params) {
-			
+		protected TaskResult _doInBackground(TaskParams...params) {
+			TaskParams param = params[0];
 			try {
 				String status = mTweetEdit.getText().toString();
 			    
-				int mode = params.getInt("mode");
+				int mode = param.getInt("mode");
 		    
 		        Log.i(TAG, "Send Status. Mode : " + mode);
 		        
@@ -530,44 +565,6 @@ public class WriteActivity extends WithHeaderActivity {
 			}
 			
 			return TaskResult.OK;
-		}
-
-		@Override
-		public void onPostExecute(TaskResult result) {
-		    endTime = System.currentTimeMillis();
-	        Log.d("LDS", "Sended a status in " + (endTime - startTime));
-	        
-			if (result == TaskResult.AUTH_ERROR) {
-				logout();
-			} else if (result == TaskResult.OK) {
-				onSendSuccess();
-			} else if (result == TaskResult.IO_ERROR) {
-				onSendFailure();
-			} 
-		}
-
-		@Override
-		public String getName() {
-			// TODO Auto-generated method stub
-			return "Send";
-		}
-
-		@Override
-		public void onCancelled() {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void onProgressUpdate(Object param) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void setTask(GenericTask task) {
-			// TODO Auto-generated method stub
-			
 		}
 	}
 

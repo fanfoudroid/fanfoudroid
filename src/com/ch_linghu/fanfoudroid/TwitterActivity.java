@@ -35,22 +35,17 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
-import com.ch_linghu.fanfoudroid.task.Deletable;
-import com.ch_linghu.fanfoudroid.task.DeleteTaskListener;
-import com.ch_linghu.fanfoudroid.task.Followable;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
-import com.ch_linghu.fanfoudroid.task.HasFavorite;
-import com.ch_linghu.fanfoudroid.task.Retrievable;
-import com.ch_linghu.fanfoudroid.task.TaskFactory;
+import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
+import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterCursorBaseActivity;
 import com.ch_linghu.fanfoudroid.weibo.Paging;
 import com.ch_linghu.fanfoudroid.weibo.Status;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 //TODO: 暂无获取更旧的消息（例如NeedMore()），用户将无法查看更旧的FriendsTimeline内容。
-public class TwitterActivity extends TwitterCursorBaseActivity 
-		implements Followable, Retrievable, HasFavorite, Deletable {
+public class TwitterActivity extends TwitterCursorBaseActivity {
 	private static final String TAG = "TwitterActivity";
 
 	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.TWEETS";
@@ -174,22 +169,90 @@ public class TwitterActivity extends TwitterCursorBaseActivity
 		}
 	}
 
-	@Override
 	public void onDeleteFailure() {
 		Log.e(TAG, "Delete failed");		
 	}
 
-	@Override
 	public void onDeleteSuccess() {
 		mTweetAdapter.refresh();
 	}
 
 	private void doDelete(String id) {
-		mDeleteTask = TaskFactory.create(DeleteTaskListener.getInstance(this));
 		
-		TaskParams params = new TaskParams();
-		params.put("id", id);
-		mDeleteTask.execute(params);
+		if (mDeleteTask != null && mDeleteTask.getStatus() == GenericTask.Status.RUNNING){
+			return;
+		}else{
+			mDeleteTask = new DeleteTask();
+			mDeleteTask.setListener(new TaskListener(){
+
+				@Override
+				public String getName() {
+					return "DeleteTask";
+				}
+
+				@Override
+				public void onCancelled(GenericTask task) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void onPostExecute(GenericTask task, TaskResult result) {
+					if (result == TaskResult.AUTH_ERROR) {
+						logout();
+					} else if (result == TaskResult.OK) {
+						onDeleteSuccess();
+					} else if (result == TaskResult.IO_ERROR) {
+						onDeleteFailure();
+					}
+				}
+
+				@Override
+				public void onPreExecute(GenericTask task) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void onProgressUpdate(GenericTask task, Object param) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+			});
+			
+			TaskParams params = new TaskParams();
+			params.put("id", id);
+			mDeleteTask.execute(params);
+		}
 	}
 
+	private class DeleteTask extends GenericTask{
+
+		@Override
+		protected TaskResult _doInBackground(TaskParams... params) {
+			TaskParams param = params[0];
+			try {
+				String id = param.getString("id");
+				com.ch_linghu.fanfoudroid.weibo.Status status = null;
+
+				status = getApi().destroyStatus(id);
+
+				// 对所有相关表的对应消息都进行删除（如果存在的话）
+				getDb().destoryStatus(TwitterDbAdapter.TABLE_FAVORITE,
+						status.getId());
+				getDb().destoryStatus(TwitterDbAdapter.TABLE_MENTION,
+						status.getId());
+				getDb().destoryStatus(TwitterDbAdapter.TABLE_TWEET,
+						status.getId());
+			} catch (WeiboException e) {
+				Log.e(TAG, e.getMessage(), e);
+				return TaskResult.IO_ERROR;
+			}
+
+			return TaskResult.OK;
+
+		}
+
+	}
 }

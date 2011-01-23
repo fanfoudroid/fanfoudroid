@@ -22,30 +22,25 @@ import android.view.ViewGroup;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
 import android.widget.CursorAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.data.Dm;
-import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
-import com.ch_linghu.fanfoudroid.task.Retrievable;
-import com.ch_linghu.fanfoudroid.task.TaskFactory;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
 import com.ch_linghu.fanfoudroid.weibo.DirectMessage;
 import com.ch_linghu.fanfoudroid.weibo.Paging;
-import com.ch_linghu.fanfoudroid.weibo.Status;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
-public class DmActivity extends WithHeaderActivity implements Retrievable {
+public class DmActivity extends WithHeaderActivity {
 
 	private static final String TAG = "DmActivity";
 
@@ -246,21 +241,9 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 		inbox.setEnabled(false);
 	}
 
-	private class DmRetrieveTaskListener implements TaskListener {
-		private GenericTask task;
-		
+	private class DmRetrieveTask extends GenericTask {
 		@Override
-		public void onPreExecute() {
-			onRetrieveBegin();
-		}
-
-		@Override
-		public void onProgressUpdate(Object params) {
-			draw();
-		}
-
-		@Override
-		public TaskResult doInBackground(TaskParams params) {
+		protected TaskResult _doInBackground(TaskParams...params) {
 			List<DirectMessage> dmList;
 
 			ArrayList<Dm> dms = new ArrayList<Dm>();
@@ -285,7 +268,7 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 			}
 
 			for (DirectMessage directMessage : dmList) {
-				if (task.isCancelled()) {
+				if (isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
 
@@ -295,7 +278,7 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 				dms.add(dm);
 				imageUrls.add(dm.profileImageUrl);
 
-				if (task.isCancelled()) {
+				if (isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
 			}
@@ -315,7 +298,7 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 			}
 
 			for (DirectMessage directMessage : dmList) {
-				if (task.isCancelled()) {
+				if (isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
 
@@ -325,18 +308,18 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 				dms.add(dm);
 				imageUrls.add(dm.profileImageUrl);
 
-				if (task.isCancelled()) {
+				if (isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
 			}
 
 			db.addDms(dms, false);
 
-			if (task.isCancelled()) {
+			if (isCancelled()) {
 				return TaskResult.CANCELLED;
 			}
 
-			task.doPublishProgress(null);
+			publishProgress(null);
 
 			for (String imageUrl : imageUrls) {
 				if (!Utils.isEmpty(imageUrl)) {
@@ -348,50 +331,15 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 					}
 				}
 
-				if (task.isCancelled()) {
+				if (isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
 			}
 
 			return TaskResult.OK;
 		}
-
-		@Override
-		public void onPostExecute(TaskResult result) {
-			if (result == TaskResult.AUTH_ERROR) {
-				logout();
-			} else if (result == TaskResult.OK) {
-				SharedPreferences.Editor editor = mPreferences.edit();
-				editor.putLong(Preferences.LAST_DM_REFRESH_KEY, Utils
-						.getNowTime());
-				editor.commit();
-				draw();
-				goTop();
-			} else {
-				// Do nothing.
-			}
-
-			// 刷新按钮停止旋转
-			getRefreshButton().clearAnimation();
-			updateProgress("");
-		}
-
-		@Override
-		public String getName() {
-			return "DmRetrieve";
-		}
-
-		@Override
-		public void onCancelled() {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void setTask(GenericTask task) {
-			this.task = task;
-		}
 	}
+	
 
 	private static class Adapter extends CursorAdapter {
 
@@ -556,25 +504,60 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 	private void doDestroy(String id) {
 		Log.i(TAG, "Attempting delete.");
 
-		mDeleteTask = TaskFactory.create(new DmDeleteTaskListener());
-		
-		TaskParams params = new TaskParams();
-		params.put("id", id);
-		mDeleteTask.execute(params);
+		if (mDeleteTask != null && mDeleteTask.getStatus() == GenericTask.Status.RUNNING){
+			return;
+		}else{
+			mDeleteTask = new DmDeleteTask();
+			mDeleteTask.setListener(new TaskListener(){
+				@Override
+				public void onPreExecute(GenericTask task) {
+					updateProgress(getString(R.string.page_status_deleting));
+				}
+
+				@Override
+				public void onPostExecute(GenericTask task, TaskResult result) {
+					if (result == TaskResult.AUTH_ERROR) {
+						logout();
+					} else if (result == TaskResult.OK) {
+						mAdapter.refresh();
+					} else {
+						// Do nothing.
+					}
+
+					updateProgress("");
+				}
+
+				@Override
+				public String getName() {
+					return "DmDeleteTask";
+				}
+
+				@Override
+				public void onCancelled(GenericTask task) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void onProgressUpdate(GenericTask task, Object param) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
+			
+			TaskParams params = new TaskParams();
+			params.put("id", id);
+			mDeleteTask.execute(params);
+		}
 	}
 
-	private class DmDeleteTaskListener implements TaskListener {
-		private GenericTask task;
+	private class DmDeleteTask extends GenericTask {
 		
 		@Override
-		public void onPreExecute() {
-			updateProgress(getString(R.string.page_status_deleting));
-		}
-
-		@Override
-		public TaskResult doInBackground(TaskParams params) {
+		protected TaskResult _doInBackground(TaskParams...params) {
+			TaskParams param = params[0];
 			try {
-				String id = params.getString("id");
+				String id = param.getString("id");
 				DirectMessage directMessage = getApi().destroyDirectMessage(id);
 				Dm.create(directMessage, false);
 				getDb().deleteDm(id);
@@ -583,104 +566,81 @@ public class DmActivity extends WithHeaderActivity implements Retrievable {
 				return TaskResult.IO_ERROR;
 			}
 
-			if (task.isCancelled()) {
+			if (isCancelled()) {
 				return TaskResult.CANCELLED;
 			}
 
 			return TaskResult.OK;
 		}
-
-		@Override
-		public void onPostExecute(TaskResult result) {
-			if (result == TaskResult.AUTH_ERROR) {
-				logout();
-			} else if (result == TaskResult.OK) {
-				mAdapter.refresh();
-			} else {
-				// Do nothing.
-			}
-
-			updateProgress("");
-		}
-
-		@Override
-		public String getName() {
-			return "DmDelete";
-		}
-
-		@Override
-		public void onCancelled() {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void onProgressUpdate(Object param) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void setTask(GenericTask task) {
-			this.task = task;
-		}
 	}
 
-	// for Retrievable interface
-	public ImageButton getRefreshButton() {
-		return refreshButton;
-	}
-
-	@Override
-	public void addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void doRetrieve() {
 		Log.i(TAG, "Attempting retrieve.");
 
 		// 旋转刷新按钮
 		animRotate(refreshButton);
 
-		mRetrieveTask = TaskFactory.create(new DmRetrieveTaskListener()); 
-		
-		TaskParams params = new TaskParams();
-		mRetrieveTask.execute(params);
+		if (mRetrieveTask != null && mRetrieveTask.getStatus() == GenericTask.Status.RUNNING){
+			return;
+		}else{
+			mRetrieveTask = new DmRetrieveTask();
+			mRetrieveTask.setListener(new TaskListener(){
+				@Override
+				public void onPreExecute(GenericTask task) {
+					updateProgress(getString(R.string.page_status_refreshing));
+				}
+
+				@Override
+				public void onProgressUpdate(GenericTask task, Object params) {
+					draw();
+				}
+
+				@Override
+				public void onPostExecute(GenericTask task, TaskResult result) {
+					if (result == TaskResult.AUTH_ERROR) {
+						logout();
+					} else if (result == TaskResult.OK) {
+						SharedPreferences.Editor editor = mPreferences.edit();
+						editor.putLong(Preferences.LAST_DM_REFRESH_KEY, Utils
+								.getNowTime());
+						editor.commit();
+						draw();
+						goTop();
+					} else {
+						// Do nothing.
+					}
+
+					// 刷新按钮停止旋转
+					refreshButton.clearAnimation();
+					updateProgress("");
+				}
+
+				@Override
+				public String getName() {
+					return "DmRetrieve";
+				}
+
+				@Override
+				public void onCancelled(GenericTask task) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
+			mRetrieveTask.execute();
+		}
 	}
 
-	@Override
+    public void goTop() {
+        mTweetList.setSelection(0);
+    }
+
 	public void draw() {
 		mAdapter.refresh();
 		mInboxAdapter.refresh();
 		mSendboxAdapter.refresh();
 	}
 
-	@Override
-	public String fetchMaxId() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Status> getMessageSinceId(String maxId) throws WeiboException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void goTop() {
-		mTweetList.setSelection(0);
-	}
-
-	@Override
-	public void onRetrieveBegin() {
-		updateProgress(getString(R.string.page_status_refreshing));
-	}
-
-	@Override
-	public void updateProgress(String msg) {
+	private void updateProgress(String msg) {
 		mProgressText.setText(msg);
 	}
 }

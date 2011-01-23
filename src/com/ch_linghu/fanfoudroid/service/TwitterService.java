@@ -51,7 +51,6 @@ import com.ch_linghu.fanfoudroid.DmActivity;
 import com.ch_linghu.fanfoudroid.MentionActivity;
 import com.ch_linghu.fanfoudroid.TwitterActivity;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
-import com.ch_linghu.fanfoudroid.task.TaskFactory;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
@@ -117,11 +116,50 @@ public class TwitterService extends Service {
 		mNewMentions = new ArrayList<Tweet>();
 		mNewDms = new ArrayList<Dm>();
 
-		mRetrieveTask = TaskFactory.create(new RetrieveTaskListener());
+		if (mRetrieveTask != null && mRetrieveTask.getStatus() == GenericTask.Status.RUNNING){
+			return;
+		}else{
+			mRetrieveTask = new RetrieveTask();
+			mRetrieveTask.setListener(new TaskListener(){
+				@Override
+				public void onPostExecute(GenericTask task, TaskResult result) {
+					if (result == TaskResult.OK) {
+						processNewTweets();
+						processNewMentions();
+						processNewDms();
+					}
+
+					stopSelf();
+				}
+
+				@Override
+				public String getName() {
+					return "ServiceRetrieveTask";
+				}
+
+				@Override
+				public void onCancelled(GenericTask task) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void onPreExecute(GenericTask task) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void onProgressUpdate(GenericTask task, Object param) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
 		
-		TaskParams params = new TaskParams();
-		params.put("pref", mPreferences);
-		mRetrieveTask.execute(params);
+			TaskParams params = new TaskParams();
+			params.put("pref", mPreferences);
+			mRetrieveTask.execute(params);
+		}
 	}
 
 	private void processNewTweets() {
@@ -356,12 +394,13 @@ public class TwitterService extends Service {
 		alarm.cancel(pending);
 	}
 
-	private class RetrieveTaskListener implements TaskListener {
-		private GenericTask task;
+	private class RetrieveTask extends GenericTask {
 		
 		@Override
-		public TaskResult doInBackground(TaskParams params) {
-			SharedPreferences preferences = (SharedPreferences)params.get("pref");
+		protected TaskResult _doInBackground(TaskParams... params) {
+			TaskParams param = params[0];
+			
+			SharedPreferences preferences = (SharedPreferences)param.get("pref");
 
 			boolean timeline_only = preferences.getBoolean(Preferences.TIMELINE_ONLY_KEY, false);
 			boolean replies_only = preferences.getBoolean(Preferences.REPLIES_ONLY_KEY, true);
@@ -385,7 +424,7 @@ public class TwitterService extends Service {
 				}
 	
 				for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
-					if (task.isCancelled()) {
+					if (isCancelled()) {
 						return TaskResult.CANCELLED;
 					}
 	
@@ -396,7 +435,7 @@ public class TwitterService extends Service {
 					mNewTweets.add(tweet);
 				}
 	
-				if (task.isCancelled()) {
+				if (isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
 			}
@@ -419,7 +458,7 @@ public class TwitterService extends Service {
 				}
 	
 				for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
-					if (task.isCancelled()) {
+					if (isCancelled()) {
 						return TaskResult.CANCELLED;
 					}
 	
@@ -430,7 +469,7 @@ public class TwitterService extends Service {
 					mNewMentions.add(tweet);
 				}
 	
-				if (task.isCancelled()) {
+				if (isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
 			}
@@ -453,7 +492,7 @@ public class TwitterService extends Service {
 				}
 	
 				for (com.ch_linghu.fanfoudroid.weibo.DirectMessage directMessage : dmList) {
-					if (task.isCancelled()) {
+					if (isCancelled()) {
 						return TaskResult.CANCELLED;
 					}
 	
@@ -464,51 +503,11 @@ public class TwitterService extends Service {
 					mNewDms.add(dm);
 				}
 	
-				if (task.isCancelled()) {
+				if (isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
 			}
 			return TaskResult.OK;
 		}
-
-		@Override
-		public void onPostExecute(TaskResult result) {
-			if (result == TaskResult.OK) {
-				processNewTweets();
-				processNewMentions();
-				processNewDms();
-			}
-
-			stopSelf();
-		}
-
-		@Override
-		public String getName() {
-			return "ServiceRetrieve";
-		}
-
-		@Override
-		public void onCancelled() {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void onPreExecute() {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void onProgressUpdate(Object param) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void setTask(GenericTask task) {
-			this.task = task;
-		}
 	}
-
 }

@@ -28,17 +28,13 @@ import android.view.MenuItem;
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
-import com.ch_linghu.fanfoudroid.task.Followable;
-import com.ch_linghu.fanfoudroid.task.HasFavorite;
-import com.ch_linghu.fanfoudroid.task.Retrievable;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterCursorBaseActivity;
 import com.ch_linghu.fanfoudroid.weibo.Paging;
 import com.ch_linghu.fanfoudroid.weibo.Status;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 //TODO: 数据来源换成 getFavorites()
-public class FavoritesActivity extends TwitterCursorBaseActivity 
-		implements Followable, Retrievable, HasFavorite {
+public class FavoritesActivity extends TwitterCursorBaseActivity {
 	private static final String TAG = "FavoritesActivity";
 
 	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.TWEETS";
