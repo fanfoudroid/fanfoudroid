@@ -487,7 +487,7 @@ public class StatusActivity extends WithHeaderActivity{
 			String text = tweet.screenName + " : " + tweet.text;
 			Utils.setSimpleTweetText(reply_status_text, text);
 			reply_status_date.setText(Utils.getRelativeDate(tweet.createdAt));
-		}else if (false){
+		} else {
 			//FIXME: 这里需要有更好的处理方法
 		    String msg = "本条消息是给 " + this.tweet.inReplyToScreenName 
 		        + " 的回复。可能你没有通过 " + this.tweet.inReplyToScreenName + " 的验证.所以无法查看该回复消息。";
