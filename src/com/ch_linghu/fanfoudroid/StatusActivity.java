@@ -353,11 +353,7 @@ public class StatusActivity extends WithHeaderActivity{
 	        mStatusTask.setListener(new TaskListener(){
 	            @Override
 	    		public void onPostExecute(GenericTask task, TaskResult result) {
-	                if (((GetStatusTask)task).IsReply()) {
-	                    showReplyStatus(replyTweet);
-	                } else {
-	                    draw();
-	                }
+	                showReplyStatus(replyTweet);
 	                StatusActivity.this.refreshButton.clearAnimation();   
 	            }
 
@@ -394,12 +390,6 @@ public class StatusActivity extends WithHeaderActivity{
 	
 	private class GetStatusTask extends GenericTask {
 	    
-	    private boolean isReply = false;
-	    
-	    public boolean IsReply(){
-	    	return isReply;
-	    }
-	    
         @Override
 		protected TaskResult _doInBackground(TaskParams...params) {
         	TaskParams param = params[0];
@@ -407,19 +397,13 @@ public class StatusActivity extends WithHeaderActivity{
             try {
                 String reply_id = param.getString("reply_id");
                 if (!Utils.isEmpty(reply_id)) {
-                    isReply = true;
-                    // TODO: 未测试
-                    replyTweet = getDb().queryTweet(reply_id, -1);
-                } else {
-                	//用于刷新功能，再次请求
-                    status = getApi().showStatus(tweet.id);
-                    tweet = Tweet.create(status);
+                    status = getApi().showStatus(reply_id);
+                    replyTweet = Tweet.create(status);
                 }
             } catch (WeiboException e) {
                 Log.e(TAG, e.getMessage(), e);
                 return TaskResult.IO_ERROR;
             }
-            
            
             return TaskResult.OK;
         }
@@ -503,7 +487,7 @@ public class StatusActivity extends WithHeaderActivity{
 			String text = tweet.screenName + " : " + tweet.text;
 			Utils.setSimpleTweetText(reply_status_text, text);
 			reply_status_date.setText(Utils.getRelativeDate(tweet.createdAt));
-		}else{
+		}else if (false){
 			//FIXME: 这里需要有更好的处理方法
 		    String msg = "本条消息是给 " + this.tweet.inReplyToScreenName 
 		        + " 的回复。可能你没有通过 " + this.tweet.inReplyToScreenName + " 的验证.所以无法查看该回复消息。";

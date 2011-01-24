@@ -17,19 +17,23 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.NoHttpResponseException;
-import org.apache.http.auth.AuthSchemeRegistry;
 import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.AuthState;
+import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.params.ConnManagerParams;
 import org.apache.http.conn.params.ConnRoutePNames;
@@ -41,7 +45,6 @@ import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.auth.BasicSchemeFactory;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
@@ -50,6 +53,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
@@ -86,6 +90,7 @@ public class HttpClient {
 
     private DefaultHttpClient mClient;
     private AuthScope mAuthScope;
+    private BasicHttpContext localcontext;
 
     private String mUserId;
     private String mPassword;
@@ -163,13 +168,45 @@ public class HttpClient {
 
         // Setup BasicAuth
         BasicScheme basicScheme = new BasicScheme();
-        AuthSchemeRegistry authRegistry = new AuthSchemeRegistry();
         mAuthScope = new AuthScope(SERVER_HOST, AuthScope.ANY_PORT);
-        authRegistry.register(basicScheme.getSchemeName(),
-                new BasicSchemeFactory());
-        mClient.setAuthSchemes(authRegistry);
+
+        // mClient.setAuthSchemes(authRegistry);
         mClient.setCredentialsProvider(new BasicCredentialsProvider());
+
+        // Generate BASIC scheme object and stick it to the local
+        // execution context
+        localcontext = new BasicHttpContext();
+        localcontext.setAttribute("preemptive-auth", basicScheme);
+
+        // first request interceptor
+        mClient.addRequestInterceptor(preemptiveAuth, 0);
     }
+    
+    /**
+     * HttpRequestInterceptor for DefaultHttpClient
+     */
+    private HttpRequestInterceptor preemptiveAuth = new HttpRequestInterceptor() {
+        @Override
+        public void process(final HttpRequest request, final HttpContext context) {
+            AuthState authState = (AuthState) context
+                    .getAttribute(ClientContext.TARGET_AUTH_STATE);
+            CredentialsProvider credsProvider = (CredentialsProvider) context
+                    .getAttribute(ClientContext.CREDS_PROVIDER);
+            HttpHost targetHost = (HttpHost) context
+                    .getAttribute(ExecutionContext.HTTP_TARGET_HOST);
+
+            if (authState.getAuthScheme() == null) {
+                AuthScope authScope = new AuthScope(targetHost.getHostName(),
+                        targetHost.getPort());
+                Credentials creds = credsProvider.getCredentials(authScope);
+                if (creds != null) {
+                    authState.setAuthScheme(new BasicScheme());
+                    authState.setCredentials(creds);
+                }
+            }
+        }
+    };
+
 
     /**
      * Setup Credentials for HTTP Basic Auth
@@ -275,10 +312,10 @@ public class HttpClient {
         method = createMethod(httpMethod, uri, file, postParams);
         // Setup ConnectionParams
         SetupHTTPConnectionParams(method);
-
+        
         // Execute Request
         try {
-            response = mClient.execute(method);
+            response = mClient.execute(method,localcontext);
             res = new Response(response);
         } catch (ClientProtocolException e) {
             Log.e(TAG, e.getMessage(), e);
@@ -299,6 +336,8 @@ public class HttpClient {
         long endTime = System.currentTimeMillis();
         Log.d("LDS", "Http request in " + (endTime - startTime));
 
+        // 不能开启此行, 开启此行会将响应的inputStream耗尽.
+        Log.d(TAG, res.asString());
         return res;
 
     }
@@ -360,7 +399,7 @@ public class HttpClient {
                 CONNECTION_TIMEOUT_MS);
         HttpConnectionParams
                 .setSoTimeout(method.getParams(), SOCKET_TIMEOUT_MS);
-        mClient.setHttpRequestRetryHandler(requestRetryHandler);
+//        mClient.setHttpRequestRetryHandler(requestRetryHandler);
         method.addHeader("Accept-Encoding", "gzip, deflate");
     }
 
@@ -386,6 +425,11 @@ public class HttpClient {
 
         log("----------------- HTTP Request Start ----------------------");
         log("[Request]");
+        
+        Credentials c = mClient.getCredentialsProvider().getCredentials(mAuthScope);
+        log("BasicAuth username : " + c.getUserPrincipal().getName());
+        log("BasicAuth password : " + c.getPassword());
+        
 
         if (httpMethod.equalsIgnoreCase(HttpPost.METHOD_NAME)) {
             // POST METHOD
@@ -540,7 +584,6 @@ public class HttpClient {
         // log post data
         if (DEBUG) {
             if (postParams != null) {
-
                 log("POST Params : " + postParams.toString());
 
                 try {
@@ -590,9 +633,6 @@ public class HttpClient {
 
             // log responseContent
             log("StatusCode : " + statusCode);
-            // 此行不能开启, 仅为调试用
-            // log("Response : " + res.asString());
-
             log("----------------- HTTP Request END ----------------------");
         }
     }
