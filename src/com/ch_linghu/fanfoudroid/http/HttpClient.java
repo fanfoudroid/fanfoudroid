@@ -337,7 +337,8 @@ public class HttpClient {
         Log.d("LDS", "Http request in " + (endTime - startTime));
 
         // 不能开启此行, 开启此行会将响应的inputStream耗尽.
-        Log.d(TAG, res.asString());
+        // FIXME: asString函数不能用于调试，这个函数会改变res的状态。
+        // Log.d(TAG, res.asString());
         return res;
 
     }
