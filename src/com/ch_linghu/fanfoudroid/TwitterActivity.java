@@ -25,15 +25,15 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
-import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.data.Tweet;
+import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
@@ -66,8 +66,16 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 
 		return intent;
 	}
-
+	
 	@Override
+    protected void onCreate(Bundle savedInstanceState) {
+        // TODO Auto-generated method stub
+        super.onCreate(savedInstanceState);
+        
+        setHeaderTitle("饭否fanfou.com");
+    }
+
+    @Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
@@ -134,7 +142,7 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 
 	@Override
 	protected Cursor fetchMessages() {
-		return getDb().fetchAllTweets(TwitterDbAdapter.TABLE_TWEET);
+		return getDb().fetchAllTweets(StatusTable.TYPE_HOME);
 	}
 
 	@Override
@@ -144,20 +152,18 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 
 	@Override
 	protected void markAllRead() {
-		getDb().markAllTweetsRead(TwitterDbAdapter.TABLE_TWEET);
+		getDb().markAllTweetsRead(StatusTable.TYPE_HOME);
 	}
-	
 	
 	// hasRetrieveListTask interface
 	@Override
 	public void addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
-		getDb().addTweets(TwitterDbAdapter.TABLE_TWEET, tweets, isUnread);
+	    getDb().putTweets(tweets, StatusTable.TYPE_HOME, isUnread);
 	}
 	
 	@Override
 	public String fetchMaxId() {
-		// TODO Auto-generated method stub
-		return getDb().fetchMaxId(TwitterDbAdapter.TABLE_TWEET);
+	    return getDb().fetchMaxTweetId(StatusTable.TYPE_HOME);
 	}
 	
 	@Override
@@ -239,12 +245,7 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 				status = getApi().destroyStatus(id);
 
 				// 对所有相关表的对应消息都进行删除（如果存在的话）
-				getDb().destoryStatus(TwitterDbAdapter.TABLE_FAVORITE,
-						status.getId());
-				getDb().destoryStatus(TwitterDbAdapter.TABLE_MENTION,
-						status.getId());
-				getDb().destoryStatus(TwitterDbAdapter.TABLE_TWEET,
-						status.getId());
+				getDb().deleteTweet(status.getId(), -1);
 			} catch (WeiboException e) {
 				Log.e(TAG, e.getMessage(), e);
 				return TaskResult.IO_ERROR;

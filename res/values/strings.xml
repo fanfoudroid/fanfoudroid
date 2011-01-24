@@ -119,6 +119,13 @@
     <string name="pref_rt_prefix_title">转发前缀</string>
     <string name="pref_rt_prefix_summary">转发消息时的前缀</string>
     <string name="pref_rt_prefix_default">热饭</string>
+    
+    <string name="pref_title_network">网络</string>
+    <string name="pref_network_type_title">网络类型</string>
+    <string name="pref_network_type_cmnet">cmnet</string>
+    <string name="pref_network_type_cmwap">cmwap</string>
+    <string name="pref_network_type_3g">3G/wifi</string>
+    <string name="pref_network_type_summary">选择当前网络的接入点或类型</string>
 
 	<!-- Service -->    
     <string name="service_new_twitter_updates">新消息</string>
@@ -161,4 +168,15 @@
     <!-- 通用 -->
     <string name="general_lable_ok">确定</string>
     <string name="general_lable_cancel">取消</string>
+    
+    <!-- PAGES -->
+    <string name="pages_mine">我的空间</string>
+    <string name="pages_profile">个人资料</string>
+    <string name="pages_followers">关注我的</string>
+    <string name="pages_following">我关注的</string>
+    <string name="pages_home">首页</string>
+    <string name="pages_mentions">提到我的</string>
+    <string name="pages_browse">随便看看</string>
+    <string name="pages_search">收藏</string>
+    <string name="pages_message">我的私信</string>
 </resources>

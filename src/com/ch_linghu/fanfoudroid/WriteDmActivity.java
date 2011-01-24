@@ -38,6 +38,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.data.Dm;
+import com.ch_linghu.fanfoudroid.data.db.StatusDatabase;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
@@ -52,9 +53,8 @@ import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 //FIXME: 将WriteDmActivity和WriteActivity进行整合。
 /**
  * 撰写私信界面
- * 
  * @author lds
- * 
+ *
  */
 public class WriteDmActivity extends WithHeaderActivity {
 
@@ -135,30 +135,32 @@ public class WriteDmActivity extends WithHeaderActivity {
 		// View
 		mProgressText = (TextView) findViewById(R.id.progress_text);
 		mTweetEditText = (EditText) findViewById(R.id.tweet_edit);
+		
+		StatusDatabase db = getDb();
 
-		TwitterDbAdapter db = getDb();
-
-		mToEdit = (AutoCompleteTextView) findViewById(R.id.to_edit);
-		Cursor cursor = db.getFollowerUsernames("");
-		// startManagingCursor(cursor);
-		mFriendsAdapter = new FriendsAdapter(this, cursor);
-		mToEdit.setAdapter(mFriendsAdapter);
-
-		// Update status
+	    mToEdit = (AutoCompleteTextView) findViewById(R.id.to_edit);
+	    Cursor cursor = db.getFollowerUsernames("");
+	    // startManagingCursor(cursor);
+	    mFriendsAdapter = new FriendsAdapter(this, cursor);
+	    mToEdit.setAdapter(mFriendsAdapter);
+	    
+	    // Update status
 		mTweetEdit = new TweetEdit(mTweetEditText,
 				(TextView) findViewById(R.id.chars_text));
 		mTweetEdit.setOnKeyListener(editEnterHandler);
-		mTweetEdit.addTextChangedListener(new MyTextWatcher(
-				WriteDmActivity.this));
+		mTweetEdit
+				.addTextChangedListener(new MyTextWatcher(WriteDmActivity.this));
 
 		// With extras
-		if (extras != null) {
-			String to = extras.getString(EXTRA_USER);
-			if (!Utils.isEmpty(to)) {
-				mToEdit.setText(to);
-				mTweetEdit.requestFocus();
-			}
-		}
+	    if (extras != null) {
+	      String to = extras.getString(EXTRA_USER);
+	      if (!Utils.isEmpty(to)) {
+	        mToEdit.setText(to);
+	        mTweetEdit.requestFocus();
+	      }
+	    }
+
+		
 
 		mSendButton = (Button) findViewById(R.id.send_button);
 		mSendButton.setOnClickListener(new View.OnClickListener() {
@@ -167,12 +169,12 @@ public class WriteDmActivity extends WithHeaderActivity {
 			}
 		});
 	}
-
+	
 	@Override
 	protected void onRestoreInstanceState(Bundle bundle) {
-		super.onRestoreInstanceState(bundle);
+	    super.onRestoreInstanceState(bundle);
 
-		mTweetEdit.updateCharsRemain();
+	    mTweetEdit.updateCharsRemain();
 	}
 
 	@Override
@@ -432,18 +434,18 @@ public class WriteDmActivity extends WithHeaderActivity {
 	private void updateProgress(String progress) {
 		mProgressText.setText(progress);
 	}
-
+	
 	private View.OnKeyListener editEnterHandler = new View.OnKeyListener() {
-		public boolean onKey(View v, int keyCode, KeyEvent event) {
-			if (keyCode == KeyEvent.KEYCODE_ENTER
-					|| keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
-				if (event.getAction() == KeyEvent.ACTION_UP) {
-					doSend();
-				}
-				return true;
-			}
-			return false;
-		}
+	    public boolean onKey(View v, int keyCode, KeyEvent event) {
+	      if (keyCode == KeyEvent.KEYCODE_ENTER
+	          || keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
+	        if (event.getAction() == KeyEvent.ACTION_UP) {
+	          doSend();
+	        }
+	        return true;
+	      }
+	      return false;
+	    }
 	};
 
 }

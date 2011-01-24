@@ -77,6 +77,18 @@
     android:defaultValue="true" />
   </PreferenceCategory>
 
+  <PreferenceCategory android:title="@string/pref_title_network">
+     <ListPreference  
+       android:key="network_type"
+       android:defaultValue="@string/pref_network_type_cmnet"
+       android:title="@string/pref_network_type_title"  
+       android:summary="@string/pref_network_type_summary"
+       android:entries="@array/network_type"
+       android:entryValues="@array/network_type"
+       android:dialogTitle="@string/pref_network_type_title"                        
+       />
+  </PreferenceCategory>
+
   <PreferenceCategory android:title="@string/pref_title_misc">
     <EditTextPreference
     android:key="rt_prefix"
@@ -84,5 +96,7 @@
     android:summary="@string/pref_rt_prefix_summary"
     android:defaultValue="@string/pref_rt_prefix_default" />
   </PreferenceCategory>
+  
+
 
 </PreferenceScreen>
