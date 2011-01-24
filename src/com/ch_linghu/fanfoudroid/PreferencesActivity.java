@@ -16,19 +16,59 @@
 
 package com.ch_linghu.fanfoudroid;
 
-import com.ch_linghu.fanfoudroid.R;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceScreen;
+import android.util.Log;
 
-public class PreferencesActivity extends PreferenceActivity {
-  @Override
-  public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
+import com.ch_linghu.fanfoudroid.helper.Preferences;
+import com.ch_linghu.fanfoudroid.http.HttpClient;
 
-    // TODO: is this a hack?    
-    setResult(RESULT_OK);
+public class PreferencesActivity extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // TODO: is this a hack?
+        setResult(RESULT_OK);
+
+        addPreferencesFromResource(R.xml.preferences);
+        
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        
+        // Set up a listener whenever a key changes
+        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
+            Preference preference) {
+        return super.onPreferenceTreeClick(preferenceScreen, preference);
+    }
     
-    addPreferencesFromResource(R.xml.preferences);
-  }
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+            String key) {
+        
+        if ( key.equalsIgnoreCase(Preferences.NETWORK_TYPE) ) {
+            HttpClient httpClient = TwitterApplication.mApi.getHttpClient();
+            String type =  sharedPreferences.getString(Preferences.NETWORK_TYPE, "");
+            
+            if (type.equalsIgnoreCase(getString(R.string.pref_network_type_cmwap))) {
+                Log.i("LDS", "Set proxy for cmwap mode.");
+                httpClient.setProxy("10.0.0.172", 80, "http");
+            } else {
+                Log.i("LDS", "No proxy.");
+                httpClient.removeProxy();
+            }
+        }
+        
+    }
     
+
 }

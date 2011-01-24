@@ -2,13 +2,18 @@
 <resources>
   
 <string-array name="check_intervals">  
-<!--  MUST REMOVE. Just for testing. -->
-<item>1</item>  
-<item>5</item>  
-<item>10</item>  
-<item>30</item>  
-<item>60</item>
-<item>120</item>
+    <!-- item>1</item-->  <!--  MUST REMOVE. Just for testing. -->
+    <item>5</item>  
+    <item>10</item>  
+    <item>30</item>  
+    <item>60</item>
+    <item>120</item>
+</string-array>
+
+<string-array name="network_type">  
+    <item>@string/pref_network_type_cmnet</item>  
+    <item>@string/pref_network_type_cmwap</item>  
+    <item>@string/pref_network_type_3g</item>  
 </string-array>
   
 </resources>

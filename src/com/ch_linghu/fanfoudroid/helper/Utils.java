@@ -30,10 +30,6 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.ch_linghu.fanfoudroid.R;
-import com.ch_linghu.fanfoudroid.TwitterApplication;
-import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
-
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.PixelFormat;
@@ -44,6 +40,10 @@ import android.text.util.Linkify;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.TextView.BufferType;
+
+import com.ch_linghu.fanfoudroid.R;
+import com.ch_linghu.fanfoudroid.TwitterApplication;
+import com.ch_linghu.fanfoudroid.data.db.StatusDatabase;
 
 public class Utils {
 
@@ -93,7 +93,7 @@ public class Utils {
   public static final Date parseDateTimeFromSqlite(String dateString) {
     try {
     	Log.d(TAG, String.format("in parseDateTime, dateString=%s", dateString));
-      return TwitterDbAdapter.DB_DATE_FORMATTER.parse(dateString);
+      return StatusDatabase.DB_DATE_FORMATTER.parse(dateString);
     } catch (ParseException e) {
       Log.w(TAG, "Could not parse Twitter date string: " + dateString);
       return null;

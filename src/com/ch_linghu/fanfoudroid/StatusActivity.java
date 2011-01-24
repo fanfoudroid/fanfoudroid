@@ -24,6 +24,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -33,6 +34,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
+import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.helper.ImageCache;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
@@ -83,7 +85,7 @@ public class StatusActivity extends WithHeaderActivity{
 	
 	public static Intent createIntent(Tweet tweet) {
 	    Intent intent = new Intent(LAUNCH_ACTION);
-	    intent.putExtra(EXTRA_TWEET, tweet);
+	    intent.putExtra(EXTRA_TWEET, (Parcelable) tweet);
 	    return intent;
 	}
 
@@ -182,7 +184,7 @@ public class StatusActivity extends WithHeaderActivity{
             }
         });
 		
-		//TODO: 收藏/取消收藏
+		// 收藏/取消收藏
 		footer_btn_fav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -406,17 +408,8 @@ public class StatusActivity extends WithHeaderActivity{
                 String reply_id = param.getString("reply_id");
                 if (!Utils.isEmpty(reply_id)) {
                     isReply = true;
-                    //先看看本地缓存有没有
-                    //先看TWEET表，如果没有再看一下MENTION表
-                    replyTweet = getDb().getTweet(TwitterDbAdapter.TABLE_TWEET, reply_id);
-                    if (replyTweet == null){
-                    	replyTweet = getDb().getTweet(TwitterDbAdapter.TABLE_MENTION, reply_id);
-                    }
-                    //如果没有再去获取
-                    if (replyTweet == null){
-                    	status = getApi().showStatus(reply_id);
-                    	replyTweet = Tweet.create(status);
-                    }
+                    // TODO: 未测试
+                    replyTweet = getDb().queryTweet(reply_id, -1);
                 } else {
                 	//用于刷新功能，再次请求
                     status = getApi().showStatus(tweet.id);
@@ -616,9 +609,11 @@ public class StatusActivity extends WithHeaderActivity{
 				com.ch_linghu.fanfoudroid.weibo.Status status = null;
 				if (action.equals(TYPE_ADD)) {
 					status = getApi().createFavorite(id);
+					getDb().setFavorited(id, "true");
 					type = TYPE_ADD;
 				} else {
 					status = getApi().destroyFavorite(id);
+					getDb().setFavorited(id, "false");
 					type = TYPE_DEL;
 				}
 
@@ -633,12 +628,8 @@ public class StatusActivity extends WithHeaderActivity{
 					}
 				}
 
-				//对所有相关表的对应消息都进行刷新（如果存在的话）
-				getDb().updateTweet(TwitterDbAdapter.TABLE_FAVORITE, tweet);
-				getDb().updateTweet(TwitterDbAdapter.TABLE_MENTION, tweet);
-				getDb().updateTweet(TwitterDbAdapter.TABLE_TWEET, tweet);
 				if(action.equals(TYPE_DEL)){
-					getDb().destoryStatus(TwitterDbAdapter.TABLE_FAVORITE, tweet.id);
+					getDb().deleteTweet(tweet.id, StatusTable.TYPE_FAVORITE);
 				}
 			} catch (WeiboException e) {
 				Log.e(TAG, e.getMessage(), e);

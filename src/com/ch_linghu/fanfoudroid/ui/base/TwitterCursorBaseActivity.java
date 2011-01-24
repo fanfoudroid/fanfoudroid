@@ -32,10 +32,11 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
+import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
@@ -101,15 +102,17 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 
 		cursor = fetchMessages(); // getDb().fetchMentions();
 		setTitle(getActivityTitle());
-
 		startManagingCursor(cursor);
+		
+	    mTweetList = (ListView) findViewById(R.id.tweet_list);
 
-		mTweetList = (ListView) findViewById(R.id.tweet_list);
-		setupListHeader(true);
+	    //TODO: 需处理没有数据时的情况
+	    Log.i("LDS", cursor.getCount()+"cur count");
+	    setupListHeader(true);
 	    
 		mTweetAdapter = new TweetCursorAdapter(this, cursor);
 		mTweetList.setAdapter(mTweetAdapter);
-		//registerOnClickListener(mTweetList);
+		//? registerOnClickListener(mTweetList);
 	}
 	
 	/**
@@ -117,6 +120,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 	 * NOTE: 必须在listView#setAdapter之前调用
 	 */
 	protected void setupListHeader(boolean addFooter) {
+        
         // Add Header to ListView
         View header = View.inflate(this, R.layout.listview_header, null);
         mTweetList.addHeaderView(header, null, false);
@@ -130,6 +134,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
             }
         });
         
+        //TODO: 完成listView顶部和底部的事件绑定
         View footer = View.inflate(this, R.layout.listview_footer, null);
         mTweetList.addFooterView(footer, null, false);
         footer.setOnClickListener(new View.OnClickListener() {
@@ -141,6 +146,11 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
                 //frameAnimation.stop();
             }
         });
+        
+        // Find View
+        loadMoreBtn = (TextView)findViewById(R.id.ask_for_more);
+        loadMoreGIF = (ProgressBar)findViewById(R.id.rectangleProgressBar);
+        loadMoreAnimation = (AnimationDrawable) loadMoreGIF.getIndeterminateDrawable();
     }
 	
 	@Override
@@ -169,28 +179,21 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 		if (cursor == null){
 			return null;
 		}else{
-			Tweet tweet = new Tweet();
-			tweet.id = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_ID));
-			tweet.createdAt = Utils.parseDateTimeFromSqlite(cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_CREATED_AT)));
-			tweet.favorited = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_FAVORITED));
-			tweet.screenName = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_USER));
-			tweet.userId = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_USER_ID));
-			tweet.text = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_TEXT));
-			tweet.source = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_SOURCE));
-			tweet.profileImageUrl = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_PROFILE_IMAGE_URL));
-			tweet.inReplyToScreenName = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_IN_REPLY_TO_SCREEN_NAME));
-			tweet.inReplyToStatusId = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_IN_REPLY_TO_STATUS_ID));
-			tweet.inReplyToUserId = cursor.getString(cursor.getColumnIndex(TwitterDbAdapter.KEY_IN_REPLY_TO_USER_ID));
-			return tweet;
+			return StatusTable.parseCursor(cursor);
 		}
 	}
 
 	@Override
 	protected void updateTweet(Tweet tweet){
+	    // TODO: updateTweet() 在哪里调用的? 目前尚只支持:
+	    // updateTweet(String tweetId, ContentValues values) 
+	    // setFavorited(String tweetId, String isFavorited)
+	    // 看是否还需要增加updateTweet(Tweet tweet)方法
+	    
 		//对所有相关表的对应消息都进行刷新（如果存在的话）
-		getDb().updateTweet(TwitterDbAdapter.TABLE_FAVORITE, tweet);
-		getDb().updateTweet(TwitterDbAdapter.TABLE_MENTION, tweet);
-		getDb().updateTweet(TwitterDbAdapter.TABLE_TWEET, tweet);
+//		getDb().updateTweet(TwitterDbAdapter.TABLE_FAVORITE, tweet);
+//		getDb().updateTweet(TwitterDbAdapter.TABLE_MENTION, tweet);
+//		getDb().updateTweet(TwitterDbAdapter.TABLE_TWEET, tweet);
 	}
 
 	@Override
@@ -200,11 +203,6 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 		if (!checkIsLogedIn()) return;
 		
 		goTop(); // skip the header
-		
-		// Find View
-		loadMoreBtn = (TextView)findViewById(R.id.ask_for_more);
-		loadMoreGIF = (ProgressBar)findViewById(R.id.rectangleProgressBar);
-        loadMoreAnimation = (AnimationDrawable) loadMoreGIF.getIndeterminateDrawable();
 
 		// Mark all as read.
 		// getDb().markAllMentionsRead();
@@ -338,7 +336,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 	}
 	public void goTop() {
         Log.i(TAG, "goTop.");
-		mTweetList.setSelectionAfterHeaderView();
+		mTweetList.setSelection(1);
 	}
 	
 	private void doRetrieveFollowers() {

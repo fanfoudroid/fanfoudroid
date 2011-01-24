@@ -36,9 +36,10 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
-import com.ch_linghu.fanfoudroid.R;
+
 import com.ch_linghu.fanfoudroid.DmActivity;
 import com.ch_linghu.fanfoudroid.MentionActivity;
+import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.StatusActivity;
 import com.ch_linghu.fanfoudroid.TwitterActivity;
 import com.ch_linghu.fanfoudroid.UserActivity;
@@ -46,6 +47,7 @@ import com.ch_linghu.fanfoudroid.WriteActivity;
 import com.ch_linghu.fanfoudroid.WriteDmActivity;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
+import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
@@ -221,7 +223,7 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 	}
 
 	private void goTop() {
-		getTweetList().setSelection(0);
+		getTweetList().setSelection(1);
 	}
 	
 	protected void adapterRefresh(){
@@ -298,6 +300,8 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
 				Tweet tweet = getContextItemTweet(position - 1); // skip the header
+				Log.i("LDS", (position -1) +"");
+				Log.i("LDS", tweet.id);
 		
 				if (tweet == null) {
 					Log.w(TAG, "Selected item not available.");
@@ -333,8 +337,10 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 				com.ch_linghu.fanfoudroid.weibo.Status status = null;
 				if (action.equals(TYPE_ADD)) {
 					status = getApi().createFavorite(id);
+					getDb().setFavorited(id, "true");
 				} else {
 					status = getApi().destroyFavorite(id);
+					getDb().setFavorited(id, "false");
 				}
 
 				Tweet tweet = Tweet.create(status);
@@ -348,12 +354,8 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 					}
 				}
 
-				//对所有相关表的对应消息都进行刷新（如果存在的话）
-				getDb().updateTweet(TwitterDbAdapter.TABLE_FAVORITE, tweet);
-				getDb().updateTweet(TwitterDbAdapter.TABLE_MENTION, tweet);
-				getDb().updateTweet(TwitterDbAdapter.TABLE_TWEET, tweet);
 				if(action.equals(TYPE_DEL)){
-					getDb().destoryStatus(TwitterDbAdapter.TABLE_FAVORITE, tweet.id);
+				    getDb().deleteTweet(tweet.id, StatusTable.TYPE_FAVORITE);
 				}
 			} catch (WeiboException e) {
 				Log.e(TAG, e.getMessage(), e);
