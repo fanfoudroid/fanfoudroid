@@ -34,6 +34,10 @@ import com.ch_linghu.fanfoudroid.data.Dm;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 
+/**
+ * @deprecated 已废弃
+ *
+ */
 public class TwitterDbAdapter {
   private static final String TAG = "TwitterDbAdapter";
 

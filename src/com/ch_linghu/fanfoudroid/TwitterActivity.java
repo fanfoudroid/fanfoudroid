@@ -34,7 +34,6 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
-import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;

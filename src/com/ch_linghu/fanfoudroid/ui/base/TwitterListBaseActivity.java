@@ -21,8 +21,6 @@
  */
 package com.ch_linghu.fanfoudroid.ui.base;
 
-import java.io.IOException;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -46,8 +44,6 @@ import com.ch_linghu.fanfoudroid.UserActivity;
 import com.ch_linghu.fanfoudroid.WriteActivity;
 import com.ch_linghu.fanfoudroid.WriteDmActivity;
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
-import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
@@ -56,7 +52,6 @@ import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.task.TweetCommonTask;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
-import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 public abstract class TwitterListBaseActivity extends WithHeaderActivity 
 	implements Refreshable {
@@ -302,8 +297,6 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
 				Tweet tweet = getContextItemTweet(position - 1); // skip the header
-				Log.i("LDS", (position -1) +"");
-				Log.i("LDS", tweet.id);
 		
 				if (tweet == null) {
 					Log.w(TAG, "Selected item not available.");

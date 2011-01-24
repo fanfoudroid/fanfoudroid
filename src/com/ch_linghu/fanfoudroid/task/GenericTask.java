@@ -1,15 +1,20 @@
 package com.ch_linghu.fanfoudroid.task;
 
-import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
+
+import android.os.AsyncTask;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.ch_linghu.fanfoudroid.TwitterApplication;
 
-import android.os.AsyncTask;
-import android.widget.Toast;
-
-public abstract class GenericTask extends AsyncTask<TaskParams, Object, TaskResult> {
+public abstract class GenericTask extends AsyncTask<TaskParams, Object, TaskResult> 
+    implements Observer
+{
 
 	private TaskListener mListener = null;
+	private boolean isCancelable = true;
 	
 	abstract protected TaskResult _doInBackground(TaskParams...params);
 	
@@ -64,5 +69,38 @@ public abstract class GenericTask extends AsyncTask<TaskParams, Object, TaskResu
 	@Override
 	protected TaskResult doInBackground(TaskParams... params){
 		return _doInBackground(params);
+	}
+	
+	public void update(Observable o, Object arg) {
+	    if (TaskManager.CANCEL_ALL ==  (Integer) arg && isCancelable) {
+	        if (getStatus() == GenericTask.Status.RUNNING) {
+	            Log.i("LDS",  getClass().getName() + " Cancelled.");
+	            cancel(true);
+	        }
+	    }
+	}
+	
+	public void setCancelable(boolean flag) {
+	    isCancelable = flag;
+	}
+	
+	
+	// TaskManager 
+	
+	public static class TaskManager  extends Observable {
+	    private static final String TAG = "TaskManager";
+	    
+	    public static final Integer CANCEL_ALL = 1;
+	    
+	    public void cancelAll() {
+	        Log.i(TAG, "All task Cancelled.");
+	        setChanged();
+	        notifyObservers(CANCEL_ALL);
+	    }
+	    
+	    public void addTask(Observer task) {
+	        super.addObserver(task);
+	    }
+	    
 	}
 }

@@ -58,10 +58,8 @@ public class WithHeaderActivity extends BaseActivity {
 				
 				// toggle dialog
 				if (dialog.isShowing()) {
-					Log.i("LDS", "hiding dialog");
 					dialog.dismiss(); //没机会触发
 				} else {
-					Log.i("LDS", "showing dialog");
 					dialog.show();
 				}
 			}

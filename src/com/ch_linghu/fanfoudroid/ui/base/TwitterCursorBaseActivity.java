@@ -67,6 +67,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 	protected static int lastPosition = 0;
 
 	// Tasks.
+	GenericTask.TaskManager taskManager = new GenericTask.TaskManager();
 	private GenericTask mRetrieveTask;
 	private GenericTask mFollowersRetrieveTask;
 	
@@ -191,7 +192,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 	    mTweetList = (ListView) findViewById(R.id.tweet_list);
 
 	    //TODO: 需处理没有数据时的情况
-	    Log.i("LDS", cursor.getCount()+"cur count");
+	    Log.i("LDS", cursor.getCount()+" cursor count");
 	    setupListHeader(true);
 	    
 		mTweetAdapter = new TweetCursorAdapter(this, cursor);
@@ -361,15 +362,9 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 	@Override
 	protected void onDestroy() {
 		Log.i(TAG, "onDestroy.");
-
-		if (mRetrieveTask != null
-				&& mRetrieveTask.getStatus() == GenericTask.Status.RUNNING) {
-			mRetrieveTask.cancel(true);
-		}
-
-		// Don't need to cancel FollowersTask (assuming it ends properly).
-
 		super.onDestroy();
+		
+        taskManager.cancelAll();
 	}
 	
 	@Override
@@ -432,6 +427,10 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
         	mFollowersRetrieveTask = new FollowersRetrieveTask();
         	mFollowersRetrieveTask.setListener(mFollowerRetrieveTaskListener);
         	mFollowersRetrieveTask.execute();
+        	
+        	taskManager.addTask(mFollowersRetrieveTask);
+        	// Don't need to cancel FollowersTask (assuming it ends properly).
+        	mFollowersRetrieveTask.setCancelable(false);
         }
     }
 	
@@ -451,6 +450,9 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 			mRetrieveTask = new RetrieveTask();
 			mRetrieveTask.setListener(mRetrieveTaskListener);
 			mRetrieveTask.execute();
+			
+			// Add Task to manager
+			taskManager.addTask(mRetrieveTask);
 		}
 	}
 	// for Retrievable interface

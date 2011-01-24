@@ -334,7 +334,7 @@ public class HttpClient {
         }
 
         long endTime = System.currentTimeMillis();
-        Log.d("LDS", "Http request in " + (endTime - startTime));
+        Log.d(TAG, "Http request in " + (endTime - startTime));
 
         // 不能开启此行, 开启此行会将响应的inputStream耗尽.
         // FIXME: asString函数不能用于调试，这个函数会改变res的状态。
