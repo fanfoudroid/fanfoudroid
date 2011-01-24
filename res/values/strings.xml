@@ -76,6 +76,9 @@
     
     <string name="write_label_you_can_type_prefix">可以输入</string>
     <string name="write_label_you_can_type_suffix">字</string>
+    
+    <!-- 单推页面 -->
+    <string name="status_status_reply_cannot_display">本条消息是给 {0} 的回复。可能你没有通过 {0} 的验证.所以无法查看该回复消息。</string>
 	
 	<!-- 私信页面 -->
     <string name="direct_meesage_status_texting_is_null">请输入私信内容.</string>

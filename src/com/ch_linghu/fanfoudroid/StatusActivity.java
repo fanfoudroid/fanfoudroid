@@ -18,6 +18,7 @@ package com.ch_linghu.fanfoudroid;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.MessageFormat;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -34,8 +35,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
-import com.ch_linghu.fanfoudroid.data.db.TwitterDbAdapter;
 import com.ch_linghu.fanfoudroid.helper.ImageCache;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
@@ -187,7 +186,7 @@ public class StatusActivity extends WithHeaderActivity{
 	
 	public static Intent createIntent(Tweet tweet) {
 	    Intent intent = new Intent(LAUNCH_ACTION);
-	    intent.putExtra(EXTRA_TWEET, (Parcelable) tweet);
+	    intent.putExtra(EXTRA_TWEET, tweet);
 	    return intent;
 	}
 
@@ -529,9 +528,7 @@ public class StatusActivity extends WithHeaderActivity{
 			Utils.setSimpleTweetText(reply_status_text, text);
 			reply_status_date.setText(Utils.getRelativeDate(tweet.createdAt));
 		} else {
-			//FIXME: 这里需要有更好的处理方法
-		    String msg = "本条消息是给 " + this.tweet.inReplyToScreenName 
-		        + " 的回复。可能你没有通过 " + this.tweet.inReplyToScreenName + " 的验证.所以无法查看该回复消息。";
+		    String msg = MessageFormat.format(getString(R.string.status_status_reply_cannot_display), this.tweet.inReplyToScreenName);
 			reply_status_text.setText(msg);
 		}
     }
