@@ -71,6 +71,41 @@ public class TwitterService extends Service {
 	private ArrayList<Dm> mNewDms;
 
 	private GenericTask mRetrieveTask;
+	private TaskListener mRetrieveTaskListener = new TaskListener(){
+		@Override
+		public void onPostExecute(GenericTask task, TaskResult result) {
+			if (result == TaskResult.OK) {
+				processNewTweets();
+				processNewMentions();
+				processNewDms();
+			}
+
+			stopSelf();
+		}
+
+		@Override
+		public String getName() {
+			return "ServiceRetrieveTask";
+		}
+
+		@Override
+		public void onCancelled(GenericTask task) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onPreExecute(GenericTask task) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onProgressUpdate(GenericTask task, Object param) {
+			// TODO Auto-generated method stub
+			
+		}
+	};
 
 	private WakeLock mWakeLock;
 
@@ -121,41 +156,7 @@ public class TwitterService extends Service {
 			return;
 		}else{
 			mRetrieveTask = new RetrieveTask();
-			mRetrieveTask.setListener(new TaskListener(){
-				@Override
-				public void onPostExecute(GenericTask task, TaskResult result) {
-					if (result == TaskResult.OK) {
-						processNewTweets();
-						processNewMentions();
-						processNewDms();
-					}
-
-					stopSelf();
-				}
-
-				@Override
-				public String getName() {
-					return "ServiceRetrieveTask";
-				}
-
-				@Override
-				public void onCancelled(GenericTask task) {
-					// TODO Auto-generated method stub
-					
-				}
-
-				@Override
-				public void onPreExecute(GenericTask task) {
-					// TODO Auto-generated method stub
-					
-				}
-
-				@Override
-				public void onProgressUpdate(GenericTask task, Object param) {
-					// TODO Auto-generated method stub
-					
-				}
-			});
+			mRetrieveTask.setListener(mRetrieveTaskListener);
 		
 			TaskParams params = new TaskParams();
 			params.put("pref", mPreferences);

@@ -65,6 +65,85 @@ public class DmActivity extends WithHeaderActivity {
 	// Tasks.
 	private GenericTask mRetrieveTask;
 	private GenericTask mDeleteTask;
+	
+	private TaskListener mDeleteTaskListener = new TaskListener(){
+		@Override
+		public void onPreExecute(GenericTask task) {
+			updateProgress(getString(R.string.page_status_deleting));
+		}
+
+		@Override
+		public void onPostExecute(GenericTask task, TaskResult result) {
+			if (result == TaskResult.AUTH_ERROR) {
+				logout();
+			} else if (result == TaskResult.OK) {
+				mAdapter.refresh();
+			} else {
+				// Do nothing.
+			}
+
+			updateProgress("");
+		}
+
+		@Override
+		public String getName() {
+			return "DmDeleteTask";
+		}
+
+		@Override
+		public void onCancelled(GenericTask task) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onProgressUpdate(GenericTask task, Object param) {
+			// TODO Auto-generated method stub
+			
+		}
+	};
+	private TaskListener mRetrieveTaskListener = new TaskListener(){
+		@Override
+		public void onPreExecute(GenericTask task) {
+			updateProgress(getString(R.string.page_status_refreshing));
+		}
+
+		@Override
+		public void onProgressUpdate(GenericTask task, Object params) {
+			draw();
+		}
+
+		@Override
+		public void onPostExecute(GenericTask task, TaskResult result) {
+			if (result == TaskResult.AUTH_ERROR) {
+				logout();
+			} else if (result == TaskResult.OK) {
+				SharedPreferences.Editor editor = mPreferences.edit();
+				editor.putLong(Preferences.LAST_DM_REFRESH_KEY, Utils
+						.getNowTime());
+				editor.commit();
+				draw();
+				goTop();
+			} else {
+				// Do nothing.
+			}
+
+			// 刷新按钮停止旋转
+			refreshButton.clearAnimation();
+			updateProgress("");
+		}
+
+		@Override
+		public String getName() {
+			return "DmRetrieve";
+		}
+
+		@Override
+		public void onCancelled(GenericTask task) {
+			// TODO Auto-generated method stub
+			
+		}
+	};
 
 	// Refresh data at startup if last refresh was this long ago or greater.
 	private static final long REFRESH_THRESHOLD = 5 * 60 * 1000;
@@ -511,42 +590,7 @@ public class DmActivity extends WithHeaderActivity {
 			return;
 		}else{
 			mDeleteTask = new DmDeleteTask();
-			mDeleteTask.setListener(new TaskListener(){
-				@Override
-				public void onPreExecute(GenericTask task) {
-					updateProgress(getString(R.string.page_status_deleting));
-				}
-
-				@Override
-				public void onPostExecute(GenericTask task, TaskResult result) {
-					if (result == TaskResult.AUTH_ERROR) {
-						logout();
-					} else if (result == TaskResult.OK) {
-						mAdapter.refresh();
-					} else {
-						// Do nothing.
-					}
-
-					updateProgress("");
-				}
-
-				@Override
-				public String getName() {
-					return "DmDeleteTask";
-				}
-
-				@Override
-				public void onCancelled(GenericTask task) {
-					// TODO Auto-generated method stub
-					
-				}
-
-				@Override
-				public void onProgressUpdate(GenericTask task, Object param) {
-					// TODO Auto-generated method stub
-					
-				}
-			});
+			mDeleteTask.setListener(mDeleteTaskListener);
 			
 			TaskParams params = new TaskParams();
 			params.put("id", id);
@@ -587,48 +631,7 @@ public class DmActivity extends WithHeaderActivity {
 			return;
 		}else{
 			mRetrieveTask = new DmRetrieveTask();
-			mRetrieveTask.setListener(new TaskListener(){
-				@Override
-				public void onPreExecute(GenericTask task) {
-					updateProgress(getString(R.string.page_status_refreshing));
-				}
-
-				@Override
-				public void onProgressUpdate(GenericTask task, Object params) {
-					draw();
-				}
-
-				@Override
-				public void onPostExecute(GenericTask task, TaskResult result) {
-					if (result == TaskResult.AUTH_ERROR) {
-						logout();
-					} else if (result == TaskResult.OK) {
-						SharedPreferences.Editor editor = mPreferences.edit();
-						editor.putLong(Preferences.LAST_DM_REFRESH_KEY, Utils
-								.getNowTime());
-						editor.commit();
-						draw();
-						goTop();
-					} else {
-						// Do nothing.
-					}
-
-					// 刷新按钮停止旋转
-					refreshButton.clearAnimation();
-					updateProgress("");
-				}
-
-				@Override
-				public String getName() {
-					return "DmRetrieve";
-				}
-
-				@Override
-				public void onCancelled(GenericTask task) {
-					// TODO Auto-generated method stub
-					
-				}
-			});
+			mRetrieveTask.setListener(mRetrieveTaskListener);
 			mRetrieveTask.execute();
 		}
 	}

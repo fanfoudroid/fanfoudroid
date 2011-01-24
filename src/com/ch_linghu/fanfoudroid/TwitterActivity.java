@@ -39,6 +39,7 @@ import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
+import com.ch_linghu.fanfoudroid.task.TweetCommonTask;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterCursorBaseActivity;
 import com.ch_linghu.fanfoudroid.weibo.Paging;
 import com.ch_linghu.fanfoudroid.weibo.Status;
@@ -50,6 +51,44 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 
 	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.TWEETS";
 	protected GenericTask mDeleteTask;
+	
+	private TaskListener mDeleteTaskListener = new TaskListener(){
+
+		@Override
+		public String getName() {
+			return "DeleteTask";
+		}
+
+		@Override
+		public void onCancelled(GenericTask task) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onPostExecute(GenericTask task, TaskResult result) {
+			if (result == TaskResult.AUTH_ERROR) {
+				logout();
+			} else if (result == TaskResult.OK) {
+				onDeleteSuccess();
+			} else if (result == TaskResult.IO_ERROR) {
+				onDeleteFailure();
+			}
+		}
+
+		@Override
+		public void onPreExecute(GenericTask task) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onProgressUpdate(GenericTask task, Object param) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	};
 	
 	static final int DIALOG_WRITE_ID = 0;
 
@@ -188,72 +227,12 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 		if (mDeleteTask != null && mDeleteTask.getStatus() == GenericTask.Status.RUNNING){
 			return;
 		}else{
-			mDeleteTask = new DeleteTask();
-			mDeleteTask.setListener(new TaskListener(){
-
-				@Override
-				public String getName() {
-					return "DeleteTask";
-				}
-
-				@Override
-				public void onCancelled(GenericTask task) {
-					// TODO Auto-generated method stub
-					
-				}
-
-				@Override
-				public void onPostExecute(GenericTask task, TaskResult result) {
-					if (result == TaskResult.AUTH_ERROR) {
-						logout();
-					} else if (result == TaskResult.OK) {
-						onDeleteSuccess();
-					} else if (result == TaskResult.IO_ERROR) {
-						onDeleteFailure();
-					}
-				}
-
-				@Override
-				public void onPreExecute(GenericTask task) {
-					// TODO Auto-generated method stub
-					
-				}
-
-				@Override
-				public void onProgressUpdate(GenericTask task, Object param) {
-					// TODO Auto-generated method stub
-					
-				}
-				
-			});
+			mDeleteTask = new TweetCommonTask.DeleteTask(this);
+			mDeleteTask.setListener(mDeleteTaskListener);
 			
 			TaskParams params = new TaskParams();
 			params.put("id", id);
 			mDeleteTask.execute(params);
 		}
-	}
-
-	private class DeleteTask extends GenericTask{
-
-		@Override
-		protected TaskResult _doInBackground(TaskParams... params) {
-			TaskParams param = params[0];
-			try {
-				String id = param.getString("id");
-				com.ch_linghu.fanfoudroid.weibo.Status status = null;
-
-				status = getApi().destroyStatus(id);
-
-				// 对所有相关表的对应消息都进行删除（如果存在的话）
-				getDb().deleteTweet(status.getId(), -1);
-			} catch (WeiboException e) {
-				Log.e(TAG, e.getMessage(), e);
-				return TaskResult.IO_ERROR;
-			}
-
-			return TaskResult.OK;
-
-		}
-
 	}
 }

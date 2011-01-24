@@ -45,6 +45,7 @@ import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
+import com.ch_linghu.fanfoudroid.task.TweetCommonTask;
 import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
@@ -61,6 +62,107 @@ public class StatusActivity extends WithHeaderActivity{
 	private GenericTask mStatusTask; 
 	private GenericTask mPhotoTask; //TODO: 压缩图片，提供获取图片的过程中可取消获取
 	private GenericTask mFavTask;
+	
+	private TaskListener mStatusTaskListener = new TaskListener(){
+        @Override
+		public void onPostExecute(GenericTask task, TaskResult result) {
+            showReplyStatus(replyTweet);
+            StatusActivity.this.refreshButton.clearAnimation();   
+        }
+
+        @Override
+		public void onPreExecute(GenericTask task) {
+            // TODO Auto-generated method stub
+        }
+
+		@Override
+		public String getName() {
+			// TODO Auto-generated method stub
+			return "GetStatus";
+		}
+
+		@Override
+		public void onCancelled(GenericTask task) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onProgressUpdate(GenericTask task, Object param) {
+			// TODO Auto-generated method stub
+		}
+    };
+    private TaskListener mPhotoTaskListener = new TaskListener(){
+        @Override
+		public void onPostExecute(GenericTask task, TaskResult result) {
+               if(result == TaskResult.OK){
+            	status_photo.setImageBitmap(mPhotoBitmap);		
+            }else{
+            	status_photo.setVisibility(View.GONE);
+            }
+            StatusActivity.this.refreshButton.clearAnimation();   
+        }
+
+        @Override
+		public void onPreExecute(GenericTask task) {
+            // TODO Auto-generated method stub
+        }
+
+		@Override
+		public String getName() {
+			// TODO Auto-generated method stub
+			return "GetPhoto";
+		}
+
+		@Override
+		public void onCancelled(GenericTask task) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onProgressUpdate(GenericTask task, Object param) {
+			// TODO Auto-generated method stub
+			
+		}
+    };
+    private TaskListener mFavTaskListener = new TaskListener(){
+
+		@Override
+		public String getName() {
+			return "FavoriteTask";
+		}
+
+		@Override
+		public void onCancelled(GenericTask task) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onPostExecute(GenericTask task, TaskResult result) {
+			if (result == TaskResult.AUTH_ERROR) {
+				logout();
+			} else if (result == TaskResult.OK) {
+				onFavSuccess();
+			} else if (result == TaskResult.IO_ERROR) {
+				onFavFailure();
+			}
+		}
+
+		@Override
+		public void onPreExecute(GenericTask task) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onProgressUpdate(GenericTask task, Object param) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+    };
 	
 	// View
 	private TextView tweet_screen_name; 
@@ -350,35 +452,7 @@ public class StatusActivity extends WithHeaderActivity{
         	return;
         }else{
 	        mStatusTask = new GetStatusTask();
-	        mStatusTask.setListener(new TaskListener(){
-	            @Override
-	    		public void onPostExecute(GenericTask task, TaskResult result) {
-	                showReplyStatus(replyTweet);
-	                StatusActivity.this.refreshButton.clearAnimation();   
-	            }
-
-	            @Override
-	    		public void onPreExecute(GenericTask task) {
-	                // TODO Auto-generated method stub
-	            }
-
-	    		@Override
-	    		public String getName() {
-	    			// TODO Auto-generated method stub
-	    			return "GetStatus";
-	    		}
-
-	    		@Override
-	    		public void onCancelled(GenericTask task) {
-	    			// TODO Auto-generated method stub
-	    			
-	    		}
-
-	    		@Override
-	    		public void onProgressUpdate(GenericTask task, Object param) {
-	    			// TODO Auto-generated method stub
-	    		}
-	        });
+	        mStatusTask.setListener(mStatusTaskListener);
 	        
 	        TaskParams params = new TaskParams();
 	        if (isReply){ 
@@ -417,40 +491,7 @@ public class StatusActivity extends WithHeaderActivity{
         	return;
         }else{
 	        mPhotoTask = new GetPhotoTask();
-	        mPhotoTask.setListener(new TaskListener(){
-	            @Override
-	    		public void onPostExecute(GenericTask task, TaskResult result) {
-	                   if(result == TaskResult.OK){
-	                	status_photo.setImageBitmap(mPhotoBitmap);		
-	                }else{
-	                	status_photo.setVisibility(View.GONE);
-	                }
-	                StatusActivity.this.refreshButton.clearAnimation();   
-	            }
-
-	            @Override
-	    		public void onPreExecute(GenericTask task) {
-	                // TODO Auto-generated method stub
-	            }
-
-	    		@Override
-	    		public String getName() {
-	    			// TODO Auto-generated method stub
-	    			return "GetPhoto";
-	    		}
-
-	    		@Override
-	    		public void onCancelled(GenericTask task) {
-	    			// TODO Auto-generated method stub
-	    			
-	    		}
-
-	    		@Override
-	    		public void onProgressUpdate(GenericTask task, Object param) {
-	    			// TODO Auto-generated method stub
-	    			
-	    		}
-	        });
+	        mPhotoTask.setListener(mPhotoTaskListener);
 	        
 	        TaskParams params = new TaskParams();
 	        params.put("photo_page_url", photoPageURL);
@@ -511,44 +552,8 @@ public class StatusActivity extends WithHeaderActivity{
     	}else{
 	        if (!Utils.isEmpty(id)) {
 	            Log.i(TAG, "doFavorite.");
-	            mFavTask = new FavoriteTask();
-	            mFavTask.setListener(new TaskListener(){
-
-					@Override
-					public String getName() {
-						return "FavoriteTask";
-					}
-	
-					@Override
-					public void onCancelled(GenericTask task) {
-						// TODO Auto-generated method stub
-						
-					}
-	
-					@Override
-					public void onPostExecute(GenericTask task, TaskResult result) {
-						if (result == TaskResult.AUTH_ERROR) {
-							logout();
-						} else if (result == TaskResult.OK) {
-							onFavSuccess();
-						} else if (result == TaskResult.IO_ERROR) {
-							onFavFailure();
-						}
-					}
-	
-					@Override
-					public void onPreExecute(GenericTask task) {
-						// TODO Auto-generated method stub
-						
-					}
-	
-					@Override
-					public void onProgressUpdate(GenericTask task, Object param) {
-						// TODO Auto-generated method stub
-						
-					}
-	        		
-	            });
+	            mFavTask = new TweetCommonTask.FavoriteTask(this);
+	            mFavTask.setListener(mFavTaskListener);
 	            
 	            TaskParams param = new TaskParams();
 	            param.put("action", action);
@@ -560,7 +565,7 @@ public class StatusActivity extends WithHeaderActivity{
     
     public void onFavSuccess() {
         // updateProgress(getString(R.string.refreshing));
-        if (((FavoriteTask)mFavTask).getType().equals(FavoriteTask.TYPE_ADD)) {
+        if (((TweetCommonTask.FavoriteTask)mFavTask).getType().equals(TweetCommonTask.FavoriteTask.TYPE_ADD)) {
             tweet.favorited = "true";
             tweet_fav.setEnabled(true);
         } else {
@@ -573,54 +578,4 @@ public class StatusActivity extends WithHeaderActivity{
         // updateProgress(getString(R.string.refreshing));
     }
 
-	private class FavoriteTask extends GenericTask{
-
-		public static final String TYPE_ADD = "add";
-	    public static final String TYPE_DEL = "del";
-	    
-	    private String type;
-	    public String getType(){
-	    	return type;
-	    }
-	    
-		@Override
-		protected TaskResult _doInBackground(TaskParams...params){
-			TaskParams param = params[0];
-			try {
-				String action = param.getString("action");
-				String id = param.getString("id");
-				
-				com.ch_linghu.fanfoudroid.weibo.Status status = null;
-				if (action.equals(TYPE_ADD)) {
-					status = getApi().createFavorite(id);
-					getDb().setFavorited(id, "true");
-					type = TYPE_ADD;
-				} else {
-					status = getApi().destroyFavorite(id);
-					getDb().setFavorited(id, "false");
-					type = TYPE_DEL;
-				}
-
-				Tweet tweet = Tweet.create(status);
-
-				if (!Utils.isEmpty(tweet.profileImageUrl)) {
-					// Fetch image to cache.
-					try {
-						getImageManager().put(tweet.profileImageUrl);
-					} catch (IOException e) {
-						Log.e(TAG, e.getMessage(), e);
-					}
-				}
-
-				if(action.equals(TYPE_DEL)){
-					getDb().deleteTweet(tweet.id, StatusTable.TYPE_FAVORITE);
-				}
-			} catch (WeiboException e) {
-				Log.e(TAG, e.getMessage(), e);
-				return TaskResult.IO_ERROR;
-			}
-
-			return TaskResult.OK;			
-		}
-	}
 }

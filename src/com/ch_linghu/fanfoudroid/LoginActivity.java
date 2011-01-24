@@ -61,6 +61,40 @@ public class LoginActivity extends BaseActivity { // TODO: FIXME: 登录页面�
 
     // Tasks.
     private GenericTask mLoginTask;
+    
+    private TaskListener mLoginTaskListener = new TaskListener(){
+
+        @Override
+        public void onPreExecute(GenericTask task) {
+            onLoginBegin();
+        }
+
+        @Override
+        public void onProgressUpdate(GenericTask task, Object param) {
+            updateProgress((String)param);
+        }
+
+        @Override
+        public void onPostExecute(GenericTask task, TaskResult result) {
+            if (result == TaskResult.OK) {
+                onLoginSuccess();
+            } else {
+                onLoginFailure(((LoginTask)task).getMsg());
+            }
+        }
+
+		@Override
+		public String getName() {
+			// TODO Auto-generated method stub
+			return "Login";
+		}
+
+		@Override
+		public void onCancelled(GenericTask task) {
+			// TODO Auto-generated method stub
+			
+		}
+    };
 
 
     @Override
@@ -170,39 +204,7 @@ public class LoginActivity extends BaseActivity { // TODO: FIXME: 登录页面�
         }else{
 	        if (!Utils.isEmpty(mUsername) & !Utils.isEmpty(mPassword) ) {
 	            mLoginTask = new LoginTask();
-	            mLoginTask.setListener(new TaskListener(){
-
-	                @Override
-	                public void onPreExecute(GenericTask task) {
-	                    onLoginBegin();
-	                }
-
-	                @Override
-	                public void onProgressUpdate(GenericTask task, Object param) {
-	                    updateProgress((String)param);
-	                }
-
-	                @Override
-	                public void onPostExecute(GenericTask task, TaskResult result) {
-	                    if (result == TaskResult.OK) {
-	                        onLoginSuccess();
-	                    } else {
-	                        onLoginFailure(((LoginTask)task).getMsg());
-	                    }
-	                }
-
-	        		@Override
-	        		public String getName() {
-	        			// TODO Auto-generated method stub
-	        			return "Login";
-	        		}
-
-	        		@Override
-	        		public void onCancelled(GenericTask task) {
-	        			// TODO Auto-generated method stub
-	        			
-	        		}
-	            });
+	            mLoginTask.setListener(mLoginTaskListener);
 	            
 	            TaskParams params = new TaskParams();
 	            params.put("username", mUsername);

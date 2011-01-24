@@ -92,6 +92,45 @@ public class WriteActivity extends WithHeaderActivity {
 
 	// Task
 	private GenericTask mSendTask;
+	
+	private TaskListener mSendTaskListener = new TaskListener(){
+		@Override
+		public void onPreExecute(GenericTask task) {
+			onSendBegin();
+		}
+
+		@Override
+		public void onPostExecute(GenericTask task, TaskResult result) {
+		    endTime = System.currentTimeMillis();
+	        Log.d("LDS", "Sended a status in " + (endTime - startTime));
+	        
+			if (result == TaskResult.AUTH_ERROR) {
+				logout();
+			} else if (result == TaskResult.OK) {
+				onSendSuccess();
+			} else if (result == TaskResult.IO_ERROR) {
+				onSendFailure();
+			} 
+		}
+
+		@Override
+		public String getName() {
+			// TODO Auto-generated method stub
+			return "SendTask";
+		}
+
+		@Override
+		public void onCancelled(GenericTask task) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onProgressUpdate(GenericTask task, Object param) {
+			// TODO Auto-generated method stub
+			
+		}
+	};
 
 	private String _reply_id;
 	private String _repost_id;
@@ -451,44 +490,7 @@ public class WriteActivity extends WithHeaderActivity {
 			    }
 			    
 				mSendTask = new SendTask();
-				mSendTask.setListener(new TaskListener(){
-					@Override
-					public void onPreExecute(GenericTask task) {
-						onSendBegin();
-					}
-
-					@Override
-					public void onPostExecute(GenericTask task, TaskResult result) {
-					    endTime = System.currentTimeMillis();
-				        Log.d("LDS", "Sended a status in " + (endTime - startTime));
-				        
-						if (result == TaskResult.AUTH_ERROR) {
-							logout();
-						} else if (result == TaskResult.OK) {
-							onSendSuccess();
-						} else if (result == TaskResult.IO_ERROR) {
-							onSendFailure();
-						} 
-					}
-
-					@Override
-					public String getName() {
-						// TODO Auto-generated method stub
-						return "SendTask";
-					}
-
-					@Override
-					public void onCancelled(GenericTask task) {
-						// TODO Auto-generated method stub
-						
-					}
-
-					@Override
-					public void onProgressUpdate(GenericTask task, Object param) {
-						// TODO Auto-generated method stub
-						
-					}
-				});
+				mSendTask.setListener(mSendTaskListener);
 				
 				TaskParams params = new TaskParams();
 				params.put("mode", mode);

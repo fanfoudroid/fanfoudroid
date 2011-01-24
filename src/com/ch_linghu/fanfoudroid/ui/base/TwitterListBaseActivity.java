@@ -54,6 +54,7 @@ import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
+import com.ch_linghu.fanfoudroid.task.TweetCommonTask;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
@@ -68,6 +69,43 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 
 	// Tasks.
 	protected GenericTask mFavTask;
+	private TaskListener mFavTaskListener = new TaskListener(){
+		
+		@Override
+		public String getName() {
+			return "FavoriteTask";
+		}
+
+		@Override
+		public void onCancelled(GenericTask task) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onPostExecute(GenericTask task, TaskResult result) {
+			if (result == TaskResult.AUTH_ERROR) {
+				logout();
+			} else if (result == TaskResult.OK) {
+				onFavSuccess();
+			} else if (result == TaskResult.IO_ERROR) {
+				onFavFailure();
+			}
+		}
+
+		@Override
+		public void onPreExecute(GenericTask task) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onProgressUpdate(GenericTask task, Object param) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	};
 
 	static final int DIALOG_WRITE_ID = 0;
 	
@@ -237,44 +275,8 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 	    	if (mFavTask != null && mFavTask.getStatus() == GenericTask.Status.RUNNING){
 	    		return;	
 	    	}else{
-	        	mFavTask = new FavoriteTask();
-	        	mFavTask.setListener(new TaskListener(){
-	
-					@Override
-					public String getName() {
-						return "FavoriteTask";
-					}
-	
-					@Override
-					public void onCancelled(GenericTask task) {
-						// TODO Auto-generated method stub
-						
-					}
-	
-					@Override
-					public void onPostExecute(GenericTask task, TaskResult result) {
-						if (result == TaskResult.AUTH_ERROR) {
-							logout();
-						} else if (result == TaskResult.OK) {
-							onFavSuccess();
-						} else if (result == TaskResult.IO_ERROR) {
-							onFavFailure();
-						}
-					}
-	
-					@Override
-					public void onPreExecute(GenericTask task) {
-						// TODO Auto-generated method stub
-						
-					}
-	
-					@Override
-					public void onProgressUpdate(GenericTask task, Object param) {
-						// TODO Auto-generated method stub
-						
-					}
-	        		
-	        	});
+	        	mFavTask = new TweetCommonTask.FavoriteTask(this);
+	        	mFavTask.setListener(mFavTaskListener);
 	
 	        	TaskParams params = new TaskParams();
 	        	params.put("action", action);
@@ -318,51 +320,6 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 		if (mFavTask != null
 				&& mFavTask.getStatus() == GenericTask.Status.RUNNING) {
 			outState.putBoolean(SIS_RUNNING_KEY, true);
-		}
-	}
-	
-	
-	private class FavoriteTask extends GenericTask{
-
-		public static final String TYPE_ADD = "add";
-	    public static final String TYPE_DEL = "del";
-	    
-		@Override
-		protected TaskResult _doInBackground(TaskParams...params){
-			TaskParams param = params[0];
-			try {
-				String action = param.getString("action");
-				String id = param.getString("id");
-				
-				com.ch_linghu.fanfoudroid.weibo.Status status = null;
-				if (action.equals(TYPE_ADD)) {
-					status = getApi().createFavorite(id);
-					getDb().setFavorited(id, "true");
-				} else {
-					status = getApi().destroyFavorite(id);
-					getDb().setFavorited(id, "false");
-				}
-
-				Tweet tweet = Tweet.create(status);
-
-				if (!Utils.isEmpty(tweet.profileImageUrl)) {
-					// Fetch image to cache.
-					try {
-						getImageManager().put(tweet.profileImageUrl);
-					} catch (IOException e) {
-						Log.e(TAG, e.getMessage(), e);
-					}
-				}
-
-				if(action.equals(TYPE_DEL)){
-				    getDb().deleteTweet(tweet.id, StatusTable.TYPE_FAVORITE);
-				}
-			} catch (WeiboException e) {
-				Log.e(TAG, e.getMessage(), e);
-				return TaskResult.IO_ERROR;
-			}
-
-			return TaskResult.OK;			
 		}
 	}
 }

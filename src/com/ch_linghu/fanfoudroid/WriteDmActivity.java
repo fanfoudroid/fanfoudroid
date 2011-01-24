@@ -75,6 +75,54 @@ public class WriteDmActivity extends WithHeaderActivity {
 
 	// Task
 	private GenericTask mSendTask;
+	
+	private TaskListener mSendTaskListener = new TaskListener() {
+		@Override
+		public void onPreExecute(GenericTask task) {
+			disableEntry();
+			updateProgress(getString(R.string.page_status_updating));
+		}
+
+		@Override
+		public void onPostExecute(GenericTask task,
+				TaskResult result) {
+			if (result == TaskResult.AUTH_ERROR) {
+				logout();
+			} else if (result == TaskResult.OK) {
+				mToEdit.setText("");
+				mTweetEdit.setText("");
+				updateProgress("");
+				enableEntry();
+				// 发送成功就直接关闭界面
+				finish();
+			} else if (result == TaskResult.NOT_FOLLOWED_ERROR) {
+				updateProgress(getString(R.string.direct_meesage_status_the_person_not_following_you));
+				enableEntry();
+			} else if (result == TaskResult.IO_ERROR) {
+				// TODO: 什么情况下会抛出IO_ERROR？需要给用户更为具体的失败原因
+				updateProgress(getString(R.string.page_status_unable_to_update));
+				enableEntry();
+			}
+		}
+
+		@Override
+		public String getName() {
+			return "DMSend";
+		}
+
+		@Override
+		public void onCancelled(GenericTask task) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void onProgressUpdate(GenericTask task, Object param) {
+			// TODO Auto-generated method stub
+
+		}
+	};
+	
 	private FriendsAdapter mFriendsAdapter; // Adapter for To: recipient
 											// autocomplete.
 
@@ -280,52 +328,7 @@ public class WriteDmActivity extends WithHeaderActivity {
 
 			if (!Utils.isEmpty(status) && !Utils.isEmpty(to)) {
 				mSendTask = new DmSendTask();
-				mSendTask.setListener(new TaskListener() {
-					@Override
-					public void onPreExecute(GenericTask task) {
-						disableEntry();
-						updateProgress(getString(R.string.page_status_updating));
-					}
-
-					@Override
-					public void onPostExecute(GenericTask task,
-							TaskResult result) {
-						if (result == TaskResult.AUTH_ERROR) {
-							logout();
-						} else if (result == TaskResult.OK) {
-							mToEdit.setText("");
-							mTweetEdit.setText("");
-							updateProgress("");
-							enableEntry();
-							// 发送成功就直接关闭界面
-							finish();
-						} else if (result == TaskResult.NOT_FOLLOWED_ERROR) {
-							updateProgress(getString(R.string.direct_meesage_status_the_person_not_following_you));
-							enableEntry();
-						} else if (result == TaskResult.IO_ERROR) {
-							// TODO: 什么情况下会抛出IO_ERROR？需要给用户更为具体的失败原因
-							updateProgress(getString(R.string.page_status_unable_to_update));
-							enableEntry();
-						}
-					}
-
-					@Override
-					public String getName() {
-						return "DMSend";
-					}
-
-					@Override
-					public void onCancelled(GenericTask task) {
-						// TODO Auto-generated method stub
-
-					}
-
-					@Override
-					public void onProgressUpdate(GenericTask task, Object param) {
-						// TODO Auto-generated method stub
-
-					}
-				});
+				mSendTask.setListener(mSendTaskListener);
 				mSendTask.execute();
 			} else if (Utils.isEmpty(status)) {
 				updateProgress(getString(R.string.direct_meesage_status_texting_is_null));

@@ -57,6 +57,46 @@ public class SearchActivity extends TwitterListBaseActivity implements
 
 	// Tasks.
 	private GenericTask mSearchTask;
+	
+	private TaskListener mSearchTaskListener = new TaskListener(){
+		@Override
+		public void onPreExecute(GenericTask task) {
+			if (mNextPage == 1) {
+				updateProgress(getString(R.string.page_status_refreshing));
+			} else {
+				updateProgress(getString(R.string.page_status_refreshing));
+			}
+		}
+
+		@Override
+		public void onProgressUpdate(GenericTask task, Object param) {
+			draw();
+		}
+
+		@Override
+		public void onPostExecute(GenericTask task, TaskResult result) {
+			if (result == TaskResult.AUTH_ERROR) {
+				logout();
+			} else if (result == TaskResult.OK) {
+				draw();
+			} else {
+				// Do nothing.
+			}
+
+			updateProgress("");
+		}
+
+		@Override
+		public String getName() {
+			return "SearchTask";
+		}
+
+		@Override
+		public void onCancelled(GenericTask task) {
+			// TODO Auto-generated method stub
+			
+		}
+	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -143,45 +183,7 @@ public class SearchActivity extends TwitterListBaseActivity implements
 			return;
 		}else{
 			mSearchTask = new SearchTask();
-			mSearchTask.setListener(new TaskListener(){
-				@Override
-				public void onPreExecute(GenericTask task) {
-					if (mNextPage == 1) {
-						updateProgress(getString(R.string.page_status_refreshing));
-					} else {
-						updateProgress(getString(R.string.page_status_refreshing));
-					}
-				}
-
-				@Override
-				public void onProgressUpdate(GenericTask task, Object param) {
-					draw();
-				}
-
-				@Override
-				public void onPostExecute(GenericTask task, TaskResult result) {
-					if (result == TaskResult.AUTH_ERROR) {
-						logout();
-					} else if (result == TaskResult.OK) {
-						draw();
-					} else {
-						// Do nothing.
-					}
-
-					updateProgress("");
-				}
-
-				@Override
-				public String getName() {
-					return "SearchTask";
-				}
-
-				@Override
-				public void onCancelled(GenericTask task) {
-					// TODO Auto-generated method stub
-					
-				}
-			});
+			mSearchTask.setListener(mSearchTaskListener);
 			mSearchTask.execute();
 		}
 	}

@@ -88,6 +88,127 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
   private GenericTask mRetrieveTask;
   private GenericTask mFriendshipTask;
   private GenericTask mLoadMoreTask;
+  
+  private TaskListener mRetrieveTaskListener = new TaskListener(){
+      @Override
+      public void onPreExecute(GenericTask task) {
+          onRetrieveBegin();
+      }
+
+      @Override
+      public void onProgressUpdate(GenericTask task, Object param) {
+          draw();
+      }
+
+      @Override
+      public void onPostExecute(GenericTask task, TaskResult result) {
+          if (result == TaskResult.AUTH_ERROR) {
+              updateProgress(getString(R.string.user_prompt_this_person_has_protected_their_updates));
+
+              return;
+          } else if (result == TaskResult.OK) {
+              refreshButton.clearAnimation();
+              draw();
+          } else {
+              // Do nothing.
+          }
+
+          updateProgress("");
+      }
+
+		@Override
+		public String getName() {
+			return "UserRetrieve";
+		}
+
+		@Override
+		public void onCancelled(GenericTask task) {
+			// TODO Auto-generated method stub
+			
+		}
+	};
+	private TaskListener mFriendshipTaskListener = new TaskListener(){
+	    
+        @Override
+        public void onPreExecute(GenericTask task) {
+            mFollowButton.setEnabled(false);
+
+            if (((UserFriendshipTask)task).IsDestroy()) {
+                updateProgress(getString(R.string.user_status_unfollowing));
+            } else {
+                updateProgress(getString(R.string.user_status_following));
+            }
+        }
+
+        @Override
+        public void onPostExecute(GenericTask task, TaskResult result) {
+            if (result == TaskResult.AUTH_ERROR) {
+                logout();
+            } else if (result == TaskResult.OK) {
+                mIsFollowing = !mIsFollowing;
+                draw();
+            } else {
+                // Do nothing.
+            }
+
+            mFollowButton.setEnabled(true);
+            updateProgress("");
+        }
+
+		@Override
+		public String getName() {
+			return "UserFriendship";
+		}
+
+		@Override
+		public void onCancelled(GenericTask task) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onProgressUpdate(GenericTask task, Object param) {
+			// TODO Auto-generated method stub
+			
+		}
+	};
+	private TaskListener mLoadMoreTaskListener = new TaskListener(){
+
+        @Override
+        public void onPreExecute(GenericTask task) {
+            onLoadMoreBegin();
+        }
+
+        @Override
+        public void onProgressUpdate(GenericTask task, Object param) {
+            draw();
+        }
+
+        @Override
+        public void onPostExecute(GenericTask task, TaskResult result) {
+            if (result == TaskResult.AUTH_ERROR) {
+                logout();
+            } else if (result == TaskResult.OK) {
+                refreshButton.clearAnimation();
+                draw();
+            } else {
+                // Do nothing.
+            }
+
+            updateProgress("");
+        }
+
+		@Override
+		public String getName() {
+			return "UserLoadMoreTask";
+		}
+
+		@Override
+		public void onCancelled(GenericTask task) {
+			// TODO Auto-generated method stub
+			
+		}
+	};
 
   private static final String EXTRA_USER = "user";
   private static final String EXTRA_NAME_SCREEN = "name";
@@ -250,44 +371,7 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
         	return;
         }else{
         	mRetrieveTask = new UserRetrieveTask();
-        	mRetrieveTask.setListener(new TaskListener(){
-                @Override
-                public void onPreExecute(GenericTask task) {
-                    onRetrieveBegin();
-                }
-
-                @Override
-                public void onProgressUpdate(GenericTask task, Object param) {
-                    draw();
-                }
-
-                @Override
-                public void onPostExecute(GenericTask task, TaskResult result) {
-                    if (result == TaskResult.AUTH_ERROR) {
-                        updateProgress(getString(R.string.user_prompt_this_person_has_protected_their_updates));
-
-                        return;
-                    } else if (result == TaskResult.OK) {
-                        refreshButton.clearAnimation();
-                        draw();
-                    } else {
-                        // Do nothing.
-                    }
-
-                    updateProgress("");
-                }
-
-        		@Override
-        		public String getName() {
-        			return "UserRetrieve";
-        		}
-
-        		@Override
-        		public void onCancelled(GenericTask task) {
-        			// TODO Auto-generated method stub
-        			
-        		}
-        	});
+        	mRetrieveTask.setListener(mRetrieveTaskListener);
         	mRetrieveTask.execute();
         }
     }
@@ -299,43 +383,7 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
         	return;
         }else{
         	mLoadMoreTask = new UserLoadMoreTask();
-        	mLoadMoreTask.setListener(new TaskListener(){
-
-                @Override
-                public void onPreExecute(GenericTask task) {
-                    onLoadMoreBegin();
-                }
-
-                @Override
-                public void onProgressUpdate(GenericTask task, Object param) {
-                    draw();
-                }
-
-                @Override
-                public void onPostExecute(GenericTask task, TaskResult result) {
-                    if (result == TaskResult.AUTH_ERROR) {
-                        logout();
-                    } else if (result == TaskResult.OK) {
-                        refreshButton.clearAnimation();
-                        draw();
-                    } else {
-                        // Do nothing.
-                    }
-
-                    updateProgress("");
-                }
-
-        		@Override
-        		public String getName() {
-        			return "UserLoadMoreTask";
-        		}
-
-        		@Override
-        		public void onCancelled(GenericTask task) {
-        			// TODO Auto-generated method stub
-        			
-        		}
-        	});
+        	mLoadMoreTask.setListener(mLoadMoreTaskListener);
         	mLoadMoreTask.execute();
         }
     }
@@ -608,51 +656,7 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
     		return;
     	}else{
     		mFriendshipTask = new UserFriendshipTask(mIsFollowing);
-    		mFriendshipTask.setListener(new TaskListener(){
-    		    
-    	        @Override
-    	        public void onPreExecute(GenericTask task) {
-    	            mFollowButton.setEnabled(false);
-
-    	            if (((UserFriendshipTask)task).IsDestroy()) {
-    	                updateProgress(getString(R.string.user_status_unfollowing));
-    	            } else {
-    	                updateProgress(getString(R.string.user_status_following));
-    	            }
-    	        }
-
-    	        @Override
-    	        public void onPostExecute(GenericTask task, TaskResult result) {
-    	            if (result == TaskResult.AUTH_ERROR) {
-    	                logout();
-    	            } else if (result == TaskResult.OK) {
-    	                mIsFollowing = !mIsFollowing;
-    	                draw();
-    	            } else {
-    	                // Do nothing.
-    	            }
-
-    	            mFollowButton.setEnabled(true);
-    	            updateProgress("");
-    	        }
-
-    			@Override
-    			public String getName() {
-    				return "UserFriendship";
-    			}
-
-    			@Override
-    			public void onCancelled(GenericTask task) {
-    				// TODO Auto-generated method stub
-    				
-    			}
-
-    			@Override
-    			public void onProgressUpdate(GenericTask task, Object param) {
-    				// TODO Auto-generated method stub
-    				
-    			}
-    		});
+    		mFriendshipTask.setListener(mFriendshipTaskListener);
     		mFriendshipTask.execute();
     	}
 

@@ -69,11 +69,11 @@ public class BaseActivity extends Activity {
     finish();
   }
 
-  protected StatusDatabase getDb() {
+  public StatusDatabase getDb() {
     return TwitterApplication.mDb;
   }
 
-  protected Weibo getApi() {
+  public Weibo getApi() {
     return TwitterApplication.mApi;
   }
   

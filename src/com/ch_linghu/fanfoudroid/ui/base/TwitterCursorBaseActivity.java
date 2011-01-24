@@ -69,6 +69,90 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 	// Tasks.
 	private GenericTask mRetrieveTask;
 	private GenericTask mFollowersRetrieveTask;
+	
+	private TaskListener mRetrieveTaskListener = new TaskListener(){
+
+		@Override
+		public String getName() {
+			return "RetrieveTask";
+		}
+
+		@Override
+		public void onCancelled(GenericTask task) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onPostExecute(GenericTask task, TaskResult result) {
+			if (result == TaskResult.AUTH_ERROR) {
+				logout();
+			} else if (result == TaskResult.OK) {
+				SharedPreferences.Editor editor = getPreferences().edit();
+				editor.putLong(Preferences.LAST_TWEET_REFRESH_KEY, Utils
+						.getNowTime());
+				editor.commit();
+				draw();
+				goTop();
+			} else {
+				// Do nothing.
+			}
+
+			// 刷新按钮停止旋转
+			getRefreshButton().clearAnimation();
+			updateProgress("");
+		}
+
+		@Override
+		public void onPreExecute(GenericTask task) {
+			onRetrieveBegin();
+		}
+
+		@Override
+		public void onProgressUpdate(GenericTask task, Object param) {
+			draw();
+		}
+		
+	};
+	private TaskListener mFollowerRetrieveTaskListener = new TaskListener(){
+
+		@Override
+		public String getName() {
+			return "FollowerRetrieve";
+		}
+
+		@Override
+		public void onCancelled(GenericTask task) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onPostExecute(GenericTask task, TaskResult result) {
+			if (result == TaskResult.OK) {
+				SharedPreferences sp = getPreferences();
+				SharedPreferences.Editor editor = sp.edit();
+				editor.putLong(Preferences.LAST_FOLLOWERS_REFRESH_KEY,
+						Utils.getNowTime());
+				editor.commit();
+			} else {
+				// Do nothing.
+			}
+		}
+
+		@Override
+		public void onPreExecute(GenericTask task) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onProgressUpdate(GenericTask task, Object param) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	};
 
 	// Refresh data at startup if last refresh was this long ago or greater.
 	private static final long REFRESH_THRESHOLD = 5 * 60 * 1000;
@@ -346,45 +430,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
         	return;
         }else{
         	mFollowersRetrieveTask = new FollowersRetrieveTask();
-        	mFollowersRetrieveTask.setListener(new TaskListener(){
-
-				@Override
-				public String getName() {
-					return "FollowerRetrieve";
-				}
-
-				@Override
-				public void onCancelled(GenericTask task) {
-					// TODO Auto-generated method stub
-					
-				}
-
-				@Override
-				public void onPostExecute(GenericTask task, TaskResult result) {
-					if (result == TaskResult.OK) {
-						SharedPreferences sp = getPreferences();
-						SharedPreferences.Editor editor = sp.edit();
-						editor.putLong(Preferences.LAST_FOLLOWERS_REFRESH_KEY,
-								Utils.getNowTime());
-						editor.commit();
-					} else {
-						// Do nothing.
-					}
-				}
-
-				@Override
-				public void onPreExecute(GenericTask task) {
-					// TODO Auto-generated method stub
-					
-				}
-
-				@Override
-				public void onProgressUpdate(GenericTask task, Object param) {
-					// TODO Auto-generated method stub
-					
-				}
-        		
-        	});
+        	mFollowersRetrieveTask.setListener(mFollowerRetrieveTaskListener);
         	mFollowersRetrieveTask.execute();
         }
     }
@@ -403,50 +449,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 			return;
 		}else{
 			mRetrieveTask = new RetrieveTask();
-			mRetrieveTask.setListener(new TaskListener(){
-
-				@Override
-				public String getName() {
-					return "RetrieveTask";
-				}
-
-				@Override
-				public void onCancelled(GenericTask task) {
-					// TODO Auto-generated method stub
-					
-				}
-
-				@Override
-				public void onPostExecute(GenericTask task, TaskResult result) {
-					if (result == TaskResult.AUTH_ERROR) {
-						logout();
-					} else if (result == TaskResult.OK) {
-						SharedPreferences.Editor editor = getPreferences().edit();
-						editor.putLong(Preferences.LAST_TWEET_REFRESH_KEY, Utils
-								.getNowTime());
-						editor.commit();
-						draw();
-						goTop();
-					} else {
-						// Do nothing.
-					}
-
-					// 刷新按钮停止旋转
-					getRefreshButton().clearAnimation();
-					updateProgress("");
-				}
-
-				@Override
-				public void onPreExecute(GenericTask task) {
-					onRetrieveBegin();
-				}
-
-				@Override
-				public void onProgressUpdate(GenericTask task, Object param) {
-					draw();
-				}
-				
-			});
+			mRetrieveTask.setListener(mRetrieveTaskListener);
 			mRetrieveTask.execute();
 		}
 	}
