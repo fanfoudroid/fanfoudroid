@@ -25,7 +25,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -41,6 +40,7 @@ import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
 import com.ch_linghu.fanfoudroid.http.Response;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
+import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
@@ -62,16 +62,11 @@ public class StatusActivity extends WithHeaderActivity{
 	private GenericTask mPhotoTask; //TODO: 压缩图片，提供获取图片的过程中可取消获取
 	private GenericTask mFavTask;
 	
-	private TaskListener mStatusTaskListener = new TaskListener(){
+	private TaskListener mStatusTaskListener = new TaskAdapter(){
         @Override
 		public void onPostExecute(GenericTask task, TaskResult result) {
             showReplyStatus(replyTweet);
             StatusActivity.this.refreshButton.clearAnimation();   
-        }
-
-        @Override
-		public void onPreExecute(GenericTask task) {
-            // TODO Auto-generated method stub
         }
 
 		@Override
@@ -80,18 +75,8 @@ public class StatusActivity extends WithHeaderActivity{
 			return "GetStatus";
 		}
 
-		@Override
-		public void onCancelled(GenericTask task) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void onProgressUpdate(GenericTask task, Object param) {
-			// TODO Auto-generated method stub
-		}
     };
-    private TaskListener mPhotoTaskListener = new TaskListener(){
+    private TaskListener mPhotoTaskListener = new TaskAdapter(){
         @Override
 		public void onPostExecute(GenericTask task, TaskResult result) {
                if(result == TaskResult.OK){
@@ -102,40 +87,17 @@ public class StatusActivity extends WithHeaderActivity{
             StatusActivity.this.refreshButton.clearAnimation();   
         }
 
-        @Override
-		public void onPreExecute(GenericTask task) {
-            // TODO Auto-generated method stub
-        }
-
 		@Override
 		public String getName() {
 			// TODO Auto-generated method stub
 			return "GetPhoto";
 		}
-
-		@Override
-		public void onCancelled(GenericTask task) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void onProgressUpdate(GenericTask task, Object param) {
-			// TODO Auto-generated method stub
-			
-		}
     };
-    private TaskListener mFavTaskListener = new TaskListener(){
+    private TaskListener mFavTaskListener = new TaskAdapter(){
 
 		@Override
 		public String getName() {
 			return "FavoriteTask";
-		}
-
-		@Override
-		public void onCancelled(GenericTask task) {
-			// TODO Auto-generated method stub
-			
 		}
 
 		@Override
@@ -148,19 +110,6 @@ public class StatusActivity extends WithHeaderActivity{
 				onFavFailure();
 			}
 		}
-
-		@Override
-		public void onPreExecute(GenericTask task) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void onProgressUpdate(GenericTask task, Object param) {
-			// TODO Auto-generated method stub
-			
-		}
-		
     };
 	
 	// View

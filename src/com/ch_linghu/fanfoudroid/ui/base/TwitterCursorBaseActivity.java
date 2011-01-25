@@ -32,7 +32,6 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.data.Tweet;
@@ -41,6 +40,7 @@ import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
+import com.ch_linghu.fanfoudroid.task.TaskManager;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
@@ -67,7 +67,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 	protected static int lastPosition = 0;
 
 	// Tasks.
-	GenericTask.TaskManager taskManager = new GenericTask.TaskManager();
+	protected TaskManager taskManager = new TaskManager();
 	private GenericTask mRetrieveTask;
 	private GenericTask mFollowersRetrieveTask;
 	

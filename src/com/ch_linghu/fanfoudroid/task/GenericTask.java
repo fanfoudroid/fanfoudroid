@@ -10,9 +10,8 @@ import android.widget.Toast;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
 
 public abstract class GenericTask extends AsyncTask<TaskParams, Object, TaskResult> 
-    implements Observer
+    implements Observer 
 {
-
 	private TaskListener mListener = null;
 	private boolean isCancelable = true;
 	
@@ -84,23 +83,4 @@ public abstract class GenericTask extends AsyncTask<TaskParams, Object, TaskResu
 	    isCancelable = flag;
 	}
 	
-	
-	// TaskManager 
-	
-	public static class TaskManager  extends Observable {
-	    private static final String TAG = "TaskManager";
-	    
-	    public static final Integer CANCEL_ALL = 1;
-	    
-	    public void cancelAll() {
-	        Log.i(TAG, "All task Cancelled.");
-	        setChanged();
-	        notifyObservers(CANCEL_ALL);
-	    }
-	    
-	    public void addTask(Observer task) {
-	        super.addObserver(task);
-	    }
-	    
-	}
 }
