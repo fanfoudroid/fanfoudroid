@@ -118,7 +118,7 @@ public class Paging implements java.io.Serializable {
     }
 
     public void setMaxId(String maxId) {
-        if (maxId.length() > 0) {
+        if (maxId.length() == 0) {
             throw new IllegalArgumentException("max_id is null. passed:" + maxId);
         }
         this.maxId = maxId;

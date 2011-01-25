@@ -39,6 +39,7 @@ import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
+import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskManager;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
@@ -46,6 +47,7 @@ import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 import com.ch_linghu.fanfoudroid.ui.module.TweetCursorAdapter;
 import com.ch_linghu.fanfoudroid.weibo.IDs;
+import com.ch_linghu.fanfoudroid.weibo.Paging;
 import com.ch_linghu.fanfoudroid.weibo.Status;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
@@ -70,6 +72,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 	protected TaskManager taskManager = new TaskManager();
 	private GenericTask mRetrieveTask;
 	private GenericTask mFollowersRetrieveTask;
+	private GenericTask mGetMoreTask;
 	
 	private TaskListener mRetrieveTaskListener = new TaskListener(){
 
@@ -229,6 +232,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
                 loadMoreGIF.setVisibility(View.VISIBLE);
                 //frameAnimation.setOneShot(true);
                 //frameAnimation.stop();
+                doGetMore();
             }
         });
         
@@ -538,7 +542,73 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 			}
 			return TaskResult.OK;
 		}
-		
 	}
+	
+	
+	// GET MORE TASK
+	
+	private class GetMoreTask extends GenericTask {
+	    @Override
+        protected TaskResult _doInBackground(TaskParams... params) {
+	        try {
+                Cursor cursor = (Cursor) mTweetAdapter.getItem(mTweetAdapter.getCount() - 1);
+                
+	            String mixId =  cursor.getString(cursor.getColumnIndex(StatusTable._ID));
+	            Paging page = new Paging(1,20);
+	            page.setMaxId(mixId);
+	            
+	            List<com.ch_linghu.fanfoudroid.weibo.Status> statuses =
+	                getApi().getFriendsTimeline(page);
+	            
+	            List<Tweet> tweets = new ArrayList<Tweet>();
+	            
+	            for (com.ch_linghu.fanfoudroid.weibo.Status s: statuses) {
+	                tweets.add(Tweet.create(s));
+	            }
+	            
+	            getDb().putTweets(tweets, StatusTable.TYPE_HOME, false);
+	            
+	            
+	        } catch (WeiboException e) {
+	            return TaskResult.FAILED;
+	        }
+	        
+	        return TaskResult.OK;
+	    }
+	}
+	
+	private TaskListener getMoreListener = new TaskAdapter() {
+        
+        @Override
+        public String getName() {
+            return "getMore";
+        }
+
+        @Override
+        public void onPostExecute(GenericTask task, TaskResult result) {
+            super.onPostExecute(task, result);
+            draw();
+            getRefreshButton().clearAnimation();
+        }
+        
+    };
+    
+    public void doGetMore() {
+        Log.i(TAG, "Attempting getMore.");
+
+        // 旋转刷新按钮
+        animRotate(refreshButton);
+
+        if (mGetMoreTask != null && mGetMoreTask.getStatus() == GenericTask.Status.RUNNING){
+            return;
+        }else{
+            mGetMoreTask = new GetMoreTask();
+            mGetMoreTask.setListener(getMoreListener);
+            mGetMoreTask.execute();
+            
+            // Add Task to manager
+            taskManager.addTask(mGetMoreTask);
+        }
+    }
 	
 }
