@@ -12,6 +12,8 @@ import com.ch_linghu.fanfoudroid.TwitterApplication;
 public abstract class GenericTask extends AsyncTask<TaskParams, Object, TaskResult> 
     implements Observer 
 {
+    private static final String TAG = "TaskManager";
+    
 	private TaskListener mListener = null;
 	private boolean isCancelable = true;
 	
@@ -36,6 +38,7 @@ public abstract class GenericTask extends AsyncTask<TaskParams, Object, TaskResu
 		if (mListener != null){
 			mListener.onCancelled(this);
 		}
+        Log.i(TAG,  mListener.getName() + " has been Cancelled.");
 		Toast.makeText(TwitterApplication.mContext, mListener.getName() + " has been cancelled", Toast.LENGTH_SHORT);
 	}
 	@Override
@@ -73,7 +76,6 @@ public abstract class GenericTask extends AsyncTask<TaskParams, Object, TaskResu
 	public void update(Observable o, Object arg) {
 	    if (TaskManager.CANCEL_ALL ==  (Integer) arg && isCancelable) {
 	        if (getStatus() == GenericTask.Status.RUNNING) {
-	            Log.i("LDS",  getClass().getName() + " Cancelled.");
 	            cancel(true);
 	        }
 	    }
