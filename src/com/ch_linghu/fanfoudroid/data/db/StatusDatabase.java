@@ -357,7 +357,7 @@ public class StatusDatabase {
     }
 
     /**
-     * 取出某一类型的所有消息 只返回最新的StatusTable.MAX_ROW_NUM条,超过部分将视为垃圾数据无法取出
+     * 取出某一类型的所有消息
      * 
      * @param tableName
      * @return a cursor
@@ -367,8 +367,8 @@ public class StatusDatabase {
 
         return mDb.query(StatusTable.TABLE_NAME, StatusTable.TABLE_COLUMNS,
                 StatusTable.FIELD_STATUS_TYPE + " = " + type, null, null, null,
-                StatusTable.FIELD_CREATED_AT + " DESC LIMIT "
-                        + StatusTable.MAX_ROW_NUM);
+                StatusTable.FIELD_CREATED_AT + " DESC ");
+        //LIMIT " + StatusTable.MAX_ROW_NUM);
     }
 
     /**
@@ -448,8 +448,9 @@ public class StatusDatabase {
         Cursor mCursor = mDb.rawQuery("SELECT COUNT(" + StatusTable._ID + ")"
                 + " FROM " + StatusTable.TABLE_NAME + " WHERE "
                 + StatusTable.FIELD_STATUS_TYPE + " = " + type + " AND "
-                + StatusTable.FIELD_IS_UNREAD + " = 1 LIMIT "
-                + StatusTable.MAX_ROW_NUM, null);
+                + StatusTable.FIELD_IS_UNREAD + " = 1 ",
+               // "LIMIT " + StatusTable.MAX_ROW_NUM,
+                null);
 
         int result = 0;
 
