@@ -52,6 +52,7 @@ import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
+import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
@@ -93,7 +94,7 @@ public class WriteActivity extends WithHeaderActivity {
 	// Task
 	private GenericTask mSendTask;
 	
-	private TaskListener mSendTaskListener = new TaskListener(){
+	private TaskListener mSendTaskListener = new TaskAdapter(){
 		@Override
 		public void onPreExecute(GenericTask task) {
 			onSendBegin();
@@ -117,18 +118,6 @@ public class WriteActivity extends WithHeaderActivity {
 		public String getName() {
 			// TODO Auto-generated method stub
 			return "SendTask";
-		}
-
-		@Override
-		public void onCancelled(GenericTask task) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void onProgressUpdate(GenericTask task, Object param) {
-			// TODO Auto-generated method stub
-			
 		}
 	};
 
