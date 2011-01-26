@@ -16,7 +16,6 @@
 
 package com.ch_linghu.fanfoudroid.data;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import org.json.JSONException;
@@ -50,7 +49,8 @@ public class Tweet extends Message implements Parcelable {
     Tweet tweet = new Tweet();
 
     tweet.id = status.getId();
-    tweet.text = Utils.decodeTwitterJson(status.getText());
+    //转义符放到getSimpleTweetText里去处理，这里不做处理
+    tweet.text = status.getText();
     tweet.createdAt = status.getCreatedAt();
     tweet.favorited = status.isFavorited()?"true":"false";
     tweet.truncated = status.isTruncated()?"true":"false";
@@ -58,13 +58,12 @@ public class Tweet extends Message implements Parcelable {
     tweet.inReplyToUserId = status.getInReplyToUserId();
     tweet.inReplyToScreenName = status.getInReplyToScreenName();
     
-    tweet.screenName = Utils.decodeTwitterJson(status.getUser().getScreenName());
+    tweet.screenName = Utils.getSimpleTweetText(status.getUser().getScreenName());
     tweet.profileImageUrl = status.getUser().getProfileImageURL().toString();
     tweet.userId = status.getUser().getId();
     tweet.user = status.getUser();
     
-    tweet.source = Utils.decodeTwitterJson(status.getSource()).
-        replaceAll("\\<.*?>", "");
+    tweet.source = Utils.getSimpleTweetText(status.getSource());
 
     return tweet;
   }
@@ -73,7 +72,8 @@ public class Tweet extends Message implements Parcelable {
     Tweet tweet = new Tweet();
 
     tweet.id = jsonObject.getString("id") + "";
-    tweet.text = Utils.decodeTwitterJson(jsonObject.getString("text"));
+    //转义符放到getSimpleTweetText里去处理，这里不做处理
+    tweet.text = jsonObject.getString("text");
     tweet.createdAt = Utils.parseSearchApiDateTime(jsonObject.getString("created_at"));
     tweet.favorited = jsonObject.getString("favorited");
     tweet.truncated = jsonObject.getString("truncated");
@@ -81,11 +81,10 @@ public class Tweet extends Message implements Parcelable {
     tweet.inReplyToUserId = jsonObject.getString("in_reply_to_user_id");
     tweet.inReplyToScreenName = jsonObject.getString("in_reply_to_screen_name");
 
-    tweet.screenName = Utils.decodeTwitterJson(jsonObject.getString("from_user"));
+    tweet.screenName = Utils.getSimpleTweetText(jsonObject.getString("from_user"));
     tweet.profileImageUrl = jsonObject.getString("profile_image_url");
     tweet.userId = jsonObject.getString("from_user_id");
-    tweet.source = Utils.decodeTwitterJson(jsonObject.getString("source")).
-        replaceAll("\\<.*?>", "");
+    tweet.source = Utils.getSimpleTweetText(jsonObject.getString("source"));
 
     return tweet;
   }

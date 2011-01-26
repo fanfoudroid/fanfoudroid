@@ -65,11 +65,6 @@ public class Utils {
 
     return sb.toString();
   }
-
-  // Twitter JSON encodes < and > to prevent XSS attacks on websites.
-  public static String decodeTwitterJson(String s) {
-    return s.replace("&lt;", "<").replace("&gt;", ">");
-  }
   
 //Wed Dec 15 02:53:36 +0000 2010
   public static final DateFormat TWITTER_DATE_FORMATTER = new SimpleDateFormat(

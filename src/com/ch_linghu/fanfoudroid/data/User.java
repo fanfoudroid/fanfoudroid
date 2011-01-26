@@ -16,10 +16,10 @@ public class User {
     User user = new User();
     
     user.id = u.getId();    
-    user.name = Utils.decodeTwitterJson(u.getName());
-    user.screenName = Utils.decodeTwitterJson(u.getScreenName());
-    user.location = Utils.decodeTwitterJson(u.getLocation());
-    user.description = Utils.decodeTwitterJson(u.getDescription());
+    user.name = Utils.getSimpleTweetText(u.getName());
+    user.screenName = Utils.getSimpleTweetText(u.getScreenName());
+    user.location = Utils.getSimpleTweetText(u.getLocation());
+    user.description = Utils.getSimpleTweetText(u.getDescription());
     user.profileImageUrl = u.getProfileImageURL().toString();
     if (u.getURL() != null){
     	user.url = u.getURL().toString();

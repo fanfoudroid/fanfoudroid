@@ -15,13 +15,13 @@ public class Dm extends Message {
     Dm dm = new Dm();
 
     dm.id = directMessage.getId();
-    dm.text = Utils.decodeTwitterJson(directMessage.getText());
+    dm.text = directMessage.getText();
     dm.createdAt = directMessage.getCreatedAt();
     dm.isSent = isSent;
 
     User user = dm.isSent ? directMessage.getRecipient()
         : directMessage.getSender();
-    dm.screenName = Utils.decodeTwitterJson(user.getScreenName());
+    dm.screenName = Utils.getSimpleTweetText(user.getScreenName());
     dm.userId = user.getId();    
     dm.profileImageUrl = user.getProfileImageURL().toString();
 
