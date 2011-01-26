@@ -52,6 +52,7 @@ import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
+import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
@@ -71,7 +72,7 @@ public class TwitterService extends Service {
 	private ArrayList<Dm> mNewDms;
 
 	private GenericTask mRetrieveTask;
-	private TaskListener mRetrieveTaskListener = new TaskListener(){
+	private TaskListener mRetrieveTaskListener = new TaskAdapter(){
 		@Override
 		public void onPostExecute(GenericTask task, TaskResult result) {
 			if (result == TaskResult.OK) {
@@ -86,24 +87,6 @@ public class TwitterService extends Service {
 		@Override
 		public String getName() {
 			return "ServiceRetrieveTask";
-		}
-
-		@Override
-		public void onCancelled(GenericTask task) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void onPreExecute(GenericTask task) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void onProgressUpdate(GenericTask task, Object param) {
-			// TODO Auto-generated method stub
-			
 		}
 	};
 

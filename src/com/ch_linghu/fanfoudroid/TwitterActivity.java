@@ -35,6 +35,7 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
+import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
@@ -51,17 +52,11 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.TWEETS";
 	protected GenericTask mDeleteTask;
 	
-	private TaskListener mDeleteTaskListener = new TaskListener(){
+	private TaskListener mDeleteTaskListener = new TaskAdapter(){
 
 		@Override
 		public String getName() {
 			return "DeleteTask";
-		}
-
-		@Override
-		public void onCancelled(GenericTask task) {
-			// TODO Auto-generated method stub
-			
 		}
 
 		@Override
@@ -74,19 +69,6 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 				onDeleteFailure();
 			}
 		}
-
-		@Override
-		public void onPreExecute(GenericTask task) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void onProgressUpdate(GenericTask task, Object param) {
-			// TODO Auto-generated method stub
-			
-		}
-		
 	};
 	
 	static final int DIALOG_WRITE_ID = 0;

@@ -74,17 +74,11 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 	private GenericTask mFollowersRetrieveTask;
 	private GenericTask mGetMoreTask;
 	
-	private TaskListener mRetrieveTaskListener = new TaskListener(){
+	private TaskListener mRetrieveTaskListener = new TaskAdapter(){
 
 		@Override
 		public String getName() {
 			return "RetrieveTask";
-		}
-
-		@Override
-		public void onCancelled(GenericTask task) {
-			// TODO Auto-generated method stub
-			
 		}
 
 		@Override
@@ -116,19 +110,12 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 		public void onProgressUpdate(GenericTask task, Object param) {
 			draw();
 		}
-		
 	};
-	private TaskListener mFollowerRetrieveTaskListener = new TaskListener(){
+	private TaskListener mFollowerRetrieveTaskListener = new TaskAdapter(){
 
 		@Override
 		public String getName() {
 			return "FollowerRetrieve";
-		}
-
-		@Override
-		public void onCancelled(GenericTask task) {
-			// TODO Auto-generated method stub
-			
 		}
 
 		@Override
@@ -143,19 +130,6 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 				// Do nothing.
 			}
 		}
-
-		@Override
-		public void onPreExecute(GenericTask task) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void onProgressUpdate(GenericTask task, Object param) {
-			// TODO Auto-generated method stub
-			
-		}
-		
 	};
 
 	// Refresh data at startup if last refresh was this long ago or greater.

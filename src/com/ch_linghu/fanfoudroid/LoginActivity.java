@@ -36,6 +36,7 @@ import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.http.HttpAuthException;
 import com.ch_linghu.fanfoudroid.http.HttpRefusedException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
+import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
@@ -62,7 +63,7 @@ public class LoginActivity extends BaseActivity { // TODO: FIXME: 登录页面�
     // Tasks.
     private GenericTask mLoginTask;
     
-    private TaskListener mLoginTaskListener = new TaskListener(){
+    private TaskListener mLoginTaskListener = new TaskAdapter(){
 
         @Override
         public void onPreExecute(GenericTask task) {
@@ -87,12 +88,6 @@ public class LoginActivity extends BaseActivity { // TODO: FIXME: 登录页面�
 		public String getName() {
 			// TODO Auto-generated method stub
 			return "Login";
-		}
-
-		@Override
-		public void onCancelled(GenericTask task) {
-			// TODO Auto-generated method stub
-			
 		}
     };
 

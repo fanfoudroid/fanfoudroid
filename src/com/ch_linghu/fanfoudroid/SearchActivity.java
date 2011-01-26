@@ -18,6 +18,7 @@ import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.MemoryImageCache;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
+import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
@@ -58,7 +59,7 @@ public class SearchActivity extends TwitterListBaseActivity implements
 	// Tasks.
 	private GenericTask mSearchTask;
 	
-	private TaskListener mSearchTaskListener = new TaskListener(){
+	private TaskListener mSearchTaskListener = new TaskAdapter(){
 		@Override
 		public void onPreExecute(GenericTask task) {
 			if (mNextPage == 1) {
@@ -89,12 +90,6 @@ public class SearchActivity extends TwitterListBaseActivity implements
 		@Override
 		public String getName() {
 			return "SearchTask";
-		}
-
-		@Override
-		public void onCancelled(GenericTask task) {
-			// TODO Auto-generated method stub
-			
 		}
 	};
 

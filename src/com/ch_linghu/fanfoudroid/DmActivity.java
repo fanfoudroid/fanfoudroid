@@ -33,6 +33,7 @@ import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
+import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
@@ -66,7 +67,7 @@ public class DmActivity extends WithHeaderActivity {
 	private GenericTask mRetrieveTask;
 	private GenericTask mDeleteTask;
 	
-	private TaskListener mDeleteTaskListener = new TaskListener(){
+	private TaskListener mDeleteTaskListener = new TaskAdapter(){
 		@Override
 		public void onPreExecute(GenericTask task) {
 			updateProgress(getString(R.string.page_status_deleting));
@@ -89,20 +90,8 @@ public class DmActivity extends WithHeaderActivity {
 		public String getName() {
 			return "DmDeleteTask";
 		}
-
-		@Override
-		public void onCancelled(GenericTask task) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void onProgressUpdate(GenericTask task, Object param) {
-			// TODO Auto-generated method stub
-			
-		}
 	};
-	private TaskListener mRetrieveTaskListener = new TaskListener(){
+	private TaskListener mRetrieveTaskListener = new TaskAdapter(){
 		@Override
 		public void onPreExecute(GenericTask task) {
 			updateProgress(getString(R.string.page_status_refreshing));
@@ -136,12 +125,6 @@ public class DmActivity extends WithHeaderActivity {
 		@Override
 		public String getName() {
 			return "DmRetrieve";
-		}
-
-		@Override
-		public void onCancelled(GenericTask task) {
-			// TODO Auto-generated method stub
-			
 		}
 	};
 

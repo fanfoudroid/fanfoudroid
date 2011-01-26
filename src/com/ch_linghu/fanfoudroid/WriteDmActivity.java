@@ -42,6 +42,7 @@ import com.ch_linghu.fanfoudroid.data.db.StatusDatabase;
 import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
+import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
@@ -76,7 +77,7 @@ public class WriteDmActivity extends WithHeaderActivity {
 	// Task
 	private GenericTask mSendTask;
 	
-	private TaskListener mSendTaskListener = new TaskListener() {
+	private TaskListener mSendTaskListener = new TaskAdapter() {
 		@Override
 		public void onPreExecute(GenericTask task) {
 			disableEntry();
@@ -108,18 +109,6 @@ public class WriteDmActivity extends WithHeaderActivity {
 		@Override
 		public String getName() {
 			return "DMSend";
-		}
-
-		@Override
-		public void onCancelled(GenericTask task) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void onProgressUpdate(GenericTask task, Object param) {
-			// TODO Auto-generated method stub
-
 		}
 	};
 	

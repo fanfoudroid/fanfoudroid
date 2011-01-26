@@ -47,6 +47,7 @@ import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
+import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
@@ -64,17 +65,11 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 
 	// Tasks.
 	protected GenericTask mFavTask;
-	private TaskListener mFavTaskListener = new TaskListener(){
+	private TaskListener mFavTaskListener = new TaskAdapter(){
 		
 		@Override
 		public String getName() {
 			return "FavoriteTask";
-		}
-
-		@Override
-		public void onCancelled(GenericTask task) {
-			// TODO Auto-generated method stub
-			
 		}
 
 		@Override
@@ -87,19 +82,6 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 				onFavFailure();
 			}
 		}
-
-		@Override
-		public void onPreExecute(GenericTask task) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void onProgressUpdate(GenericTask task, Object param) {
-			// TODO Auto-generated method stub
-			
-		}
-		
 	};
 
 	static final int DIALOG_WRITE_ID = 0;
