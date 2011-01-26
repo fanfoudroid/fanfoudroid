@@ -40,10 +40,11 @@ public final class StatusTablesInfo {
         public static final String TAG = "StatusTable";
         
         // Status Types
-        public static final int TYPE_HOME = 1;
-        public static final int TYPE_MENTION = 2;
-        public static final int TYPE_USER = 3;
-        public static final int TYPE_FAVORITE = 4;
+        public static final int TYPE_HOME = 1;		//首页(我和我的好友)
+        public static final int TYPE_MENTION = 2;	//提到我的
+        public static final int TYPE_USER = 3;		//指定USER的
+        public static final int TYPE_FAVORITE = 4;	//收藏
+        public static final int TYPE_BROWSE = 5;	//随便看看
         
         public static final String TABLE_NAME = "status";
         public static final int MAX_ROW_NUM = 20;

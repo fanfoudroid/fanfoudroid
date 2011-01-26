@@ -71,6 +71,15 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>                                                            
         </activity>
+        <activity android:name=".BrowseActivity"
+                  android:windowSoftInputMode="adjustResize|stateHidden"  
+                  android:label="@string/app_name"
+                  >
+            <intent-filter>
+                <action android:name="com.ch_linghu.fanfoudroid.TWEETS" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>                                                            
+        </activity>
         <!--  TODO: why need stateHidden on the magic? -->
         <activity android:name=".MentionActivity"
                   android:windowSoftInputMode="adjustResize|stateHidden"  

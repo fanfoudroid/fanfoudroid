@@ -34,6 +34,7 @@ import android.widget.GridView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
+import com.ch_linghu.fanfoudroid.BrowseActivity;
 import com.ch_linghu.fanfoudroid.DmActivity;
 import com.ch_linghu.fanfoudroid.FavoritesActivity;
 import com.ch_linghu.fanfoudroid.MentionActivity;
@@ -185,8 +186,7 @@ public class MenuDialog extends Dialog {
 					goTo(MentionActivity.class);
 					break;
 				case PAGE_BROWSE:
-				    //TODO: 完成随便看看页面
-//					goTo(BrowseActivity.class);
+					goTo(BrowseActivity.class);
 					break;
 				case PAGE_FAVORITES:
 					goTo(FavoritesActivity.class);

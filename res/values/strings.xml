@@ -7,6 +7,7 @@
     <string name="page_title_direct_messages">我的私信</string>
     <string name="page_title_favorites">我的收藏</string>
     <string name="page_title_mentions">提到我的</string>
+    <string name="page_title_browse">随便看看</string>
     <string name="page_title_write">撰写信息</string>
     
 	<!-- 状态条提示  -->
