@@ -50,7 +50,7 @@ public class TwitterApplication extends Application {
 
         // 为cmwap用户设置代理上网
         String type = getNetworkType();
-        if (type.equalsIgnoreCase("cmwap")) {
+        if (null != type && type.equalsIgnoreCase("cmwap")) {
             Toast.makeText(this, "您当前正在使用cmwap网络上网.", Toast.LENGTH_SHORT);
             mApi.getHttpClient().setProxy("10.0.0.172", 80, "http");
         }

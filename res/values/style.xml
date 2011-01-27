@@ -98,8 +98,8 @@
          <item name="android:clickable">true</item>
     </style>
     
-     <style parent="@android:style/Widget.ProgressBar" name="customProgressBar">
-        <item name="android:indeterminateDrawable">@anim/robot_anmi</item>
+     <style name="customProgressBar">
+        <item name="android:indeterminateDrawable">@anim/loading_blue_16</item>
     </style>
     
 </resources>

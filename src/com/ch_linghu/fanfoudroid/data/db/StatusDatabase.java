@@ -244,15 +244,14 @@ public class StatusDatabase {
         SQLiteDatabase mDb = mOpenHelper.getWritableDatabase();
 
         String sql = "DELETE FROM " + StatusTable.TABLE_NAME
-                + " WHERE " + StatusTable.FIELD_STATUS_TYPE + " = " + type 
-                + " AND " + StatusTable._ID + " NOT IN " 
+                + " WHERE " + StatusTable._ID + " NOT IN " 
                 + " (SELECT " + StatusTable._ID // 子句
-                + " FROM " + StatusTable.TABLE_NAME;
+                + " FROM " + StatusTable.TABLE_NAME
+                + " ORDER BY " + StatusTable.FIELD_CREATED_AT + " DESC LIMIT "
+                + StatusTable.MAX_ROW_NUM + ")";
         if (type != -1) {
-            sql += " WHERE " + StatusTable.FIELD_STATUS_TYPE + " = " + type + " ";
+            sql += " AND " + StatusTable.FIELD_STATUS_TYPE + " = " + type + " ";
         }
-        sql += " ORDER BY " + StatusTable.FIELD_CREATED_AT + " DESC LIMIT ";
-        sql += StatusTable.MAX_ROW_NUM + ")";
 
         Log.d(TAG, sql);
         mDb.execSQL(sql);

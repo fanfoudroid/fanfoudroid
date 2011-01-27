@@ -63,8 +63,8 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 	
 	protected TextView loadMoreBtn;
 	protected ProgressBar loadMoreGIF;
-	// use setOneShot(true) to stop this animation,
-	protected AnimationDrawable loadMoreAnimation; 
+	protected TextView loadMoreBtnTop;
+	protected ProgressBar loadMoreGIFTop;
 	
 	protected static int lastPosition = 0;
 
@@ -90,6 +90,8 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 				editor.putLong(Preferences.LAST_TWEET_REFRESH_KEY, Utils
 						.getNowTime());
 				editor.commit();
+				//TODO: 1. StatusType ; 2. 只有在取回的数据大于MAX时才做GC, 因为小于时可以保证数据的连续性
+				getDb().gc(-1); // GC 
 				draw();
 				goTop();
 			} else {
@@ -98,6 +100,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 
 			// 刷新按钮停止旋转
 			getRefreshButton().clearAnimation();
+            loadMoreGIFTop.setVisibility(View.GONE);
 			updateProgress("");
 		}
 
@@ -185,27 +188,22 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
         
         // Add Header to ListView
         View header = View.inflate(this, R.layout.listview_header, null);
-        mTweetList.addHeaderView(header, null, false);
+        mTweetList.addHeaderView(header, null, true);
         header.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadMoreBtn.setVisibility(View.GONE);
-                loadMoreGIF.setVisibility(View.VISIBLE);
-                //frameAnimation.setOneShot(true);
-                //frameAnimation.stop();
+                loadMoreGIFTop.setVisibility(View.VISIBLE);
+                doRetrieve();
             }
         });
         
         //TODO: 完成listView顶部和底部的事件绑定
         View footer = View.inflate(this, R.layout.listview_footer, null);
-        mTweetList.addFooterView(footer, null, false);
+        mTweetList.addFooterView(footer, null, true);
         footer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadMoreBtn.setVisibility(View.GONE);
                 loadMoreGIF.setVisibility(View.VISIBLE);
-                //frameAnimation.setOneShot(true);
-                //frameAnimation.stop();
                 doGetMore();
             }
         });
@@ -213,7 +211,10 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
         // Find View
         loadMoreBtn = (TextView)findViewById(R.id.ask_for_more);
         loadMoreGIF = (ProgressBar)findViewById(R.id.rectangleProgressBar);
-        loadMoreAnimation = (AnimationDrawable) loadMoreGIF.getIndeterminateDrawable();
+        loadMoreBtnTop = (TextView)findViewById(R.id.ask_for_more_header);
+        loadMoreGIFTop = (ProgressBar)findViewById(R.id.rectangleProgressBar_header);
+        
+        //loadMoreAnimation = (AnimationDrawable) loadMoreGIF.getIndeterminateDrawable();
     }
 	
 	@Override
@@ -528,7 +529,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
                 Cursor cursor = (Cursor) mTweetAdapter.getItem(mTweetAdapter.getCount() - 1);
                 
 	            String mixId =  cursor.getString(cursor.getColumnIndex(StatusTable._ID));
-	            Paging page = new Paging(1,20);
+	            Paging page = new Paging(1, StatusTable.MAX_ROW_NUM + 1);
 	            page.setMaxId(mixId);
 	            
 	            List<com.ch_linghu.fanfoudroid.weibo.Status> statuses =
@@ -563,6 +564,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
             super.onPostExecute(task, result);
             draw();
             getRefreshButton().clearAnimation();
+            loadMoreGIF.setVisibility(View.GONE);
         }
         
     };

@@ -1,30 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- 列表底部 - 载入更多 -->
  
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="55dp"
     android:gravity="center"
     android:padding="0dp"
  >
       <TextView android:id="@+id/ask_for_more_header"
-       android:layout_width="fill_parent"
-       android:layout_height="54dp"
-       android:gravity="center"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_centerHorizontal="true"
+       android:paddingTop="10dp"
+       android:paddingBottom="10dp"
        style="@style/normalText.Big"
        android:text="刷新"
        />
       <ProgressBar   
         android:id="@+id/rectangleProgressBar_header"    
-        android:layout_width="wrap_content"   
-        android:layout_height="54dp"
         style="@style/customProgressBar" 
+        android:layout_width="16px"   
+        android:layout_height="16px"
+        android:layout_toRightOf="@id/ask_for_more_header"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="5dp"
         android:visibility="gone"  
        /> 
-      <!-- 渐变条 -->
-	  <View android:background="@drawable/shape"
-	     android:id="@+id/main_shape"
-	     android:layout_width="fill_parent"
-	     android:layout_height="1px"/>
-</LinearLayout>
+</RelativeLayout>
