@@ -271,7 +271,7 @@ public class ImageManager implements ImageCache {
         
         // image is too small
         if (bitmap.getWidth() < 100 && bitmap.getHeight() < 100) {
-            quality = 90;
+            quality = 100;
         }
         
         Log.i(TAG, "Writing file: " + hashedUrl);

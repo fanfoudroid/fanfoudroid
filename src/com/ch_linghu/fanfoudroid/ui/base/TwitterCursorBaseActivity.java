@@ -528,6 +528,9 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 	        try {
                 Cursor cursor = (Cursor) mTweetAdapter.getItem(mTweetAdapter.getCount() - 1);
                 
+                if (null == cursor || cursor.getCount() == 0)
+                    return TaskResult.FAILED;
+                
 	            String mixId =  cursor.getString(cursor.getColumnIndex(StatusTable._ID));
 	            Paging page = new Paging(1, StatusTable.MAX_ROW_NUM + 1);
 	            page.setMaxId(mixId);

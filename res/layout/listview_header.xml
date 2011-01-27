@@ -6,6 +6,7 @@
     android:layout_height="55dp"
     android:gravity="center"
     android:padding="0dp"
+    android:background="@android:drawable/list_selector_background"
  >
       <TextView android:id="@+id/ask_for_more_header"
        android:layout_width="wrap_content"

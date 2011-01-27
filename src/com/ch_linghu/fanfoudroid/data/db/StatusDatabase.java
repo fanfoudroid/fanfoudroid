@@ -304,7 +304,7 @@ public class StatusDatabase {
         if (-1 == id) {
             Log.e(TAG, "cann't insert the tweet : " + tweet.toString());
         } else {
-            Log.i(TAG, "Insert a status into datebase : " + tweet.toString());
+            //Log.i(TAG, "Insert a status into datebase : " + tweet.toString());
         }
 
         return id;
