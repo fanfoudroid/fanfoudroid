@@ -111,6 +111,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 
 		@Override
 		public void onProgressUpdate(GenericTask task, Object param) {
+			Log.d(TAG, "onProgressUpdate");
 			draw();
 		}
 	};
@@ -475,6 +476,8 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 			}
 
 			addMessages(tweets, false); // getDb().addMentions(tweets, false);
+			Log.d("TAG", "publishProgress");
+			publishProgress(1);
 
 			if (isCancelled()) {
 				return TaskResult.CANCELLED;
