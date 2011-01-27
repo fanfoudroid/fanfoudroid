@@ -267,7 +267,7 @@ public class StatusDatabase {
      *            需要写入的单条消息
      * @return the row ID of the newly inserted row, or -1 if an error occurred
      */
-    private long insertTweet(Tweet tweet, int type, boolean isUnread) {
+    public long insertTweet(Tweet tweet, int type, boolean isUnread) {
         SQLiteDatabase Db = mOpenHelper.getWritableDatabase();
 
         if (isExists(tweet.id, type)) {
@@ -275,6 +275,36 @@ public class StatusDatabase {
             return -1;
         }
 
+        ContentValues initialValues = makeTweetValues(tweet, type, isUnread);
+        long id = Db.insert(StatusTable.TABLE_NAME, null, initialValues);
+
+        if (-1 == id) {
+            Log.e(TAG, "cann't insert the tweet : " + tweet.toString());
+        } else {
+            Log.i(TAG, "Insert a status into datebase : " + tweet.toString());
+        }
+
+        return id;
+    }
+
+    /**
+     * 更新一条消息
+     * 
+     * @param tweetId
+     * @param values
+     *            ContentValues 需要更新字段的键值对
+     * @return the number of rows affected
+     */
+    public int updateTweet(String tweetId, ContentValues values) {
+        Log.i(TAG, "Update Tweet  : " + tweetId + " " + values.toString());
+
+        SQLiteDatabase Db = mOpenHelper.getWritableDatabase();
+
+        return Db.update(StatusTable.TABLE_NAME, values,
+                StatusTable._ID + "=?", new String[] { tweetId });
+    }
+    
+    private ContentValues makeTweetValues(Tweet tweet, int type, boolean isUnread) {
         // 插入一条新消息
         ContentValues initialValues = new ContentValues();
         initialValues.put(StatusTable.FIELD_STATUS_TYPE, type);
@@ -298,33 +328,8 @@ public class StatusDatabase {
         initialValues.put(StatusTable.FIELD_IS_UNREAD, isUnread);
         initialValues.put(StatusTable.FIELD_TRUNCATED, tweet.truncated);
         // TODO: truncated
-
-        long id = Db.insert(StatusTable.TABLE_NAME, null, initialValues);
-
-        if (-1 == id) {
-            Log.e(TAG, "cann't insert the tweet : " + tweet.toString());
-        } else {
-            //Log.i(TAG, "Insert a status into datebase : " + tweet.toString());
-        }
-
-        return id;
-    }
-
-    /**
-     * 更新一条消息
-     * 
-     * @param tweetId
-     * @param values
-     *            ContentValues 需要更新字段的键值对
-     * @return the number of rows affected
-     */
-    public int updateTweet(String tweetId, ContentValues values) {
-        Log.i(TAG, "Update Tweet  : " + tweetId + " " + values.toString());
-
-        SQLiteDatabase Db = mOpenHelper.getWritableDatabase();
-
-        return Db.update(StatusTable.TABLE_NAME, values,
-                StatusTable._ID + "=?", new String[] { tweetId });
+        
+        return initialValues;
     }
 
     /**
@@ -335,7 +340,8 @@ public class StatusDatabase {
      * @return
      */
     public void putTweets(List<Tweet> tweets, int type, boolean isUnread) {
-        if (0 == tweets.size())
+        //long start = System.currentTimeMillis();
+        if (null == tweets || 0 == tweets.size())
             return;
 
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
@@ -345,7 +351,15 @@ public class StatusDatabase {
 
             for (int i = tweets.size() - 1; i >= 0; i--) {
                 Tweet tweet = tweets.get(i);
-                insertTweet(tweet, type, isUnread);
+                
+                ContentValues initialValues = makeTweetValues(tweet, type, isUnread);
+                long id = db.insert(StatusTable.TABLE_NAME, null, initialValues);
+
+                if (-1 == id) {
+                    Log.e(TAG, "cann't insert the tweet : " + tweet.toString());
+                } else {
+                    Log.i(TAG, "Insert a status into datebase : " + tweet.toString());
+                }
             }
 
             // gc(type); // 保持总量
@@ -353,6 +367,8 @@ public class StatusDatabase {
         } finally {
             db.endTransaction();
         }
+        //long end = System.currentTimeMillis();
+        //Log.d("LDS", "putTweets : " + (end-start));
     }
 
     /**

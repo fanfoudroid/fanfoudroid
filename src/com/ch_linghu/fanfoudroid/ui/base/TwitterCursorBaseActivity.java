@@ -532,7 +532,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
                     return TaskResult.FAILED;
                 
 	            String mixId =  cursor.getString(cursor.getColumnIndex(StatusTable._ID));
-	            Paging page = new Paging(1, StatusTable.MAX_ROW_NUM + 1);
+	            Paging page = new Paging(1, 20);
 	            page.setMaxId(mixId);
 	            
 	            List<com.ch_linghu.fanfoudroid.weibo.Status> statuses =

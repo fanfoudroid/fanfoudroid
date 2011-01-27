@@ -47,7 +47,7 @@ public final class StatusTablesInfo {
         public static final int TYPE_BROWSE = 5;	//随便看看
         
         public static final String TABLE_NAME = "status";
-        public static final int MAX_ROW_NUM = 40; //单类型数据安全区域
+        public static final int MAX_ROW_NUM = 20; //单类型数据安全区域
         
         public static final String FIELD_USER_ID = "uid";
         public static final String FIELD_USER_SCREEN_NAME = "screen_name";
