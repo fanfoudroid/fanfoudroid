@@ -17,6 +17,7 @@ import com.ch_linghu.fanfoudroid.data.db.StatusDatabase;
 import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
+import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheManager;
 import com.ch_linghu.fanfoudroid.weibo.Weibo;
 
 public class TwitterApplication extends Application {
@@ -24,6 +25,7 @@ public class TwitterApplication extends Application {
     public static final String TAG = "TwitterApplication";
     
     public static ImageManager mImageManager;
+    public static ProfileImageCacheManager mProfileImageCacheManager;
     public static StatusDatabase mDb;
     public static Weibo mApi; // new API
     public static Context mContext;
@@ -36,6 +38,7 @@ public class TwitterApplication extends Application {
 
         mContext = this.getApplicationContext();
         mImageManager = new ImageManager(this);
+        mProfileImageCacheManager = new ProfileImageCacheManager();
         mApi = new Weibo();
         mDb = StatusDatabase.getInstance(this);
 

@@ -9,6 +9,7 @@ import java.util.Date;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,6 +25,7 @@ import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.StatusDatabase;
 import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
+import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 
 public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
@@ -111,8 +113,15 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 
 		if (useProfileImage){
 			if (!Utils.isEmpty(profileImageUrl)) {
-				holder.profileImage.setImageBitmap(TwitterApplication.mImageManager
-						.get(profileImageUrl));
+				holder.profileImage.setImageBitmap(TwitterApplication.mProfileImageCacheManager
+						.get(profileImageUrl, new ProfileImageCacheCallback(){
+
+							@Override
+							public void refresh(String url, Bitmap bitmap) {
+								TweetCursorAdapter.this.refresh();
+							}
+							
+						}));
 			}
 		}else{
 			holder.profileImage.setVisibility(View.GONE);

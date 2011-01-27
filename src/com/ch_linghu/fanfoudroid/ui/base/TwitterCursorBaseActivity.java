@@ -468,37 +468,35 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 				tweet = Tweet.create(status);
 				tweets.add(tweet);
 
-				imageUrls.add(tweet.profileImageUrl);
-
 				if (isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
 			}
 
 			addMessages(tweets, false); // getDb().addMentions(tweets, false);
-			Log.d("TAG", "publishProgress");
-			publishProgress(1);
-
-			if (isCancelled()) {
-				return TaskResult.CANCELLED;
-			}
-
-			//task.publishProgress();
-
-			for (String imageUrl : imageUrls) {
-				if (!Utils.isEmpty(imageUrl)) {
-					// Fetch image to cache.
-					try {
-						getImageManager().put(imageUrl);
-					} catch (IOException e) {
-						Log.e(TAG, e.getMessage(), e);
-					}
-				}
-
-				if (isCancelled()) {
-					return TaskResult.CANCELLED;
-				}
-			}
+//			Log.d("TAG", "publishProgress");
+//			publishProgress(1);
+//
+//			if (isCancelled()) {
+//				return TaskResult.CANCELLED;
+//			}
+//
+//			//task.publishProgress();
+//
+//			for (String imageUrl : imageUrls) {
+//				if (!Utils.isEmpty(imageUrl)) {
+//					// Fetch image to cache.
+//					try {
+//						getImageManager().put(imageUrl);
+//					} catch (IOException e) {
+//						Log.e(TAG, e.getMessage(), e);
+//					}
+//				}
+//
+//				if (isCancelled()) {
+//					return TaskResult.CANCELLED;
+//				}
+//			}
 
 			return TaskResult.OK;
 		}
