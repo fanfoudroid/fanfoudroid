@@ -48,6 +48,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
@@ -556,6 +557,10 @@ public class WriteActivity extends WithHeaderActivity {
 			}
 			
 			return TaskResult.OK;
+		}
+
+		private ImageManager getImageManager() {
+			return TwitterApplication.mProfileImageCacheManager.getImageManager();
 		}
 	}
 

@@ -80,14 +80,14 @@ public class TweetCommonTask {
 
 				Tweet tweet = Tweet.create(status);
 
-				if (!Utils.isEmpty(tweet.profileImageUrl)) {
-					// Fetch image to cache.
-					try {
-						activity.getImageManager().put(tweet.profileImageUrl);
-					} catch (IOException e) {
-						Log.e(TAG, e.getMessage(), e);
-					}
-				}
+//				if (!Utils.isEmpty(tweet.profileImageUrl)) {
+//					// Fetch image to cache.
+//					try {
+//						activity.getImageManager().put(tweet.profileImageUrl);
+//					} catch (IOException e) {
+//						Log.e(TAG, e.getMessage(), e);
+//					}
+//				}
 
 				if(action.equals(TYPE_DEL)){
 					activity.getDb().deleteTweet(tweet.id, StatusTable.TYPE_FAVORITE);

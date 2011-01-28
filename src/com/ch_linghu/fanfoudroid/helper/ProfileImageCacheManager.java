@@ -65,6 +65,11 @@ public class ProfileImageCacheManager {
 		return bitmap;
 	}
 	
+	//Low-level interface to get ImageManager
+	public ImageManager getImageManager(){
+		return mImageManager;
+	}
+	
 	private void putUrl(String url){
 		synchronized(mUrlList){
 			mUrlList.add(url);

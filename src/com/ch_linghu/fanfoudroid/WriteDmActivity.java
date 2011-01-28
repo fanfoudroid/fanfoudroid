@@ -339,14 +339,14 @@ public class WriteDmActivity extends WithHeaderActivity {
 						text);
 				Dm dm = Dm.create(directMessage, true);
 
-				if (!Utils.isEmpty(dm.profileImageUrl)) {
-					// Fetch image to cache.
-					try {
-						getImageManager().put(dm.profileImageUrl);
-					} catch (IOException e) {
-						Log.e(TAG, e.getMessage(), e);
-					}
-				}
+//				if (!Utils.isEmpty(dm.profileImageUrl)) {
+//					// Fetch image to cache.
+//					try {
+//						getImageManager().put(dm.profileImageUrl);
+//					} catch (IOException e) {
+//						Log.e(TAG, e.getMessage(), e);
+//					}
+//				}
 
 				getDb().createDm(dm, false);
 			} catch (WeiboException e) {

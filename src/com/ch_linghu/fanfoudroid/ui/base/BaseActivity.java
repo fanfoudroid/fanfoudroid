@@ -94,9 +94,9 @@ public class BaseActivity extends Activity {
 
   // Retrieve interface
   
-  public ImageManager getImageManager() {
-    return TwitterApplication.mImageManager;
-  }
+//  public ImageManager getImageManager() {
+//    return TwitterApplication.mImageManager;
+//  }
   
   public void logout() {
     TwitterService.unschedule(this);
@@ -109,7 +109,8 @@ public class BaseActivity extends Activity {
     editor.clear();
     editor.commit();
 
-    getImageManager().clear();
+    //FIXME: 对ImageCache也需要清理，现在暂时没有实现
+    //getImageManager().clear();
 
     // TODO: cancel notifications.
 

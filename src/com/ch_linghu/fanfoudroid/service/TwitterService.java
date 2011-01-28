@@ -156,16 +156,16 @@ public class TwitterService extends Service {
 
 		int count = getDb().addNewTweetsAndCountUnread( mNewTweets, StatusTable.TYPE_HOME);
 
-		for (Tweet tweet : mNewTweets) {
-			if (!Utils.isEmpty(tweet.profileImageUrl)) {
-				// Fetch image to cache.
-				try {
-					TwitterApplication.mImageManager.put(tweet.profileImageUrl);
-				} catch (IOException e) {
-					Log.e(TAG, e.getMessage(), e);
-				}
-			}
-		}
+//		for (Tweet tweet : mNewTweets) {
+//			if (!Utils.isEmpty(tweet.profileImageUrl)) {
+//				// Fetch image to cache.
+//				try {
+//					TwitterApplication.mImageManager.put(tweet.profileImageUrl);
+//				} catch (IOException e) {
+//					Log.e(TAG, e.getMessage(), e);
+//				}
+//			}
+//		}
 
 		if (count <= 0) {
 			return;
@@ -201,16 +201,16 @@ public class TwitterService extends Service {
 
 		int count = getDb().addNewTweetsAndCountUnread(mNewMentions, StatusTable.TYPE_MENTION);
 
-		for (Tweet tweet : mNewMentions) {
-			if (!Utils.isEmpty(tweet.profileImageUrl)) {
-				// Fetch image to cache.
-				try {
-					TwitterApplication.mImageManager.put(tweet.profileImageUrl);
-				} catch (IOException e) {
-					Log.e(TAG, e.getMessage(), e);
-				}
-			}
-		}
+//		for (Tweet tweet : mNewMentions) {
+//			if (!Utils.isEmpty(tweet.profileImageUrl)) {
+//				// Fetch image to cache.
+//				try {
+//					TwitterApplication.mImageManager.put(tweet.profileImageUrl);
+//				} catch (IOException e) {
+//					Log.e(TAG, e.getMessage(), e);
+//				}
+//			}
+//		}
 
 		if (count <= 0) {
 			return;
@@ -290,16 +290,16 @@ public class TwitterService extends Service {
 			db.addDms(mNewDms, false);
 		}
 
-		for (Dm dm : mNewDms) {
-			if (!Utils.isEmpty(dm.profileImageUrl)) {
-				// Fetch image to cache.
-				try {
-					TwitterApplication.mImageManager.put(dm.profileImageUrl);
-				} catch (IOException e) {
-					Log.e(TAG, e.getMessage(), e);
-				}
-			}
-		}
+//		for (Dm dm : mNewDms) {
+//			if (!Utils.isEmpty(dm.profileImageUrl)) {
+//				// Fetch image to cache.
+//				try {
+//					TwitterApplication.mImageManager.put(dm.profileImageUrl);
+//				} catch (IOException e) {
+//					Log.e(TAG, e.getMessage(), e);
+//				}
+//			}
+//		}
 
 		if (count <= 0) {
 			return;

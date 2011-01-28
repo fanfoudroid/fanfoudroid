@@ -3,14 +3,17 @@ package com.ch_linghu.fanfoudroid.ui.module;
 import java.util.ArrayList;
 
 import com.ch_linghu.fanfoudroid.R;
+import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.helper.ImageCache;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
+import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,6 +31,15 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 	protected LayoutInflater mInflater;
 	protected StringBuilder mMetaBuilder;
 	protected ImageCache mImageCache;
+	
+	private ProfileImageCacheCallback callback = new ProfileImageCacheCallback(){
+
+		@Override
+		public void refresh(String url, Bitmap bitmap) {
+			TweetArrayAdapter.this.refresh();			
+		}
+		
+	};
 
 	public TweetArrayAdapter(Context context, ImageCache imageCache) {
 		mTweets = new ArrayList<Tweet>();
@@ -97,8 +109,8 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 
 			if (useProfileImage){
 				if (!Utils.isEmpty(profileImageUrl)) {
-					holder.profileImage.setImageBitmap(mImageCache
-							.get(profileImageUrl));
+					holder.profileImage.setImageBitmap(TwitterApplication.mProfileImageCacheManager
+							.get(profileImageUrl, callback));
 				}
 			}else{
 				holder.profileImage.setVisibility(View.GONE);

@@ -74,6 +74,15 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 	private int mFavorited;
 
 	private StringBuilder mMetaBuilder;
+	
+	private ProfileImageCacheCallback callback = new ProfileImageCacheCallback(){
+
+		@Override
+		public void refresh(String url, Bitmap bitmap) {
+			TweetCursorAdapter.this.refresh();
+		}
+		
+	};
 
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
@@ -114,14 +123,7 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		if (useProfileImage){
 			if (!Utils.isEmpty(profileImageUrl)) {
 				holder.profileImage.setImageBitmap(TwitterApplication.mProfileImageCacheManager
-						.get(profileImageUrl, new ProfileImageCacheCallback(){
-
-							@Override
-							public void refresh(String url, Bitmap bitmap) {
-								TweetCursorAdapter.this.refresh();
-							}
-							
-						}));
+						.get(profileImageUrl, callback));
 			}
 		}else{
 			holder.profileImage.setVisibility(View.GONE);

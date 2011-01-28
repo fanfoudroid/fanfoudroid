@@ -36,6 +36,7 @@ import android.widget.TextView;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.helper.ImageCache;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
+import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
 import com.ch_linghu.fanfoudroid.http.Response;
@@ -323,6 +324,15 @@ public class StatusActivity extends WithHeaderActivity{
 		super.onDestroy();
 	}
 	
+	private ProfileImageCacheCallback callback = new ProfileImageCacheCallback(){
+
+		@Override
+		public void refresh(String url, Bitmap bitmap) {
+			profile_image.setImageBitmap(bitmap);
+		}
+		
+	};
+	
 	private void draw() {
 	    Log.i(TAG, "draw");
 	    
@@ -337,8 +347,9 @@ public class StatusActivity extends WithHeaderActivity{
         boolean isFav = (tweet.favorited.equals("true")) ? true : false;
         tweet_fav.setEnabled(isFav);
         
-        Bitmap mProfileBitmap = TwitterApplication.mImageManager.get(tweet.profileImageUrl);
-        profile_image.setImageBitmap(mProfileBitmap);
+        //Bitmap mProfileBitmap = TwitterApplication.mImageManager.get(tweet.profileImageUrl);
+        profile_image.setImageBitmap(TwitterApplication.mProfileImageCacheManager
+        		.get(tweet.profileImageUrl, callback));
         
         // has photo
         if (usePhotoPreview){

@@ -220,33 +220,33 @@ public class SearchActivity extends TwitterListBaseActivity implements
 
 			addTweets(mTweets);
 
-			if (isCancelled()) {
-				return TaskResult.CANCELLED;
-			}
-
-			publishProgress();
-
-			// TODO: what if orientation change?
-			ImageManager imageManager = getImageManager();
-			MemoryImageCache imageCache = new MemoryImageCache();
-
-			for (String imageUrl : imageUrls) {
-				if (!Utils.isEmpty(imageUrl)) {
-					// Fetch image to cache.
-					try {
-						Bitmap bitmap = imageManager.fetchImage(imageUrl);
-						imageCache.put(imageUrl, bitmap);
-					} catch (IOException e) {
-						Log.e(TAG, e.getMessage(), e);
-					}
-				}
-
-				if (isCancelled()) {
-					return TaskResult.CANCELLED;
-				}
-			}
-
-			addImages(imageCache);
+//			if (isCancelled()) {
+//				return TaskResult.CANCELLED;
+//			}
+//
+//			publishProgress();
+//
+//			// TODO: what if orientation change?
+//			ImageManager imageManager = getImageManager();
+//			MemoryImageCache imageCache = new MemoryImageCache();
+//
+//			for (String imageUrl : imageUrls) {
+//				if (!Utils.isEmpty(imageUrl)) {
+//					// Fetch image to cache.
+//					try {
+//						Bitmap bitmap = imageManager.fetchImage(imageUrl);
+//						imageCache.put(imageUrl, bitmap);
+//					} catch (IOException e) {
+//						Log.e(TAG, e.getMessage(), e);
+//					}
+//				}
+//
+//				if (isCancelled()) {
+//					return TaskResult.CANCELLED;
+//				}
+//			}
+//
+//			addImages(imageCache);
 
 			return TaskResult.OK;
 		}

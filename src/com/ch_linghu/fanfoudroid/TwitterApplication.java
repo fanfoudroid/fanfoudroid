@@ -24,7 +24,7 @@ public class TwitterApplication extends Application {
 
     public static final String TAG = "TwitterApplication";
     
-    public static ImageManager mImageManager;
+    //public static ImageManager mImageManager;
     public static ProfileImageCacheManager mProfileImageCacheManager;
     public static StatusDatabase mDb;
     public static Weibo mApi; // new API
@@ -37,7 +37,7 @@ public class TwitterApplication extends Application {
         super.onCreate();
 
         mContext = this.getApplicationContext();
-        mImageManager = new ImageManager(this);
+        //mImageManager = new ImageManager(this);
         mProfileImageCacheManager = new ProfileImageCacheManager();
         mApi = new Weibo();
         mDb = StatusDatabase.getInstance(this);
@@ -77,32 +77,34 @@ public class TwitterApplication extends Application {
     }
 
     private void cleanupImages() {
-        HashSet<String> keepers = new HashSet<String>();
-
-        Cursor cursor = mDb.fetchAllTweets(StatusTable.TYPE_HOME);
-
-        if (cursor.moveToFirst()) {
-            int imageIndex = cursor
-                    .getColumnIndexOrThrow(StatusTable.FIELD_PROFILE_IMAGE_URL);
-            do {
-                keepers.add(cursor.getString(imageIndex));
-            } while (cursor.moveToNext());
-        }
-
-        cursor.close();
-
-        cursor = mDb.fetchAllDms(-1);
-
-        if (cursor.moveToFirst()) {
-            int imageIndex = cursor
-                    .getColumnIndexOrThrow(StatusTable.FIELD_PROFILE_IMAGE_URL);
-            do {
-                keepers.add(cursor.getString(imageIndex));
-            } while (cursor.moveToNext());
-        }
-
-        cursor.close();
-
-        mImageManager.cleanup(keepers);
+    	//FIXME: 需要一个完善的方法来完成ImageCache的清理
+    	//       目前暂时没有实现
+//        HashSet<String> keepers = new HashSet<String>();
+//
+//        Cursor cursor = mDb.fetchAllTweets(StatusTable.TYPE_HOME);
+//
+//        if (cursor.moveToFirst()) {
+//            int imageIndex = cursor
+//                    .getColumnIndexOrThrow(StatusTable.FIELD_PROFILE_IMAGE_URL);
+//            do {
+//                keepers.add(cursor.getString(imageIndex));
+//            } while (cursor.moveToNext());
+//        }
+//
+//        cursor.close();
+//
+//        cursor = mDb.fetchAllDms(-1);
+//
+//        if (cursor.moveToFirst()) {
+//            int imageIndex = cursor
+//                    .getColumnIndexOrThrow(StatusTable.FIELD_PROFILE_IMAGE_URL);
+//            do {
+//                keepers.add(cursor.getString(imageIndex));
+//            } while (cursor.moveToNext());
+//        }
+//
+//        cursor.close();
+//
+//        mImageManager.cleanup(keepers);
     }
 }

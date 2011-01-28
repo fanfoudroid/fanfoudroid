@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -31,6 +32,7 @@ import com.ch_linghu.fanfoudroid.data.db.StatusDatabase;
 import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.MessageTable;
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
+import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -312,7 +314,7 @@ public class DmActivity extends WithHeaderActivity {
 			ArrayList<Dm> dms = new ArrayList<Dm>();
 
 			StatusDatabase db = getDb();
-			ImageManager imageManager = getImageManager();
+			//ImageManager imageManager = getImageManager();
 
 			String maxId = db.fetchMaxDmId(false);
 
@@ -378,26 +380,26 @@ public class DmActivity extends WithHeaderActivity {
 
 			db.addDms(dms, false);
 
-			if (isCancelled()) {
-				return TaskResult.CANCELLED;
-			}
-
-			publishProgress(null);
-
-			for (String imageUrl : imageUrls) {
-				if (!Utils.isEmpty(imageUrl)) {
-					// Fetch image to cache.
-					try {
-						imageManager.put(imageUrl);
-					} catch (IOException e) {
-						Log.e(TAG, e.getMessage(), e);
-					}
-				}
-
-				if (isCancelled()) {
-					return TaskResult.CANCELLED;
-				}
-			}
+//			if (isCancelled()) {
+//				return TaskResult.CANCELLED;
+//			}
+//
+//			publishProgress(null);
+//
+//			for (String imageUrl : imageUrls) {
+//				if (!Utils.isEmpty(imageUrl)) {
+//					// Fetch image to cache.
+//					try {
+//						imageManager.put(imageUrl);
+//					} catch (IOException e) {
+//						Log.e(TAG, e.getMessage(), e);
+//					}
+//				}
+//
+//				if (isCancelled()) {
+//					return TaskResult.CANCELLED;
+//				}
+//			}
 
 			return TaskResult.OK;
 		}
@@ -481,8 +483,16 @@ public class DmActivity extends WithHeaderActivity {
 
 			if (!Utils.isEmpty(profileImageUrl)) {
 				holder.profileImage
-						.setImageBitmap(TwitterApplication.mImageManager
-								.get(profileImageUrl));
+						.setImageBitmap(TwitterApplication.mProfileImageCacheManager
+								.get(profileImageUrl, new ProfileImageCacheCallback(){
+
+									@Override
+									public void refresh(String url,
+											Bitmap bitmap) {
+										Adapter.this.refresh();
+									}
+									
+								}));
 			}
 
 			try {

@@ -381,7 +381,7 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
         protected TaskResult _doInBackground(TaskParams...params) {
             List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
 
-            ImageManager imageManager = getImageManager();
+            //ImageManager imageManager = getImageManager();
 
             try {
                 statusList = getApi().getUserTimeline(mUsername,
@@ -419,29 +419,29 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
 
             publishProgress();
 
-            mImageCache = new MemoryImageCache();
-            if (!Utils.isEmpty(mUser.profileImageUrl)) {
-                try {
-                    Bitmap bitmap = imageManager
-                            .fetchImage(mUser.profileImageUrl);
-                    setProfileBitmap(bitmap);
-                    mImageCache.put(mUser.profileImageUrl, bitmap);
-                } catch (IOException e) {
-                    Log.e(TAG, e.getMessage(), e);
-                }
-            }
-
-            if (isCancelled()) {
-                return TaskResult.CANCELLED;
-            }
-
-            publishProgress();
-            Weibo fanfou = getApi();
+//            mImageCache = new MemoryImageCache();
+//            if (!Utils.isEmpty(mUser.profileImageUrl)) {
+//                try {
+//                    Bitmap bitmap = imageManager
+//                            .fetchImage(mUser.profileImageUrl);
+//                    setProfileBitmap(bitmap);
+//                    mImageCache.put(mUser.profileImageUrl, bitmap);
+//                } catch (IOException e) {
+//                    Log.e(TAG, e.getMessage(), e);
+//                }
+//            }
+//
+//            if (isCancelled()) {
+//                return TaskResult.CANCELLED;
+//            }
+//
+//            publishProgress();
+//            Weibo fanfou = getApi();
 
             try {
                 // mIsFollowing = getApi().existsFriendship(mMe, mUsername);
                 com.ch_linghu.fanfoudroid.weibo.User mCurrentUser;
-                mCurrentUser = fanfou.showUser(fanfou.getUserId());
+                mCurrentUser = getApi().showUser(getApi().getUserId());
 
                 mIsFollowing = getApi().existsFriendship(mCurrentUser.getId(),
                         mUsername);
