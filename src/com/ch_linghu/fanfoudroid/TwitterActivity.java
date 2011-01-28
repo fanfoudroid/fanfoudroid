@@ -216,4 +216,22 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 			mDeleteTask.execute(params);
 		}
 	}
+	
+	@Override
+	public String fetchMinId() {
+		return getDb().fetchMinTweetId(StatusTable.TYPE_HOME);
+	}
+
+	@Override
+	public List<Status> getMoreMessageFromId(String minId)
+			throws WeiboException {
+		Paging paging = new Paging(1, 20);
+		paging.setMaxId(minId);
+		return getApi().getFriendsTimeline(paging);
+	}
+
+	@Override
+	public int getDatabaseType() {
+		return StatusTable.TYPE_HOME;
+	}
 }

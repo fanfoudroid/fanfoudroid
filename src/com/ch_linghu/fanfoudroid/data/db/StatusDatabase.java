@@ -246,8 +246,11 @@ public class StatusDatabase {
         String sql = "DELETE FROM " + StatusTable.TABLE_NAME
                 + " WHERE " + StatusTable._ID + " NOT IN " 
                 + " (SELECT " + StatusTable._ID // 子句
-                + " FROM " + StatusTable.TABLE_NAME
-                + " ORDER BY " + StatusTable.FIELD_CREATED_AT + " DESC LIMIT "
+                + " FROM " + StatusTable.TABLE_NAME;
+        if (type != -1){
+            sql += " WHERE " + StatusTable.FIELD_STATUS_TYPE + " = " + type + " ";
+        }
+                sql += " ORDER BY " + StatusTable.FIELD_CREATED_AT + " DESC LIMIT "
                 + StatusTable.MAX_ROW_NUM + ")";
         if (type != -1) {
             sql += " AND " + StatusTable.FIELD_STATUS_TYPE + " = " + type + " ";
@@ -408,21 +411,20 @@ public class StatusDatabase {
      * @return The newest Status Id
      */
     public String fetchMaxTweetId(int type) {
-        return fetchMaxOrMixTweetId(type, true);
+        return fetchMaxOrMinTweetId(type, true);
     }
 
     /**
-     * 取出本地某类型最新消息ID
+     * 取出本地某类型最旧消息ID
      * 
      * @param tableName
-     * @deprecated 废弃
      * @return The oldest Status Id
      */
-    public String fetchMixTweetId(int type) {
-        return fetchMaxOrMixTweetId(type, false);
+    public String fetchMinTweetId(int type) {
+        return fetchMaxOrMinTweetId(type, false);
     }
 
-    private String fetchMaxOrMixTweetId(int type, boolean isMax) {
+    private String fetchMaxOrMinTweetId(int type, boolean isMax) {
         SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
 
         String sql = "SELECT " + StatusTable._ID + " FROM "

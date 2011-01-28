@@ -90,8 +90,8 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 				editor.putLong(Preferences.LAST_TWEET_REFRESH_KEY, Utils
 						.getNowTime());
 				editor.commit();
-				//TODO: 1. StatusType ; 2. 只有在取回的数据大于MAX时才做GC, 因为小于时可以保证数据的连续性
-				getDb().gc(-1); // GC 
+				//TODO: 1. StatusType(DONE) ; 2. 只有在取回的数据大于MAX时才做GC, 因为小于时可以保证数据的连续性
+				getDb().gc(getDatabaseType()); // GC 
 				draw();
 				goTop();
 			} else {
@@ -145,13 +145,19 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 	abstract protected void markAllRead();
 
 	abstract protected Cursor fetchMessages();
+	
+	public abstract int getDatabaseType();
 
 	public abstract String fetchMaxId();
+	public abstract String fetchMinId();
 
 	public abstract void addMessages(ArrayList<Tweet> tweets,
 			boolean isUnread);
 
 	public abstract List<Status> getMessageSinceId(String maxId)
+			throws WeiboException;
+	
+	public abstract List<Status> getMoreMessageFromId(String minId)
 			throws WeiboException;
 
 	public static final int CONTEXT_REPLY_ID = Menu.FIRST + 1;
@@ -463,10 +469,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 					return TaskResult.CANCELLED;
 				}
 
-				Tweet tweet;
-
-				tweet = Tweet.create(status);
-				tweets.add(tweet);
+				tweets.add(Tweet.create(status));
 
 				if (isCancelled()) {
 					return TaskResult.CANCELLED;
@@ -526,31 +529,42 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 	private class GetMoreTask extends GenericTask {
 	    @Override
         protected TaskResult _doInBackground(TaskParams... params) {
-	        try {
-                Cursor cursor = (Cursor) mTweetAdapter.getItem(mTweetAdapter.getCount() - 1);
-                
-                if (null == cursor || cursor.getCount() == 0)
-                    return TaskResult.FAILED;
-                
-	            String mixId =  cursor.getString(cursor.getColumnIndex(StatusTable._ID));
-	            Paging page = new Paging(1, 20);
-	            page.setMaxId(mixId);
-	            
-	            List<com.ch_linghu.fanfoudroid.weibo.Status> statuses =
-	                getApi().getFriendsTimeline(page);
-	            
-	            List<Tweet> tweets = new ArrayList<Tweet>();
-	            
-	            for (com.ch_linghu.fanfoudroid.weibo.Status s: statuses) {
-	                tweets.add(Tweet.create(s));
-	            }
-	            
-	            getDb().putTweets(tweets, StatusTable.TYPE_HOME, false);
-	            
-	            
-	        } catch (WeiboException e) {
-	            return TaskResult.FAILED;
-	        }
+			List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
+
+			String minId = fetchMinId(); // getDb().fetchMaxMentionId();
+
+			if(minId == null){
+				return TaskResult.FAILED;
+			}
+
+			try {
+				statusList = getMoreMessageFromId(minId);
+			} catch (WeiboException e) {
+				Log.e(TAG, e.getMessage(), e);
+				return TaskResult.IO_ERROR;
+			}
+
+			if(statusList == null){
+				return TaskResult.FAILED;
+			}
+
+			ArrayList<Tweet> tweets = new ArrayList<Tweet>();
+			HashSet<String> imageUrls = new HashSet<String>();
+			
+			for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
+				if (isCancelled()) {
+					return TaskResult.CANCELLED;
+				}
+
+				tweets.add(Tweet.create(status));
+
+				if (isCancelled()) {
+					return TaskResult.CANCELLED;
+				}
+			}
+
+			addMessages(tweets, false); // getDb().addMentions(tweets, false);
+
 	        
 	        return TaskResult.OK;
 	    }

@@ -59,4 +59,22 @@ public class BrowseActivity extends TwitterCursorBaseActivity {
 		getDb().markAllTweetsRead(StatusTable.TYPE_BROWSE);
 	}
 
+	@Override
+	public String fetchMinId() {
+		//随便看看没有获取更多的功能
+		return null;
+	}
+
+	@Override
+	public List<Status> getMoreMessageFromId(String minId)
+			throws WeiboException {
+		//随便看看没有获取更多的功能
+		return null;
+	}
+
+	@Override
+	public int getDatabaseType() {
+		return StatusTable.TYPE_BROWSE;
+	}
+
 }

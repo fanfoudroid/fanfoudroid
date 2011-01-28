@@ -109,4 +109,22 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 			return getApi().getFavorites();
 		}
 	}
+
+	@Override
+	public String fetchMinId() {
+		return getDb().fetchMinTweetId(StatusTable.TYPE_FAVORITE);
+	}
+
+	@Override
+	public List<Status> getMoreMessageFromId(String minId)
+			throws WeiboException {
+		Paging paging = new Paging(1, 20);
+		paging.setMaxId(minId);
+		return getApi().getFavorites(paging);
+	}
+
+	@Override
+	public int getDatabaseType() {
+		return StatusTable.TYPE_FAVORITE;
+	}
 }

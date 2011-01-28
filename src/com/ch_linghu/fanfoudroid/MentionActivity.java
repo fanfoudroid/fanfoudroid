@@ -103,7 +103,24 @@ public class MentionActivity extends TwitterCursorBaseActivity {
 
 	@Override
 	public void addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
-		// TODO Auto-generated method stub
 		getDb().putTweets(tweets, StatusTable.TYPE_MENTION, isUnread);
+	}
+
+	@Override
+	public String fetchMinId() {
+		return getDb().fetchMinTweetId(StatusTable.TYPE_MENTION);
+	}
+
+	@Override
+	public List<Status> getMoreMessageFromId(String minId)
+			throws WeiboException {
+		Paging paging = new Paging(1, 20);
+		paging.setMaxId(minId);
+		return getApi().getMentions(paging);
+	}
+
+	@Override
+	public int getDatabaseType() {
+		return StatusTable.TYPE_MENTION;
 	}
 }
