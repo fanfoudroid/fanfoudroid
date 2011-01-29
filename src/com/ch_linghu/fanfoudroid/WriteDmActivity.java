@@ -72,8 +72,9 @@ public class WriteDmActivity extends WithHeaderActivity {
 	private EditText mTweetEditText;
 	private TextView mProgressText;
 	private Button mSendButton;
-	private AutoCompleteTextView mToEdit;
-
+	//private AutoCompleteTextView mToEdit;
+	private TextView mToEdit;
+	
 	// Task
 	private GenericTask mSendTask;
 	
@@ -175,11 +176,14 @@ public class WriteDmActivity extends WithHeaderActivity {
 		
 		StatusDatabase db = getDb();
 
-	    mToEdit = (AutoCompleteTextView) findViewById(R.id.to_edit);
-	    Cursor cursor = db.getFollowerUsernames("");
-	    // startManagingCursor(cursor);
-	    mFriendsAdapter = new FriendsAdapter(this, cursor);
-	    mToEdit.setAdapter(mFriendsAdapter);
+		//FIXME: 暂时取消收件人自动完成功能
+	    //mToEdit = (AutoCompleteTextView) findViewById(R.id.to_edit);
+	    //Cursor cursor = db.getFollowerUsernames("");
+	    //// startManagingCursor(cursor);
+	    //mFriendsAdapter = new FriendsAdapter(this, cursor);
+	    //mToEdit.setAdapter(mFriendsAdapter);
+		
+		mToEdit = (TextView) findViewById(R.id.to_edit);
 	    
 	    // Update status
 		mTweetEdit = new TweetEdit(mTweetEditText,
