@@ -236,7 +236,7 @@ public class Utils {
   public static void setTweetText(TextView textView, String text) {
     String processedText = preprocessText(text);
 	textView.setText(Html.fromHtml(processedText), BufferType.SPANNABLE);
-	Linkify.addLinks(textView, Linkify.WEB_URLS);
+	Linkify.addLinks(textView, Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES);
 	Utils.linkifyUsers(textView);
     Utils.linkifyTags(textView);
     _userLinkMapping.clear();

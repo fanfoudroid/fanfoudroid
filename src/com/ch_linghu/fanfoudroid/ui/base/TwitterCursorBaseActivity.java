@@ -246,11 +246,17 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 
 	@Override
 	protected Tweet getContextItemTweet(int position){
-		Cursor cursor = (Cursor) mTweetAdapter.getItem(position);
-		if (cursor == null){
-			return null;
+		//因为List加了Header，所以要跳过一个
+		if (position >= 1){
+			position = position - 1;
+			Cursor cursor = (Cursor) mTweetAdapter.getItem(position);
+			if (cursor == null){
+				return null;
+			}else{
+				return StatusTable.parseCursor(cursor);
+			}
 		}else{
-			return StatusTable.parseCursor(cursor);
+			return null;
 		}
 	}
 

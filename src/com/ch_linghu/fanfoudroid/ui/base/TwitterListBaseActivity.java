@@ -179,7 +179,7 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
 				.getMenuInfo();
-		Tweet tweet = getContextItemTweet(info.position - 1);	//skip the header
+		Tweet tweet = getContextItemTweet(info.position);
 
 		if (tweet == null) {
 			Log.w(TAG, "Selected item not available.");
@@ -278,7 +278,7 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
-				Tweet tweet = getContextItemTweet(position - 1); // skip the header
+				Tweet tweet = getContextItemTweet(position);
 		
 				if (tweet == null) {
 					Log.w(TAG, "Selected item not available.");

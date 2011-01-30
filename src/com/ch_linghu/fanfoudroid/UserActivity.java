@@ -673,7 +673,11 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
 
     @Override
     protected Tweet getContextItemTweet(int position) {
-    	return (Tweet) mAdapter.getItem(position);
+    	if(position >= 1){
+    		return (Tweet) mAdapter.getItem(position-1);
+    	}else{
+    		return null;
+    	}
     }
 
     @Override
