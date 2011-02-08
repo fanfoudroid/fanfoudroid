@@ -255,7 +255,7 @@ public class Utils {
 	  return bitmap;  
   }   
   
-  private static Pattern PHOTO_PAGE_LINK = Pattern.compile("http://fanfou.com/photo/[-a-zA-Z0-9+&@#%?=~_|!:,.;]*[-a-zA-Z0-9+&@#%=~_|]");
+  private static Pattern PHOTO_PAGE_LINK = Pattern.compile("http://fanfou.com(/photo/[-a-zA-Z0-9+&@#%?=~_|!:,.;]*[-a-zA-Z0-9+&@#%=~_|])");
   private static Pattern PHOTO_SRC_LINK = Pattern.compile("src=\"(http:\\/\\/photo\\.fanfou\\.com\\/.*?)\"");
   /**
    * 获得消息中的照片页面链接
@@ -265,7 +265,8 @@ public class Utils {
   public static String getPhotoPageLink(String text){
 	  Matcher m = PHOTO_PAGE_LINK.matcher(text);
 	  if(m.find()){
-		  return m.group(0);
+		  //return m.group(0);
+		  return "http://m.fanfou.com" + m.group(1);
 	  }else{
 		  return null;
 	  }
