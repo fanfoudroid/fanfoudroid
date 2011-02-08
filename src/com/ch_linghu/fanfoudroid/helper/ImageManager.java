@@ -168,8 +168,8 @@ public class ImageManager implements ImageCache {
      * @param quality image quality 1～100
      * @throws IOException
      */
-    public void put(String url, int quality) throws IOException {
-        if (contains(url)) {
+    public void put(String url, int quality, boolean forceOverride) throws IOException {
+        if (!forceOverride && contains(url)) {
             // Image already exists.
             return;
 
@@ -191,7 +191,7 @@ public class ImageManager implements ImageCache {
      * @throws IOException
      */
     public void put(String url) throws IOException {
-        put(url, DEFAULT_COMPRESS_QUALITY);
+        put(url, DEFAULT_COMPRESS_QUALITY, false);
     }
     
     /**
@@ -199,12 +199,12 @@ public class ImageManager implements ImageCache {
      * @param file
      * @throws IOException
      */
-    public void put(File file, int quality) throws IOException {
+    public void put(File file, int quality, boolean forceOverride) throws IOException {
         if (!file.exists()) {
             Log.w(TAG, file.getName() + " is not exists.");
             return;
         }
-        if (contains(file.getPath())) {
+        if (!forceOverride && contains(file.getPath())) {
             // Image already exists.
             Log.i(TAG, file.getName() + " is exists");
             return;
@@ -369,7 +369,7 @@ public class ImageManager implements ImageCache {
      */
     public File compressImage(File targetFile, int quality) throws IOException {
         
-        put(targetFile, quality); // compress, resize, store 
+        put(targetFile, quality, true); // compress, resize, store 
         
         String filePath = getMd5(targetFile.getPath());
         File compressedImage = mContext.getFileStreamPath(filePath);

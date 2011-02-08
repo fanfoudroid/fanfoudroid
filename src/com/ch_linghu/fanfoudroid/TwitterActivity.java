@@ -133,7 +133,7 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		
 		AdapterView.AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-		Tweet tweet = getContextItemTweet(info.position - 1);	//skip the header
+		Tweet tweet = getContextItemTweet(info.position);
 		
 		if (tweet.userId.equals(getApi().getUserId())){
 			menu.add(0, CONTEXT_DELETE_ID, 0, R.string.cmenu_delete);
@@ -145,7 +145,7 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
 		.getMenuInfo();
-		Tweet tweet = getContextItemTweet(info.position - 1);	//skip the header
+		Tweet tweet = getContextItemTweet(info.position);
 		
 		if (tweet == null) {
 			Log.w(TAG, "Selected item not available.");
