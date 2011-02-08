@@ -16,6 +16,7 @@ import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.MemoryImageCache;
+import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheManager;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -41,19 +42,16 @@ public class SearchActivity extends TwitterListBaseActivity implements
 	private String mSearchQuery;
 	private ArrayList<Tweet> mTweets;
 	private TweetArrayAdapter mAdapter;
-	private MemoryImageCache mImageCache;
 	private int mNextPage = 1;
 
 	private static class State {
 		State(SearchActivity activity) {
 			mTweets = activity.mTweets;
 			mNextPage = activity.mNextPage;
-			mImageCache = activity.mImageCache;
 		}
 
 		public ArrayList<Tweet> mTweets;
 		public int mNextPage;
-		public MemoryImageCache mImageCache;
 	}
 
 	// Tasks.
@@ -116,7 +114,6 @@ public class SearchActivity extends TwitterListBaseActivity implements
 
 		if (state != null) {
 			mTweets = state.mTweets;
-			mImageCache = state.mImageCache;
 			draw();
 		} else {
 			doSearch();
@@ -168,7 +165,7 @@ public class SearchActivity extends TwitterListBaseActivity implements
 	}
 
 	private void draw() {
-		mAdapter.refresh(mTweets, mImageCache);
+		mAdapter.refresh(mTweets);
 	}
 
 	private void doSearch() {
@@ -284,14 +281,6 @@ public class SearchActivity extends TwitterListBaseActivity implements
 		++mNextPage;
 	}
 
-	private synchronized void addImages(MemoryImageCache imageCache) {
-		if (mImageCache == null) {
-			mImageCache = imageCache;
-		} else {
-			mImageCache.putAll(imageCache);
-		}
-	}
-
 	@Override
 	protected String getActivityTitle() {
 		return mSearchQuery;
@@ -332,7 +321,7 @@ public class SearchActivity extends TwitterListBaseActivity implements
 	protected void setupState() {
 		mTweets = new ArrayList<Tweet>();
 		mTweetList = (MyListView) findViewById(R.id.tweet_list);
-		mAdapter = new TweetArrayAdapter(this, mImageCache);
+		mAdapter = new TweetArrayAdapter(this);
 		mTweetList.setAdapter(mAdapter);
 		mTweetList.setOnNeedMoreListener(this);		
 	}

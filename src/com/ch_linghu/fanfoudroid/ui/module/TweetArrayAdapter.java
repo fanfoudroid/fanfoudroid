@@ -8,6 +8,7 @@ import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.helper.ImageCache;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
+import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheManager;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 
 import android.app.Activity;
@@ -30,7 +31,6 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 	private Context mContext;
 	protected LayoutInflater mInflater;
 	protected StringBuilder mMetaBuilder;
-	protected ImageCache mImageCache;
 	
 	private ProfileImageCacheCallback callback = new ProfileImageCacheCallback(){
 
@@ -41,12 +41,11 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 		
 	};
 
-	public TweetArrayAdapter(Context context, ImageCache imageCache) {
+	public TweetArrayAdapter(Context context) {
 		mTweets = new ArrayList<Tweet>();
 		mContext = context;
 		mInflater = LayoutInflater.from(mContext);
 		mMetaBuilder = new StringBuilder();
-		mImageCache = imageCache;
 	}
 
 	@Override
@@ -104,19 +103,15 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 		Utils.setSimpleTweetText(holder.tweetText, tweet.text);
 		// holder.tweetText.setText(tweet.text, BufferType.SPANNABLE);
 
-		if (mImageCache != null) {
-			String profileImageUrl = tweet.profileImageUrl;
+		String profileImageUrl = tweet.profileImageUrl;
 
-			if (useProfileImage){
-				if (!Utils.isEmpty(profileImageUrl)) {
-					holder.profileImage.setImageBitmap(TwitterApplication.mProfileImageCacheManager
-							.get(profileImageUrl, callback));
-				}
-			}else{
-				holder.profileImage.setVisibility(View.GONE);
+		if (useProfileImage){
+			if (!Utils.isEmpty(profileImageUrl)) {
+				holder.profileImage.setImageBitmap(TwitterApplication.mProfileImageCacheManager
+						.get(profileImageUrl, callback));
 			}
 		}else{
-			holder.profileImage.setImageBitmap(ImageCache.mDefaultBitmap);
+			holder.profileImage.setVisibility(View.GONE);
 		}
 
 		holder.metaText.setText(Tweet.buildMetaText(mMetaBuilder,
@@ -131,10 +126,6 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 		return view;
 	}
 
-	public void refresh(ArrayList<Tweet> tweets, ImageCache imageCache) {
-		mImageCache = imageCache;
-		refresh(tweets);
-	}
 
 	public void refresh(ArrayList<Tweet> tweets) {
 		mTweets = tweets;

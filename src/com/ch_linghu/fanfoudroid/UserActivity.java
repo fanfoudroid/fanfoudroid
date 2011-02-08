@@ -26,6 +26,7 @@ import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.User;
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.MemoryImageCache;
+import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -53,8 +54,6 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
   private Boolean mIsFollowing;
   private Boolean mIsFollower = false;
   private int mNextPage = 1;
-  private Bitmap mProfileBitmap;
-  private MemoryImageCache mImageCache;
 
   private static class State {
     State(UserActivity activity) {
@@ -63,8 +62,6 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
       mIsFollowing = activity.mIsFollowing;
       mIsFollower = activity.mIsFollower;
       mNextPage = activity.mNextPage;
-      mProfileBitmap = activity.mProfileBitmap;
-  	  mImageCache = activity.mImageCache;
     }
 
     public ArrayList<Tweet> mTweets;
@@ -72,8 +69,6 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
     public boolean mIsFollowing;
     public boolean mIsFollower;
     public int mNextPage;
-    public Bitmap mProfileBitmap;
-	public MemoryImageCache mImageCache;
   }
 
   // Views.
@@ -84,7 +79,16 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
   private Button mFollowButton;
 
   private TweetArrayAdapter mAdapter;
-
+	private ProfileImageCacheCallback callback = new ProfileImageCacheCallback(){
+	
+		@Override
+		public void refresh(String url, Bitmap bitmap) {
+			mProfileImage.setImageBitmap(bitmap);
+			
+		}
+		
+	};
+	
   // Tasks.
   private GenericTask mRetrieveTask;
   private GenericTask mFriendshipTask;
@@ -249,8 +253,6 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
       mIsFollowing = state.mIsFollowing;
       mIsFollower = state.mIsFollower;
       mNextPage = state.mNextPage;
-      mProfileBitmap = state.mProfileBitmap;
-      mImageCache = state.mImageCache;
 
       draw();
     } else {
@@ -315,13 +317,10 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
     }
 
     private void draw() {
-        if (mProfileBitmap != null) {
-            mProfileImage.setImageBitmap(mProfileBitmap);
-        }
-
-        mAdapter.refresh(mTweets, mImageCache);
+        mAdapter.refresh(mTweets);
 
         if (mUser != null) {
+            mProfileImage.setImageBitmap(TwitterApplication.mProfileImageCacheManager.get(mUser.profileImageUrl, callback));
             mNameText.setText(mUser.name);
         }
 
@@ -662,10 +661,6 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
         ++mNextPage;
     }
 
-    private synchronized void setProfileBitmap(Bitmap bitmap) {
-        mProfileBitmap = bitmap;
-    }
-
     @Override
     protected String getActivityTitle() {
         return "@" + mUsername;
@@ -698,7 +693,7 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
     @Override
     protected void setupState() {
         mTweets = new ArrayList<Tweet>();
-        mAdapter = new TweetArrayAdapter(this, mImageCache);
+        mAdapter = new TweetArrayAdapter(this);
         // Add Header to ListView
         mTweetList = (MyListView) findViewById(R.id.tweet_list);
         View header = View.inflate(this, R.layout.user_header, null);
