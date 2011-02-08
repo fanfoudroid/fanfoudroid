@@ -134,11 +134,6 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 		
 		AdapterView.AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
 		Tweet tweet = getContextItemTweet(info.position);
-
-		if (tweet == null) {
-			Log.w(TAG, "Selected item not available.");
-			return;
-		}
 		
 		if (tweet.userId.equals(getApi().getUserId())){
 			menu.add(0, CONTEXT_DELETE_ID, 0, R.string.cmenu_delete);
