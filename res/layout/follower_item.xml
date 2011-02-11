@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+  android:orientation="horizontal"
+  android:layout_width="fill_parent"
+  android:layout_height="wrap_content"
+  android:padding="5dp"
+>
+
+    <!-- profile image -->
+	<ImageView
+	  android:id="@+id/profile_image"
+	  android:layout_marginTop="2dp"
+	  android:layout_marginLeft="2dp"
+	  android:layout_marginBottom="2dp"
+	  android:layout_marginRight="7dp"
+	  android:layout_width="48dp"
+	  android:layout_height="48dp"
+	/>
+	
+	
+	<LinearLayout 
+	  android:orientation="vertical"
+	  android:layout_width="fill_parent"
+	  android:layout_height="wrap_content"
+	>
+	
+		<LinearLayout 
+		  android:orientation="horizontal"
+		  android:layout_width="fill_parent"
+		  android:layout_height="wrap_content"
+		>
+		    <!-- user name -->
+			<TextView
+			  android:id="@+id/screen_name" 
+			  android:layout_width="wrap_content"
+			  android:layout_height="wrap_content"
+			  style="@style/LinkText.Bold.Big"
+			/>
+		    <!-- user id -->
+			<TextView
+			  android:id="@+id/user_id" 
+			  android:layout_width="wrap_content"
+			  android:layout_height="wrap_content"
+			  android:layout_marginLeft="2dp"
+			  style="@drawable/tweet_meta_color"
+			/>
+		</LinearLayout>		
+		
+		<!-- Last Tweet  -->
+		<TextView
+		  android:id="@+id/last_status" 
+		  android:layout_width="fill_parent"
+		  android:layout_height="wrap_content"
+		  android:textColor="@drawable/tweet_color"        
+		/>		
+	</LinearLayout>
+
+</LinearLayout>

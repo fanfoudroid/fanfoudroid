@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:background="@color/body_background"
+  >
+  
+    <!-- Header -->
+    
+    <!-- Main content area. -->
+    <ListView
+    android:id="@+id/follower_list"
+    android:layout_width="fill_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"
+    android:cacheColorHint="#00000000"
+    android:fadeScrollbars="true"
+    android:divider="#FFCCCCCC"
+    android:dividerHeight="1dip"
+    android:fastScrollEnabled="true"
+    />                
+
+	 <!-- 提示栏 -->
+     <TextView
+     android:id="@+id/progress_text"
+     android:layout_alignParentBottom="true"
+     android:layout_alignParentRight="true"
+     android:visibility="gone"
+     style="@style/statusbar"
+     />
+    
+    
+</LinearLayout>

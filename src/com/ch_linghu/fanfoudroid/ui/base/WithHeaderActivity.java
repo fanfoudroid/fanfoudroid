@@ -16,6 +16,7 @@ import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.R;
+import com.ch_linghu.fanfoudroid.SearchActivity;
 import com.ch_linghu.fanfoudroid.TwitterActivity;
 import com.ch_linghu.fanfoudroid.WriteActivity;
 import com.ch_linghu.fanfoudroid.ui.module.MenuDialog;
@@ -24,6 +25,15 @@ public class WithHeaderActivity extends BaseActivity {
 	
 	private static final String TAG = "WithHeaderActivity";
 	
+	@Override
+	public boolean onSearchRequested() {
+		// TODO Auto-generated method stub
+		Intent intent = new Intent();
+		intent.setClass(this, SearchActivity.class);
+		startActivity(intent);
+		return true;
+	}
+
 	public static final int HEADER_STYLE_HOME  = 1;
 	public static final int HEADER_STYLE_WRITE = 2;
 	public static final int HEADER_STYLE_BACK  = 3;
@@ -113,10 +123,12 @@ public class WithHeaderActivity extends BaseActivity {
 		searchButton  = (ImageButton) findViewById(R.id.search);
 		searchButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				// 旋转动画
-				Animation anim = AnimationUtils.loadAnimation(v.getContext(),
-						R.anim.scale_lite);
-				v.startAnimation(anim);
+//				// 旋转动画
+//				Animation anim = AnimationUtils.loadAnimation(v.getContext(),
+//						R.anim.scale_lite);
+//				v.startAnimation(anim);
+				
+				//NOTE: this method has been overrided now!
 				onSearchRequested();
 			}
 		});

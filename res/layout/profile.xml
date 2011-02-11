@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:orientation="vertical"
+  android:background="@color/body_background"
+  >
+  
+   <!-- Header -->
+   
+   <ScrollView 
+   android:layout_width="fill_parent"
+   android:layout_height="fill_parent"
+   android:layout_weight="1">
+   <LinearLayout android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        >
+       <!-- 个人栏 -->
+        <LinearLayout android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            >
+            <!-- 用户头像 -->
+            <ImageView android:id="@+id/profile_image"
+                android:src="@drawable/user_default_photo"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignParentLeft="true"
+                android:layout_marginRight="10dp" />
+				<LinearLayout 
+				  android:orientation="vertical"
+				  android:layout_width="fill_parent"
+				  android:layout_height="wrap_content"
+	              android:layout_toRightOf="@id/profile_image"
+				>
+				    <!-- 用户名 -->
+					<LinearLayout 
+					  android:orientation="horizontal"
+					  android:layout_width="fill_parent"
+					  android:layout_height="wrap_content"
+					>
+						<TextView
+						  android:id="@+id/screen_name" 
+						  android:layout_width="wrap_content"
+						  android:layout_height="wrap_content"
+			              style="@style/LinkText.Bold.Huge"
+			              android:text="令狐虫"
+						/>
+						<TextView
+						  android:id="@+id/user_id" 
+						  android:layout_width="wrap_content"
+						  android:layout_height="wrap_content"
+						  style="@drawable/tweet_meta_color"
+			              android:text="ch_linghu"
+						/>
+					</LinearLayout>
+					<!-- 所在地 -->
+					<LinearLayout 
+					  android:orientation="horizontal"
+					  android:layout_width="fill_parent"
+					  android:layout_height="wrap_content"
+					>
+						<TextView
+						  android:layout_width="wrap_content"
+						  android:layout_height="wrap_content"
+			              android:text="所在地："
+						/>
+						<TextView
+						  android:id="@+id/user_location" 
+						  android:layout_width="wrap_content"
+						  android:layout_height="wrap_content"
+						  style="@drawable/tweet_meta_color"
+			              android:text="上海"
+						/>
+					</LinearLayout>
+					<!-- 网站 -->		
+					<LinearLayout 
+					  android:orientation="horizontal"
+					  android:layout_width="fill_parent"
+					  android:layout_height="wrap_content"
+					>
+						<TextView
+						  android:layout_width="wrap_content"
+						  android:layout_height="wrap_content"
+			              android:text="网站："
+						/>
+						<TextView
+						  android:id="@+id/user_id" 
+						  android:layout_width="wrap_content"
+						  android:layout_height="wrap_content"
+						  style="@drawable/tweet_meta_color"
+						  android:autoLink="all"
+			              android:text="http://example.com/"
+						/>
+					</LinearLayout>
+		            <!-- 自我描述 -->
+		            <TextView android:id="@+id/tweet_user_info"
+		                android:layout_width="fill_parent"
+		                android:layout_height="wrap_content"
+		                android:text="一个很长的自述：\n
+素胚勾勒出青花筆鋒濃轉淡\n
+瓶身描繪的牡丹一如妳初妝\n
+冉冉檀香透過窗心事我了然\n
+宣紙上走筆至此擱一半\n
+\n
+釉色渲染仕女圖韻味被私藏\n 
+而妳嫣然的一笑如含苞待放\n
+妳的美一縷飄散 去到我去不了的地方\n
+\n
+天青色等煙雨 而我在等妳\n 
+炊煙裊裊昇起 隔江千萬里\n
+在瓶底書漢隸仿前朝的飄逸\n
+就當我為遇見妳伏筆"
+		                 />
+				</LinearLayout>		
+			<!-- 是否保护 -->
+            <ImageButton android:id="@+id/is_proctected"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="8dp"
+                android:src="@drawable/arrow_1" 
+                android:background="@null"
+                />
+        </LinearLayout>
+        <!-- 分割线 -->
+        <LinearLayout
+           android:background="#CCC"
+           android:layout_width="fill_parent"
+           android:layout_height="1dp"
+           />
+        <!-- 功能栏 -->
+		<LinearLayout 
+		  android:orientation="horizontal"
+		  android:layout_width="fill_parent"
+		  android:layout_height="wrap_content"
+		  android:gravity="center_vertical|right"
+		>
+			<!-- 跟随按钮 -->
+			<Button
+			  android:id="@+id/btn_follow"
+			  android:layout_width="wrap_content"
+			  android:layout_height="wrap_content"
+              android:text="跟随"
+			/>
+			<!-- Block -->
+			<Button
+			  android:id="@+id/btn_block" 
+			  android:layout_width="wrap_content"
+			  android:layout_height="wrap_content"
+              android:text="阻止"
+			/>
+		</LinearLayout>
+        
+        <!-- 消息数 -->
+        <Button android:id="@+id/btn_tweets"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="令狐虫的消息(1024)"
+            />
+        <!-- ta关注的人 -->
+        <Button android:id="@+id/btn_following"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="令狐虫关注的人(128)"
+            />
+        <!-- 关注ta的人 -->
+        <Button android:id="@+id/btn_following"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="关注令狐虫的人(256)"
+            /> 
+     </LinearLayout>
+   </ScrollView>
+   
+</LinearLayout>

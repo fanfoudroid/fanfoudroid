@@ -11,6 +11,7 @@ public class User {
   public String description = "";
   public String profileImageUrl = "";
   public String url = "";
+  public String lastStatus;
 
   public static User create(com.ch_linghu.fanfoudroid.weibo.User u){
     User user = new User();
@@ -24,6 +25,7 @@ public class User {
     if (u.getURL() != null){
     	user.url = u.getURL().toString();
     }
+    user.lastStatus = u.getStatusText();
         
     return user;
   }  

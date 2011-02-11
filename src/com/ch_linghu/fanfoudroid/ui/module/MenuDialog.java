@@ -37,7 +37,10 @@ import android.widget.Toast;
 import com.ch_linghu.fanfoudroid.BrowseActivity;
 import com.ch_linghu.fanfoudroid.DmActivity;
 import com.ch_linghu.fanfoudroid.FavoritesActivity;
+import com.ch_linghu.fanfoudroid.FollowersActivity;
+import com.ch_linghu.fanfoudroid.FollowingActivity;
 import com.ch_linghu.fanfoudroid.MentionActivity;
+import com.ch_linghu.fanfoudroid.ProfileActivity;
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.TwitterActivity;
 
@@ -170,14 +173,14 @@ public class MenuDialog extends Dialog {
 //					goTo(HomeActivity.class);
 					break;
 				case PAGE_PROFILE:
-//					goTo(ProfileActivity.class);
+					goTo(ProfileActivity.class);
 					break;
 				case PAGE_FOLLOWERS:
-//					goTo(FollowersActivity.class);
+					goTo(FollowersActivity.class);
 					break;
 				case PAGE_FOLLOWING:
 				    //TODO: 完成关注者页面
-//					goTo(FollowingActivity.class);
+					goTo(FollowingActivity.class);
 					break;
 				case PAGE_HOME:
 					goTo(TwitterActivity.class);
