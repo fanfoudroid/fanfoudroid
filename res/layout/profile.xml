@@ -116,16 +116,6 @@
 就當我為遇見妳伏筆"
 		                 />
 				</LinearLayout>		
-			<!-- 是否保护 -->
-            <ImageButton android:id="@+id/is_proctected"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="8dp"
-                android:src="@drawable/arrow_1" 
-                android:background="@null"
-                />
         </LinearLayout>
         <!-- 分割线 -->
         <LinearLayout
@@ -140,6 +130,13 @@
 		  android:layout_height="wrap_content"
 		  android:gravity="center_vertical|right"
 		>
+			<!-- 是否保护 -->
+            <ImageView android:id="@+id/is_proctected"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:src="@android:drawable/ic_lock_idle_lock" 
+                />
 			<!-- 跟随按钮 -->
 			<Button
 			  android:id="@+id/btn_follow"
