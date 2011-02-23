@@ -46,6 +46,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
@@ -163,6 +164,7 @@ public class WriteActivity extends WithHeaderActivity {
 			//String filename = extras.getString("filename");
 			//mFile = new File(filename);
 			//TODO: 需要进一步细化
+			//TODO:想将图片放在EditText左边
 			mFile = bitmapToFile(createThumbnailBitmap(mImageUri, 800));
 			mPreview.setImageBitmap(createThumbnailBitmap(mImageUri,
 					MAX_BITMAP_SIZE));
@@ -194,13 +196,14 @@ public class WriteActivity extends WithHeaderActivity {
 	}
 
 	private void changeStyleWithPic() {
-		mPreview.setLayoutParams(
-			new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 1f)
-		);
+		//修改布局 ，以前 图片居中，现在在左边
+//		mPreview.setLayoutParams(
+//			new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT)
+//		);
 		mPreview.setVisibility(View.VISIBLE);
 		mTweetEditText.setLayoutParams(
-			new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 2f)
-		);
+				new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 2f)
+			);
 	}
 
 	/**
