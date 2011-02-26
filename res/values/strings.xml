@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
     <string name="app_name">安能饭否</string>
     
@@ -88,6 +88,15 @@
 	<string name="direct_message_label_from_prefix">来自: </string>
 	<string name="direct_message_label_to_prefix">发给: </string>
 
+	<!-- 用户信息页面profile -->
+	<string name="profile_user_location_title">所在地:</string>
+	<string name="profile_user_url_title">饭否主页:</string>
+	<string name="profile_friends_count_title">收听</string>
+	<string name="profile_followers_count_title">听众</string>
+	<string name="profile_statuses_count_title">消息</string>
+	<string name="profile_favourites_count_title">收藏</string>
+	<string name="profile_description_null">用户未设置自述</string>
+	
 	<!-- 设置页面  -->
     <string name="pref_title_notifications">后台提示</string>
     <string name="pref_title_apperance">外观</string>
@@ -113,7 +122,7 @@
     <string name="pref_check_updates_vibrate_summary">有新消息提示时手机振动</string>
 
     <string name="pref_check_updates_ringtone_title">选择提示铃音</string>
-    <string name="pref_check_updates_ringtone_summary"></string>
+    <string name="pref_check_updates_ringtone_summary"/>
     
     <string name="pref_use_profile_image">用户头像</string>
     <string name="pref_use_profile_image_summary">是否显示用户头像</string>
