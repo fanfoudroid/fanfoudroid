@@ -401,7 +401,7 @@ public class ImageManager implements ImageCache {
         if (originWidth > maxWidth) {
             width = maxWidth;
             
-            double i = originWidth / maxWidth;
+            double i = originWidth * 1.0 / maxWidth;
             height = (int) Math.floor(originHeight / i);
         
             bitmap = Bitmap.createScaledBitmap(bitmap, width, height, false);
