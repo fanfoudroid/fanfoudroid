@@ -223,7 +223,7 @@ public class StatusDatabase {
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         
         String where = StatusTable._ID + " =? "; 
-        if (-1 == type) {
+        if (-1 != type) {
            where  += " AND " + StatusTable.FIELD_STATUS_TYPE + " = " + type;
         }
 
