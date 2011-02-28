@@ -26,20 +26,46 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package com.ch_linghu.fanfoudroid.weibo;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 import com.ch_linghu.fanfoudroid.http.Response;
 
-
+/**
+ * 模仿JSONObject的XML实现
+ * @author jmx
+ *
+ */
+class XmlObject{
+	private String str;
+	public XmlObject(String s){
+		this.str = s;
+	}
+	
+	//FIXME: 这里用的是一个专有的ugly实现
+	public String getString(String name) throws Exception {
+		Pattern p = Pattern.compile(String.format("<%s>(.*?)</%s>", name, name));
+		Matcher m = p.matcher(this.str);
+		if (m.find()){
+			return m.group(1);
+		}else{
+			throw new Exception(String.format("<%s> value not found", name));
+		}
+	}
+	
+	@Override
+	public String toString(){
+		return this.str;
+	}
+}
 /**
  * 服务器响应的错误信息
  */
@@ -57,10 +83,24 @@ public class RefuseError extends WeiboResponse implements java.io.Serializable {
     private static final long serialVersionUID = -2105422180879273058L;
     
     public RefuseError(Response res) throws WeiboException {
-        this(res.asJSONObject());
+    	String error = res.asString();
+    	try{
+    		//先尝试作为json object进行处理
+    		JSONObject json = new JSONObject(error);
+    		init(json);
+    	}catch(Exception e1){
+    		//如果失败，则作为XML再进行处理
+    		try{
+    			 XmlObject xml = new XmlObject(error);
+    			 init(xml);
+    		}catch(Exception e2){
+    			//再失败就作为普通字符串进行处理，这个处理保证不会出错
+    			init(error);
+    		}
+    	}
     }
 
-    public RefuseError(JSONObject json) throws WeiboException {
+    public void init(JSONObject json) throws WeiboException {
         try {
            mRequestUrl = json.getString("request");
            mResponseError = json.getString("error");
@@ -68,6 +108,22 @@ public class RefuseError extends WeiboResponse implements java.io.Serializable {
        } catch (JSONException je) {
            throw new WeiboException(je.getMessage() + ":" + json.toString(), je);
        }
+    }
+
+    public void init(XmlObject xml) throws WeiboException {
+        try {
+            mRequestUrl = xml.getString("request");
+            mResponseError = xml.getString("error");
+            parseError(mResponseError);
+        } catch (Exception e) {
+            throw new WeiboException(e.getMessage() + ":" + xml.toString(), e);
+        }
+    }
+
+    public void init(String error){
+       mRequestUrl = "";
+       mResponseError = error;
+       parseError(mResponseError);
     }
     
     private void parseError(String error) {
