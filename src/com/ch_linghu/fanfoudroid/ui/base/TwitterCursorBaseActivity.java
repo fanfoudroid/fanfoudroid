@@ -61,6 +61,9 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 	protected ListView mTweetList;
 	protected TweetCursorAdapter mTweetAdapter;
 	
+	protected View mListHeader;
+	protected View mListFooter;
+	
 	protected TextView loadMoreBtn;
 	protected ProgressBar loadMoreGIF;
 	protected TextView loadMoreBtnTop;
@@ -194,9 +197,9 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 	protected void setupListHeader(boolean addFooter) {
         
         // Add Header to ListView
-        View header = View.inflate(this, R.layout.listview_header, null);
-        mTweetList.addHeaderView(header, null, true);
-        header.setOnClickListener(new View.OnClickListener() {
+        mListHeader = View.inflate(this, R.layout.listview_header, null);
+        mTweetList.addHeaderView(mListHeader, null, true);
+        mListHeader.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 loadMoreGIFTop.setVisibility(View.VISIBLE);
@@ -205,9 +208,9 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
         });
         
         //TODO: 完成listView顶部和底部的事件绑定
-        View footer = View.inflate(this, R.layout.listview_footer, null);
-        mTweetList.addFooterView(footer, null, true);
-        footer.setOnClickListener(new View.OnClickListener() {
+        mListFooter = View.inflate(this, R.layout.listview_footer, null);
+        mTweetList.addFooterView(mListFooter, null, true);
+        mListFooter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 loadMoreGIF.setVisibility(View.VISIBLE);
