@@ -26,12 +26,19 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
+import android.view.View.OnCreateContextMenuListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.helper.ImageCache;
@@ -58,10 +65,14 @@ public class StatusActivity extends WithHeaderActivity{
 	private static final String EXTRA_TWEET = "tweet";
 	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.STATUS";
 	
+	static final private int CONTEXT_SHARE_ID = 0x0001;
+	static final private int CONTEXT_DELETE_ID = 0x0002;
+
 	// Task TODO: tasks 
 	private GenericTask mStatusTask; 
 	private GenericTask mPhotoTask; //TODO: 压缩图片，提供获取图片的过程中可取消获取
 	private GenericTask mFavTask;
+	private GenericTask mDeleteTask;
 	
 	private TaskListener mStatusTaskListener = new TaskAdapter(){
         @Override
@@ -112,7 +123,24 @@ public class StatusActivity extends WithHeaderActivity{
 			}
 		}
     };
-	
+	private TaskListener mDeleteTaskListener = new TaskAdapter(){
+
+		@Override
+		public String getName() {
+			return "DeleteTask";
+		}
+
+		@Override
+		public void onPostExecute(GenericTask task, TaskResult result) {
+			if (result == TaskResult.AUTH_ERROR) {
+				logout();
+			} else if (result == TaskResult.OK) {
+				onDeleteSuccess();
+			} else if (result == TaskResult.IO_ERROR) {
+				onDeleteFailure();
+			}
+		}
+	};	
 	// View
 	private TextView tweet_screen_name; 
 	private TextView tweet_text; 
@@ -248,9 +276,11 @@ public class StatusActivity extends WithHeaderActivity{
         });
 		
 		//TODO: 更多操作
+		registerForContextMenu(footer_btn_more);
 		footer_btn_more.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+            	openContextMenu(v);
             }
         });
 	}
@@ -535,4 +565,48 @@ public class StatusActivity extends WithHeaderActivity{
         // updateProgress(getString(R.string.refreshing));
     }
 
+	private void doDelete(String id) {
+		
+		if (mDeleteTask != null && mDeleteTask.getStatus() == GenericTask.Status.RUNNING){
+			return;
+		}else{
+			mDeleteTask = new TweetCommonTask.DeleteTask(this);
+			mDeleteTask.setListener(mDeleteTaskListener);
+			
+			TaskParams params = new TaskParams();
+			params.put("id", id);
+			mDeleteTask.execute(params);
+		}
+	}    
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		switch(item.getItemId()){
+			case CONTEXT_SHARE_ID:
+				Intent intent = new Intent(Intent.ACTION_SEND);
+				intent.setType("text/plain");
+				intent.putExtra(Intent.EXTRA_TEXT, 
+						String.format("@%s: %s", 
+								tweet.userId, 
+								Utils.getSimpleTweetText(tweet.text)));
+				startActivity(Intent.createChooser(intent, getString(R.string.cmenu_share)));
+				return true;
+			case CONTEXT_DELETE_ID:
+				doDelete(tweet.id);
+				return true;
+		}
+		return super.onContextItemSelected(item);
+	}
+	
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		menu.setHeaderIcon(android.R.drawable.ic_menu_more);
+		menu.setHeaderTitle(getString(R.string.cmenu_more));
+		
+		menu.add(0, CONTEXT_SHARE_ID, 0, R.string.cmenu_share);
+		if (tweet.userId.equals(getApi().getUserId())){
+			menu.add(0, CONTEXT_DELETE_ID, 0, R.string.cmenu_delete);
+		}
+	}
 }
