@@ -149,7 +149,7 @@ public class WriteActivity extends WithHeaderActivity {
 		alert.show();
 	}
 
-	private void getPic(Intent intent, Bundle extras) {
+	private void getPic(Intent intent, Uri uri) {
 		
 		//  Cann't insert two pictures
 		chooseImagesButton.setEnabled(false);
@@ -159,16 +159,23 @@ public class WriteActivity extends WithHeaderActivity {
 		withPic = true;
 		mFile = null;
 
-		if (Intent.ACTION_SEND.equals(intent.getAction()) && extras != null) {
-			mImageUri = (Uri) extras.getParcelable("uri");
-			//String filename = extras.getString("filename");
-			//mFile = new File(filename);
-			//TODO: 需要进一步细化
-			//TODO:想将图片放在EditText左边
-			mFile = bitmapToFile(createThumbnailBitmap(mImageUri, 800));
-			mPreview.setImageBitmap(createThumbnailBitmap(mImageUri,
-					MAX_BITMAP_SIZE));
-		}
+		
+    	if (uri.getScheme().equals("content")){
+    		mImageUri = uri;
+    	} else {
+    		//suppose that we got a file:// URI, convert it to content:// URI
+    		String path = uri.getPath();
+    		File file = new File(path);
+    		mImageUri = Uri.fromFile(file);
+    	}
+
+		//String filename = extras.getString("filename");
+		//mFile = new File(filename);
+		//TODO: 需要进一步细化
+		//TODO:想将图片放在EditText左边
+		mFile = bitmapToFile(createThumbnailBitmap(mImageUri, 800));
+		mPreview.setImageBitmap(createThumbnailBitmap(mImageUri,
+				MAX_BITMAP_SIZE));
 
 		if (mFile == null) {
 			updateProgress("Could not locate picture file. Sorry!");
@@ -263,6 +270,12 @@ public class WriteActivity extends WithHeaderActivity {
 		Intent intent = getIntent();
 		String action = intent.getAction();
 		Bundle extras = intent.getExtras();
+		String text = null;
+		Uri uri = null;
+		if(extras != null){
+			text = extras.getString(Intent.EXTRA_TEXT);
+			uri = (Uri)(extras.get(Intent.EXTRA_STREAM));
+		}
 
 		_reply_id = null;
 		_repost_id = null;
@@ -282,8 +295,8 @@ public class WriteActivity extends WithHeaderActivity {
 
 		// With picture
 		mPreview = (ImageView) findViewById(R.id.preview);
-		if (Intent.ACTION_SEND.equals(intent.getAction()) && extras != null) {
-			getPic(intent, extras);
+		if (Intent.ACTION_SEND.equals(intent.getAction()) && uri != null) {
+			getPic(intent, uri);
 		}
 
 		// Update status
@@ -293,8 +306,8 @@ public class WriteActivity extends WithHeaderActivity {
 		mTweetEdit
 				.addTextChangedListener(new MyTextWatcher(WriteActivity.this));
 
+		mTweetEdit.setText(text);
 		if (NEW_TWEET_ACTION.equals(action)) {
-			mTweetEdit.setText(intent.getStringExtra(EXTRA_TEXT));
 			_reply_id = intent.getStringExtra(EXTRA_REPLY_ID);
 		}
 		
@@ -305,7 +318,7 @@ public class WriteActivity extends WithHeaderActivity {
 		    boolean isAppendToTheEnd = prefereces.getBoolean(Preferences.RT_INSERT_APPEND, true);
 		    
 		    EditText inputField = mTweetEdit.getEditText();
-			inputField.setTextKeepState(intent.getStringExtra(EXTRA_TEXT));
+			inputField.setTextKeepState(text);
 		    
 		    Editable etext = inputField.getText();
 		    int position = (isAppendToTheEnd) ? etext.length() : 1;  
@@ -391,7 +404,7 @@ public class WriteActivity extends WithHeaderActivity {
 	public static Intent createNewReplyIntent(String screenName, String replyId) {
 		String replyTo = "@" + screenName + " ";
         Intent intent = new Intent(WriteActivity.NEW_TWEET_ACTION);
-        intent.putExtra(WriteActivity.EXTRA_TEXT, replyTo);
+        intent.putExtra(Intent.EXTRA_TEXT, replyTo);
         intent.putExtra(WriteActivity.EXTRA_REPLY_ID, replyId);
         
         return intent;
@@ -409,7 +422,7 @@ public class WriteActivity extends WithHeaderActivity {
                 + " "
                 + Utils.getSimpleTweetText(tweetText);
         Intent intent = new Intent(WriteActivity.REPOST_TWEET_ACTION);
-        intent.putExtra(WriteActivity.EXTRA_TEXT, retweet);
+        intent.putExtra(Intent.EXTRA_TEXT, retweet);
         intent.putExtra(WriteActivity.EXTRA_REPOST_ID, repostId);
         
         return intent;

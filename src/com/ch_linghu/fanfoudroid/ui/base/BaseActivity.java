@@ -278,36 +278,28 @@ public class BaseActivity extends Activity {
       handleLoggedOut();
     } else if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK){
     	Intent intent = new Intent(Intent.ACTION_SEND);
-    	Bundle bundle = new Bundle();
-    	bundle.putParcelable("uri", mImageUri);
-    	bundle.putString("filename", mImageFile.getPath());
+    	intent.putExtra(Intent.EXTRA_STREAM, mImageUri);
+//    	Bundle bundle = new Bundle();
+//    	bundle.putParcelable("uri", mImageUri);
+//    	bundle.putString("filename", mImageFile.getPath());
     	
     	intent.setClass(this, WriteActivity.class);
-    	intent.putExtras(bundle);
+//    	intent.putExtras(bundle);
         startActivity(intent);  
         
         //打开发送图片界面后将自身关闭
         finish();
     } else if (requestCode == REQUEST_PHOTO_LIBRARY && resultCode == RESULT_OK){
     	mImageUri = data.getData();
-    	if (mImageUri.getScheme().equals("content")){
-        	String filePath = getRealPathFromURI(mImageUri);
-        	mImageFile = new File(filePath);    	
-    	}else{
-    		//suppose that we got a file:// URI, convert it to content:// URI
-    		String filePath = mImageUri.getPath();
-    		mImageFile = new File(filePath);
-    		mImageUri = Uri.fromFile(mImageFile);
-    	}
 
     	Intent intent = new Intent(Intent.ACTION_SEND);
-    	Bundle bundle = new Bundle();
-    	bundle.putParcelable("uri", mImageUri);
-    	bundle.putString("filename", mImageFile.getPath());
+    	intent.putExtra(Intent.EXTRA_STREAM, mImageUri);
+//    	Bundle bundle = new Bundle();
+//    	bundle.putParcelable("uri", mImageUri);
+//    	bundle.putString("filename", mImageFile.getPath());
     	
-//    	intent.setClass(this, PictureActivity.class);
     	intent.setClass(this, WriteActivity.class);
-    	intent.putExtras(bundle);
+//    	intent.putExtras(bundle);
         startActivity(intent);  	
 
         //打开发送图片界面后将自身关闭
