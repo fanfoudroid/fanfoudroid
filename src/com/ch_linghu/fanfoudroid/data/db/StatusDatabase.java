@@ -71,6 +71,9 @@ public class StatusDatabase {
             db.execSQL(StatusTable.CREATE_TABLE);
             db.execSQL(MessageTable.CREATE_TABLE);
             db.execSQL(FollowTable.CREATE_TABLE);
+            
+            //2011.03.01 add beta
+            db.execSQL(UserInfoTable.CREATE_TABLE);
         }
 
         @Override
@@ -95,6 +98,9 @@ public class StatusDatabase {
             db.execSQL("DROP TABLE IF EXISTS " + StatusTable.TABLE_NAME);
             db.execSQL("DROP TABLE IF EXISTS " + MessageTable.TABLE_NAME);
             db.execSQL("DROP TABLE IF EXISTS " + FollowTable.TABLE_NAME);
+            
+            //2011.03.01 add
+            db.execSQL("DROP TABLE IF EXISTS "+UserInfoTable.TABLE_NAME);
         }
     }
 
@@ -132,6 +138,9 @@ public class StatusDatabase {
         db.execSQL("DELETE FROM " + StatusTable.TABLE_NAME);
         db.execSQL("DELETE FROM " + MessageTable.TABLE_NAME);
         db.execSQL("DELETE FROM " + FollowTable.TABLE_NAME);
+        
+        //2011.03.01 add
+        db.execSQL("DELETE FROM "+UserInfoTable.TABLE_NAME);
     }
 
     /**
@@ -800,5 +809,99 @@ public class StatusDatabase {
             mDb.endTransaction();
         }
     }
+    
+    //2011.03.01 add 
+    //UserInfo操作
+    
+    public Cursor getAllUserInfo(){
+    	SQLiteDatabase mDb=mOpenHelper.getReadableDatabase();
+    	return mDb.query(UserInfoTable.TABLE_NAME,UserInfoTable.TABLE_COLUMNS, null, null, null, null, null);
+    }
+    /**
+     * 根据id列表获取user数据
+     * @param userIds
+     * @return
+     */
+    public Cursor getUserInfoByIds(String[] userIds){
+    	SQLiteDatabase mDb=mOpenHelper.getReadableDatabase();
+    	String userIdStr="";
+    	for(String id:userIds){
+    		userIdStr+="'"+id+"',";
+    	}
+    	userIdStr.substring(0, userIdStr.lastIndexOf(","));//删除最后的逗号
+    	return mDb.query(UserInfoTable.TABLE_NAME, UserInfoTable.TABLE_COLUMNS, UserInfoTable.FIELD_USER_NAME+" in ("+userIdStr+")", null, null, null, null);
+    	
+    }
+    
+    /**
+     * 新建用户
+     * 
+     * @param user
+     * @return the row ID of the newly inserted row, or -1 if an error occurred
+     */
+    public long createUserInfo(com.ch_linghu.fanfoudroid.data.User user) {
+        SQLiteDatabase mDb = mOpenHelper.getWritableDatabase();
+
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(UserInfoTable._ID, user.id);
+        initialValues.put(UserInfoTable.FIELD_USER_NAME, user.name);
+        initialValues.put(UserInfoTable.FIELD_USER_SCREEN_NAME, user.screenName);
+        initialValues.put(UserInfoTable.FIELD_LOCALTION, user.location);
+        initialValues.put(UserInfoTable.FIELD_DESCRIPTION, user.description);
+        initialValues.put(UserInfoTable.FIELD_PROFILE_IMAGE_URL, user.profileImageUrl);
+        initialValues.put(UserInfoTable.FIELD_URL, user.url);
+        initialValues.put(UserInfoTable.FIELD_PROTECTED, user.isProtected);
+        initialValues.put(UserInfoTable.FIELD_FOLLOWERS_COUNT, user.followersCount);
+        initialValues.put(UserInfoTable.FIELD_LAST_STATUS, user.lastStatus);
+        initialValues.put(UserInfoTable.FIELD_FRIENDS_COUNT, user.friendsCount);
+        initialValues.put(UserInfoTable.FIELD_FAVORITES_COUNT, user.favoritesCount);
+        initialValues.put(UserInfoTable.FIELD_STATUSES_COUNT, user.statusesCount);
+        initialValues.put(UserInfoTable.FIELD_FOLLOWING, user.isFollowing);
+        
+        
+        long rowId = mDb.insert(UserInfoTable.TABLE_NAME, null, initialValues);
+        if (-1 == rowId) {
+            Log.e(TAG, "Cann't create Follower : " + user.id);
+        } else {
+            Log.i(TAG, "create create follower : " + user.id);
+        }
+        return rowId;
+    }
+    /**
+     * 查看数据是否已保存用户数据
+     * @param userId
+     * @return
+     */
+    public boolean existsUser(String userId) {
+        SQLiteDatabase Db = mOpenHelper.getReadableDatabase();
+        boolean result = false;
+
+        Cursor cursor = Db.query(UserInfoTable.TABLE_NAME,
+                new String[] { UserInfoTable._ID }, UserInfoTable._ID +"='"+userId+"'",
+                null, null, null, null);
+        Log.i("testesetesteste", String.valueOf(cursor.getCount()));
+        if (cursor != null && cursor.getCount() > 0) {
+            result = true;
+        }
+
+        cursor.close();
+        return result;
+    }
+    
+    /**
+     * 根据userid提取信息
+     * @param userId
+     * @return
+     */
+    public Cursor getUserInfoById(String userId){
+    	  SQLiteDatabase Db = mOpenHelper.getReadableDatabase();
+
+          Cursor cursor = Db.query(UserInfoTable.TABLE_NAME,
+                  UserInfoTable.TABLE_COLUMNS, UserInfoTable._ID + " = '" +userId+"'",
+                  null, null, null, null);
+
+        return cursor;
+    }
+    
 
 }

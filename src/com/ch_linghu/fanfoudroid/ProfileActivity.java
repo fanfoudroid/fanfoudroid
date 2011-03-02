@@ -1,8 +1,13 @@
 package com.ch_linghu.fanfoudroid;
 
 import java.net.URL;
+import java.text.ParseException;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
+import com.ch_linghu.fanfoudroid.data.db.StatusDatabase;
+import com.ch_linghu.fanfoudroid.data.db.UserInfoTable;
+import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.MessageTable;
+import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
@@ -17,8 +22,12 @@ import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -33,6 +42,8 @@ import android.widget.Toast;
  */
 public class ProfileActivity extends WithHeaderActivity {
 	private static final String TAG = "ProfileActivity";
+	private static final String LAUNCH_ACTION = "";
+	private String userid;
 	private GenericTask profileImageTask;// 获取用户图片
 	private GenericTask profileInfoTask;// 获取用户信息
 	private User profileInfo;// 用户信息
@@ -57,12 +68,22 @@ public class ProfileActivity extends WithHeaderActivity {
 	private ProgressDialog dialog;
 
 	private static final String FANFOUROOT = "http://fanfou.com/";
+	private static final String USER_ID = "userid";
 
+	private StatusDatabase db;
+
+	public static Intent createIntent(String userid) {
+		Intent intent = new Intent(LAUNCH_ACTION);
+		intent.putExtra(USER_ID, userid);
+		return intent;
+	}
+
+	// 暂时没用
 	private ProfileImageCacheCallback callback = new ProfileImageCacheCallback() {
 
 		@Override
 		public void refresh(String url, Bitmap bitmap) {
-			profileImageView.refreshDrawableState();
+			// profileImageView.refreshDrawableState();
 		}
 
 	};
@@ -70,17 +91,24 @@ public class ProfileActivity extends WithHeaderActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
+		Log.d(TAG, "OnCreate start");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.myprofile);
-		initHeader(HEADER_STYLE_BACK);
-		// try {
-		// //User showUser = getApi().showUser(getApi().getUserId());
-		// //Toast.makeText(this, showUser.getName(), Toast.LENGTH_LONG).show();
-		// } catch (WeiboException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
+		initHeader(HEADER_STYLE_HOME);
+
+		// Intent intent = getIntent();
+		// Bundle extras = intent.getExtras();
+		// this.userid=extras.getString(USER_ID);
+		// 初始化控件
 		initControls();
+		// 获取登录用户id
+		SharedPreferences preferences = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		this.userid = preferences.getString(Preferences.CURRENT_USER_ID,
+				getApi().getUserId());
+		// this.userid = getApi().getUserId();
+		Log.i(TAG, "the userid is " + userid);
+		db = this.getDb();
 		draw();
 	}
 
@@ -132,17 +160,29 @@ public class ProfileActivity extends WithHeaderActivity {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
+				Intent favoritesActivity = new Intent();
+				favoritesActivity.setClass(ProfileActivity.this,
+						FavoritesActivity.class);
+				startActivity(favoritesActivity);
 
 			}
 		});
+
+		// 刷新
+		View.OnClickListener refreshListener = new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				doGetProfileInfo();
+			}
+		};
+
+		refreshButton.setOnClickListener(refreshListener);
 	}
 
 	private void draw() {
 		Log.i(TAG, "draw");
-		dialog = ProgressDialog.show(ProfileActivity.this, "", "数据加载中....");
-		doGetProfileInfo();
-
+		bindProfileInfo();
+		//doGetProfileInfo();
 	}
 
 	@Override
@@ -154,9 +194,9 @@ public class ProfileActivity extends WithHeaderActivity {
 
 	@Override
 	protected void onStart() {
-
 		super.onStart();
 		Log.i(TAG, "onStart.");
+
 	}
 
 	@Override
@@ -166,9 +206,42 @@ public class ProfileActivity extends WithHeaderActivity {
 		Log.i(TAG, "onStop.");
 	}
 
+	/**
+	 * 从数据库获取,如果数据库不存在则创建
+	 */
+	private void bindProfileInfo(){
+		
+		if (null != db && db.existsUser(userid)) {
+
+			Cursor cursor = db.getUserInfoById(userid);
+			profileInfo = User.parseUser(cursor);
+			cursor.close();
+			if (profileInfo == null) {
+				Log.w(TAG, "cannot get userinfo from userinfotable the id is"
+						+ userid);
+			}
+		} else {
+			try {
+				profileInfo = getApi().showUser(userid);
+				com.ch_linghu.fanfoudroid.data.User userinfodb = profileInfo
+						.parseUser();
+				db.createUserInfo(userinfodb);
+				
+			} catch (WeiboException e) {//获取数据失败
+				Log.e(TAG, "get data error");
+				//e.printStackTrace();
+				Toast.makeText(getBaseContext(), "获取个人信息失败", Toast.LENGTH_SHORT).show();
+			}
+		}
+		bindControl();
+		
+	}
+	/**
+	 * 从api获取
+	 */
 	private void doGetProfileInfo() {
 		// 旋转刷新按钮
-		// animRotate(refreshButton);
+		animRotate(refreshButton);
 
 		if (profileInfoTask != null
 				&& profileInfoTask.getStatus() == GenericTask.Status.RUNNING) {
@@ -181,9 +254,12 @@ public class ProfileActivity extends WithHeaderActivity {
 		}
 	}
 
+	/**
+	 * FIXME:不从网上获取图片
+	 * @param imageUrl
+	 */
 	private void doGetProfileImage(String imageUrl) {
-		// 旋转刷新按钮
-		// animRotate(refreshButton);
+	
 		if (profileImageTask != null
 				&& profileImageTask.getStatus() == GenericTask.Status.RUNNING) {
 			return;
@@ -198,46 +274,52 @@ public class ProfileActivity extends WithHeaderActivity {
 		}
 	}
 
+	private void bindControl(){
+		setHeaderTitle("@" + profileInfo.getScreenName());
+		// Toast.makeText(getBaseContext(),
+		// "用户名:"+profileInfo.getName(), Toast.LENGTH_LONG).show();
+		profileName.setText(profileInfo.getId());
+		profileScreenName.setText(profileInfo.getScreenName());
+		userLocation.setText(profileInfo.getLocation());
+		if (profileInfo.getURL() != null) {
+			userUrl.setText(profileInfo.getURL().toString());
+		} else {
+			userUrl.setText(FANFOUROOT + profileInfo.getId());
+		}
+		if (profileInfo.getDescription() != null
+				&& profileInfo.getDescription() == "") {
+			userInfo.setText(R.string.profile_description_null);
+		} else {
+			userInfo.setText(profileInfo.getDescription());
+		}
+
+		friendsCount.setText(String.valueOf(profileInfo
+				.getFriendsCount()));
+		followersCount.setText(String.valueOf(profileInfo
+				.getFollowersCount()));
+		statusCount.setText(String.valueOf(profileInfo
+				.getStatusesCount()));
+		favouritesCount.setText(String.valueOf(profileInfo
+				.getFavouritesCount()));
+	}
 	private TaskListener profileInfoTaskListener = new TaskAdapter() {
 		@Override
 		public void onPostExecute(GenericTask task, TaskResult result) {
 			// 加载成功
 			if (result == TaskResult.OK) {
-
-				if (profileInfo != null) {
-					String imageurl = profileInfo.getProfileImageURL()
-							.toString();
-					doGetProfileImage(imageurl);
-				}
-
-				// Toast.makeText(getBaseContext(),
-				// "用户名:"+profileInfo.getName(), Toast.LENGTH_LONG).show();
-				profileName.setText(profileInfo.getId());
-				profileScreenName.setText(profileInfo.getScreenName());
-				userLocation.setText(profileInfo.getLocation());
-				if (profileInfo.getURL() != null) {
-					userUrl.setText(profileInfo.getURL().toString());
-				} else {
-					userUrl.setText(FANFOUROOT + profileInfo.getId());
-				}
-				if (profileInfo.getDescription() != null
-						&& profileInfo.getDescription() == "") {
-					userInfo.setText(R.string.profile_description_null);
-				} else {
-					userInfo.setText(profileInfo.getDescription());
-				}
-
-				friendsCount.setText(String.valueOf(profileInfo
-						.getFriendsCount()));
-				followersCount.setText(String.valueOf(profileInfo
-						.getFollowersCount()));
-				statusCount.setText(String.valueOf(profileInfo
-						.getStatusesCount()));
-				favouritesCount.setText(String.valueOf(profileInfo
-						.getFavouritesCount()));
-				if (dialog != null) {
-					dialog.dismiss();
-				}
+				bindControl();
+				
+				
+//				if (dialog != null) {
+//					// dialog.dismiss();
+//				}
+				
+//				if (profileInfo != null) {
+//					String imageurl = profileInfo.getProfileImageURL()
+//							.toString();
+//					// 加载图像
+//					doGetProfileImage(imageurl);
+//				}
 			}
 		}
 
@@ -280,7 +362,36 @@ public class ProfileActivity extends WithHeaderActivity {
 		protected TaskResult _doInBackground(TaskParams... params) {
 			// TODO
 			try {
-				profileInfo = getApi().showUser(getApi().getUserId());
+				 profileInfo = getApi().showUser(getApi().getUserId());
+
+//				if (userid != null) {
+//					if (null != db && db.existsUser(userid)) {
+//
+//						Cursor cursor=db.getUserInfoById(userid);
+//						profileInfo=User.parseUser(cursor);
+//						cursor.close();
+//						if (profileInfo == null) {
+//							Log.w(TAG,
+//									"cannot get userinfo from userinfotable the id is"
+//											+ userid);
+//						}
+//					} else {
+//						profileInfo = getApi().showUser(userid);
+//						if (profileInfo != null) {
+//							com.ch_linghu.fanfoudroid.data.User userinfodb = profileInfo
+//									.parseUser();
+//							db.createUserInfo(userinfodb);
+//
+//						} else {
+//							Log.w(TAG,
+//									"profileInfo is null.getApi().showUser()");
+//						}
+//					}
+//				} else {
+//					Log.w(TAG, "the userid is null");
+//				}
+//
+//				profileInfo = getApi().showUser(userid);
 			} catch (WeiboException e) {
 
 				return TaskResult.FAILED;
@@ -314,5 +425,4 @@ public class ProfileActivity extends WithHeaderActivity {
 		}
 
 	}
-
 }

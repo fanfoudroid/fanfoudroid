@@ -28,6 +28,7 @@ package com.ch_linghu.fanfoudroid.weibo;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -40,6 +41,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import android.database.Cursor;
+import android.util.Log;
+
+import com.ch_linghu.fanfoudroid.data.db.StatusDatabase;
+import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.MessageTable;
+import com.ch_linghu.fanfoudroid.data.db.UserInfoTable;
 import com.ch_linghu.fanfoudroid.http.Response;
 
 
@@ -111,6 +118,9 @@ public class User extends WeiboResponse implements java.io.Serializable {
         init(res.asJSONObject());
     }
 
+    User(){
+    	
+    }
     private void init(JSONObject json) throws WeiboException {
         try {
             id = json.getString("id");
@@ -674,5 +684,59 @@ public class User extends WeiboResponse implements java.io.Serializable {
                 ", geoEnabled=" + geoEnabled +
                 ", verified=" + verified +
                 '}';
+    }
+    
+    //TODO:增加从游标解析User的方法，用于和data里User转换一条数据
+    public static User parseUser(Cursor cursor){
+    	 if (null == cursor || 0 == cursor.getCount()||cursor.getCount()>1) {
+ 	        Log.w("User.ParseUser", "Cann't parse Cursor, bacause cursor is null or empty.");
+ 	     }
+    	 cursor.moveToFirst();
+    	 User u=new User();
+    	 u.id = cursor.getString(cursor.getColumnIndex(UserInfoTable._ID));
+    	 u.name = cursor.getString(cursor.getColumnIndex(UserInfoTable.FIELD_USER_NAME));
+    	 u.screenName = cursor.getString(cursor.getColumnIndex(UserInfoTable.FIELD_USER_SCREEN_NAME));
+    	 u.location = cursor.getString(cursor.getColumnIndex(UserInfoTable.FIELD_LOCALTION));
+    	 u.description = cursor.getString(cursor.getColumnIndex(UserInfoTable.FIELD_DESCRIPTION));
+    	 u.profileImageUrl = cursor.getString(cursor.getColumnIndex(UserInfoTable.FIELD_PROFILE_IMAGE_URL));
+    	 u.url = cursor.getString(cursor.getColumnIndex(UserInfoTable.FIELD_URL));
+    	 u.isProtected = (0 == cursor.getInt(cursor.getColumnIndex(UserInfoTable.FIELD_PROTECTED))) ? false : true;
+    	 u.followersCount = cursor.getInt(cursor.getColumnIndex(UserInfoTable.FIELD_FOLLOWERS_COUNT));
+ 	
+ 	
+    	 u.friendsCount = cursor.getInt(cursor.getColumnIndex(UserInfoTable.FIELD_FRIENDS_COUNT));
+    	 u.favouritesCount = cursor.getInt(cursor.getColumnIndex(UserInfoTable.FIELD_FAVORITES_COUNT));
+    	 u.statusesCount = cursor.getInt(cursor.getColumnIndex(UserInfoTable.FIELD_STATUSES_COUNT));
+    	 u.following = (0 == cursor.getInt(cursor.getColumnIndex(UserInfoTable.FIELD_FOLLOWING))) ? false : true;
+ 	
+ 	    try {
+ 	    	String createAtStr=cursor.getString(cursor.getColumnIndex(MessageTable.FIELD_CREATED_AT));
+ 	    	if(createAtStr!=null){
+ 	    		u.createdAt = StatusDatabase.DB_DATE_FORMATTER.parse(createAtStr);
+ 	    	}
+ 	    	
+ 	    } catch (ParseException e) {
+ 	        Log.w("User", "Invalid created at data.");
+ 	    }
+ 	    return u;
+    }
+    
+    public com.ch_linghu.fanfoudroid.data.User parseUser(){
+    	com.ch_linghu.fanfoudroid.data.User user=new com.ch_linghu.fanfoudroid.data.User();
+    	user.id=this.id;
+    	user.name=this.name;
+    	user.screenName=this.screenName;
+    	user.location=this.location;
+    	user.description=this.description;
+    	user.profileImageUrl=this.profileImageUrl;
+    	user.url=this.url;
+    	user.isProtected=this.isProtected;
+    	user.followersCount=this.followersCount;
+    	user.friendsCount=this.friendsCount;
+    	user.favoritesCount=this.favouritesCount;
+    	user.statusesCount=this.statusesCount;
+    	user.isFollowing=this.following;
+    	user.createdAt = this.createdAt;
+  	    return user;
     }
 }

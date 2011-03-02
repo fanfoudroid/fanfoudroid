@@ -41,6 +41,7 @@ import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.BaseActivity;
+import com.ch_linghu.fanfoudroid.weibo.User;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 public class LoginActivity extends BaseActivity { // TODO: FIXME: 登录页面需要个性化的菜单绑定, 不直接继承 BaseActivity
@@ -62,6 +63,8 @@ public class LoginActivity extends BaseActivity { // TODO: FIXME: 登录页面�
 
     // Tasks.
     private GenericTask mLoginTask;
+    
+    private User user;
     
     private TaskListener mLoginTaskListener = new TaskAdapter(){
 
@@ -228,6 +231,11 @@ public class LoginActivity extends BaseActivity { // TODO: FIXME: 登录页面�
         SharedPreferences.Editor editor = mPreferences.edit();
         editor.putString(Preferences.USERNAME_KEY, mUsername);
         editor.putString(Preferences.PASSWORD_KEY, mPassword);
+        
+        //add 存储当前用户的id
+        
+        editor.putString(Preferences.CURRENT_USER_ID, user.getId());
+        
         editor.commit();
 
         TwitterApplication.mApi.setCredentials(mUsername, mPassword);
@@ -269,7 +277,7 @@ public class LoginActivity extends BaseActivity { // TODO: FIXME: 登录页面�
             try {
             	String username = param.getString("username");
             	String password = param.getString("password");
-                TwitterApplication.mApi.login(username, password);
+               user= TwitterApplication.mApi.login(username, password);
             } catch (WeiboException e) {
                 Log.e(TAG, e.getMessage(), e);
 

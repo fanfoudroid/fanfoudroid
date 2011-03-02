@@ -46,4 +46,7 @@ public class Preferences {
   public static final String RT_INSERT_APPEND = "rt_insert_append"; //转发时光标放置在开始还是结尾 
   
   public static final String NETWORK_TYPE = "network_type";
+  
+  
+  public static final String CURRENT_USER_ID="current_user_id";//当前用户id值
 }
