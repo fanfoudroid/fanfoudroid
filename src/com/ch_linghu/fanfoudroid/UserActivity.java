@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.User;
@@ -107,15 +108,17 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
 
       @Override
       public void onPostExecute(GenericTask task, TaskResult result) {
+          refreshButton.clearAnimation();
           if (result == TaskResult.AUTH_ERROR) {
               updateProgress(getString(R.string.user_prompt_this_person_has_protected_their_updates));
-
               return;
           } else if (result == TaskResult.OK) {
-              refreshButton.clearAnimation();
               draw();
-          } else {
-              // Do nothing.
+          } else if (result == TaskResult.IO_ERROR) {
+              //TODO: 更好的信息提示方法.
+              Toast.makeText(UserActivity.this, 
+            		  "ERROR:" + getString(R.string.user_prompt_this_person_has_protected_their_updates), 
+            		  Toast.LENGTH_LONG).show();
           }
 
           updateProgress("");
