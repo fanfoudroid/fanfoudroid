@@ -37,6 +37,7 @@ import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.DmActivity;
 import com.ch_linghu.fanfoudroid.MentionActivity;
+import com.ch_linghu.fanfoudroid.ProfileActivity;
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.StatusActivity;
 import com.ch_linghu.fanfoudroid.TwitterActivity;
@@ -188,7 +189,7 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 
 		switch (item.getItemId()) {
 		case CONTEXT_MORE_ID:
-			launchActivity(UserActivity.createIntent(tweet.userId, tweet.screenName));
+			launchActivity(ProfileActivity.createIntent(tweet.userId));
 			return true;
 		case CONTEXT_REPLY_ID: {
 			// TODO: this isn't quite perfect. It leaves extra empty spaces if

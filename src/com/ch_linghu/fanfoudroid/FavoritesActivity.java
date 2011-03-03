@@ -21,12 +21,15 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
+import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterCursorBaseActivity;
 import com.ch_linghu.fanfoudroid.weibo.Paging;
 import com.ch_linghu.fanfoudroid.weibo.Status;
@@ -36,13 +39,17 @@ import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 public class FavoritesActivity extends TwitterCursorBaseActivity {
 	private static final String TAG = "FavoritesActivity";
 
-	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.TWEETS";
+	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.FAVORITES";
+	private static final String USER_ID = "userid";
 
 	static final int DIALOG_WRITE_ID = 0;
+	
+	private String userId;
 
-	public static Intent createIntent(Context context) {
+	public static Intent createIntent(String userId) {
 		Intent intent = new Intent(LAUNCH_ACTION);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		intent.putExtra(USER_ID, userId);
 
 		return intent;
 	}
@@ -53,11 +60,23 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 		super.onCreate(savedInstanceState);
 		
 		setHeaderTitle(getString(R.string.page_title_favorites));
+
+		Intent intent = getIntent();
+		Bundle extras = intent.getExtras();
+		if (extras != null){
+			this.userId = extras.getString(USER_ID);
+		} else {
+			// 获取登录用户id
+			SharedPreferences preferences = PreferenceManager
+					.getDefaultSharedPreferences(this);
+			userId = preferences.getString(Preferences.CURRENT_USER_ID,
+					TwitterApplication.mApi.getUserId());
+		}
 		
 	}
 
-	public static Intent createNewTaskIntent(Context context) {
-		Intent intent = createIntent(context);
+	public static Intent createNewTaskIntent(String userId) {
+		Intent intent = createIntent(userId);
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
 		return intent;
@@ -120,7 +139,7 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 			throws WeiboException {
 		Paging paging = new Paging(1, 20);
 		paging.setMaxId(minId);
-		return getApi().getFavorites(paging);
+		return getApi().getFavorites(userId, paging);
 	}
 
 	@Override

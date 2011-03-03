@@ -26,8 +26,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -42,12 +44,12 @@ import android.widget.Toast;
  */
 public class ProfileActivity extends WithHeaderActivity {
 	private static final String TAG = "ProfileActivity";
-	private static final String LAUNCH_ACTION = "";
-	private String userid;
-	private GenericTask profileImageTask;// 获取用户图片
+	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.PROFILE";
+
 	private GenericTask profileInfoTask;// 获取用户信息
+
+	private String userId;
 	private User profileInfo;// 用户信息
-	private Bitmap profileImage;// 用户头像
 
 	private ImageView profileImageView;// 头像
 	private TextView profileName;// 名称
@@ -65,25 +67,22 @@ public class ProfileActivity extends WithHeaderActivity {
 	private LinearLayout statusesLayout;
 	private LinearLayout favouritesLayout;
 
-	private ProgressDialog dialog;
-
 	private static final String FANFOUROOT = "http://fanfou.com/";
 	private static final String USER_ID = "userid";
 
 	private StatusDatabase db;
 
-	public static Intent createIntent(String userid) {
+	public static Intent createIntent(String userId) {
 		Intent intent = new Intent(LAUNCH_ACTION);
-		intent.putExtra(USER_ID, userid);
+		intent.putExtra(USER_ID, userId);
 		return intent;
 	}
 
-	// 暂时没用
 	private ProfileImageCacheCallback callback = new ProfileImageCacheCallback() {
 
 		@Override
 		public void refresh(String url, Bitmap bitmap) {
-			// profileImageView.refreshDrawableState();
+			profileImageView.setImageBitmap(bitmap);
 		}
 
 	};
@@ -96,18 +95,26 @@ public class ProfileActivity extends WithHeaderActivity {
 		setContentView(R.layout.myprofile);
 		initHeader(HEADER_STYLE_HOME);
 
-		// Intent intent = getIntent();
-		// Bundle extras = intent.getExtras();
-		// this.userid=extras.getString(USER_ID);
+		Intent intent = getIntent();
+		Bundle extras = intent.getExtras();
+		if (extras != null){
+			this.userId = extras.getString(USER_ID);
+		} else {
+			// 获取登录用户id
+			SharedPreferences preferences = PreferenceManager
+					.getDefaultSharedPreferences(this);
+			userId = preferences.getString(Preferences.CURRENT_USER_ID,
+					TwitterApplication.mApi.getUserId());
+		}
+	    Uri data = intent.getData();
+	    if (data != null){
+	    	userId = data.getLastPathSegment();
+	    }
+		
 		// 初始化控件
 		initControls();
-		// 获取登录用户id
-		SharedPreferences preferences = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		this.userid = preferences.getString(Preferences.CURRENT_USER_ID,
-				getApi().getUserId());
-		// this.userid = getApi().getUserId();
-		Log.i(TAG, "the userid is " + userid);
+
+		Log.i(TAG, "the userid is " + userId);
 		db = this.getDb();
 		draw();
 	}
@@ -152,7 +159,7 @@ public class ProfileActivity extends WithHeaderActivity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-
+				launchActivity(UserActivity.createIntent(profileInfo.getId(), profileInfo.getScreenName()));
 			}
 		});
 
@@ -160,11 +167,12 @@ public class ProfileActivity extends WithHeaderActivity {
 
 			@Override
 			public void onClick(View v) {
-				Intent favoritesActivity = new Intent();
-				favoritesActivity.setClass(ProfileActivity.this,
-						FavoritesActivity.class);
-				startActivity(favoritesActivity);
-
+				//TODO: 收藏页面因为是从数据库获得数据，目前还不能简单的实现
+				//      其他人的收藏，需要重新考虑
+//				Intent intent = FavoritesActivity.createIntent(userId);
+//				intent.setClass(ProfileActivity.this,
+//						FavoritesActivity.class);
+//				startActivity(intent);
 			}
 		});
 
@@ -181,8 +189,8 @@ public class ProfileActivity extends WithHeaderActivity {
 
 	private void draw() {
 		Log.i(TAG, "draw");
-		bindProfileInfo();
-		//doGetProfileInfo();
+		//bindProfileInfo();
+		doGetProfileInfo();
 	}
 
 	@Override
@@ -206,39 +214,6 @@ public class ProfileActivity extends WithHeaderActivity {
 		Log.i(TAG, "onStop.");
 	}
 
-	/**
-	 * 从数据库获取,如果数据库不存在则创建
-	 */
-	private void bindProfileInfo(){
-		
-		if (null != db && db.existsUser(userid)) {
-
-			Cursor cursor = db.getUserInfoById(userid);
-			profileInfo = User.parseUser(cursor);
-			cursor.close();
-			if (profileInfo == null) {
-				Log.w(TAG, "cannot get userinfo from userinfotable the id is"
-						+ userid);
-			}
-		} else {
-			try {
-				profileInfo = getApi().showUser(userid);
-				com.ch_linghu.fanfoudroid.data.User userinfodb = profileInfo
-						.parseUser();
-				db.createUserInfo(userinfodb);
-				
-			} catch (WeiboException e) {//获取数据失败
-				Log.e(TAG, "get data error");
-				//e.printStackTrace();
-				Toast.makeText(getBaseContext(), "获取个人信息失败", Toast.LENGTH_SHORT).show();
-			}
-		}
-		bindControl();
-		
-	}
-	/**
-	 * 从api获取
-	 */
 	private void doGetProfileInfo() {
 		// 旋转刷新按钮
 		animRotate(refreshButton);
@@ -254,30 +229,12 @@ public class ProfileActivity extends WithHeaderActivity {
 		}
 	}
 
-	/**
-	 * FIXME:不从网上获取图片
-	 * @param imageUrl
-	 */
-	private void doGetProfileImage(String imageUrl) {
-	
-		if (profileImageTask != null
-				&& profileImageTask.getStatus() == GenericTask.Status.RUNNING) {
-			return;
-		} else {
-
-			profileImageTask = new GetProfileImageTask();
-			profileImageTask.setListener(profileImageTaskListener);
-			TaskParams params = new TaskParams();
-			params.put("imageUrl", imageUrl);
-			profileImageTask.execute(params);
-
-		}
-	}
-
-	private void bindControl(){
+	private void bindControl() {
 		setHeaderTitle("@" + profileInfo.getScreenName());
 		// Toast.makeText(getBaseContext(),
 		// "用户名:"+profileInfo.getName(), Toast.LENGTH_LONG).show();
+		profileImageView.setImageBitmap(TwitterApplication.mProfileImageCacheManager.get(
+				profileInfo.getProfileImageURL().toString(), callback));
 		profileName.setText(profileInfo.getId());
 		profileScreenName.setText(profileInfo.getScreenName());
 		userLocation.setText(profileInfo.getLocation());
@@ -293,59 +250,32 @@ public class ProfileActivity extends WithHeaderActivity {
 			userInfo.setText(profileInfo.getDescription());
 		}
 
-		friendsCount.setText(String.valueOf(profileInfo
-				.getFriendsCount()));
-		followersCount.setText(String.valueOf(profileInfo
-				.getFollowersCount()));
-		statusCount.setText(String.valueOf(profileInfo
-				.getStatusesCount()));
-		favouritesCount.setText(String.valueOf(profileInfo
-				.getFavouritesCount()));
+		friendsCount.setText(String.valueOf(profileInfo.getFriendsCount()));
+		followersCount.setText(String.valueOf(profileInfo.getFollowersCount()));
+		statusCount.setText(String.valueOf(profileInfo.getStatusesCount()));
+		favouritesCount.setText(String
+				.valueOf(profileInfo.getFavouritesCount()));
 	}
+
 	private TaskListener profileInfoTaskListener = new TaskAdapter() {
 		@Override
 		public void onPostExecute(GenericTask task, TaskResult result) {
+			refreshButton.clearAnimation();
 			// 加载成功
 			if (result == TaskResult.OK) {
 				bindControl();
-				
-				
-//				if (dialog != null) {
-//					// dialog.dismiss();
-//				}
-				
-//				if (profileInfo != null) {
-//					String imageurl = profileInfo.getProfileImageURL()
-//							.toString();
-//					// 加载图像
-//					doGetProfileImage(imageurl);
-//				}
+			} else if (result == TaskResult.FAILED) {
+				Log.e(TAG, "get data error");
+				// e.printStackTrace();
+				Toast
+						.makeText(getBaseContext(), "获取个人信息失败",
+								Toast.LENGTH_SHORT).show();				
 			}
 		}
 
 		@Override
 		public String getName() {
-			return "GetInfo";
-		}
-
-	};
-
-	private TaskListener profileImageTaskListener = new TaskAdapter() {
-
-		@Override
-		public void onPostExecute(GenericTask task, TaskResult result) {
-
-			if (result == TaskResult.OK) {
-				Log.d(TAG, "pic load complete");
-				profileImageView.setImageBitmap(profileImage);
-
-			}
-		}
-
-		@Override
-		public String getName() {
-
-			return "GetProfileImage";
+			return "GetProfileInfo";
 		}
 
 	};
@@ -360,69 +290,27 @@ public class ProfileActivity extends WithHeaderActivity {
 
 		@Override
 		protected TaskResult _doInBackground(TaskParams... params) {
-			// TODO
-			try {
-				 profileInfo = getApi().showUser(getApi().getUserId());
 
-//				if (userid != null) {
-//					if (null != db && db.existsUser(userid)) {
-//
-//						Cursor cursor=db.getUserInfoById(userid);
-//						profileInfo=User.parseUser(cursor);
-//						cursor.close();
-//						if (profileInfo == null) {
-//							Log.w(TAG,
-//									"cannot get userinfo from userinfotable the id is"
-//											+ userid);
-//						}
-//					} else {
-//						profileInfo = getApi().showUser(userid);
-//						if (profileInfo != null) {
-//							com.ch_linghu.fanfoudroid.data.User userinfodb = profileInfo
-//									.parseUser();
-//							db.createUserInfo(userinfodb);
-//
-//						} else {
-//							Log.w(TAG,
-//									"profileInfo is null.getApi().showUser()");
-//						}
-//					}
-//				} else {
-//					Log.w(TAG, "the userid is null");
-//				}
-//
-//				profileInfo = getApi().showUser(userid);
-			} catch (WeiboException e) {
+			if (null != db && db.existsUser(userId)) {
+				Cursor cursor = db.getUserInfoById(userId);
+				profileInfo = User.parseUser(cursor);
+				cursor.close();
+				if (profileInfo == null) {
+					Log.w(TAG, "cannot get userinfo from userinfotable the id is"
+							+ userId);
+				}
+			} else {
+				try {
+					profileInfo = getApi().showUser(userId);
+					com.ch_linghu.fanfoudroid.data.User userinfodb = profileInfo
+							.parseUser();
+					db.createUserInfo(userinfodb);
 
-				return TaskResult.FAILED;
+				} catch (WeiboException e) {
+					return TaskResult.FAILED;
+				}
 			}
 			return TaskResult.OK;
 		}
-	}
-
-	/**
-	 * 获取用户头像task
-	 * 
-	 * @author Dino
-	 * 
-	 */
-	private class GetProfileImageTask extends GenericTask {
-
-		@Override
-		protected TaskResult _doInBackground(TaskParams... params) {
-			TaskParams param = params[0];
-			try {
-				String imageUrl = param.getString("imageUrl");
-				Log.d(TAG, imageUrl);
-				profileImage = TwitterApplication.mProfileImageCacheManager
-						.get(imageUrl, callback);
-
-			} catch (WeiboException e) {
-				Log.e(TAG, e.getMessage());
-				return TaskResult.FAILED;
-			}
-			return TaskResult.OK;
-		}
-
 	}
 }
