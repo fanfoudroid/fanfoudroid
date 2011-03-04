@@ -82,7 +82,7 @@ public final class UserInfoTable implements BaseColumns {
 		user.url = cursor.getString(cursor.getColumnIndex(FIELD_URL));
 		user.isProtected = (0 == cursor.getInt(cursor.getColumnIndex(FIELD_PROTECTED))) ? false : true;
 		user.followersCount = cursor.getInt(cursor.getColumnIndex(FIELD_FOLLOWERS_COUNT));
-		user.lastStatus = cursor.getString(cursor.getColumnIndex(FIELD_LAST_STATUS));;
+		user.lastStatus = cursor.getString(cursor.getColumnIndex(FIELD_LAST_STATUS));
 	
 		user.friendsCount = cursor.getInt(cursor.getColumnIndex(FIELD_FRIENDS_COUNT));
 		user.favoritesCount = cursor.getInt(cursor.getColumnIndex(FIELD_FAVORITES_COUNT));

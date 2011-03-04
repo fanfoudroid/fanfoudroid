@@ -902,6 +902,16 @@ public class StatusDatabase {
 
         return cursor;
     }
+    /**
+     * 更新用户
+     * @param uid
+     * @param args
+     * @return
+     */
+    public boolean updateUser(String uid,ContentValues args){
+    	SQLiteDatabase Db=mOpenHelper.getWritableDatabase();
+    	return Db.update(UserInfoTable.TABLE_NAME, args, UserInfoTable._ID+"='"+uid+"'", null)>0;
+    }
     
 
 }

@@ -97,6 +97,7 @@
 	<string name="profile_statuses_count_title">消息</string>
 	<string name="profile_favourites_count_title">收藏</string>
 	<string name="profile_description_null">用户未设置自述</string>
+	<string name="profile_location_null">用户未设置地点</string>
 	
 	<!-- 设置页面  -->
     <string name="pref_title_notifications">后台提示</string>

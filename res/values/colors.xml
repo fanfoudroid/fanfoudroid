@@ -16,4 +16,6 @@
   <color name="simiple_button_color">#FFF</color>
   
   <color name="body_background">#FFF</color>
+  
+  <color name="simple_text_color">#FF52991F</color>
 </resources>

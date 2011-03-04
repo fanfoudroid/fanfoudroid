@@ -7,103 +7,8 @@
 	android:layout_height="fill_parent"
   android:background="@color/body_background"
   >
- <!--   fill_parent -1 
-match_parent -1 
-wrap_content -2 
--->
-
-<!-- android:orientation
-
-Constant Value Description 
-horizontal 0 Defines an horizontal widget.  
-vertical 1 Defines a vertical widget.  
-
- -->
  
- <!-- disabled	-1	 Do not tile the bitmap. This is the default value.
-clamp	0	 Replicates the edge color.
-repeat	1	 Repeats the bitmap in both direction.
-mirror	2 -->
-
-<!-- top 0x30  
-bottom 0x50  
-left 0x03  
-right 0x05  
-center_vertical 0x10  
-fill_vertical 0x70  
-center_horizontal 0x01  
-fill_horizontal 0x07  
-center 0x11 
-fill 0x77  
-clip_vertical 0x80 
-clip_horizontal 0x08 
- -->
  
- <!-- android:textStyle
- 
- normal	0	
-bold	1	
-italic	2
-  -->
- 
-<!-- 顶部条，暂时不用
-	<RelativeLayout
-		android:id="@+id/relativelayout_5"
-		android:background="@drawable/userinfo_title_bg"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		>
-
-		<ImageView
-			android:id="@+id/imageview_1"
-			android:layout_width="60.0dip"
-			android:layout_height="60.0dip"
-			android:layout_marginLeft="10.0dip"
-			android:src="@drawable/icon"
-			android:layout_centerVertical="true"
-			>
-		</ImageView>
-	
-		<TextView
-			android:textSize="16.0sp"
-			android:textStyle="bold"
-			android:textColor="#FF464D5B"
-			android:id="@+id/textview_13"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginLeft="10.0dip"
-			android:layout_toRightOf="@+id/imageview_1"
-			android:layout_centerVertical="true"
-			>
-		</TextView>
-	
-		<ImageView
-			android:id="@+id/imageview_2"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginLeft="10.0dip"
-			android:src="@drawable/icon"
-			android:layout_toRightOf="@+id/textview_13"
-			android:layout_centerVertical="true"
-			>
-		</ImageView>
-	
-		<Button
-			android:textColor="#FFFFFFFF"
-			android:id="@+id/button_1"
-			android:background="@drawable/icon"
-			android:visibility="visible"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_marginRight="4.0dip"
-			android:text="test"
-			android:layout_alignParentRight="true"
-			android:layout_centerVertical="true"
-			>
-		</Button>
-	</RelativeLayout>
-	 -->
-	 
 	 
 	 
 <ScrollView
@@ -135,25 +40,25 @@ italic	2
 				android:id="@+id/profileimage"
 				android:layout_width="48dp"
 				android:layout_height="48dp"
-			
+				android:layout_marginRight="5.0dip"
 				>
 				</ImageView>
 				<!-- 用户昵称 -->
 				<TextView
-				android:id="@+id/profilename"
+				android:id="@+id/profilescreenname"
 				android:layout_width="fill_parent"
 				android:layout_height="24.0dip"
 				android:layout_toRightOf="@id/profileimage"
+			style="@style/LinkText.Bold.Huge"
 				
 				></TextView>
 				<!-- 用户名。。Email? -->
 				<TextView
-				android:id="@+id/profilescreenname"
+				android:id="@+id/profilename"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
 				android:layout_toRightOf="@id/profileimage"
-		
-				android:layout_below="@id/profilename"
+				android:layout_below="@id/profilescreenname"
 				
 				>
 				</TextView>
@@ -182,19 +87,19 @@ italic	2
 					android:text="@string/profile_user_location_title"
 					android:layout_alignParentLeft="true"
 					android:layout_alignParentTop="true"
+					style="@style/normalText"
 					>
 				</TextView>
 				<!-- 所在地 -->
 				<TextView
 					android:textSize="16.0sp"
-					android:textColor="#FF373737"
 					android:id="@+id/user_location"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_marginLeft="10.0dip"
 					android:layout_toRightOf="@id/user_location_title"
 					android:layout_alignTop="@id/user_location_title"
-			
+					style="@style/normalText.span"
 					>
 				</TextView>
 				<!-- 分隔条 -->
@@ -214,17 +119,16 @@ italic	2
 					android:id="@+id/user_url_title"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-			
 					android:layout_below="@id/view_3"
 					android:layout_alignLeft="@id/user_location_title"
 					android:layout_alignParentBottom="true"
 					android:text="@string/profile_user_url_title"
+					style="@style/normalText"
 					>
 				</TextView>
 				  
 				<TextView
 					android:textSize="16.0sp"
-					android:textColor="#FF373737"
 					android:gravity="center_vertical"
 					android:id="@+id/user_url"
 					android:layout_width="wrap_content"
@@ -234,8 +138,7 @@ italic	2
 					android:singleLine="true"
 					android:layout_toRightOf="@id/user_url_title"
 					android:layout_alignBottom="@id/user_url_title"
-					android:autoLink="all"
-				
+					style="@style/normalText.span"
 					>
 				</TextView>
 				
@@ -255,6 +158,7 @@ italic	2
 				android:id="@+id/tweet_user_info"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
+				style="@style/normalText.span"
 				></TextView>
 				</RelativeLayout>
 			<!-- 按钮面板部分 -->
@@ -306,7 +210,7 @@ italic	2
 							android:layout_marginTop="10.0dip"
 							android:text="0"
 							android:layout_centerHorizontal="true"
-						
+							style="@style/normalText"
 							>
 						</TextView>
 						
@@ -319,7 +223,7 @@ italic	2
 							android:text="@string/profile_friends_count_title"
 							android:layout_below="@+id/friends_count"
 							android:layout_centerHorizontal="true"
-
+							style="@style/normalText.span"
 							>
 						</TextView>
 					</RelativeLayout>
@@ -346,7 +250,7 @@ italic	2
 							android:layout_height="wrap_content"
 							android:layout_marginTop="10.0dip"
 							android:text="0"
-						
+							style="@style/normalText"
 							>
 						</TextView>
 						<TextView
@@ -356,7 +260,7 @@ italic	2
 							android:layout_width="fill_parent"
 							android:layout_height="wrap_content"
 							android:text="@string/profile_followers_count_title"
-					
+							style="@style/normalText.span"
 							>
 						</TextView>
 					</LinearLayout>
@@ -388,6 +292,7 @@ italic	2
 							android:layout_height="wrap_content"
 							android:layout_marginTop="10.0dip"
 							android:text="0"
+							style="@style/normalText"
 				
 							>
 						</TextView>
@@ -398,7 +303,7 @@ italic	2
 							android:layout_width="fill_parent"
 							android:layout_height="wrap_content"
 							android:text="@string/profile_statuses_count_title"
-							
+							style="@style/normalText.span"
 							>
 						</TextView>
 					</LinearLayout>
@@ -425,7 +330,7 @@ italic	2
 							android:layout_height="wrap_content"
 							android:layout_marginTop="10.0dip"
 							android:text="0"
-							
+							style="@style/normalText"
 							>
 						</TextView>
 						<TextView
@@ -435,6 +340,7 @@ italic	2
 							android:layout_width="fill_parent"
 							android:layout_height="wrap_content"
 							android:text="@string/profile_favourites_count_title"
+							style="@style/normalText.span"
 							>
 						</TextView>
 					</LinearLayout>
