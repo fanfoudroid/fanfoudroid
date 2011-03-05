@@ -230,10 +230,11 @@ public class ProfileActivity extends WithHeaderActivity {
 				Log.w(TAG, "cannot get userinfo from userinfotable the id is"
 						+ userId);
 			}
+			bindControl();
 		} else {
 			doGetProfileInfo();
 		}
-		bindControl();
+		
 
 	}
 
@@ -301,17 +302,13 @@ public class ProfileActivity extends WithHeaderActivity {
 
 			// 加载成功
 			if (result == TaskResult.OK) {
-				if (null != db && db.existsUser(userId)) {
-					try {
-						profileInfo = getApi().showUser(userId);
+				if (null != db && !db.existsUser(userId)) {
+					
+						
 						com.ch_linghu.fanfoudroid.data.User userinfodb = profileInfo
 								.parseUser();
 						db.createUserInfo(userinfodb);
-					} catch (WeiboException e) {
-						Log.e(TAG, "get data error");
-						Toast.makeText(getBaseContext(), "获取个人信息失败",
-								Toast.LENGTH_SHORT).show();
-					}
+				
 
 				} else {
 					// 更新用户
@@ -392,10 +389,11 @@ public class ProfileActivity extends WithHeaderActivity {
 		protected TaskResult _doInBackground(TaskParams... params) {
 
 			try {
-				profileInfo = getApi().showUser(getApi().getUserId());
+				profileInfo = getApi().showUser(userId);
 
 			} catch (WeiboException e) {
 
+				Log.e(TAG, e.getMessage());
 				return TaskResult.FAILED;
 			}
 			return TaskResult.OK;
