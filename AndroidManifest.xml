@@ -142,7 +142,17 @@
                       android:host="users" />                
             </intent-filter>                                      
         </activity>
-        <activity android:name=".FollowersActivity"/>
+        <activity android:name=".FollowersActivity">
+         <intent-filter>
+                <action android:name="com.ch_linghu.fanfoudroid.FOLLOWERS" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>                                      
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+        </activity>
         <activity android:name=".FollowingActivity"/>
         <activity android:name=".SearchActivity"/>
         

@@ -867,6 +867,59 @@ public class StatusDatabase {
         }
         return rowId;
     }
+    
+    public long createWeiboUserInfo(com.ch_linghu.fanfoudroid.weibo.User user){
+        SQLiteDatabase mDb = mOpenHelper.getWritableDatabase();
+    	ContentValues args = new ContentValues();
+
+		args.put(UserInfoTable._ID, user.getName());
+		
+		args.put(UserInfoTable.FIELD_USER_NAME, user.getName());
+		
+		args.put(UserInfoTable.FIELD_USER_SCREEN_NAME,
+				user.getScreenName());
+		
+		String location = user.getLocation();
+		args.put(UserInfoTable.FIELD_LOCALTION, location);
+		
+		String description = user.getDescription();
+		args.put(UserInfoTable.FIELD_DESCRIPTION, description);
+		
+		args.put(UserInfoTable.FIELD_PROFILE_IMAGE_URL,
+				user.getProfileBackgroundImageUrl());
+
+		if (user.getURL() != null) {
+			args.put(UserInfoTable.FIELD_URL, user.getURL().toString());
+		}
+
+		args.put(UserInfoTable.FIELD_PROTECTED, user.isProtected());
+		
+		args.put(UserInfoTable.FIELD_FOLLOWERS_COUNT,
+				user.getFollowersCount());
+		
+		args.put(UserInfoTable.FIELD_LAST_STATUS, user.getStatusSource());
+		
+		args.put(UserInfoTable.FIELD_FRIENDS_COUNT,
+				user.getFriendsCount());
+		
+		args.put(UserInfoTable.FIELD_FAVORITES_COUNT,
+				user.getFavouritesCount());
+		
+		args.put(UserInfoTable.FIELD_STATUSES_COUNT,
+				user.getStatusesCount());
+		
+		args.put(UserInfoTable.FIELD_FOLLOWING, user.isFollowing());
+		
+	    long rowId = mDb.insert(UserInfoTable.TABLE_NAME, null, args);
+        if (-1 == rowId) {
+            Log.e(TAG, "Cann't create Follower : " + user.getId());
+        } else {
+            Log.i(TAG, "create create follower : " + user.getId());
+        }
+        return rowId;
+    }
+    
+    
     /**
      * 查看数据是否已保存用户数据
      * @param userId
@@ -911,6 +964,124 @@ public class StatusDatabase {
     public boolean updateUser(String uid,ContentValues args){
     	SQLiteDatabase Db=mOpenHelper.getWritableDatabase();
     	return Db.update(UserInfoTable.TABLE_NAME, args, UserInfoTable._ID+"='"+uid+"'", null)>0;
+    }
+
+    
+    /**
+     * 更新用户信息
+     */
+    public boolean updateUser(com.ch_linghu.fanfoudroid.data.User user){
+    	
+    	SQLiteDatabase Db=mOpenHelper.getWritableDatabase();
+    	ContentValues args=new ContentValues();
+    	args.put(UserInfoTable._ID, user.id);
+		
+		args.put(UserInfoTable.FIELD_USER_NAME, user.name);
+		
+		args.put(UserInfoTable.FIELD_USER_SCREEN_NAME, user.screenName);
+		
+		args.put(UserInfoTable.FIELD_LOCALTION, user.location);
+		
+		args.put(UserInfoTable.FIELD_DESCRIPTION, user.description);
+		
+		args.put(UserInfoTable.FIELD_PROFILE_IMAGE_URL, user.profileImageUrl);
+
+		args.put(UserInfoTable.FIELD_URL, user.url);
+
+		args.put(UserInfoTable.FIELD_PROTECTED, user.isProtected);
+		
+		args.put(UserInfoTable.FIELD_FOLLOWERS_COUNT, user.followersCount);
+		
+		args.put(UserInfoTable.FIELD_LAST_STATUS, user.lastStatus);
+		
+		args.put(UserInfoTable.FIELD_FRIENDS_COUNT, user.friendsCount);
+		
+		args.put(UserInfoTable.FIELD_FAVORITES_COUNT, user.favoritesCount);
+		
+		args.put(UserInfoTable.FIELD_STATUSES_COUNT, user.statusesCount);
+		
+		args.put(UserInfoTable.FIELD_FOLLOWING, user.isFollowing);
+		
+    	return Db.update(UserInfoTable.TABLE_NAME, args, UserInfoTable._ID+"='"+user.id+"'", null)>0;
+    }
+    /**
+     * 减少转换的开销
+     * @param user
+     * @return
+     */
+    public boolean updateWeiboUser(com.ch_linghu.fanfoudroid.weibo.User user){
+    	
+    	SQLiteDatabase Db=mOpenHelper.getWritableDatabase();
+    	ContentValues args = new ContentValues();
+
+		args.put(UserInfoTable._ID, user.getName());
+		
+		args.put(UserInfoTable.FIELD_USER_NAME, user.getName());
+		
+		args.put(UserInfoTable.FIELD_USER_SCREEN_NAME,
+				user.getScreenName());
+		
+		String location = user.getLocation();
+		args.put(UserInfoTable.FIELD_LOCALTION, location);
+		
+		String description = user.getDescription();
+		args.put(UserInfoTable.FIELD_DESCRIPTION, description);
+		
+		args.put(UserInfoTable.FIELD_PROFILE_IMAGE_URL,
+				user.getProfileBackgroundImageUrl());
+
+		if (user.getURL() != null) {
+			args.put(UserInfoTable.FIELD_URL, user.getURL().toString());
+		}
+
+		args.put(UserInfoTable.FIELD_PROTECTED, user.isProtected());
+		
+		args.put(UserInfoTable.FIELD_FOLLOWERS_COUNT,
+				user.getFollowersCount());
+		
+		args.put(UserInfoTable.FIELD_LAST_STATUS, user.getStatusSource());
+		
+		args.put(UserInfoTable.FIELD_FRIENDS_COUNT,
+				user.getFriendsCount());
+		
+		args.put(UserInfoTable.FIELD_FAVORITES_COUNT,
+				user.getFavouritesCount());
+		
+		args.put(UserInfoTable.FIELD_STATUSES_COUNT,
+				user.getStatusesCount());
+		
+		args.put(UserInfoTable.FIELD_FOLLOWING, user.isFollowing());
+		
+		return Db.update(UserInfoTable.TABLE_NAME, args, UserInfoTable._ID+"='"+user.getId()+"'", null)>0;
+		
+    }
+    /**
+     * 同步用户,更新已存在的用户,插入未存在的用户
+     */
+    public void syncUsers(List<com.ch_linghu.fanfoudroid.data.User> users){
+    	SQLiteDatabase mDb = mOpenHelper.getWritableDatabase();
+    	mDb.beginTransaction();
+    	for(com.ch_linghu.fanfoudroid.data.User u:users){
+    		if(existsUser(u.id)){
+    			updateUser(u);
+    		}else{
+    			createUserInfo(u);
+    		}
+    	}
+    	mDb.setTransactionSuccessful();
+    }
+    
+    public void syncWeiboUsers(List<com.ch_linghu.fanfoudroid.weibo.User> users){
+    	SQLiteDatabase mDb = mOpenHelper.getWritableDatabase();
+    	mDb.beginTransaction();
+    	for(com.ch_linghu.fanfoudroid.weibo.User u:users){
+    		if(existsUser(u.getId())){
+    			updateWeiboUser(u);
+    		}else{
+    			createWeiboUserInfo(u);
+    		}
+    	}
+    	mDb.setTransactionSuccessful();
     }
     
 
