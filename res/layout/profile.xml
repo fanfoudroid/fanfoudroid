@@ -1,180 +1,493 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="fill_parent"
-  android:layout_height="fill_parent"
-  android:orientation="vertical"
+	android:orientation="vertical"
+	
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
   android:background="@color/body_background"
   >
-  
-   <!-- Header -->
-   
-   <ScrollView 
-   android:layout_width="fill_parent"
-   android:layout_height="fill_parent"
-   android:layout_weight="1">
-   <LinearLayout android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        >
-       <!-- 个人栏 -->
-        <LinearLayout android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            >
-            <!-- 用户头像 -->
-            <ImageView android:id="@+id/profile_image"
-                android:src="@drawable/user_default_photo"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_alignParentLeft="true"
-                android:layout_marginRight="10dp" />
-				<LinearLayout 
-				  android:orientation="vertical"
-				  android:layout_width="fill_parent"
-				  android:layout_height="wrap_content"
-	              android:layout_toRightOf="@id/profile_image"
-				>
-				    <!-- 用户名 -->
-					<LinearLayout 
-					  android:orientation="horizontal"
-					  android:layout_width="fill_parent"
-					  android:layout_height="wrap_content"
-					>
-						<TextView
-						  android:id="@+id/screen_name" 
-						  android:layout_width="wrap_content"
-						  android:layout_height="wrap_content"
-			              style="@style/LinkText.Bold.Huge"
-			              android:text="令狐虫"
-						/>
-						<TextView
-						  android:id="@+id/user_id" 
-						  android:layout_width="wrap_content"
-						  android:layout_height="wrap_content"
-						  style="@drawable/tweet_meta_color"
-			              android:text="ch_linghu"
-						/>
-					</LinearLayout>
-					<!-- 所在地 -->
-					<LinearLayout 
-					  android:orientation="horizontal"
-					  android:layout_width="fill_parent"
-					  android:layout_height="wrap_content"
-					>
-						<TextView
-						  android:layout_width="wrap_content"
-						  android:layout_height="wrap_content"
-			              android:text="所在地："
-						/>
-						<TextView
-						  android:id="@+id/user_location" 
-						  android:layout_width="wrap_content"
-						  android:layout_height="wrap_content"
-						  style="@drawable/tweet_meta_color"
-			              android:text="上海"
-						/>
-					</LinearLayout>
-					<!-- 网站 -->		
-					<LinearLayout 
-					  android:orientation="horizontal"
-					  android:layout_width="fill_parent"
-					  android:layout_height="wrap_content"
-					>
-						<TextView
-						  android:layout_width="wrap_content"
-						  android:layout_height="wrap_content"
-			              android:text="网站："
-						/>
-						<TextView
-						  android:id="@+id/user_id" 
-						  android:layout_width="wrap_content"
-						  android:layout_height="wrap_content"
-						  style="@drawable/tweet_meta_color"
-						  android:autoLink="all"
-			              android:text="http://example.com/"
-						/>
-					</LinearLayout>
-		            <!-- 自我描述 -->
-		            <TextView android:id="@+id/tweet_user_info"
-		                android:layout_width="fill_parent"
-		                android:layout_height="wrap_content"
-		                android:text="一个很长的自述：\n
-素胚勾勒出青花筆鋒濃轉淡\n
-瓶身描繪的牡丹一如妳初妝\n
-冉冉檀香透過窗心事我了然\n
-宣紙上走筆至此擱一半\n
-\n
-釉色渲染仕女圖韻味被私藏\n 
-而妳嫣然的一笑如含苞待放\n
-妳的美一縷飄散 去到我去不了的地方\n
-\n
-天青色等煙雨 而我在等妳\n 
-炊煙裊裊昇起 隔江千萬里\n
-在瓶底書漢隸仿前朝的飄逸\n
-就當我為遇見妳伏筆"
-		                 />
-				</LinearLayout>		
-        </LinearLayout>
-        <!-- 分割线 -->
-        <LinearLayout
-           android:background="#CCC"
-           android:layout_width="fill_parent"
-           android:layout_height="1dp"
-           />
-        <!-- 功能栏 -->
-		<LinearLayout 
-		  android:orientation="horizontal"
-		  android:layout_width="fill_parent"
-		  android:layout_height="wrap_content"
-		  android:gravity="center_vertical|right"
+ 
+<ScrollView
+		android:background="#FFEFF0F4"
+		android:scrollbars="horizontal"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
 		>
-			<!-- 是否保护 -->
-            <ImageView android:id="@+id/is_proctected"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="8dp"
-                android:src="@android:drawable/ic_lock_idle_lock" 
-                />
-			<!-- 跟随按钮 -->
-			<Button
-			  android:id="@+id/btn_follow"
-			  android:layout_width="wrap_content"
-			  android:layout_height="wrap_content"
-              android:text="跟随"
-			/>
-			<!-- Block -->
-			<Button
-			  android:id="@+id/btn_block" 
-			  android:layout_width="wrap_content"
-			  android:layout_height="wrap_content"
-              android:text="阻止"
-			/>
+		
+		
+		
+		<LinearLayout
+			android:orientation="vertical"
+			android:background="#FFEFF0F4"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			>
+			
+			<!-- 头像部分 -->
+			<RelativeLayout
+			android:orientation="vertical"
+			android:background="#FFEFF0F4"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_margin="10.0dip"
+			>
+				<!-- 头像图片 -->
+				<ImageView 
+				android:id="@+id/profileimage"
+				android:layout_width="48dp"
+				android:layout_height="48dp"
+				android:layout_marginRight="5.0dip"
+				>
+				</ImageView>
+				<!-- 用户昵称 -->
+				<TextView
+				android:id="@+id/profilescreenname"
+				android:layout_width="fill_parent"
+				android:layout_height="24.0dip"
+				android:layout_toRightOf="@id/profileimage"
+				style="@style/LinkText.Bold.Huge"
+				
+				></TextView>
+				<!-- 用户名。。Email? -->
+				<TextView
+				android:id="@+id/profilename"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:layout_toRightOf="@id/profileimage"
+				android:layout_below="@id/profilescreenname"
+				
+				>
+				</TextView>
+			</RelativeLayout>
+			
+			
+			
+			<!-- 基本信息部分 -->
+			<RelativeLayout
+				android:id="@+id/relative_3"
+				android:background="@drawable/panel_bg"
+				android:layout_width="fill_parent"
+				android:layout_height="100.0dip"
+				android:layout_margin="10.0dip"
+				>
+				
+				<TextView
+					android:textSize="16.0sp"
+					android:textColor="#FF7D899D"
+					android:gravity="center_vertical"
+					android:id="@+id/user_location_title"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginLeft="5.0dip"
+					android:layout_marginTop="10.0dip"
+					android:text="@string/profile_user_location_title"
+					android:layout_alignParentLeft="true"
+					android:layout_alignParentTop="true"
+					style="@style/normalText"
+					>
+				</TextView>
+				<!-- 所在地 -->
+				<TextView
+					android:textSize="16.0sp"
+					android:id="@+id/user_location"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginLeft="10.0dip"
+					android:layout_toRightOf="@id/user_location_title"
+					android:layout_alignTop="@id/user_location_title"
+					style="@style/normalText.span"
+					>
+				</TextView>
+				<!-- 分隔条 -->
+				<View
+					android:id="@+id/view_3"
+					android:background="@drawable/horizontal_separation_line"
+					android:layout_width="fill_parent"
+					android:layout_height="1.0dip"
+					android:layout_centerVertical="true"
+					>
+				</View>
+				<!-- 网站 -->
+				<TextView
+					android:textSize="16.0sp"
+					android:textColor="#FF7D899D"
+					android:gravity="center_vertical"
+					android:id="@+id/user_url_title"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_below="@id/view_3"
+					android:layout_alignLeft="@id/user_location_title"
+					android:layout_alignParentBottom="true"
+					android:text="@string/profile_user_url_title"
+					style="@style/normalText"
+					>
+				</TextView>
+				  
+				<TextView
+					android:textSize="16.0sp"
+					android:gravity="center_vertical"
+					android:id="@+id/user_url"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_below="@id/view_3"
+					android:layout_marginLeft="10.0dip"
+					android:singleLine="true"
+					android:layout_toRightOf="@id/user_url_title"
+					android:layout_alignParentBottom="true"
+					android:autoLink="web"
+					style="@style/normalText"
+					>
+				</TextView>
+				
+			</RelativeLayout>
+			
+			<!-- 自我描述部分 -->
+			<RelativeLayout
+				android:id="@+id/relative_user_info"
+				android:background="@drawable/panel_bg"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:layout_margin="10.0dip"
+				android:padding="20.0dip"
+				
+				>
+				<TextView
+				android:id="@+id/tweet_user_info"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				style="@style/normalText"
+				></TextView>
+				</RelativeLayout>
+			<!-- 按钮面板部分 -->
+            <RelativeLayout
+					android:background="@drawable/panel_bg"
+					android:layout_width="fill_parent"
+					android:layout_height="130.0dip"
+					android:layout_margin="10.0dip"
+					>
+					<!-- 垂直分隔条 -->
+					<View
+						android:id="@+id/view_one"
+						android:background="@drawable/vertical_separation_line_repeat"
+						android:layout_width="1.0dip"
+						android:layout_height="fill_parent"
+						android:layout_centerHorizontal="true"
+						>
+					</View>
+					
+					<!-- 水平分隔条 -->
+					<View
+						android:id="@+id/view_two"
+						android:background="@drawable/horizontal_separation_line_repeat"
+						android:layout_width="fill_parent"
+						android:layout_height="1.0dip"
+						android:layout_centerVertical="true"
+						>
+					</View>
+					
+					<!-- ta跟随的人 按钮 -->
+					<RelativeLayout
+						android:id="@+id/friendsLayout"
+						android:background="@drawable/bg_panel_above_left"
+						android:clickable="true"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_toLeftOf="@+id/view_one"
+						android:layout_above="@+id/view_two"
+						android:layout_alignParentLeft="true"
+						android:layout_alignParentTop="true"
+						>
+						
+						<!--ta跟随的人数  -->
+						<TextView
+							android:gravity="center"
+							android:id="@+id/friends_count"
+							android:layout_width="fill_parent"
+							android:layout_height="wrap_content"
+							android:layout_marginTop="10.0dip"
+							android:text="0"
+							android:layout_centerHorizontal="true"
+							style="@style/normalText"
+							>
+						</TextView>
+						
+						<!-- ta跟随的人 -->
+						<TextView
+							android:gravity="center"
+							android:id="@+id/friends_count_title"
+							android:layout_width="fill_parent"
+							android:layout_height="wrap_content"
+							android:text="@string/profile_friends_count_title"
+							android:layout_below="@+id/friends_count"
+							android:layout_centerHorizontal="true"
+							style="@style/normalText.span"
+							>
+						</TextView>
+					</RelativeLayout>
+					
+					<!-- 跟随ta的人 按钮 -->
+					<LinearLayout
+						android:orientation="vertical"
+						android:id="@+id/followersLayout"
+						android:background="@drawable/bg_panel_above_right"
+						android:clickable="true"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_toRightOf="@id/view_one"
+						android:layout_above="@id/view_two"
+						android:layout_alignParentTop="true"
+						android:layout_alignParentRight="true"
+						>
+						<!-- 跟随ta的人数 -->
+						<TextView
+							android:gravity="center"
+							android:layout_gravity="center_horizontal"
+							android:id="@+id/followers_count"
+							android:layout_width="fill_parent"
+							android:layout_height="wrap_content"
+							android:layout_marginTop="10.0dip"
+							android:text="0"
+							style="@style/normalText"
+							>
+						</TextView>
+						<TextView
+							android:gravity="center"
+							android:layout_gravity="center_horizontal"
+							android:id="@+id/followers_count_title"
+							android:layout_width="fill_parent"
+							android:layout_height="wrap_content"
+							android:text="@string/profile_followers_count_title"
+							style="@style/normalText.span"
+							>
+						</TextView>
+					</LinearLayout>
+					
+					<!-- 消息TODO:有bug 同样的布局，却不居中，
+					需要加padding-right,
+					怀疑资源图片中patches有问题
+					还好横屏竖屏都没问题
+					 -->
+					<LinearLayout
+						android:orientation="vertical"
+						android:id="@+id/statusesLayout"
+						android:background="@drawable/bg_panel_below_left"
+						android:clickable="true"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_toLeftOf="@id/view_one"
+						android:layout_below="@id/view_two"
+						android:layout_alignParentLeft="true"
+						android:layout_alignParentBottom="true"
+						android:paddingRight="10dp"
+						>
+						<!-- 消息数 -->
+						<TextView
+							android:gravity="center"
+							android:layout_gravity="center_horizontal"
+							android:id="@+id/statuses_count"
+							android:layout_width="fill_parent"
+							android:layout_height="wrap_content"
+							android:layout_marginTop="10.0dip"
+							android:text="0"
+							style="@style/normalText"
+				
+							>
+						</TextView>
+						<TextView
+							android:gravity="center"
+							android:layout_gravity="center_horizontal"
+							android:id="@+id/statuses_count_title"
+							android:layout_width="fill_parent"
+							android:layout_height="wrap_content"
+							android:text="@string/profile_statuses_count_title"
+							style="@style/normalText.span"
+							>
+						</TextView>
+					</LinearLayout>
+					
+					<!-- 收藏按钮 -->
+					<LinearLayout
+						android:orientation="vertical"
+						android:id="@+id/favouritesLayout"
+						android:background="@drawable/bg_panel_below_right"
+						android:clickable="true"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_toRightOf="@+id/view_one"
+						android:layout_below="@+id/view_two"
+						android:layout_alignParentRight="true"
+						android:layout_alignParentBottom="true"
+						>
+						<!-- 收藏数 -->
+						<TextView
+							android:gravity="center"
+							android:layout_gravity="center_horizontal"
+							android:id="@+id/favourites_count"
+							android:layout_width="fill_parent"
+							android:layout_height="wrap_content"
+							android:layout_marginTop="10.0dip"
+							android:text="0"
+							style="@style/normalText"
+							>
+						</TextView>
+						<TextView
+							android:gravity="center"
+							android:layout_gravity="center_horizontal"
+							android:id="@+id/favourites_count_title"
+							android:layout_width="fill_parent"
+							android:layout_height="wrap_content"
+							android:text="@string/profile_favourites_count_title"
+							style="@style/normalText.span"
+							>
+						</TextView>
+					</LinearLayout>
+				
+				</RelativeLayout>
+				
+				<!--  扩展用
+				
+				<LinearLayout
+				android:orientation="vertical"
+				android:background="@drawable/panel_bg"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="10.0dip"
+				>
+				
+				<RelativeLayout
+					android:id="@+id/relativelayout_7"
+					
+					android:focusable="true"
+					android:clickable="true"
+					android:layout_width="fill_parent"
+					android:layout_height="43.0dip"
+					>
+					
+					<TextView
+						android:id="@+id/textview_15"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_marginLeft="10.0dip"
+						android:text="test"
+						android:layout_alignParentLeft="true"
+						android:layout_centerVertical="true"
+						
+						>
+					</TextView>
+				
+					<TextView
+						android:id="@+id/textview_16"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_marginLeft="10.0dip"
+						android:text="0"
+						android:layout_toRightOf="@+id/textview_15"
+						android:layout_centerVertical="true"
+						
+						>
+					</TextView>
+					<ImageView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_marginRight="20.0dip"
+						android:src="@drawable/icon"
+						android:layout_alignParentRight="true"
+						android:layout_centerVertical="true"
+						>
+					</ImageView>
+				</RelativeLayout>
+			
+				<View
+					android:id="@+id/view_4"
+					android:background="@drawable/horizontal_separation_line_repeat"
+					android:layout_width="fill_parent"
+					android:layout_height="1.0dip"
+					android:layout_centerVertical="true"
+					>
+				</View>
+				
+				<RelativeLayout
+					android:id="@+id/relativelayout_7"
+				
+					android:focusable="true"
+					android:clickable="true"
+					android:layout_width="fill_parent"
+					android:layout_height="43.0dip"
+					>
+					
+					<TextView
+						android:id="@+id/textview_16"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_marginLeft="10.0dip"
+						android:text="tsss"
+						android:layout_alignParentLeft="true"
+						android:layout_centerVertical="true"
+					
+						>
+					</TextView>
+					<ImageView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_marginRight="20.0dip"
+						android:src="@drawable/icon"
+						android:layout_alignParentRight="true"
+						android:layout_centerVertical="true"
+						>
+					</ImageView>
+				</RelativeLayout>
+			</LinearLayout>
+			
+			-->
+			
+			<!-- TODO 工具栏  
+			<LinearLayout
+				android:orientation="vertical"
+		
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="10.0dip"
+				>
+		
+				<RelativeLayout
+					android:id="@+id/relativelayout_7"
+				
+					android:focusable="true"
+					android:clickable="true"
+					android:layout_width="fill_parent"
+					android:layout_height="43.0dip"
+					>
+					
+					<TextView
+						android:id="@+id/textview_16"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_marginLeft="10.0dip"
+						android:text="tsss"
+						android:layout_alignParentLeft="true"
+						android:layout_centerVertical="true"
+					
+						>
+					</TextView>
+					<ImageView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_marginRight="20.0dip"
+						android:src="@drawable/icon"
+						android:layout_alignParentRight="true"
+						android:layout_centerVertical="true"
+						>
+						
+					
+					</ImageView>
+				</RelativeLayout>
+			</LinearLayout>
+			-->
+			
 		</LinearLayout>
-        
-        <!-- 消息数 -->
-        <Button android:id="@+id/btn_tweets"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:text="令狐虫的消息(1024)"
-            />
-        <!-- ta关注的人 -->
-        <Button android:id="@+id/btn_following"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:text="令狐虫关注的人(128)"
-            />
-        <!-- 关注ta的人 -->
-        <Button android:id="@+id/btn_following"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:text="关注令狐虫的人(256)"
-            /> 
-     </LinearLayout>
-   </ScrollView>
-   
+			
+			
+	</ScrollView>
+
 </LinearLayout>

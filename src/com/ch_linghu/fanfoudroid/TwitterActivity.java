@@ -45,7 +45,6 @@ import com.ch_linghu.fanfoudroid.weibo.Paging;
 import com.ch_linghu.fanfoudroid.weibo.Status;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
-//TODO: 暂无获取更旧的消息（例如NeedMore()），用户将无法查看更旧的FriendsTimeline内容。
 public class TwitterActivity extends TwitterCursorBaseActivity {
 	private static final String TAG = "TwitterActivity";
 

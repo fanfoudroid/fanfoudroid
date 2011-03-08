@@ -91,9 +91,9 @@
 
 	<!-- 用户信息页面profile -->
 	<string name="profile_user_location_title">所在地:</string>
-	<string name="profile_user_url_title">饭否主页:</string>
-	<string name="profile_friends_count_title">收听</string>
-	<string name="profile_followers_count_title">听众</string>
+	<string name="profile_user_url_title">网站:</string>
+	<string name="profile_friends_count_title">{0}关注的人</string>
+	<string name="profile_followers_count_title">关注{0}的人</string>
 	<string name="profile_statuses_count_title">消息</string>
 	<string name="profile_favourites_count_title">收藏</string>
 	<string name="profile_description_null">用户未设置自述</string>

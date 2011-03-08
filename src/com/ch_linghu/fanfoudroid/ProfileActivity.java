@@ -1,27 +1,20 @@
 package com.ch_linghu.fanfoudroid;
 
-import java.net.URL;
-import java.text.ParseException;
+import java.text.MessageFormat;
 
-import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.StatusDatabase;
 import com.ch_linghu.fanfoudroid.data.db.UserInfoTable;
-import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.MessageTable;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
-import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
-import com.ch_linghu.fanfoudroid.ui.module.TweetCursorAdapter;
 import com.ch_linghu.fanfoudroid.weibo.User;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -30,14 +23,13 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.text.TextUtils;
+import android.provider.BaseColumns;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * 
@@ -50,6 +42,8 @@ public class ProfileActivity extends WithHeaderActivity {
 	private GenericTask profileInfoTask;// 获取用户信息
 
 	private String userId;
+	private String myself;
+	
 	private User profileInfo;// 用户信息
 
 	private ImageView profileImageView;// 头像
@@ -93,19 +87,21 @@ public class ProfileActivity extends WithHeaderActivity {
 
 		Log.d(TAG, "OnCreate start");
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.myprofile);
+		setContentView(R.layout.profile);
 		initHeader(HEADER_STYLE_HOME);
 
 		Intent intent = getIntent();
 		Bundle extras = intent.getExtras();
+
+		// 获取登录用户id
+		SharedPreferences preferences = PreferenceManager
+				.getDefaultSharedPreferences(this);
+		myself = preferences.getString(Preferences.CURRENT_USER_ID,
+				TwitterApplication.mApi.getUserId());
 		if (extras != null) {
 			this.userId = extras.getString(USER_ID);
 		} else {
-			// 获取登录用户id
-			SharedPreferences preferences = PreferenceManager
-					.getDefaultSharedPreferences(this);
-			userId = preferences.getString(Preferences.CURRENT_USER_ID,
-					TwitterApplication.mApi.getUserId());
+			this.userId = myself;
 		}
 		Uri data = intent.getData();
 		if (data != null) {
@@ -129,6 +125,18 @@ public class ProfileActivity extends WithHeaderActivity {
 		userInfo = (TextView) findViewById(R.id.tweet_user_info);
 		friendsCount = (TextView) findViewById(R.id.friends_count);
 		followersCount = (TextView) findViewById(R.id.followers_count);
+
+		TextView friendsCountTitle = (TextView) findViewById(R.id.friends_count_title);
+		TextView followersCountTitle = (TextView) findViewById(R.id.followers_count_title);
+		String who;
+		if (userId.equals(myself)){
+			who = "我";
+		} else {
+			who = "ta";
+		}
+		friendsCountTitle.setText(MessageFormat.format(getString(R.string.profile_friends_count_title), who));
+		followersCountTitle.setText(MessageFormat.format(getString(R.string.profile_followers_count_title), who));
+
 		statusCount = (TextView) findViewById(R.id.statuses_count);
 		favouritesCount = (TextView) findViewById(R.id.favourites_count);
 
@@ -336,7 +344,7 @@ public class ProfileActivity extends WithHeaderActivity {
 	private boolean updateUser() {
 		ContentValues args = new ContentValues();
 
-		args.put(UserInfoTable._ID, profileInfo.getName());
+		args.put(BaseColumns._ID, profileInfo.getName());
 		
 		args.put(UserInfoTable.FIELD_USER_NAME, profileInfo.getName());
 		
