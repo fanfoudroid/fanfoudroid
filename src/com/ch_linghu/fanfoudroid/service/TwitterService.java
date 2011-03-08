@@ -47,8 +47,8 @@ import com.ch_linghu.fanfoudroid.TwitterActivity;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.data.Dm;
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.data.db.StatusDatabase;
-import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
+import com.ch_linghu.fanfoudroid.data.db.StatusTable;
+import com.ch_linghu.fanfoudroid.data.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
@@ -97,7 +97,7 @@ public class TwitterService extends Service {
 		return null;
 	}
 
-	private StatusDatabase getDb() {
+	private TwitterDatabase getDb() {
 		return TwitterApplication.mDb;
 	}
 
@@ -154,7 +154,7 @@ public class TwitterService extends Service {
 
 		Log.i(TAG, mNewTweets.size() + " new tweets.");
 
-		int count = getDb().addNewTweetsAndCountUnread( mNewTweets, StatusTable.TYPE_HOME);
+		int count = getDb().addNewTweetsAndCountUnread( mNewTweets, TwitterApplication.getMyselfId(), StatusTable.TYPE_HOME);
 
 //		for (Tweet tweet : mNewTweets) {
 //			if (!Utils.isEmpty(tweet.profileImageUrl)) {
@@ -199,7 +199,7 @@ public class TwitterService extends Service {
 
 		Log.i(TAG, mNewMentions.size() + " new mentions.");
 
-		int count = getDb().addNewTweetsAndCountUnread(mNewMentions, StatusTable.TYPE_MENTION);
+		int count = getDb().addNewTweetsAndCountUnread(mNewMentions, TwitterApplication.getMyselfId(), StatusTable.TYPE_MENTION);
 
 //		for (Tweet tweet : mNewMentions) {
 //			if (!Utils.isEmpty(tweet.profileImageUrl)) {
@@ -281,7 +281,7 @@ public class TwitterService extends Service {
 
 		int count = 0;
 
-		StatusDatabase db = getDb();
+		TwitterDatabase db = getDb();
 
 		if (db.fetchDmCount() > 0) {
 			count = db.addNewDmsAndCountUnread(mNewDms);
@@ -392,7 +392,7 @@ public class TwitterService extends Service {
 			boolean dm_only = preferences.getBoolean(Preferences.DM_ONLY_KEY, true);
 			
 			if (timeline_only){
-				String maxId = getDb().fetchMaxTweetId(StatusTable.TYPE_HOME);
+				String maxId = getDb().fetchMaxTweetId(TwitterApplication.getMyselfId(), StatusTable.TYPE_HOME);
 				Log.i(TAG, "Max id is:" + maxId);
 	
 				List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
@@ -426,7 +426,7 @@ public class TwitterService extends Service {
 			}
 			
 			if (replies_only){
-				String maxMentionId = getDb().fetchMaxTweetId(StatusTable.TYPE_MENTION);
+				String maxMentionId = getDb().fetchMaxTweetId(TwitterApplication.getMyselfId(), StatusTable.TYPE_MENTION);
 				Log.i(TAG, "Max mention id is:" + maxMentionId);
 
 				List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;

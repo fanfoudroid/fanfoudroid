@@ -44,8 +44,8 @@ import org.w3c.dom.NodeList;
 import android.database.Cursor;
 import android.util.Log;
 
-import com.ch_linghu.fanfoudroid.data.db.StatusDatabase;
-import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.MessageTable;
+import com.ch_linghu.fanfoudroid.data.db.MessageTable;
+import com.ch_linghu.fanfoudroid.data.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.data.db.UserInfoTable;
 import com.ch_linghu.fanfoudroid.http.Response;
 
@@ -712,7 +712,7 @@ public class User extends WeiboResponse implements java.io.Serializable {
  	    try {
  	    	String createAtStr=cursor.getString(cursor.getColumnIndex(MessageTable.FIELD_CREATED_AT));
  	    	if(createAtStr!=null){
- 	    		u.createdAt = StatusDatabase.DB_DATE_FORMATTER.parse(createAtStr);
+ 	    		u.createdAt = TwitterDatabase.DB_DATE_FORMATTER.parse(createAtStr);
  	    	}
  	    	
  	    } catch (ParseException e) {

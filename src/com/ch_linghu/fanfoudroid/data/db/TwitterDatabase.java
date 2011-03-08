@@ -8,31 +8,33 @@ import java.util.Locale;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.data.Dm;
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.FollowTable;
-import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.MessageTable;
-import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
+import com.ch_linghu.fanfoudroid.helper.Preferences;
+import com.ch_linghu.fanfoudroid.helper.Utils;
 
 /**
  * A Database which contains all statuses and direct-messages, use
  * getInstane(Context) to get a new instance
  * 
  */
-public class StatusDatabase {
+public class TwitterDatabase {
 
     private static final String TAG = "DatabaseHelper";
 
     private static final String DATABASE_NAME = "status_db";
     private static final int DATABASE_VERSION = 1;
 
-    private static StatusDatabase instance = null;
+    private static TwitterDatabase instance = null;
     private DatabaseHelper mOpenHelper = null;
     private Context mContext = null;
 
@@ -104,14 +106,14 @@ public class StatusDatabase {
         }
     }
 
-    private StatusDatabase(Context context) {
+    private TwitterDatabase(Context context) {
         mContext = context;
         mOpenHelper = new DatabaseHelper(context);
     }
 
-    public static synchronized StatusDatabase getInstance(Context context) {
+    public static synchronized TwitterDatabase getInstance(Context context) {
         if (null == instance) {
-            return new StatusDatabase(context);
+            return new TwitterDatabase(context);
         }
         return instance;
     }
@@ -202,14 +204,15 @@ public class StatusDatabase {
      *            <li>StatusTable.TYPE_FAVORITE</li>
      * @return is exists
      */
-    public boolean isExists(String tweetId, int type) {
+    public boolean isExists(String tweetId, String owner, int type) {
         SQLiteDatabase Db = mOpenHelper.getWritableDatabase();
         boolean result = false;
 
         Cursor cursor = Db.query(StatusTable.TABLE_NAME,
                 new String[] { StatusTable._ID }, StatusTable._ID + " =? AND "
-                        + StatusTable.FIELD_STATUS_TYPE + " = " + type,
-                new String[] { tweetId }, null, null, null);
+                    + StatusTable.FIELD_OWNER_ID + "=? AND "    
+                	+ StatusTable.FIELD_STATUS_TYPE + " = " + type,
+                new String[] { tweetId, owner }, null, null, null);
 
         if (cursor != null && cursor.getCount() > 0) {
             result = true;
@@ -228,10 +231,13 @@ public class StatusDatabase {
      *         otherwise. To remove all rows and get a count pass "1" as the
      *         whereClause.
      */
-    public int deleteTweet(String tweetId, int type) {
+    public int deleteTweet(String tweetId, String owner, int type) {
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         
         String where = StatusTable._ID + " =? "; 
+        if (!Utils.isEmpty(owner)){
+        	where += " AND " + StatusTable.FIELD_OWNER_ID + " = '" + owner + "' ";
+        }
         if (-1 != type) {
            where  += " AND " + StatusTable.FIELD_STATUS_TYPE + " = " + type;
         }
@@ -249,18 +255,32 @@ public class StatusDatabase {
      *            <li>StatusTable.TYPE_FAVORITE</li>
      *            <li>-1 means all types</li>
      */
-    public void gc(int type) {
+    public void gc(String owner, int type) {
         SQLiteDatabase mDb = mOpenHelper.getWritableDatabase();
 
         String sql = "DELETE FROM " + StatusTable.TABLE_NAME
                 + " WHERE " + StatusTable._ID + " NOT IN " 
                 + " (SELECT " + StatusTable._ID // 子句
                 + " FROM " + StatusTable.TABLE_NAME;
+        boolean first = true;
+        if (!Utils.isEmpty(owner)){
+        	sql += " WHERE " + StatusTable.FIELD_OWNER_ID + " = '" + owner + "' ";
+        	first = false;
+        }
         if (type != -1){
-            sql += " WHERE " + StatusTable.FIELD_STATUS_TYPE + " = " + type + " ";
+        	if (first){
+        		sql += " WHERE ";
+        	}else{
+        		sql += " AND ";
+        	}
+        	sql += StatusTable.FIELD_STATUS_TYPE + " = " + type + " ";
         }
                 sql += " ORDER BY " + StatusTable.FIELD_CREATED_AT + " DESC LIMIT "
                 + StatusTable.MAX_ROW_NUM + ")";
+
+        if (!Utils.isEmpty(owner)){
+        	sql += " AND " + StatusTable.FIELD_OWNER_ID + " = '" + owner + "' ";
+        }
         if (type != -1) {
             sql += " AND " + StatusTable.FIELD_STATUS_TYPE + " = " + type + " ";
         }
@@ -279,15 +299,15 @@ public class StatusDatabase {
      *            需要写入的单条消息
      * @return the row ID of the newly inserted row, or -1 if an error occurred
      */
-    public long insertTweet(Tweet tweet, int type, boolean isUnread) {
+    public long insertTweet(Tweet tweet, String owner, int type, boolean isUnread) {
         SQLiteDatabase Db = mOpenHelper.getWritableDatabase();
 
-        if (isExists(tweet.id, type)) {
+        if (isExists(tweet.id, owner, type)) {
             Log.i(TAG, tweet.id + "is exists.");
             return -1;
         }
 
-        ContentValues initialValues = makeTweetValues(tweet, type, isUnread);
+        ContentValues initialValues = makeTweetValues(tweet, owner, type, isUnread);
         long id = Db.insert(StatusTable.TABLE_NAME, null, initialValues);
 
         if (-1 == id) {
@@ -316,9 +336,10 @@ public class StatusDatabase {
                 StatusTable._ID + "=?", new String[] { tweetId });
     }
     
-    private ContentValues makeTweetValues(Tweet tweet, int type, boolean isUnread) {
+    private ContentValues makeTweetValues(Tweet tweet, String owner, int type, boolean isUnread) {
         // 插入一条新消息
         ContentValues initialValues = new ContentValues();
+        initialValues.put(StatusTable.FIELD_OWNER_ID, owner);
         initialValues.put(StatusTable.FIELD_STATUS_TYPE, type);
         initialValues.put(StatusTable._ID, tweet.id);
         initialValues.put(StatusTable.FIELD_TEXT, tweet.text);
@@ -351,7 +372,7 @@ public class StatusDatabase {
      *            需要写入的消息List
      * @return
      */
-    public void putTweets(List<Tweet> tweets, int type, boolean isUnread) {
+    public void putTweets(List<Tweet> tweets, String owner, int type, boolean isUnread) {
         //long start = System.currentTimeMillis();
         if (null == tweets || 0 == tweets.size())
             return;
@@ -364,7 +385,7 @@ public class StatusDatabase {
             for (int i = tweets.size() - 1; i >= 0; i--) {
                 Tweet tweet = tweets.get(i);
                 
-                ContentValues initialValues = makeTweetValues(tweet, type, isUnread);
+                ContentValues initialValues = makeTweetValues(tweet, owner, type, isUnread);
                 long id = db.insert(StatusTable.TABLE_NAME, null, initialValues);
 
                 if (-1 == id) {
@@ -384,20 +405,38 @@ public class StatusDatabase {
     }
 
     /**
-     * 取出某一类型的所有消息
+     * 取出指定用户的某一类型的所有消息
+     * 
+     * @param userId
+     * @param tableName
+     * @return a cursor
+     */
+    public Cursor fetchAllTweets(String owner, int type) {
+        SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
+
+        return mDb.query(StatusTable.TABLE_NAME, StatusTable.TABLE_COLUMNS,
+                StatusTable.FIELD_OWNER_ID + " = ? AND " + StatusTable.FIELD_STATUS_TYPE + " = " + type,  
+                new String[]{owner}, null, null,
+                StatusTable.FIELD_CREATED_AT + " DESC ");
+        //LIMIT " + StatusTable.MAX_ROW_NUM);
+    }
+
+    /**
+     * 取出自己的某一类型的所有消息
      * 
      * @param tableName
      * @return a cursor
      */
     public Cursor fetchAllTweets(int type) {
-        SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
-
-        return mDb.query(StatusTable.TABLE_NAME, StatusTable.TABLE_COLUMNS,
-                StatusTable.FIELD_STATUS_TYPE + " = " + type, null, null, null,
-                StatusTable.FIELD_CREATED_AT + " DESC ");
-        //LIMIT " + StatusTable.MAX_ROW_NUM);
+		// 获取登录用户id
+		SharedPreferences preferences = PreferenceManager
+				.getDefaultSharedPreferences(mContext);
+		String myself = preferences.getString(Preferences.CURRENT_USER_ID,
+				TwitterApplication.mApi.getUserId());
+		
+		return fetchAllTweets(myself, type);
+    	
     }
-
     /**
      * 清空某类型的所有信息
      * 
@@ -419,8 +458,8 @@ public class StatusDatabase {
      * @param type
      * @return The newest Status Id
      */
-    public String fetchMaxTweetId(int type) {
-        return fetchMaxOrMinTweetId(type, true);
+    public String fetchMaxTweetId(String owner, int type) {
+        return fetchMaxOrMinTweetId(owner, type, true);
     }
 
     /**
@@ -429,16 +468,18 @@ public class StatusDatabase {
      * @param tableName
      * @return The oldest Status Id
      */
-    public String fetchMinTweetId(int type) {
-        return fetchMaxOrMinTweetId(type, false);
+    public String fetchMinTweetId(String owner, int type) {
+        return fetchMaxOrMinTweetId(owner, type, false);
     }
 
-    private String fetchMaxOrMinTweetId(int type, boolean isMax) {
+    private String fetchMaxOrMinTweetId(String owner, int type, boolean isMax) {
         SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
 
         String sql = "SELECT " + StatusTable._ID + " FROM "
                 + StatusTable.TABLE_NAME + " WHERE "
-                + StatusTable.FIELD_STATUS_TYPE + "=" + type + " ORDER BY "
+                + StatusTable.FIELD_STATUS_TYPE + " = " + type + " AND "
+                + StatusTable.FIELD_OWNER_ID + " = '" + owner + "' "
+                + " ORDER BY "
                 + StatusTable.FIELD_CREATED_AT;
         if (isMax)
             sql += " DESC ";
@@ -468,12 +509,13 @@ public class StatusDatabase {
      * @param tableName
      * @return
      */
-    public int fetchUnreadCount(int type) {
+    public int fetchUnreadCount(String owner, int type) {
         SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
 
         Cursor mCursor = mDb.rawQuery("SELECT COUNT(" + StatusTable._ID + ")"
                 + " FROM " + StatusTable.TABLE_NAME + " WHERE "
                 + StatusTable.FIELD_STATUS_TYPE + " = " + type + " AND "
+                + StatusTable.FIELD_OWNER_ID + " = '" + owner + "' AND "
                 + StatusTable.FIELD_IS_UNREAD + " = 1 ",
                // "LIMIT " + StatusTable.MAX_ROW_NUM,
                 null);
@@ -491,10 +533,10 @@ public class StatusDatabase {
         return result;
     }
 
-    public int addNewTweetsAndCountUnread(List<Tweet> tweets, int type) {
-        putTweets(tweets, type, true);
+    public int addNewTweetsAndCountUnread(List<Tweet> tweets, String owner, int type) {
+        putTweets(tweets, owner, type, true);
 
-        return fetchUnreadCount(type);
+        return fetchUnreadCount(owner, type);
     }
 
     /**
@@ -697,10 +739,11 @@ public class StatusDatabase {
      * @param tableName
      * @return the number of rows affected
      */
-    public int markAllTweetsRead(int type) {
+    public int markAllTweetsRead(String owner, int type) {
         SQLiteDatabase mDb = mOpenHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
+        values.put(StatusTable.FIELD_OWNER_ID, owner);
         values.put(StatusTable.FIELD_IS_UNREAD, 0);
 
         return mDb.update(StatusTable.TABLE_NAME, values,

@@ -26,7 +26,7 @@ import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.TwitterActivity;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.WriteActivity;
-import com.ch_linghu.fanfoudroid.data.db.StatusDatabase;
+import com.ch_linghu.fanfoudroid.data.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.service.TwitterService;
@@ -48,15 +48,27 @@ public class BaseActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
-    PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-    mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-    manageUpdateChecks();
-    
-    // No Titlebar
-	requestWindowFeature(Window.FEATURE_NO_TITLE);
-	requestWindowFeature(Window.FEATURE_PROGRESS);
+    _onCreate(savedInstanceState);
+  }
+  
+  //因为onCreate方法无法返回状态，因此无法进行状态判断，
+  //为了能对上层返回的信息进行判断处理，我们使用_onCreate代替真正的
+  //onCreate进行工作。onCreate仅在顶层调用_onCreate。
+  protected boolean _onCreate(Bundle savedInstanceState){
+	    if (!checkIsLogedIn()){
+	    	return false;
+	    } else {
+		    PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+		    mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+	
+		    manageUpdateChecks();
+		    
+		    // No Titlebar
+			requestWindowFeature(Window.FEATURE_NO_TITLE);
+			requestWindowFeature(Window.FEATURE_PROGRESS);
+		
+			return true;
+	    }
   }
 
   protected void handleLoggedOut() {
@@ -69,7 +81,7 @@ public class BaseActivity extends Activity {
     finish();
   }
 
-  public StatusDatabase getDb() {
+  public TwitterDatabase getDb() {
     return TwitterApplication.mDb;
   }
 

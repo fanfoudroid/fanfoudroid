@@ -258,79 +258,83 @@ public class WriteActivity extends WithHeaderActivity {
 	}
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected boolean _onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "onCreate.");
-		super.onCreate(savedInstanceState);
-
-		// init View
-		setContentView(R.layout.write);
-		initHeader(HEADER_STYLE_WRITE);
-		
-		// Intent & Action & Extras
-		Intent intent = getIntent();
-		String action = intent.getAction();
-		Bundle extras = intent.getExtras();
-		String text = null;
-		Uri uri = null;
-		if(extras != null){
-			text = extras.getString(Intent.EXTRA_TEXT);
-			uri = (Uri)(extras.get(Intent.EXTRA_STREAM));
-		}
-
-		_reply_id = null;
-		_repost_id = null;
-		
-		// View
-		mProgressText = (TextView) findViewById(R.id.progress_text);
-		mTweetEditText = (EditText) findViewById(R.id.tweet_edit);
-
-		// 插入图片
-		chooseImagesButton = (Button) findViewById(R.id.choose_images_button);
-		chooseImagesButton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				Log.i(TAG, "chooseImagesButton onClick");
-				createInsertPhotoDialog();
+		if (super._onCreate(savedInstanceState)){
+			// init View
+			setContentView(R.layout.write);
+			initHeader(HEADER_STYLE_WRITE);
+			
+			// Intent & Action & Extras
+			Intent intent = getIntent();
+			String action = intent.getAction();
+			Bundle extras = intent.getExtras();
+			String text = null;
+			Uri uri = null;
+			if(extras != null){
+				text = extras.getString(Intent.EXTRA_TEXT);
+				uri = (Uri)(extras.get(Intent.EXTRA_STREAM));
 			}
-		});
-
-		// With picture
-		mPreview = (ImageView) findViewById(R.id.preview);
-		if (Intent.ACTION_SEND.equals(intent.getAction()) && uri != null) {
-			getPic(intent, uri);
-		}
-
-		// Update status
-		mTweetEdit = new TweetEdit(mTweetEditText,
-				(TextView) findViewById(R.id.chars_text));
-		mTweetEdit.setOnKeyListener(tweetEnterHandler);
-		mTweetEdit
-				.addTextChangedListener(new MyTextWatcher(WriteActivity.this));
-
-		mTweetEdit.setText(text);
-		if (NEW_TWEET_ACTION.equals(action)) {
-			_reply_id = intent.getStringExtra(EXTRA_REPLY_ID);
-		}
-		
-		if (REPOST_TWEET_ACTION.equals(action)) {
-		    
-		    // 根据用户习惯，将光标放置在转发消息的头部或尾部
-		    SharedPreferences prefereces = getPreferences();
-		    boolean isAppendToTheEnd = prefereces.getBoolean(Preferences.RT_INSERT_APPEND, true);
-		    
-		    EditText inputField = mTweetEdit.getEditText();
-			inputField.setTextKeepState(text);
-		    
-		    Editable etext = inputField.getText();
-		    int position = (isAppendToTheEnd) ? etext.length() : 1;  
-		    Selection.setSelection(etext, position);
-		}
-
-		mSendButton = (Button) findViewById(R.id.send_button);
-		mSendButton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				doSend();
+	
+			_reply_id = null;
+			_repost_id = null;
+			
+			// View
+			mProgressText = (TextView) findViewById(R.id.progress_text);
+			mTweetEditText = (EditText) findViewById(R.id.tweet_edit);
+	
+			// 插入图片
+			chooseImagesButton = (Button) findViewById(R.id.choose_images_button);
+			chooseImagesButton.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View v) {
+					Log.i(TAG, "chooseImagesButton onClick");
+					createInsertPhotoDialog();
+				}
+			});
+	
+			// With picture
+			mPreview = (ImageView) findViewById(R.id.preview);
+			if (Intent.ACTION_SEND.equals(intent.getAction()) && uri != null) {
+				getPic(intent, uri);
 			}
-		});
+	
+			// Update status
+			mTweetEdit = new TweetEdit(mTweetEditText,
+					(TextView) findViewById(R.id.chars_text));
+			mTweetEdit.setOnKeyListener(tweetEnterHandler);
+			mTweetEdit
+					.addTextChangedListener(new MyTextWatcher(WriteActivity.this));
+	
+			mTweetEdit.setText(text);
+			if (NEW_TWEET_ACTION.equals(action)) {
+				_reply_id = intent.getStringExtra(EXTRA_REPLY_ID);
+			}
+			
+			if (REPOST_TWEET_ACTION.equals(action)) {
+			    
+			    // 根据用户习惯，将光标放置在转发消息的头部或尾部
+			    SharedPreferences prefereces = getPreferences();
+			    boolean isAppendToTheEnd = prefereces.getBoolean(Preferences.RT_INSERT_APPEND, true);
+			    
+			    EditText inputField = mTweetEdit.getEditText();
+				inputField.setTextKeepState(text);
+			    
+			    Editable etext = inputField.getText();
+			    int position = (isAppendToTheEnd) ? etext.length() : 1;  
+			    Selection.setSelection(etext, position);
+			}
+	
+			mSendButton = (Button) findViewById(R.id.send_button);
+			mSendButton.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View v) {
+					doSend();
+				}
+			});
+			
+			return true;
+		}else{
+			return false;
+		}
 		
 		
 	}

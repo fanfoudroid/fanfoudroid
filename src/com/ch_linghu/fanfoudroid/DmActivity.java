@@ -28,8 +28,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.data.Dm;
-import com.ch_linghu.fanfoudroid.data.db.StatusDatabase;
-import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.MessageTable;
+import com.ch_linghu.fanfoudroid.data.db.MessageTable;
+import com.ch_linghu.fanfoudroid.data.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
@@ -153,60 +153,59 @@ public class DmActivity extends WithHeaderActivity {
 	}
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		if (!getApi().isLoggedIn()) {
-			Log.i(TAG, "Not logged in.");
-			handleLoggedOut();
-			return;
+	protected boolean _onCreate(Bundle savedInstanceState) {
+		if (super._onCreate(savedInstanceState))
+		{
+			setContentView(R.layout.dm);
+			initHeader(HEADER_STYLE_HOME);
+			setHeaderTitle("我的私信");
+	
+			// 绑定底部栏按钮onClick监听器
+			bindFooterButtonEvent();
+	
+			mTweetList = (ListView) findViewById(R.id.tweet_list);
+	
+			mProgressText = (TextView) findViewById(R.id.progress_text);
+	
+			TwitterDatabase db = getDb();
+			// Mark all as read.
+			db.markAllDmsRead();
+	
+			setupAdapter(); // Make sure call bindFooterButtonEvent first
+	
+			boolean shouldRetrieve = false;
+	
+			long lastRefreshTime = mPreferences.getLong(
+					Preferences.LAST_DM_REFRESH_KEY, 0);
+			long nowTime = Utils.getNowTime();
+	
+			long diff = nowTime - lastRefreshTime;
+			Log.i(TAG, "Last refresh was " + diff + " ms ago.");
+	
+			if (diff > REFRESH_THRESHOLD) {
+				shouldRetrieve = true;
+			} else if (Utils.isTrue(savedInstanceState, SIS_RUNNING_KEY)) {
+				// Check to see if it was running a send or retrieve task.
+				// It makes no sense to resend the send request (don't want dupes)
+				// so we instead retrieve (refresh) to see if the message has
+				// posted.
+				Log.i(TAG,
+						"Was last running a retrieve or send task. Let's refresh.");
+				shouldRetrieve = true;
+			}
+	
+			if (shouldRetrieve) {
+				doRetrieve();
+			}
+	
+			// Want to be able to focus on the items with the trackball.
+			// That way, we can navigate up and down by changing item focus.
+			mTweetList.setItemsCanFocus(true);
+			
+			return true;
+		}else{
+			return false;
 		}
-
-		setContentView(R.layout.dm);
-		initHeader(HEADER_STYLE_HOME);
-		setHeaderTitle("我的私信");
-
-		// 绑定底部栏按钮onClick监听器
-		bindFooterButtonEvent();
-
-		mTweetList = (ListView) findViewById(R.id.tweet_list);
-
-		mProgressText = (TextView) findViewById(R.id.progress_text);
-
-		StatusDatabase db = getDb();
-		// Mark all as read.
-		db.markAllDmsRead();
-
-		setupAdapter(); // Make sure call bindFooterButtonEvent first
-
-		boolean shouldRetrieve = false;
-
-		long lastRefreshTime = mPreferences.getLong(
-				Preferences.LAST_DM_REFRESH_KEY, 0);
-		long nowTime = Utils.getNowTime();
-
-		long diff = nowTime - lastRefreshTime;
-		Log.i(TAG, "Last refresh was " + diff + " ms ago.");
-
-		if (diff > REFRESH_THRESHOLD) {
-			shouldRetrieve = true;
-		} else if (Utils.isTrue(savedInstanceState, SIS_RUNNING_KEY)) {
-			// Check to see if it was running a send or retrieve task.
-			// It makes no sense to resend the send request (don't want dupes)
-			// so we instead retrieve (refresh) to see if the message has
-			// posted.
-			Log.i(TAG,
-					"Was last running a retrieve or send task. Let's refresh.");
-			shouldRetrieve = true;
-		}
-
-		if (shouldRetrieve) {
-			doRetrieve();
-		}
-
-		// Want to be able to focus on the items with the trackball.
-		// That way, we can navigate up and down by changing item focus.
-		mTweetList.setItemsCanFocus(true);
 	}
 
 	@Override
@@ -313,7 +312,7 @@ public class DmActivity extends WithHeaderActivity {
 
 			ArrayList<Dm> dms = new ArrayList<Dm>();
 
-			StatusDatabase db = getDb();
+			TwitterDatabase db = getDb();
 			//ImageManager imageManager = getImageManager();
 
 			String maxId = db.fetchMaxDmId(false);
@@ -497,7 +496,7 @@ public class DmActivity extends WithHeaderActivity {
 
 			try {
 				holder.metaText.setText(Utils
-						.getRelativeDate(StatusDatabase.DB_DATE_FORMATTER
+						.getRelativeDate(TwitterDatabase.DB_DATE_FORMATTER
 								.parse(cursor.getString(mCreatedAtColumn))));
 			} catch (ParseException e) {
 				Log.w(TAG, "Invalid created at data.");

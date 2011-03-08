@@ -8,7 +8,6 @@ import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.data.User;
 
-import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.MessageTable;
 
 public final class UserInfoTable implements BaseColumns {
 
@@ -90,7 +89,7 @@ public final class UserInfoTable implements BaseColumns {
 		user.isFollowing = (0 == cursor.getInt(cursor.getColumnIndex(FIELD_FOLLOWING))) ? false : true;
 	
 	    try {
-	        user.createdAt = StatusDatabase.DB_DATE_FORMATTER.parse(cursor.getString(cursor.getColumnIndex(MessageTable.FIELD_CREATED_AT)));
+	        user.createdAt = TwitterDatabase.DB_DATE_FORMATTER.parse(cursor.getString(cursor.getColumnIndex(MessageTable.FIELD_CREATED_AT)));
 	    } catch (ParseException e) {
 	        Log.w(TAG, "Invalid created at data.");
 	    }

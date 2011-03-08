@@ -228,13 +228,6 @@ public class WithHeaderActivity extends BaseActivity {
 	}
 	
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-//		View header = (View) View.inflate(WithHeaderActivity.this, R.layout.header, null);
-
-	}
-
-	@Override
 	protected void onDestroy() {
 		// dismiss dialog before destroy 
 		// to avoid android.view.WindowLeaked Exception

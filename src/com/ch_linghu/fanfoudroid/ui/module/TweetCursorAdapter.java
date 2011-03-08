@@ -22,8 +22,8 @@ import android.widget.TextView;
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.data.db.StatusDatabase;
-import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
+import com.ch_linghu.fanfoudroid.data.db.StatusTable;
+import com.ch_linghu.fanfoudroid.data.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
 import com.ch_linghu.fanfoudroid.helper.Utils;
@@ -136,7 +136,7 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		}
 
 		try {
-			Date createdAt = StatusDatabase.DB_DATE_FORMATTER.parse(cursor
+			Date createdAt = TwitterDatabase.DB_DATE_FORMATTER.parse(cursor
 					.getString(mCreatedAtColumn));
 			holder.metaText.setText(Tweet.buildMetaText(mMetaBuilder,
 					createdAt, cursor.getString(mSourceColumn), cursor

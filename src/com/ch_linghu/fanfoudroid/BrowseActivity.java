@@ -3,11 +3,14 @@ package com.ch_linghu.fanfoudroid;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
+import com.ch_linghu.fanfoudroid.data.db.StatusTable;
+import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterCursorBaseActivity;
 import com.ch_linghu.fanfoudroid.weibo.Paging;
 import com.ch_linghu.fanfoudroid.weibo.Status;
@@ -20,13 +23,15 @@ import com.ch_linghu.fanfoudroid.weibo.WeiboException;
  */
 public class BrowseActivity extends TwitterCursorBaseActivity {
 	private static final String TAG = "BrowseActivity";
-
+	
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
-		super.onCreate(savedInstanceState);
-		
-		setHeaderTitle(getActivityTitle());
+	protected boolean _onCreate(Bundle savedInstanceState) {
+		if (super._onCreate(savedInstanceState)){
+			setHeaderTitle(getActivityTitle());
+			return true;
+		}else{
+			return false;
+		}
 	}
 
 	@Override
@@ -36,17 +41,17 @@ public class BrowseActivity extends TwitterCursorBaseActivity {
 
 	@Override
 	public void addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
-	    getDb().putTweets(tweets, StatusTable.TYPE_BROWSE, isUnread);
+	    getDb().putTweets(tweets, getUserId(), StatusTable.TYPE_BROWSE, isUnread);
 	}
 
 	@Override
 	public String fetchMaxId() {
-	    return getDb().fetchMaxTweetId(StatusTable.TYPE_BROWSE);
+	    return getDb().fetchMaxTweetId(getUserId(), StatusTable.TYPE_BROWSE);
 	}
 
 	@Override
 	protected Cursor fetchMessages() {
-		return getDb().fetchAllTweets(StatusTable.TYPE_BROWSE);
+		return getDb().fetchAllTweets(getUserId(), StatusTable.TYPE_BROWSE);
 	}
 
 	@Override
@@ -56,7 +61,7 @@ public class BrowseActivity extends TwitterCursorBaseActivity {
 
 	@Override
 	protected void markAllRead() {
-		getDb().markAllTweetsRead(StatusTable.TYPE_BROWSE);
+		getDb().markAllTweetsRead(getUserId(), StatusTable.TYPE_BROWSE);
 	}
 
 	@Override
@@ -75,6 +80,11 @@ public class BrowseActivity extends TwitterCursorBaseActivity {
 	@Override
 	public int getDatabaseType() {
 		return StatusTable.TYPE_BROWSE;
+	}
+
+	@Override
+	public String getUserId() {
+		return TwitterApplication.getMyselfId();
 	}
 
 }

@@ -4,8 +4,9 @@ import java.io.IOException;
 
 import android.util.Log;
 
+import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
+import com.ch_linghu.fanfoudroid.data.db.StatusTable;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.ui.base.BaseActivity;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
@@ -30,7 +31,7 @@ public class TweetCommonTask {
 				status = activity.getApi().destroyStatus(id);
 
 				// 对所有相关表的对应消息都进行删除（如果存在的话）
-				activity.getDb().deleteTweet(status.getId(), -1);
+				activity.getDb().deleteTweet(status.getId(), "", -1);
 			} catch (WeiboException e) {
 				Log.e(TAG, e.getMessage(), e);
 				return TaskResult.IO_ERROR;
@@ -90,7 +91,7 @@ public class TweetCommonTask {
 //				}
 
 				if(action.equals(TYPE_DEL)){
-					activity.getDb().deleteTweet(tweet.id, StatusTable.TYPE_FAVORITE);
+					activity.getDb().deleteTweet(tweet.id, TwitterApplication.getMyselfId(), StatusTable.TYPE_FAVORITE);
 				}
 			} catch (WeiboException e) {
 				Log.e(TAG, e.getMessage(), e);

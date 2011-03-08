@@ -208,59 +208,60 @@ public class UserActivity extends TwitterListBaseActivity implements MyListView.
   }
 
   @Override
-  protected void onCreate(Bundle savedInstanceState) {
-	super.onCreate(savedInstanceState);
-
+  protected boolean _onCreate(Bundle savedInstanceState) {
+	if (super._onCreate(savedInstanceState)){
+	    // 用户栏（用户名/头像）
+	    mUserText 	  = (TextView) findViewById(R.id.tweet_user_text);
+	    mNameText 	  = (TextView) findViewById(R.id.realname_text);
+	    mProfileImage = (ImageView) findViewById(R.id.profile_image);
+	    
+	    // follow button
+	    mFollowButton = (Button) findViewById(R.id.follow_button);
+	    mFollowButton.setOnClickListener(new OnClickListener() {
+	      public void onClick(View v) {
+	        confirmFollow();
+	      }
+	    });
 	
+	    Intent intent = getIntent();
+	    Uri data = intent.getData();
 	
-    
-    // 用户栏（用户名/头像）
-    mUserText 	  = (TextView) findViewById(R.id.tweet_user_text);
-    mNameText 	  = (TextView) findViewById(R.id.realname_text);
-    mProfileImage = (ImageView) findViewById(R.id.profile_image);
-    
-    // follow button
-    mFollowButton = (Button) findViewById(R.id.follow_button);
-    mFollowButton.setOnClickListener(new OnClickListener() {
-      public void onClick(View v) {
-        confirmFollow();
-      }
-    });
-
-    Intent intent = getIntent();
-    Uri data = intent.getData();
-
-    // Input username
-    mUsername = intent.getStringExtra(EXTRA_USER);
-    mScreenName = intent.getStringExtra(EXTRA_NAME_SCREEN);
-
-    if (TextUtils.isEmpty(mUsername)) {
-      mUsername = data.getLastPathSegment();
-    }
-    
-    // Set header title 
-    String header_title = (!TextUtils.isEmpty(mScreenName)) ? mScreenName : mUsername;
-    setHeaderTitle("@" + header_title);
-    
-    setTitle("@" + mUsername);
-    mUserText.setText("@" + mUsername);
-
-    State state = (State) getLastNonConfigurationInstance();
-    
-    
-    boolean wasRunning = Utils.isTrue(savedInstanceState, SIS_RUNNING_KEY);
-
-    if (state != null && !wasRunning) {
-      mTweets = state.mTweets;
-      mUser = state.mUser;
-      mIsFollowing = state.mIsFollowing;
-      mIsFollower = state.mIsFollower;
-      mNextPage = state.mNextPage;
-
-      draw();
-    } else {
-      doRetrieve();
-    }
+	    // Input username
+	    mUsername = intent.getStringExtra(EXTRA_USER);
+	    mScreenName = intent.getStringExtra(EXTRA_NAME_SCREEN);
+	
+	    if (TextUtils.isEmpty(mUsername)) {
+	      mUsername = data.getLastPathSegment();
+	    }
+	    
+	    // Set header title 
+	    String header_title = (!TextUtils.isEmpty(mScreenName)) ? mScreenName : mUsername;
+	    setHeaderTitle("@" + header_title);
+	    
+	    setTitle("@" + mUsername);
+	    mUserText.setText("@" + mUsername);
+	
+	    State state = (State) getLastNonConfigurationInstance();
+	    
+	    
+	    boolean wasRunning = Utils.isTrue(savedInstanceState, SIS_RUNNING_KEY);
+	
+	    if (state != null && !wasRunning) {
+	      mTweets = state.mTweets;
+	      mUser = state.mUser;
+	      mIsFollowing = state.mIsFollowing;
+	      mIsFollower = state.mIsFollower;
+	      mNextPage = state.mNextPage;
+	
+	      draw();
+	    } else {
+	      doRetrieve();
+	    }
+	    
+	    return true;
+	}else{
+		return false;
+	}
 
   }
 

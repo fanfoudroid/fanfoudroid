@@ -13,8 +13,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.ch_linghu.fanfoudroid.data.db.StatusDatabase;
-import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
+import com.ch_linghu.fanfoudroid.data.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheManager;
@@ -26,11 +25,20 @@ public class TwitterApplication extends Application {
     
     //public static ImageManager mImageManager;
     public static ProfileImageCacheManager mProfileImageCacheManager;
-    public static StatusDatabase mDb;
+    public static TwitterDatabase mDb;
     public static Weibo mApi; // new API
     public static Context mContext;
     
     public static int networkType = 0;
+
+    
+	// 获取登录用户id
+    public static String getMyselfId(){
+		SharedPreferences preferences = PreferenceManager
+				.getDefaultSharedPreferences(mContext);
+		return preferences.getString(Preferences.CURRENT_USER_ID,
+				TwitterApplication.mApi.getUserId());
+    }
 
     @Override
     public void onCreate() {
@@ -40,7 +48,7 @@ public class TwitterApplication extends Application {
         //mImageManager = new ImageManager(this);
         mProfileImageCacheManager = new ProfileImageCacheManager();
         mApi = new Weibo();
-        mDb = StatusDatabase.getInstance(this);
+        mDb = TwitterDatabase.getInstance(this);
 
         SharedPreferences preferences = PreferenceManager
                 .getDefaultSharedPreferences(this);

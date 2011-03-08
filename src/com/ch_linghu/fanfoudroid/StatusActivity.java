@@ -170,50 +170,54 @@ public class StatusActivity extends WithHeaderActivity{
 
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected boolean _onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "onCreate.");
-		super.onCreate(savedInstanceState);
-
-		mClient = getApi().getHttpClient();
-		
-		// Intent & Action & Extras
-		Intent intent = getIntent();
-		String action = intent.getAction();
-		Bundle extras = intent.getExtras();
-		
-		// Must has extras
-		if (null == extras) {
-		    Log.e(TAG, this.getClass().getName()  + " must has extras.");
-		    finish();
-		    return;
+		if (super._onCreate(savedInstanceState)){
+			mClient = getApi().getHttpClient();
+			
+			// Intent & Action & Extras
+			Intent intent = getIntent();
+			String action = intent.getAction();
+			Bundle extras = intent.getExtras();
+			
+			// Must has extras
+			if (null == extras) {
+			    Log.e(TAG, this.getClass().getName()  + " must has extras.");
+			    finish();
+			    return false;
+			}
+			
+			// init View
+	        setContentView(R.layout.status);
+	        initHeader(HEADER_STYLE_BACK);
+	
+			// View
+			tweet_screen_name	= (TextView)	findViewById(R.id.tweet_screen_name);
+			tweet_user_info		= (TextView)	findViewById(R.id.tweet_user_info);
+			tweet_text			= (TextView)	findViewById(R.id.tweet_text);
+			tweet_source		= (TextView)	findViewById(R.id.tweet_source);
+			profile_image		= (ImageView)	findViewById(R.id.profile_image);
+			tweet_created_at 	= (TextView)	findViewById(R.id.tweet_created_at);
+			btn_person_more 	= (ImageButton)	findViewById(R.id.person_more);
+			tweet_fav           = (ImageButton)   findViewById(R.id.tweet_fav);
+			
+	        reply_wrap = (ViewGroup) findViewById(R.id.reply_wrap);
+	        reply_status_text = (TextView) findViewById(R.id.reply_status_text);
+	        reply_status_date = (TextView) findViewById(R.id.reply_tweet_created_at);
+	    	status_photo = (ImageView)findViewById(R.id.status_photo);
+	
+			// Set view with intent data
+			this.tweet = extras.getParcelable(EXTRA_TWEET);
+			draw(); 
+			
+			// 绑定监听器
+			bindFooterBarListener();
+			bindReplyViewListener();
+			
+			return true;
+		}else{
+			return false;
 		}
-		
-		// init View
-        setContentView(R.layout.status);
-        initHeader(HEADER_STYLE_BACK);
-
-		// View
-		tweet_screen_name	= (TextView)	findViewById(R.id.tweet_screen_name);
-		tweet_user_info		= (TextView)	findViewById(R.id.tweet_user_info);
-		tweet_text			= (TextView)	findViewById(R.id.tweet_text);
-		tweet_source		= (TextView)	findViewById(R.id.tweet_source);
-		profile_image		= (ImageView)	findViewById(R.id.profile_image);
-		tweet_created_at 	= (TextView)	findViewById(R.id.tweet_created_at);
-		btn_person_more 	= (ImageButton)	findViewById(R.id.person_more);
-		tweet_fav           = (ImageButton)   findViewById(R.id.tweet_fav);
-		
-        reply_wrap = (ViewGroup) findViewById(R.id.reply_wrap);
-        reply_status_text = (TextView) findViewById(R.id.reply_status_text);
-        reply_status_date = (TextView) findViewById(R.id.reply_tweet_created_at);
-    	status_photo = (ImageView)findViewById(R.id.status_photo);
-
-		// Set view with intent data
-		this.tweet = extras.getParcelable(EXTRA_TWEET);
-		draw(); 
-		
-		// 绑定监听器
-		bindFooterBarListener();
-		bindReplyViewListener();
 	}
 	
 	private void bindFooterBarListener() {

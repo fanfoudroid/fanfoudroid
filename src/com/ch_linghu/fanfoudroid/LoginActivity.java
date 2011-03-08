@@ -16,6 +16,7 @@
 
 package com.ch_linghu.fanfoudroid;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -40,11 +41,11 @@ import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
-import com.ch_linghu.fanfoudroid.ui.base.BaseActivity;
 import com.ch_linghu.fanfoudroid.weibo.User;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
-public class LoginActivity extends BaseActivity { // TODO: FIXME: 登录页面需要个性化的菜单绑定, 不直接继承 BaseActivity
+//登录页面需要个性化的菜单绑定, 不直接继承 BaseActivity
+public class LoginActivity extends Activity { 
     private static final String TAG = "LoginActivity";
     private static final String SIS_RUNNING_KEY = "running";
 

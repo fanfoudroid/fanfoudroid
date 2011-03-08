@@ -26,7 +26,7 @@ import android.os.Bundle;
 import android.view.Menu;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
+import com.ch_linghu.fanfoudroid.data.db.StatusTable;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterCursorBaseActivity;
 import com.ch_linghu.fanfoudroid.weibo.Paging;
 import com.ch_linghu.fanfoudroid.weibo.Status;
@@ -54,10 +54,13 @@ public class MentionActivity extends TwitterCursorBaseActivity {
 	}
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		
-		setHeaderTitle("@提到我的");
+	protected boolean _onCreate(Bundle savedInstanceState) {
+		if (super._onCreate(savedInstanceState)){
+			setHeaderTitle("@提到我的");
+			return true;
+		}else{
+			return false;
+		}
 	}
 
 	@Override
@@ -67,19 +70,16 @@ public class MentionActivity extends TwitterCursorBaseActivity {
 	
 	@Override
 	protected Cursor fetchMessages() {
-		// TODO Auto-generated method stub
-		return getDb().fetchAllTweets(StatusTable.TYPE_MENTION);
+		return getDb().fetchAllTweets(getUserId(), StatusTable.TYPE_MENTION);
 	}
 	
 	@Override
 	protected void markAllRead() {
-		// TODO Auto-generated method stub
-		getDb().markAllTweetsRead(StatusTable.TYPE_MENTION);
+		getDb().markAllTweetsRead(getUserId(), StatusTable.TYPE_MENTION);
 	}
 	
 	@Override
 	protected String getActivityTitle() {
-		// TODO Auto-generated method stub
 		return getResources().getString(R.string.page_title_mentions);
 	}
 	
@@ -88,8 +88,7 @@ public class MentionActivity extends TwitterCursorBaseActivity {
 
 	@Override
 	public String fetchMaxId() {
-		// TODO Auto-generated method stub
-		return getDb().fetchMaxTweetId(StatusTable.TYPE_MENTION);
+		return getDb().fetchMaxTweetId(getUserId(), StatusTable.TYPE_MENTION);
 	}
 
 	@Override
@@ -103,12 +102,12 @@ public class MentionActivity extends TwitterCursorBaseActivity {
 
 	@Override
 	public void addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
-		getDb().putTweets(tweets, StatusTable.TYPE_MENTION, isUnread);
+		getDb().putTweets(tweets, getUserId(), StatusTable.TYPE_MENTION, isUnread);
 	}
 
 	@Override
 	public String fetchMinId() {
-		return getDb().fetchMinTweetId(StatusTable.TYPE_MENTION);
+		return getDb().fetchMinTweetId(getUserId(), StatusTable.TYPE_MENTION);
 	}
 
 	@Override
@@ -122,5 +121,10 @@ public class MentionActivity extends TwitterCursorBaseActivity {
 	@Override
 	public int getDatabaseType() {
 		return StatusTable.TYPE_MENTION;
+	}
+
+	@Override
+	public String getUserId() {
+		return TwitterApplication.getMyselfId();
 	}
 }

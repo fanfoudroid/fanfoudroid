@@ -2,7 +2,7 @@ package com.ch_linghu.fanfoudroid;
 
 import java.text.MessageFormat;
 
-import com.ch_linghu.fanfoudroid.data.db.StatusDatabase;
+import com.ch_linghu.fanfoudroid.data.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.data.db.UserInfoTable;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
@@ -65,7 +65,7 @@ public class ProfileActivity extends WithHeaderActivity {
 	private static final String FANFOUROOT = "http://fanfou.com/";
 	private static final String USER_ID = "userid";
 
-	private StatusDatabase db;
+	private TwitterDatabase db;
 
 	public static Intent createIntent(String userId) {
 		Intent intent = new Intent(LAUNCH_ACTION);
@@ -83,37 +83,38 @@ public class ProfileActivity extends WithHeaderActivity {
 	};
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected boolean _onCreate(Bundle savedInstanceState) {
 
 		Log.d(TAG, "OnCreate start");
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.profile);
-		initHeader(HEADER_STYLE_HOME);
-
-		Intent intent = getIntent();
-		Bundle extras = intent.getExtras();
-
-		// 获取登录用户id
-		SharedPreferences preferences = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		myself = preferences.getString(Preferences.CURRENT_USER_ID,
-				TwitterApplication.mApi.getUserId());
-		if (extras != null) {
-			this.userId = extras.getString(USER_ID);
-		} else {
-			this.userId = myself;
+		if (super._onCreate(savedInstanceState)){
+			setContentView(R.layout.profile);
+			initHeader(HEADER_STYLE_HOME);
+	
+			Intent intent = getIntent();
+			Bundle extras = intent.getExtras();
+	
+			myself = TwitterApplication.getMyselfId();
+			if (extras != null) {
+				this.userId = extras.getString(USER_ID);
+			} else {
+				this.userId = myself;
+			}
+			Uri data = intent.getData();
+			if (data != null) {
+				userId = data.getLastPathSegment();
+			}
+	
+			// 初始化控件
+			initControls();
+	
+			Log.i(TAG, "the userid is " + userId);
+			db = this.getDb();
+			draw();
+			
+			return true;
+		}else{
+			return false;
 		}
-		Uri data = intent.getData();
-		if (data != null) {
-			userId = data.getLastPathSegment();
-		}
-
-		// 初始化控件
-		initControls();
-
-		Log.i(TAG, "the userid is " + userId);
-		db = this.getDb();
-		draw();
 	}
 
 	private void initControls() {
@@ -177,12 +178,10 @@ public class ProfileActivity extends WithHeaderActivity {
 
 			@Override
 			public void onClick(View v) {
-				// TODO: 收藏页面因为是从数据库获得数据，目前还不能简单的实现
-				// 其他人的收藏，需要重新考虑
-				// Intent intent = FavoritesActivity.createIntent(userId);
-				// intent.setClass(ProfileActivity.this,
-				// FavoritesActivity.class);
-				// startActivity(intent);
+				 Intent intent = FavoritesActivity.createIntent(userId);
+				 intent.setClass(ProfileActivity.this,
+				 FavoritesActivity.class);
+				 startActivity(intent);
 			}
 		});
 

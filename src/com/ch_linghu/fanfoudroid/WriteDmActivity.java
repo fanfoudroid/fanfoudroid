@@ -38,8 +38,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.data.Dm;
-import com.ch_linghu.fanfoudroid.data.db.StatusDatabase;
-import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
+import com.ch_linghu.fanfoudroid.data.db.StatusTable;
+import com.ch_linghu.fanfoudroid.data.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -158,57 +158,61 @@ public class WriteDmActivity extends WithHeaderActivity {
 	}
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected boolean _onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "onCreate.");
-		super.onCreate(savedInstanceState);
-
-		// init View
-		setContentView(R.layout.write_dm);
-		initHeader(HEADER_STYLE_WRITE);
-
-		// Intent & Action & Extras
-		Intent intent = getIntent();
-		Bundle extras = intent.getExtras();
-
-		// View
-		mProgressText = (TextView) findViewById(R.id.progress_text);
-		mTweetEditText = (EditText) findViewById(R.id.tweet_edit);
-		
-		StatusDatabase db = getDb();
-
-		//FIXME: 暂时取消收件人自动完成功能
-	    //mToEdit = (AutoCompleteTextView) findViewById(R.id.to_edit);
-	    //Cursor cursor = db.getFollowerUsernames("");
-	    //// startManagingCursor(cursor);
-	    //mFriendsAdapter = new FriendsAdapter(this, cursor);
-	    //mToEdit.setAdapter(mFriendsAdapter);
-		
-		mToEdit = (TextView) findViewById(R.id.to_edit);
-	    
-	    // Update status
-		mTweetEdit = new TweetEdit(mTweetEditText,
-				(TextView) findViewById(R.id.chars_text));
-		mTweetEdit.setOnKeyListener(editEnterHandler);
-		mTweetEdit
-				.addTextChangedListener(new MyTextWatcher(WriteDmActivity.this));
-
-		// With extras
-	    if (extras != null) {
-	      String to = extras.getString(EXTRA_USER);
-	      if (!Utils.isEmpty(to)) {
-	        mToEdit.setText(to);
-	        mTweetEdit.requestFocus();
-	      }
-	    }
-
-		
-
-		mSendButton = (Button) findViewById(R.id.send_button);
-		mSendButton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				doSend();
-			}
-		});
+		if (super._onCreate(savedInstanceState)){
+			// init View
+			setContentView(R.layout.write_dm);
+			initHeader(HEADER_STYLE_WRITE);
+	
+			// Intent & Action & Extras
+			Intent intent = getIntent();
+			Bundle extras = intent.getExtras();
+	
+			// View
+			mProgressText = (TextView) findViewById(R.id.progress_text);
+			mTweetEditText = (EditText) findViewById(R.id.tweet_edit);
+			
+			TwitterDatabase db = getDb();
+	
+			//FIXME: 暂时取消收件人自动完成功能
+		    //mToEdit = (AutoCompleteTextView) findViewById(R.id.to_edit);
+		    //Cursor cursor = db.getFollowerUsernames("");
+		    //// startManagingCursor(cursor);
+		    //mFriendsAdapter = new FriendsAdapter(this, cursor);
+		    //mToEdit.setAdapter(mFriendsAdapter);
+			
+			mToEdit = (TextView) findViewById(R.id.to_edit);
+		    
+		    // Update status
+			mTweetEdit = new TweetEdit(mTweetEditText,
+					(TextView) findViewById(R.id.chars_text));
+			mTweetEdit.setOnKeyListener(editEnterHandler);
+			mTweetEdit
+					.addTextChangedListener(new MyTextWatcher(WriteDmActivity.this));
+	
+			// With extras
+		    if (extras != null) {
+		      String to = extras.getString(EXTRA_USER);
+		      if (!Utils.isEmpty(to)) {
+		        mToEdit.setText(to);
+		        mTweetEdit.requestFocus();
+		      }
+		    }
+	
+			
+	
+			mSendButton = (Button) findViewById(R.id.send_button);
+			mSendButton.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View v) {
+					doSend();
+				}
+			});
+			
+			return true;
+		}else{
+			return false;
+		}
 	}
 	
 	@Override

@@ -33,7 +33,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
+import com.ch_linghu.fanfoudroid.data.db.StatusTable;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
@@ -87,11 +87,13 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 	}
 	
 	@Override
-    protected void onCreate(Bundle savedInstanceState) {
-        // TODO Auto-generated method stub
-        super.onCreate(savedInstanceState);
-        
-        setHeaderTitle("饭否fanfou.com");
+    protected boolean _onCreate(Bundle savedInstanceState) {
+        if (super._onCreate(savedInstanceState)){
+        	setHeaderTitle("饭否fanfou.com");
+        	return true;
+        }else{
+        	return false;
+        }
     }
 
     @Override
@@ -161,7 +163,7 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 
 	@Override
 	protected Cursor fetchMessages() {
-		return getDb().fetchAllTweets(StatusTable.TYPE_HOME);
+		return getDb().fetchAllTweets(getUserId(), StatusTable.TYPE_HOME);
 	}
 
 	@Override
@@ -171,18 +173,18 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 
 	@Override
 	protected void markAllRead() {
-		getDb().markAllTweetsRead(StatusTable.TYPE_HOME);
+		getDb().markAllTweetsRead(getUserId(), StatusTable.TYPE_HOME);
 	}
 	
 	// hasRetrieveListTask interface
 	@Override
 	public void addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
-	    getDb().putTweets(tweets, StatusTable.TYPE_HOME, isUnread);
+	    getDb().putTweets(tweets, getUserId(), StatusTable.TYPE_HOME, isUnread);
 	}
 	
 	@Override
 	public String fetchMaxId() {
-	    return getDb().fetchMaxTweetId(StatusTable.TYPE_HOME);
+	    return getDb().fetchMaxTweetId(getUserId(), StatusTable.TYPE_HOME);
 	}
 	
 	@Override
@@ -218,7 +220,7 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 	
 	@Override
 	public String fetchMinId() {
-		return getDb().fetchMinTweetId(StatusTable.TYPE_HOME);
+		return getDb().fetchMinTweetId(getUserId(), StatusTable.TYPE_HOME);
 	}
 
 	@Override
@@ -232,5 +234,10 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 	@Override
 	public int getDatabaseType() {
 		return StatusTable.TYPE_HOME;
+	}
+
+	@Override
+	public String getUserId() {
+		return TwitterApplication.getMyselfId();
 	}
 }

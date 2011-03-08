@@ -36,7 +36,7 @@ import android.widget.TextView;
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.User;
-import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
+import com.ch_linghu.fanfoudroid.data.db.StatusTable;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
@@ -93,7 +93,9 @@ public abstract class UserCursorBaseActivity extends TwitterListBaseActivity{
 						.getNowTime());
 				editor.commit();
 				//TODO: 1. StatusType(DONE) ; 2. 只有在取回的数据大于MAX时才做GC, 因为小于时可以保证数据的连续性
-				getDb().gc(getDatabaseType()); // GC 
+				
+				//FIXME： gc需要带owner
+				//getDb().gc(getDatabaseType()); // GC 
 				draw();
 				goTop();
 			} else {
@@ -281,54 +283,56 @@ public abstract class UserCursorBaseActivity extends TwitterListBaseActivity{
 	}
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected boolean _onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "onCreate.");
-		super.onCreate(savedInstanceState);
-		if (!checkIsLogedIn()) return;
-		
-		goTop(); // skip the header
-
-		// Mark all as read.
-		// getDb().markAllMentionsRead();
-		markAllRead();
-
-		boolean shouldRetrieve = false;
-
-		//FIXME： 该子类页面全部使用了这个统一的计时器，导致进入Mention等分页面后经常不会自动刷新
-		long lastRefreshTime = mPreferences.getLong(
-				Preferences.LAST_TWEET_REFRESH_KEY, 0);
-		long nowTime = Utils.getNowTime();
-
-		long diff = nowTime - lastRefreshTime;
-		Log.i(TAG, "Last refresh was " + diff + " ms ago.");
-
-		if (diff > REFRESH_THRESHOLD) {
-			shouldRetrieve = true;
-		} else if (Utils.isTrue(savedInstanceState, SIS_RUNNING_KEY)) {
-			// Check to see if it was running a send or retrieve task.
-			// It makes no sense to resend the send request (don't want dupes)
-			// so we instead retrieve (refresh) to see if the message has
-			// posted.
-			Log.i(TAG,
-					"Was last running a retrieve or send task. Let's refresh.");
-			shouldRetrieve = true;
-		}
-
-		if (shouldRetrieve) {
-			doRetrieve();
-		}
-
-		long lastFollowersRefreshTime = mPreferences.getLong(
-				Preferences.LAST_FOLLOWERS_REFRESH_KEY, 0);
-
-		diff = nowTime - lastFollowersRefreshTime;
-		Log.i(TAG, "Last followers refresh was " + diff + " ms ago.");
-
-		// Should Refresh Followers
-		if (diff > FOLLOWERS_REFRESH_THRESHOLD && 
-				(mRetrieveTask == null || mRetrieveTask.getStatus() != GenericTask.Status.RUNNING)) {
-			Log.i(TAG, "Refresh followers.");
-			doRetrieveFollowers();
+		if (super._onCreate(savedInstanceState)){
+			goTop(); // skip the header
+	
+			// Mark all as read.
+			// getDb().markAllMentionsRead();
+			markAllRead();
+	
+			boolean shouldRetrieve = false;
+	
+			//FIXME： 该子类页面全部使用了这个统一的计时器，导致进入Mention等分页面后经常不会自动刷新
+			long lastRefreshTime = mPreferences.getLong(
+					Preferences.LAST_TWEET_REFRESH_KEY, 0);
+			long nowTime = Utils.getNowTime();
+	
+			long diff = nowTime - lastRefreshTime;
+			Log.i(TAG, "Last refresh was " + diff + " ms ago.");
+	
+			if (diff > REFRESH_THRESHOLD) {
+				shouldRetrieve = true;
+			} else if (Utils.isTrue(savedInstanceState, SIS_RUNNING_KEY)) {
+				// Check to see if it was running a send or retrieve task.
+				// It makes no sense to resend the send request (don't want dupes)
+				// so we instead retrieve (refresh) to see if the message has
+				// posted.
+				Log.i(TAG,
+						"Was last running a retrieve or send task. Let's refresh.");
+				shouldRetrieve = true;
+			}
+	
+			if (shouldRetrieve) {
+				doRetrieve();
+			}
+	
+			long lastFollowersRefreshTime = mPreferences.getLong(
+					Preferences.LAST_FOLLOWERS_REFRESH_KEY, 0);
+	
+			diff = nowTime - lastFollowersRefreshTime;
+			Log.i(TAG, "Last followers refresh was " + diff + " ms ago.");
+	
+			// Should Refresh Followers
+			if (diff > FOLLOWERS_REFRESH_THRESHOLD && 
+					(mRetrieveTask == null || mRetrieveTask.getStatus() != GenericTask.Status.RUNNING)) {
+				Log.i(TAG, "Refresh followers.");
+				doRetrieveFollowers();
+			}
+			return true;
+		}else{
+			return false;
 		}
 	}
 

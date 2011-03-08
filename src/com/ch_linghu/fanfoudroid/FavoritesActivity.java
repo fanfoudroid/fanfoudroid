@@ -16,6 +16,7 @@
 
 package com.ch_linghu.fanfoudroid;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +29,7 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
+import com.ch_linghu.fanfoudroid.data.db.StatusTable;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterCursorBaseActivity;
 import com.ch_linghu.fanfoudroid.weibo.Paging;
@@ -44,8 +45,8 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 
 	static final int DIALOG_WRITE_ID = 0;
 	
-	private String userId;
-
+	private String userId = null;
+	
 	public static Intent createIntent(String userId) {
 		Intent intent = new Intent(LAUNCH_ACTION);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -55,24 +56,21 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 	}
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
-		super.onCreate(savedInstanceState);
-		
-		setHeaderTitle(getString(R.string.page_title_favorites));
-
-		Intent intent = getIntent();
-		Bundle extras = intent.getExtras();
-		if (extras != null){
-			this.userId = extras.getString(USER_ID);
-		} else {
-			// 获取登录用户id
-			SharedPreferences preferences = PreferenceManager
-					.getDefaultSharedPreferences(this);
-			userId = preferences.getString(Preferences.CURRENT_USER_ID,
-					TwitterApplication.mApi.getUserId());
+	protected boolean _onCreate(Bundle savedInstanceState) {
+		if (super._onCreate(savedInstanceState)){
+			setHeaderTitle(getActivityTitle());
+			
+			//重置cursor
+			Cursor cursor = fetchMessages();
+			startManagingCursor(cursor);
+			mTweetAdapter.changeCursor(cursor);
+			mTweetAdapter.refresh();
+			
+			return true;
+		}else{
+			return false;
 		}
-		
+
 	}
 
 	public static Intent createNewTaskIntent(String userId) {
@@ -91,20 +89,27 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 	@Override
 	protected Cursor fetchMessages() {
 		// TODO Auto-generated method stub
-		return getDb().fetchAllTweets(StatusTable.TYPE_FAVORITE);
+		return getDb().fetchAllTweets(getUserId(), StatusTable.TYPE_FAVORITE);
 	}
 
 	@Override
 	protected String getActivityTitle() {
 		// TODO Auto-generated method stub
-		return getResources().getString(R.string.page_title_favorites);
+		String template = getString(R.string.page_title_favorites);
+		String who;
+		if (getUserId().equals(TwitterApplication.getMyselfId())){
+			who = "我";
+		}else{
+			who = getUserId();
+		}
+		return MessageFormat.format(template, who);
 	}
 
 	
 	@Override
 	protected void markAllRead() {
 		// TODO Auto-generated method stub
-		getDb().markAllTweetsRead(StatusTable.TYPE_FAVORITE);
+		getDb().markAllTweetsRead(getUserId(), StatusTable.TYPE_FAVORITE);
 	}
 	
 	
@@ -112,26 +117,26 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 	
 	@Override
 	public void addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
-		getDb().putTweets(tweets, StatusTable.TYPE_FAVORITE, isUnread);
+		getDb().putTweets(tweets, getUserId(), StatusTable.TYPE_FAVORITE, isUnread);
 	}
 	
 	@Override
 	public String fetchMaxId() {
-		return getDb().fetchMaxTweetId(StatusTable.TYPE_FAVORITE);
+		return getDb().fetchMaxTweetId(getUserId(), StatusTable.TYPE_FAVORITE);
 	}
 
 	@Override
 	public List<Status> getMessageSinceId(String maxId) throws WeiboException {
 		if (maxId != null){
-			return getApi().getFavorites(new Paging(maxId));
+			return getApi().getFavorites(getUserId(), new Paging(maxId));
 		}else{
-			return getApi().getFavorites();
+			return getApi().getFavorites(getUserId());
 		}
 	}
 
 	@Override
 	public String fetchMinId() {
-		return getDb().fetchMinTweetId(StatusTable.TYPE_FAVORITE);
+		return getDb().fetchMinTweetId(getUserId(), StatusTable.TYPE_FAVORITE);
 	}
 
 	@Override
@@ -139,11 +144,25 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 			throws WeiboException {
 		Paging paging = new Paging(1, 20);
 		paging.setMaxId(minId);
-		return getApi().getFavorites(userId, paging);
+		return getApi().getFavorites(getUserId(), paging);
 	}
 
 	@Override
 	public int getDatabaseType() {
 		return StatusTable.TYPE_FAVORITE;
+	}
+
+	@Override
+	public String getUserId() {
+		Intent intent = getIntent();
+		Bundle extras = intent.getExtras();
+		if (extras != null){
+			userId = extras.getString(USER_ID);
+		} else {
+			userId = TwitterApplication.getMyselfId();
+		}
+
+		return userId;
+		
 	}
 }

@@ -92,31 +92,34 @@ public class SearchResultActivity extends TwitterListBaseActivity implements
 	};
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	protected boolean _onCreate(Bundle savedInstanceState) {
+		if (super._onCreate(savedInstanceState)){
 
-		//setContentView(R.layout.search);
-
-		Intent intent = getIntent();
-		// Assume it's SEARCH.
-		// String action = intent.getAction();
-		mSearchQuery = intent.getStringExtra(SearchManager.QUERY);
-
-		if (TextUtils.isEmpty(mSearchQuery)) {
-			mSearchQuery = intent.getData().getLastPathSegment();
-		}
-
-		setHeaderTitle(mSearchQuery);
-		setTitle(mSearchQuery);
-
-
-		State state = (State) getLastNonConfigurationInstance();
-
-		if (state != null) {
-			mTweets = state.mTweets;
-			draw();
-		} else {
-			doSearch();
+			Intent intent = getIntent();
+			// Assume it's SEARCH.
+			// String action = intent.getAction();
+			mSearchQuery = intent.getStringExtra(SearchManager.QUERY);
+	
+			if (TextUtils.isEmpty(mSearchQuery)) {
+				mSearchQuery = intent.getData().getLastPathSegment();
+			}
+	
+			setHeaderTitle(mSearchQuery);
+			setTitle(mSearchQuery);
+	
+	
+			State state = (State) getLastNonConfigurationInstance();
+	
+			if (state != null) {
+				mTweets = state.mTweets;
+				draw();
+			} else {
+				doSearch();
+			}
+			
+			return true;
+		}else{
+			return false;
 		}
 	}
 

@@ -117,21 +117,25 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 	}
 	
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	protected boolean _onCreate(Bundle savedInstanceState){
+		if (super._onCreate(savedInstanceState)){
+			setContentView(getLayoutId());
+			initHeader(HEADER_STYLE_HOME);
 
-		setContentView(getLayoutId());
-		initHeader(HEADER_STYLE_HOME);
+			mPreferences.getInt(Preferences.TWITTER_ACTIVITY_STATE_KEY, STATE_ALL);
 
-		mPreferences.getInt(Preferences.TWITTER_ACTIVITY_STATE_KEY, STATE_ALL);
+			// 提示栏
+			mProgressText = (TextView) findViewById(R.id.progress_text);
+			
+			setupState();
 
-		// 提示栏
-		mProgressText = (TextView) findViewById(R.id.progress_text);
-		
-		setupState();
-
-		registerForContextMenu(getTweetList());
-		registerOnClickListener(getTweetList());		
+			registerForContextMenu(getTweetList());
+			registerOnClickListener(getTweetList());		
+			
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override

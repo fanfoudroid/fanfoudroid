@@ -43,7 +43,7 @@ import android.widget.TextView.BufferType;
 
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
-import com.ch_linghu.fanfoudroid.data.db.StatusDatabase;
+import com.ch_linghu.fanfoudroid.data.db.TwitterDatabase;
 
 public class Utils {
 
@@ -88,7 +88,7 @@ public class Utils {
   public static final Date parseDateTimeFromSqlite(String dateString) {
     try {
     	Log.d(TAG, String.format("in parseDateTime, dateString=%s", dateString));
-      return StatusDatabase.DB_DATE_FORMATTER.parse(dateString);
+      return TwitterDatabase.DB_DATE_FORMATTER.parse(dateString);
     } catch (ParseException e) {
       Log.w(TAG, "Could not parse Twitter date string: " + dateString);
       return null;
