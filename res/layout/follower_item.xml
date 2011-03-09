@@ -47,13 +47,13 @@
 			/>
 		</LinearLayout>		
 		
-		<!-- Last Tweet  -->
+		<!-- Last Tweet  
 		<TextView
 		  android:id="@+id/last_status" 
 		  android:layout_width="fill_parent"
 		  android:layout_height="wrap_content"
 		  android:textColor="@drawable/tweet_color"        
-		/>		
+		/>		-->
 	</LinearLayout>
 
 </LinearLayout>

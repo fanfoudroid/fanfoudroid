@@ -75,7 +75,7 @@ public class UserArrayAdapter extends BaseAdapter {
 			holder.profileImage = (ImageView) view.findViewById(R.id.profile_image);
 			holder.screenName = (TextView) view.findViewById(R.id.screen_name);
 			holder.userId = (TextView) view.findViewById(R.id.user_id);
-			holder.lastStatus = (TextView) view.findViewById(R.id.last_status);
+			//holder.lastStatus = (TextView) view.findViewById(R.id.last_status);
 			view.setTag(holder);
 		} else {
 			view = convertView;

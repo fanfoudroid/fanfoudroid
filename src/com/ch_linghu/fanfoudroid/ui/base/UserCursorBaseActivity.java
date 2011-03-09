@@ -26,17 +26,25 @@ import android.database.Cursor;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
+import com.ch_linghu.fanfoudroid.ProfileActivity;
 import com.ch_linghu.fanfoudroid.R;
+import com.ch_linghu.fanfoudroid.StatusActivity;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.User;
 import com.ch_linghu.fanfoudroid.data.db.StatusTablesInfo.StatusTable;
+import com.ch_linghu.fanfoudroid.data.db.UserInfoTable;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
@@ -74,7 +82,9 @@ public abstract class UserCursorBaseActivity extends TwitterListBaseActivity{
 	protected TaskManager taskManager = new TaskManager();
 	private GenericTask mRetrieveTask;
 	private GenericTask mFollowersRetrieveTask;
-	private GenericTask mGetMoreTask;
+	private GenericTask mGetMoreTask;//每次十个用户
+	
+	protected abstract String getUserId();//获得用户id
 	
 	private TaskListener mRetrieveTaskListener = new TaskAdapter(){
 
@@ -102,7 +112,7 @@ public abstract class UserCursorBaseActivity extends TwitterListBaseActivity{
 
 			// 刷新按钮停止旋转
 			getRefreshButton().clearAnimation();
-            loadMoreGIFTop.setVisibility(View.GONE);
+            //loadMoreGIFTop.setVisibility(View.GONE);
 			updateProgress("");
 		}
 
@@ -144,7 +154,6 @@ public abstract class UserCursorBaseActivity extends TwitterListBaseActivity{
 	// Refresh followers if last refresh was this long ago or greater.
 	private static final long FOLLOWERS_REFRESH_THRESHOLD = 12 * 60 * 60 * 1000;
 
-	abstract protected void markAllRead();
 
 	abstract protected Cursor fetchUsers();
 	
@@ -155,8 +164,7 @@ public abstract class UserCursorBaseActivity extends TwitterListBaseActivity{
 
 	public abstract List<com.ch_linghu.fanfoudroid.weibo.User> getUsers() throws WeiboException;
 	
-	public abstract void addMessages(ArrayList<Tweet> tweets,
-			boolean isUnread);
+	public abstract void addUsers(ArrayList<com.ch_linghu.fanfoudroid.data.User> tusers);
 
 //	public abstract List<Status> getMessageSinceId(String maxId)
 //			throws WeiboException;
@@ -165,6 +173,8 @@ public abstract class UserCursorBaseActivity extends TwitterListBaseActivity{
 	public abstract List<Status> getMoreMessageFromId(String minId)
 			throws WeiboException;
 
+	public abstract Paging getNextPage();//下一页数
+	public abstract Paging getCurrentPage();//当前页数
 	public static final int CONTEXT_REPLY_ID = Menu.FIRST + 1;
 	// public static final int CONTEXT_AT_ID = Menu.FIRST + 2;
 	public static final int CONTEXT_RETWEET_ID = Menu.FIRST + 3;
@@ -179,7 +189,7 @@ public abstract class UserCursorBaseActivity extends TwitterListBaseActivity{
 	protected void setupState() {
 		Cursor cursor;
 
-		cursor = fetchUsers(); // getDb().fetchMentions();
+		cursor = fetchUsers(); //
 		setTitle(getActivityTitle());
 		startManagingCursor(cursor);
 		
@@ -199,20 +209,12 @@ public abstract class UserCursorBaseActivity extends TwitterListBaseActivity{
 	 * NOTE: 必须在listView#setAdapter之前调用
 	 */
 	protected void setupListHeader(boolean addFooter) {
+       
         
-        // Add Header to ListView
-        View header = View.inflate(this, R.layout.listview_header, null);
-        mUserList.addHeaderView(header, null, true);
-        header.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loadMoreGIFTop.setVisibility(View.VISIBLE);
-                doRetrieve();
-            }
-        });
-        
-        //TODO: 完成listView顶部和底部的事件绑定
+        //TODO: 完成listView底部的事件绑定
         View footer = View.inflate(this, R.layout.listview_footer, null);
+       // TextView footerText=(TextView) footer.findViewById(R.id.ask_for_more);
+      
         mUserList.addFooterView(footer, null, true);
         footer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -225,8 +227,8 @@ public abstract class UserCursorBaseActivity extends TwitterListBaseActivity{
         // Find View
         loadMoreBtn = (TextView)findViewById(R.id.ask_for_more);
         loadMoreGIF = (ProgressBar)findViewById(R.id.rectangleProgressBar);
-        loadMoreBtnTop = (TextView)findViewById(R.id.ask_for_more_header);
-        loadMoreGIFTop = (ProgressBar)findViewById(R.id.rectangleProgressBar_header);
+        //loadMoreBtnTop = (TextView)findViewById(R.id.ask_for_more_header);
+        //loadMoreGIFTop = (ProgressBar)findViewById(R.id.rectangleProgressBar_header);
         
         //loadMoreAnimation = (AnimationDrawable) loadMoreGIF.getIndeterminateDrawable();
     }
@@ -251,6 +253,10 @@ public abstract class UserCursorBaseActivity extends TwitterListBaseActivity{
 		return true;
 	}
 
+	/**
+	 * 
+	 * @deprecated 废用，改用User getContextItemUser(int position)
+	 */
 	@Override
 	protected Tweet getContextItemTweet(int position){
 		position = position - 1;
@@ -261,6 +267,21 @@ public abstract class UserCursorBaseActivity extends TwitterListBaseActivity{
 				return null;
 			}else{
 				return StatusTable.parseCursor(cursor);
+			}
+		}else{
+			return null;
+		}
+	}
+	
+	protected User getContextItemUser(int position){
+		//position = position - 1;
+		//加入footer跳过footer
+		if (position < mUserListAdapter.getCount()){
+			Cursor cursor = (Cursor) mUserListAdapter.getItem(position);
+			if (cursor == null){
+				return null;
+			}else{
+				return UserInfoTable.parseCursor(cursor);
 			}
 		}else{
 			return null;
@@ -287,10 +308,6 @@ public abstract class UserCursorBaseActivity extends TwitterListBaseActivity{
 		if (!checkIsLogedIn()) return;
 		
 		goTop(); // skip the header
-
-		// Mark all as read.
-		// getDb().markAllMentionsRead();
-		markAllRead();
 
 		boolean shouldRetrieve = false;
 
@@ -459,39 +476,42 @@ public abstract class UserCursorBaseActivity extends TwitterListBaseActivity{
 		return refreshButton;
 	}
 	
+	/**
+	 * TODO：从API获取当前Followers，并同步到数据库
+	 * @author Dino
+	 *
+	 */
 	private class RetrieveTask extends GenericTask{
 
 		@Override
 		protected TaskResult _doInBackground(TaskParams... params) {
-			//List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
-			/*
-			List<com.ch_linghu.fanfoudroid.weibo.User> usersList;
-			String maxId = fetchMaxId(); // getDb().fetchMaxMentionId();
-
+			
+			Log.i(TAG, "load RetrieveTask");
+		
+			List<com.ch_linghu.fanfoudroid.weibo.User> usersList=null;
 			try {
-				usersList = getUserSinceId(maxId);
+				usersList=getApi().getFollowersList(getUserId(),getCurrentPage());
 				
 			} catch (WeiboException e) {
-				Log.e(TAG, e.getMessage(), e);
-				return TaskResult.IO_ERROR;
+				
+				e.printStackTrace();
 			}
-
-			ArrayList<User> users = new ArrayList<User>();
-			HashSet<String> imageUrls = new HashSet<String>();
+			
+			ArrayList<User> users=new ArrayList<User>();
 			
 			for (com.ch_linghu.fanfoudroid.weibo.User user : usersList) {
 				if (isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
-
+				
 				users.add(User.create(user));
 
 				if (isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
 			}
-
-		*/
+			addUsers(users);
+			
 			return TaskResult.OK;
 		}
 		
@@ -502,9 +522,9 @@ public abstract class UserCursorBaseActivity extends TwitterListBaseActivity{
 		@Override
 		protected TaskResult _doInBackground(TaskParams... params) {
 			try {
-
+				Log.i(TAG, "load FollowersErtrieveTask");
 				List<com.ch_linghu.fanfoudroid.weibo.User> t_users= getUsers();
-				getDb().syncWeiboUsers(t_users);
+				getDb().syncWeiboUsers(t_users);//怎么他喵的写这了。
 				
 			} catch (WeiboException e) {
 				Log.e(TAG, e.getMessage(), e);
@@ -515,48 +535,42 @@ public abstract class UserCursorBaseActivity extends TwitterListBaseActivity{
 	}
 	
 	
-	// GET MORE TASK
 	
+	/**
+	 * TODO:需要重写,获取下一批用户,按页分100页一次
+	 * @author Dino
+	 *
+	 */
 	private class GetMoreTask extends GenericTask {
 	    @Override
         protected TaskResult _doInBackground(TaskParams... params) {
-			List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
 
-			String minId = fetchMinId(); // getDb().fetchMaxMentionId();
-
-			if(minId == null){
-				return TaskResult.FAILED;
-			}
-
-			try {
-				statusList = getMoreMessageFromId(minId);
-			} catch (WeiboException e) {
-				Log.e(TAG, e.getMessage(), e);
-				return TaskResult.IO_ERROR;
-			}
-
-			if(statusList == null){
-				return TaskResult.FAILED;
-			}
-
-			ArrayList<Tweet> tweets = new ArrayList<Tweet>();
-			HashSet<String> imageUrls = new HashSet<String>();
+	    	Log.i(TAG, "load RetrieveTask");
 			
-			for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
+			List<com.ch_linghu.fanfoudroid.weibo.User> usersList=null;
+			try {
+				usersList=getApi().getFollowersList(getUserId(),getNextPage());
+				
+			} catch (WeiboException e) {
+				
+				e.printStackTrace();
+			}
+			
+			ArrayList<User> users=new ArrayList<User>();
+			
+			for (com.ch_linghu.fanfoudroid.weibo.User user : usersList) {
 				if (isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
-
-				tweets.add(Tweet.create(status));
+				
+				users.add(User.create(user));
 
 				if (isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
 			}
-
-			addMessages(tweets, false); // getDb().addMentions(tweets, false);
-
-	        
+			addUsers(users);
+			
 	        return TaskResult.OK;
 	    }
 	}
@@ -595,5 +609,40 @@ public abstract class UserCursorBaseActivity extends TwitterListBaseActivity{
             taskManager.addTask(mGetMoreTask);
         }
     }
+    
+    /*
+     * TODO:重写,长按出来的菜单
+     * @see com.ch_linghu.fanfoudroid.ui.base.TwitterListBaseActivity#onCreateContextMenu(android.view.ContextMenu, android.view.View, android.view.ContextMenu.ContextMenuInfo)
+     */
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		
+		
+	}
+
+	/*
+	 * TODO：单击列表项
+	 * @see com.ch_linghu.fanfoudroid.ui.base.TwitterListBaseActivity#registerOnClickListener(android.widget.ListView)
+	 */
+	@Override
+	protected void registerOnClickListener(ListView listView) {
+
+		listView.setOnItemClickListener(new OnItemClickListener(){
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position,
+					long id) {
+				//Toast.makeText(getBaseContext(), "选择第"+position+"个列表",Toast.LENGTH_SHORT).show();
+				User user=getContextItemUser(position);
+				if(user==null){
+					Log.w(TAG, "selected item not available");
+				}else{
+					launchActivity(ProfileActivity.createIntent(user.id));
+				}
+			}
+		});
+	}
+	
+	
 	
 }

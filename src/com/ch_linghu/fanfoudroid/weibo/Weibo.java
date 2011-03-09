@@ -771,12 +771,14 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
     /**
      * Returns the specified user's friends, each with current status inline.
      * <br>This method calls http://api.fanfou.com/statuses/friends.format
+     * <br>分页每页显示100条
      *
      * @param paging controls pagination
      * @return the list of friends
      * @throws WeiboException when Weibo service or network is unavailable
      * @since fanfoudroid 0.5.0
      * @see <a href="http://code.google.com/p/fanfou-api/wiki/ApiDocumentation"</a>
+     * 
      */
     public List<User> getFriendsStatuses(Paging paging) throws WeiboException {
         return User.constructUsers(get(getBaseURL() + "users/friends.json", null,
@@ -1248,6 +1250,10 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
     }
 
 
+    public List<com.ch_linghu.fanfoudroid.weibo.User> getFollowersList(String userId,Paging paging) throws WeiboException{
+    	return User.constructUsers(get(getBaseURL() + "users/followers.json", 
+        		createParams(new BasicNameValuePair("id", userId)),paging, false));
+    }
     /**
      * Returns an array of numeric IDs for every user the authenticating user is following.
      * @return an array of numeric IDs for every user the authenticating user is following
@@ -1273,6 +1279,15 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
         return new IDs(get(getBaseURL() + "friends/ids.xml?cursor=" + cursor, true));
     }
    
+    /**
+     * 获取关注者id列表
+     * @param userId
+     * @return
+     * @throws WeiboException
+     */
+    public IDs getFriendsIDs(String userId) throws WeiboException{
+    	return new IDs(get(getBaseURL() + "friends/ids.xml?id=" +userId , true));
+    }
     
     /* 账户方法 */
     

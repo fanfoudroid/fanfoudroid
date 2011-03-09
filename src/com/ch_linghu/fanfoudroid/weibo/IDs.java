@@ -142,6 +142,9 @@ public class IDs extends WeiboResponse {
         return ids != null ? Arrays.hashCode(ids) : 0;
     }
 
+    public int getCount(){
+    	return ids.length;
+    }
     @Override
     public String toString() {
         return "IDs{" +
