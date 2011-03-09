@@ -180,6 +180,7 @@ public class MenuDialog extends Dialog {
 					goTo(ProfileActivity.class);
 					break;
 				case PAGE_FOLLOWERS:
+					//TODO:我关注的页面
 					goTo(FollowersActivity.class);
 					break;
 				case PAGE_FOLLOWING:

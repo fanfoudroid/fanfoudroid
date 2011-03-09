@@ -8,7 +8,6 @@ import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.data.User;
 
-
 public final class UserInfoTable implements BaseColumns {
 
 	public static final String TAG = "UserInfoTable";
@@ -87,12 +86,12 @@ public final class UserInfoTable implements BaseColumns {
 		user.favoritesCount = cursor.getInt(cursor.getColumnIndex(FIELD_FAVORITES_COUNT));
 		user.statusesCount = cursor.getInt(cursor.getColumnIndex(FIELD_STATUSES_COUNT));
 		user.isFollowing = (0 == cursor.getInt(cursor.getColumnIndex(FIELD_FOLLOWING))) ? false : true;
-	
-	    try {
-	        user.createdAt = TwitterDatabase.DB_DATE_FORMATTER.parse(cursor.getString(cursor.getColumnIndex(MessageTable.FIELD_CREATED_AT)));
-	    } catch (ParseException e) {
-	        Log.w(TAG, "Invalid created at data.");
-	    }
+	//TODO:报空指针异常,待查
+//	    try {
+//	        user.createdAt = StatusDatabase.DB_DATE_FORMATTER.parse(cursor.getString(cursor.getColumnIndex(MessageTable.FIELD_CREATED_AT)));
+//	    } catch (ParseException e) {
+//	        Log.w(TAG, "Invalid created at data.");
+//	    }
 	    
 	    return user;
 	}

@@ -5,16 +5,23 @@ import java.util.List;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.User;
+import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.ui.base.UserCursorBaseActivity;
 import com.ch_linghu.fanfoudroid.ui.module.UserArrayAdapter;
+import com.ch_linghu.fanfoudroid.weibo.IDs;
+import com.ch_linghu.fanfoudroid.weibo.Paging;
 import com.ch_linghu.fanfoudroid.weibo.Status;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.widget.ListView;
 
 public class FollowersActivity extends UserCursorBaseActivity {
@@ -22,52 +29,60 @@ public class FollowersActivity extends UserCursorBaseActivity {
 	private ListView mUserList;
 	private UserArrayAdapter mAdapter;
 	private static final String TAG = "FollowersActivity";
-
+	
+	private String userId;
 	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.FOLLOWERS";
+	private static final String USER_ID = "userId";
+	private int currentPage=1;
+	private int followersCount=0;
+	private static final double PRE_PAGE_COUNT=100.0;//官方分页为每页100
+	private int pageCount=0;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
+		   Intent intent = getIntent();
+			Bundle extras = intent.getExtras();
+			if (extras != null) {
+				this.userId = extras.getString(USER_ID);
+			} else {
+				// 获取登录用户id
+				SharedPreferences preferences = PreferenceManager
+						.getDefaultSharedPreferences(this);
+				userId = preferences.getString(Preferences.CURRENT_USER_ID,
+						TwitterApplication.mApi.getUserId());
+			}
+			Uri data = intent.getData();
+			if (data != null) {
+				userId = data.getLastPathSegment();
+			}
 		super.onCreate(savedInstanceState);
-       // setContentView(R.layout.follower);
-        
+     
         setHeaderTitle("饭否fanfou.com");
-        
-//        //FIXME: 以下代码仅用于示例用途
-//        ArrayList<User> users = new ArrayList<User>();
-//        for(int i = 0; i < 32; ++i){
-//        	User user = new User();
-//        	user.id = "test" + i;
-//        	user.screenName = "测试" + i;
-//        	user.lastStatus = "谢谢万能的饭否 转@葡萄球君 万能的饭否告诉您 是位于埃及西奈半岛南端的一座城市，在红海与西奈山之间的海岸地带。距伊斯梅利亚大约四小时车程，距塔巴三小时车程。 转@和菜头 沙姆沙伊赫是哪里？";
-//        	users.add(user);
-//        }
-//        
-//        mAdapter = new UserArrayAdapter(this);
-//        mUserList = (ListView)findViewById(R.id.follower_list);
-//        mUserList.setAdapter(mAdapter);
-//        mAdapter.refresh(users);
-        
+       
 	}
 	
-	public static Intent createIntent(Context context) {
+	public static Intent createIntent(String userId) {
 		Intent intent = new Intent(LAUNCH_ACTION);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
+		intent.putExtra(USER_ID, userId);
 		return intent;
 	}
 	
-	
-
-	@Override
-	protected void markAllRead() {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	protected Cursor fetchUsers() {
-		// TODO Auto-generated method stub
-		return getDb().getAllUserInfo();
+		//根据IDs得到UserInfo
+		Cursor userCursor=null;
+		try {
+			IDs friendsIDs = getApi().getFollowersIDs(userId);//收听者全部id
+			followersCount=friendsIDs.getCount();//收听者总数
+			pageCount=(int)Math.ceil(followersCount/PRE_PAGE_COUNT);//总页数
+			userCursor=getDb().getUserInfoByIds(friendsIDs.getIDs());
+			Log.i(TAG, "the user's count is "+userCursor.getCount());
+		} catch (WeiboException e) {
+			Log.e(TAG,e.getMessage());
+			e.printStackTrace();
+		}
+		return userCursor;
 	}
 
 	@Override
@@ -92,14 +107,10 @@ public class FollowersActivity extends UserCursorBaseActivity {
 	@Override
 	public List<com.ch_linghu.fanfoudroid.weibo.User> getUsers() throws WeiboException {
 		
-		return getApi().getFriendsStatuses();
+		return getApi().getFollowersList(this.userId,getNextPage());
 	}
 
-	@Override
-	public void addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
-		// TODO Auto-generated method stub
-		
-	}
+
 
 	@Override
 	public List<com.ch_linghu.fanfoudroid.weibo.User> getUserSinceId(
@@ -113,6 +124,34 @@ public class FollowersActivity extends UserCursorBaseActivity {
 			throws WeiboException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	/*
+	 * 添加一批用户到数据库中
+	 * @see com.ch_linghu.fanfoudroid.ui.base.UserCursorBaseActivity#addUsers(java.util.ArrayList)
+	 */
+	@Override
+	public void addUsers(ArrayList<User> tusers) {
+		getDb().syncUsers(tusers);
+		
+	}
+
+	@Override
+	public Paging getNextPage() {
+		
+		return new Paging(currentPage+1>this.pageCount?currentPage+1:currentPage);
+	}
+	
+
+	@Override
+	protected String getUserId() {
+		return this.userId;
+	}
+
+	@Override
+	public Paging getCurrentPage() {
+
+		return new Paging(this.currentPage);
 	}
 
 }

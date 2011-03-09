@@ -46,7 +46,7 @@ public class UserCursorAdapter extends CursorAdapter implements TweetAdapter {
 			 mScreenNametColumn=cursor.getColumnIndexOrThrow(UserInfoTable.FIELD_USER_SCREEN_NAME);
 		 mUserIdColumn=cursor.getColumnIndexOrThrow(UserInfoTable._ID);
 			 mProfileImageUrlColumn=cursor.getColumnIndexOrThrow(UserInfoTable.FIELD_PROFILE_IMAGE_URL);
-		 mLastStatusColumn=cursor.getColumnIndexOrThrow(UserInfoTable.FIELD_LAST_STATUS);
+		// mLastStatusColumn=cursor.getColumnIndexOrThrow(UserInfoTable.FIELD_LAST_STATUS);
 		    //TODO: 可使用:
 		    //Tweet tweet = StatusTable.parseCursor(cursor);
 		    
@@ -74,7 +74,7 @@ public class UserCursorAdapter extends CursorAdapter implements TweetAdapter {
 	private int mScreenNametColumn;
 	private int mUserIdColumn;
 	private int mProfileImageUrlColumn;
-	private int mLastStatusColumn;
+	//private int mLastStatusColumn;
 //	private int mCreatedAtColumn;
 //	private int mSourceColumn;
 //	private int mInReplyToScreenName;
@@ -106,7 +106,7 @@ Log.i(TAG,"load newView");
 		
 		holder.screenName=(TextView) view.findViewById(R.id.screen_name);
 		holder.profileImage=(ImageView)view.findViewById(R.id.profile_image);
-		holder.lastStatus=(TextView) view.findViewById(R.id.last_status);
+		//holder.lastStatus=(TextView) view.findViewById(R.id.last_status);
 		holder.userId=(TextView) view.findViewById(R.id.user_id);
 		view.setTag(holder);
 
@@ -134,8 +134,8 @@ Log.i(TAG,"load newView");
 		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(mContext);;
 		boolean useProfileImage = pref.getBoolean(Preferences.USE_PROFILE_IMAGE, true);
 		//holder.lastStatus.setText(cursor.getString(mLastStatusColumn));
-		Log.i(TAG,cursor.getString(mLastStatusColumn)==null?"test":cursor.getString(mLastStatusColumn));
-		holder.lastStatus.setText(cursor.getString(mLastStatusColumn)==null?"test":cursor.getString(mLastStatusColumn));
+		//Log.i(TAG,cursor.getString(mLastStatusColumn)==null?"test":cursor.getString(mLastStatusColumn));
+		//holder.lastStatus.setText(cursor.getString(mLastStatusColumn)==null?"test":cursor.getString(mLastStatusColumn));
 		String profileImageUrl = cursor.getString(mProfileImageUrlColumn);
 		if (useProfileImage){
 		if (!Utils.isEmpty(profileImageUrl)) {
