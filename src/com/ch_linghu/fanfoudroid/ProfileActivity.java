@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * 
@@ -159,7 +160,11 @@ public class ProfileActivity extends WithHeaderActivity {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
+				//Toast.makeText(getBaseContext(), "跟随他的人", Toast.LENGTH_SHORT).show();
+				 Intent intent = FollowersActivity.createIntent(userId);
+				 intent.setClass(ProfileActivity.this,
+				 FollowersActivity.class);
+				 startActivity(intent);
 
 			}
 		});

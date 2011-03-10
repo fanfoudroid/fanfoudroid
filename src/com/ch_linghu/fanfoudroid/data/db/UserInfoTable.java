@@ -29,6 +29,8 @@ public final class UserInfoTable implements BaseColumns {
     public static final String FIELD_CREATED_AT = "created_at";
 	public static final String FIELD_FOLLOWING = "following";
 	
+	public static final String FIELD_FOLLOWER_IDS="follower_ids";
+	
     public static final String[] TABLE_COLUMNS = new String[] { _ID,
     	FIELD_USER_NAME, FIELD_USER_SCREEN_NAME,
     	FIELD_LOCALTION, FIELD_DESCRIPTION, 
@@ -54,6 +56,7 @@ public final class UserInfoTable implements BaseColumns {
     	+ FIELD_LAST_STATUS + " text, "
         + FIELD_CREATED_AT + " date, "
     	+ FIELD_FOLLOWING + " boolean "
+    	//+FIELD_FOLLOWER_IDS+" text"
     	+ ")";
     
 	 /**

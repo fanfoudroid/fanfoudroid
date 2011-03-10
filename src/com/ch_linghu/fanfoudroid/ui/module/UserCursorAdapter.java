@@ -5,6 +5,7 @@ package com.ch_linghu.fanfoudroid.ui.module;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.List;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -69,6 +70,7 @@ public class UserCursorAdapter extends CursorAdapter implements TweetAdapter {
 		mMetaBuilder = new StringBuilder();
 	}
 
+	
 	private LayoutInflater mInflater;
 
 	private int mScreenNametColumn;

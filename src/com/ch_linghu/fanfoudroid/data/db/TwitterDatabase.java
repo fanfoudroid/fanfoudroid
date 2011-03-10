@@ -871,8 +871,11 @@ public class TwitterDatabase {
     	for(String id:userIds){
     		userIdStr+="'"+id+"',";
     	}
+    	if(userIds.length==0){
+    		userIdStr="'',";
+    	}
     	userIdStr=userIdStr.substring(0, userIdStr.lastIndexOf(","));//删除最后的逗号
-    	return mDb.query(UserInfoTable.TABLE_NAME, UserInfoTable.TABLE_COLUMNS, UserInfoTable.FIELD_USER_NAME+" in ("+userIdStr+")", null, null, null, null);
+    	return mDb.query(UserInfoTable.TABLE_NAME, UserInfoTable.TABLE_COLUMNS, UserInfoTable._ID+" in ("+userIdStr+")", null, null, null, null);
     	
     }
     
@@ -1103,7 +1106,8 @@ public class TwitterDatabase {
      */
     public void syncUsers(List<com.ch_linghu.fanfoudroid.data.User> users){
     	SQLiteDatabase mDb = mOpenHelper.getWritableDatabase();
-    	mDb.beginTransaction();
+    	try{
+    		mDb.beginTransaction();
     	for(com.ch_linghu.fanfoudroid.data.User u:users){
     		if(existsUser(u.id)){
     			updateUser(u);
@@ -1112,11 +1116,17 @@ public class TwitterDatabase {
     		}
     	}
     	mDb.setTransactionSuccessful();
+    	} finally {
+            mDb.endTransaction();
+        }
+    	
     }
     
     public void syncWeiboUsers(List<com.ch_linghu.fanfoudroid.weibo.User> users){
     	SQLiteDatabase mDb = mOpenHelper.getWritableDatabase();
-    	mDb.beginTransaction();
+    	
+    	try{
+    		 	mDb.beginTransaction();
     	for(com.ch_linghu.fanfoudroid.weibo.User u:users){
     		if(existsUser(u.getId())){
     			updateWeiboUser(u);
@@ -1125,7 +1135,12 @@ public class TwitterDatabase {
     		}
     	}
     	mDb.setTransactionSuccessful();
+    	} finally {
+            mDb.endTransaction();
+        }
+   
     }
+
     
 
 }

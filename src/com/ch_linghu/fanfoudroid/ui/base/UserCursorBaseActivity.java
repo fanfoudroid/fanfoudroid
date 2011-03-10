@@ -64,7 +64,17 @@ import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 /**
  * TwitterCursorBaseLine用于带有静态数据来源（对应数据库的，与twitter表同构的特定表）的展现
  */
-public abstract class UserCursorBaseActivity extends TwitterListBaseActivity{
+public abstract class UserCursorBaseActivity extends UserListBaseActivity{
+
+	/**暂不放在数据库中，直接从Api读取。
+	 * 麻烦的是api数据与数据库同步，当收听人数比较多的时候，一次性读取太费流量
+	 * 按照饭否api每次分页100人
+	 * 当收听数<100时先从数据库一次性根据API返回的ID列表读取数据，如果数据库中的收听数<总数，那么从API中读取所有用户信息并同步到数据库中。
+	 * 当收听数>100时采取分页加载，先按照id 获取数据库里前100用户,如果用户数量<100则从api中加载，从page=1开始下载，同步到数据库中，单击更多继续从数据库中加载，如果余下的用户<100则从Api中加载
+	 * 
+	 * 单击刷新按钮则加载下一页
+	 * 
+	 */
 	static final String TAG = "UserCursorBaseActivity";
 
 	// Views.
@@ -177,6 +187,8 @@ public abstract class UserCursorBaseActivity extends TwitterListBaseActivity{
 
 	public abstract Paging getNextPage();//下一页数
 	public abstract Paging getCurrentPage();//当前页数
+	protected abstract String[] getIds();
+	
 	public static final int CONTEXT_REPLY_ID = Menu.FIRST + 1;
 	// public static final int CONTEXT_AT_ID = Menu.FIRST + 2;
 	public static final int CONTEXT_RETWEET_ID = Menu.FIRST + 3;
@@ -189,6 +201,7 @@ public abstract class UserCursorBaseActivity extends TwitterListBaseActivity{
 	
 	@Override
 	protected void setupState() {
+		
 		Cursor cursor;
 
 		cursor = fetchUsers(); //
@@ -255,25 +268,6 @@ public abstract class UserCursorBaseActivity extends TwitterListBaseActivity{
 		return true;
 	}
 
-	/**
-	 * 
-	 * @deprecated 废用，改用User getContextItemUser(int position)
-	 */
-	@Override
-	protected Tweet getContextItemTweet(int position){
-		position = position - 1;
-		//因为List加了Header和footer，所以要跳过第一个以及忽略最后一个
-		if (position >= 0 && position < mUserListAdapter.getCount()){
-			Cursor cursor = (Cursor) mUserListAdapter.getItem(position);
-			if (cursor == null){
-				return null;
-			}else{
-				return StatusTable.parseCursor(cursor);
-			}
-		}else{
-			return null;
-		}
-	}
 	
 	protected User getContextItemUser(int position){
 		//position = position - 1;
@@ -303,11 +297,11 @@ public abstract class UserCursorBaseActivity extends TwitterListBaseActivity{
 //		getDb().updateTweet(TwitterDbAdapter.TABLE_TWEET, tweet);
 	}
 
+
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+    protected boolean _onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "onCreate.");
-		super.onCreate(savedInstanceState);
-		if (!checkIsLogedIn()) return;
+		 if (super._onCreate(savedInstanceState)){
 		
 		goTop(); // skip the header
 
@@ -320,7 +314,7 @@ public abstract class UserCursorBaseActivity extends TwitterListBaseActivity{
 
 		long diff = nowTime - lastRefreshTime;
 		Log.i(TAG, "Last refresh was " + diff + " ms ago.");
-
+/*
 		if (diff > REFRESH_THRESHOLD) {
 			shouldRetrieve = true;
 		} else if (Utils.isTrue(savedInstanceState, SIS_RUNNING_KEY)) {
@@ -332,7 +326,8 @@ public abstract class UserCursorBaseActivity extends TwitterListBaseActivity{
 					"Was last running a retrieve or send task. Let's refresh.");
 			shouldRetrieve = true;
 		}
-
+*/
+		shouldRetrieve=true;
 		if (shouldRetrieve) {
 			doRetrieve();
 		}
@@ -343,12 +338,17 @@ public abstract class UserCursorBaseActivity extends TwitterListBaseActivity{
 		diff = nowTime - lastFollowersRefreshTime;
 		Log.i(TAG, "Last followers refresh was " + diff + " ms ago.");
 
-		// Should Refresh Followers
+		/*
 		if (diff > FOLLOWERS_REFRESH_THRESHOLD && 
 				(mRetrieveTask == null || mRetrieveTask.getStatus() != GenericTask.Status.RUNNING)) {
 			Log.i(TAG, "Refresh followers.");
 			doRetrieveFollowers();
 		}
+		*/
+		  return true;
+         }else{
+          return false;
+         }
 	}
 
 	@Override
@@ -499,6 +499,7 @@ public abstract class UserCursorBaseActivity extends TwitterListBaseActivity{
 				e.printStackTrace();
 			}
 			
+			
 			ArrayList<User> users=new ArrayList<User>();
 			
 			for (com.ch_linghu.fanfoudroid.weibo.User user : usersList) {
@@ -612,38 +613,8 @@ public abstract class UserCursorBaseActivity extends TwitterListBaseActivity{
         }
     }
     
-    /*
-     * TODO:重写,长按出来的菜单
-     * @see com.ch_linghu.fanfoudroid.ui.base.TwitterListBaseActivity#onCreateContextMenu(android.view.ContextMenu, android.view.View, android.view.ContextMenu.ContextMenuInfo)
-     */
-	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,
-			ContextMenuInfo menuInfo) {
-		
-		
-	}
 
-	/*
-	 * TODO：单击列表项
-	 * @see com.ch_linghu.fanfoudroid.ui.base.TwitterListBaseActivity#registerOnClickListener(android.widget.ListView)
-	 */
-	@Override
-	protected void registerOnClickListener(ListView listView) {
 
-		listView.setOnItemClickListener(new OnItemClickListener(){
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position,
-					long id) {
-				//Toast.makeText(getBaseContext(), "选择第"+position+"个列表",Toast.LENGTH_SHORT).show();
-				User user=getContextItemUser(position);
-				if(user==null){
-					Log.w(TAG, "selected item not available");
-				}else{
-					launchActivity(ProfileActivity.createIntent(user.id));
-				}
-			}
-		});
-	}
 	
 	
 	

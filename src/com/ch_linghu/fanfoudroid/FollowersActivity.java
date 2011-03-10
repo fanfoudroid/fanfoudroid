@@ -1,6 +1,7 @@
 package com.ch_linghu.fanfoudroid;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
@@ -37,6 +38,8 @@ public class FollowersActivity extends UserCursorBaseActivity {
 	private int followersCount=0;
 	private static final double PRE_PAGE_COUNT=100.0;//官方分页为每页100
 	private int pageCount=0;
+	
+	private String[] ids;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		   Intent intent = getIntent();
@@ -72,12 +75,17 @@ public class FollowersActivity extends UserCursorBaseActivity {
 	protected Cursor fetchUsers() {
 		//根据IDs得到UserInfo
 		Cursor userCursor=null;
+		
 		try {
-			IDs friendsIDs = getApi().getFollowersIDs(userId);//收听者全部id
-			followersCount=friendsIDs.getCount();//收听者总数
+			
+			ids= getApi().getFollowersIDs(userId).getIDs();;//收听者全部id
+			Arrays.sort(ids);
+			followersCount=ids.length;//收听者总数
 			pageCount=(int)Math.ceil(followersCount/PRE_PAGE_COUNT);//总页数
-			userCursor=getDb().getUserInfoByIds(friendsIDs.getIDs());
+
+			userCursor=getDb().getUserInfoByIds(ids);
 			Log.i(TAG, "the user's count is "+userCursor.getCount());
+			
 		} catch (WeiboException e) {
 			Log.e(TAG,e.getMessage());
 			e.printStackTrace();
@@ -139,7 +147,9 @@ public class FollowersActivity extends UserCursorBaseActivity {
 	@Override
 	public Paging getNextPage() {
 		
-		return new Paging(currentPage+1>this.pageCount?currentPage+1:currentPage);
+		//return new Paging(currentPage+1>this.pageCount?currentPage+1:currentPage);
+		currentPage+=1;
+return new Paging(currentPage);
 	}
 	
 
@@ -153,5 +163,13 @@ public class FollowersActivity extends UserCursorBaseActivity {
 
 		return new Paging(this.currentPage);
 	}
+
+	@Override
+	protected String[] getIds() {
+		
+		return ids;
+	}
+	
+	
 
 }
