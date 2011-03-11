@@ -66,13 +66,17 @@ import com.ch_linghu.fanfoudroid.weibo.WeiboException;
  */
 public abstract class UserCursorBaseActivity extends UserListBaseActivity{
 
-	/**暂不放在数据库中，直接从Api读取。
+	/**
+	 * 第一种方案：(采取第一种)
+	 * 暂不放在数据库中，直接从Api读取。
+	 * 
+	 * 第二种方案：
 	 * 麻烦的是api数据与数据库同步，当收听人数比较多的时候，一次性读取太费流量
 	 * 按照饭否api每次分页100人
 	 * 当收听数<100时先从数据库一次性根据API返回的ID列表读取数据，如果数据库中的收听数<总数，那么从API中读取所有用户信息并同步到数据库中。
-	 * 当收听数>100时采取分页加载，先按照id 获取数据库里前100用户,如果用户数量<100则从api中加载，从page=1开始下载，同步到数据库中，单击更多继续从数据库中加载，如果余下的用户<100则从Api中加载
-	 * 
-	 * 单击刷新按钮则加载下一页
+	 * 当收听数>100时采取分页加载，先按照id 获取数据库里前100用户,如果用户数量<100则从api中加载，从page=1开始下载，同步到数据库中，单击更多继续从数据库中加载
+	 * 当数据库中的数据读取到最后一页后，则从api中加载并更新到数据库中。
+	 * 单击刷新按钮则从api加载并同步到数据库中
 	 * 
 	 */
 	static final String TAG = "UserCursorBaseActivity";
@@ -252,17 +256,16 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity{
 	protected int getLayoutId(){
 		return R.layout.follower;
 	}
-
+	
 	@Override
-	protected ListView getTweetList(){
+	protected ListView getUserList() {
 		return mUserList;
 	}
 
 	@Override
-	protected TweetAdapter getTweetAdapter(){
+	protected TweetAdapter getUserAdapter() {
 		return mUserListAdapter;
 	}
-
 	@Override
 	protected boolean useBasicMenu(){
 		return true;
@@ -527,7 +530,7 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity{
 			try {
 				Log.i(TAG, "load FollowersErtrieveTask");
 				List<com.ch_linghu.fanfoudroid.weibo.User> t_users= getUsers();
-				getDb().syncWeiboUsers(t_users);//怎么他喵的写这了。
+				getDb().syncWeiboUsers(t_users);
 				
 			} catch (WeiboException e) {
 				Log.e(TAG, e.getMessage(), e);

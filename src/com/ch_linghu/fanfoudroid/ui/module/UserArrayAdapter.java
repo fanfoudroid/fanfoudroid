@@ -25,8 +25,11 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-//TODO: 目前仅为示例实现
-public class UserArrayAdapter extends BaseAdapter {
+//TODO：
+/*
+ * 另一种实现方法
+ */
+public class UserArrayAdapter extends BaseAdapter implements TweetAdapter{
 	private static final String TAG = "TweetArrayAdapter";
 
 	protected ArrayList<User> mUsers;
@@ -85,19 +88,39 @@ public class UserArrayAdapter extends BaseAdapter {
 		
 		User user = mUsers.get(position);
 
-		//String profileImageUrl = user.profileImageUrl;
-
-		holder.profileImage.setImageBitmap(ImageManager.mDefaultBitmap);
+		String profileImageUrl = user.profileImageUrl;
+		if (useProfileImage){
+			if (!Utils.isEmpty(profileImageUrl)) {
+				holder.profileImage.setImageBitmap(TwitterApplication.mProfileImageCacheManager
+						.get(profileImageUrl, callback));
+			}
+			}else{
+				holder.profileImage.setVisibility(View.GONE);
+			}
+		//holder.profileImage.setImageBitmap(ImageManager.mDefaultBitmap);
 		holder.screenName.setText(user.screenName);
 		holder.userId.setText(user.id);
-		holder.lastStatus.setText(user.lastStatus);
+		//holder.lastStatus.setText(user.lastStatus);
 
 		return view;
 	}
-
-
 	public void refresh(ArrayList<User> users) {
 		mUsers = users;
 		notifyDataSetChanged();
 	}
+	@Override
+	public void refresh() {
+		
+		
+	}
+	
+	private ProfileImageCacheCallback callback = new ProfileImageCacheCallback(){
+
+		@Override
+		public void refresh(String url, Bitmap bitmap) {
+			UserArrayAdapter.this.refresh();
+		}
+		
+	};
+
 }

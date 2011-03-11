@@ -48,23 +48,7 @@ public class UserCursorAdapter extends CursorAdapter implements TweetAdapter {
 		 mUserIdColumn=cursor.getColumnIndexOrThrow(UserInfoTable._ID);
 			 mProfileImageUrlColumn=cursor.getColumnIndexOrThrow(UserInfoTable.FIELD_PROFILE_IMAGE_URL);
 		// mLastStatusColumn=cursor.getColumnIndexOrThrow(UserInfoTable.FIELD_LAST_STATUS);
-		    //TODO: 可使用:
-		    //Tweet tweet = StatusTable.parseCursor(cursor);
-		    
-//			mUserTextColumn = cursor
-//					.getColumnIndexOrThrow(UserInfoTable.FIELD_USER_SCREEN_NAME);
-//			mTextColumn = cursor
-//					.getColumnIndexOrThrow(UserInfoTable.);
-//			mProfileImageUrlColumn = cursor
-//					.getColumnIndexOrThrow(UserInfoTable.FIELD_PROFILE_IMAGE_URL);
-//			mCreatedAtColumn = cursor
-//					.getColumnIndexOrThrow(UserInfoTable.FIELD_CREATED_AT);
-//			mSourceColumn = cursor
-//					.getColumnIndexOrThrow(UserInfoTable.FIELD_SOURCE);
-//			mInReplyToScreenName = cursor
-//					.getColumnIndexOrThrow(UserInfoTable.FIELD_IN_REPLY_TO_SCREEN_NAME);
-//			mFavorited = cursor
-//					.getColumnIndexOrThrow(UserInfoTable.FIELD_FAVORITED);
+
 			
 		}
 		mMetaBuilder = new StringBuilder();
@@ -77,10 +61,7 @@ public class UserCursorAdapter extends CursorAdapter implements TweetAdapter {
 	private int mUserIdColumn;
 	private int mProfileImageUrlColumn;
 	//private int mLastStatusColumn;
-//	private int mCreatedAtColumn;
-//	private int mSourceColumn;
-//	private int mInReplyToScreenName;
-//	private int mFavorited;
+
 	
 
 	private StringBuilder mMetaBuilder;
@@ -99,13 +80,6 @@ public class UserCursorAdapter extends CursorAdapter implements TweetAdapter {
 		View view = mInflater.inflate(R.layout.follower_item, parent, false);
 Log.i(TAG,"load newView");
 		UserCursorAdapter.ViewHolder holder = new ViewHolder();
-//		holder.tweetUserText = (TextView) view
-//				.findViewById(R.id.tweet_user_text);
-//		holder.tweetText = (TextView) view.findViewById(R.id.tweet_text);
-//		holder.profileImage = (ImageView) view.findViewById(R.id.profile_image);
-//		holder.metaText = (TextView) view.findViewById(R.id.tweet_meta_text);
-//		holder.fav = (ImageView) view.findViewById(R.id.tweet_fav);
-		
 		holder.screenName=(TextView) view.findViewById(R.id.screen_name);
 		holder.profileImage=(ImageView)view.findViewById(R.id.profile_image);
 		//holder.lastStatus=(TextView) view.findViewById(R.id.last_status);
@@ -116,11 +90,7 @@ Log.i(TAG,"load newView");
 	}
 
 	private static class ViewHolder {
-//		public TextView tweetUserText;
-//		public TextView tweetText;
-//		public ImageView profileImage;
-//		public TextView metaText;
-//		public ImageView fav;
+
 		public TextView screenName;
 		public TextView userId;
 		public TextView lastStatus;
@@ -135,9 +105,6 @@ Log.i(TAG,"load newView");
 		Log.i(TAG,"holder is null?"+(holder==null?"yes":"no"));
 		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(mContext);;
 		boolean useProfileImage = pref.getBoolean(Preferences.USE_PROFILE_IMAGE, true);
-		//holder.lastStatus.setText(cursor.getString(mLastStatusColumn));
-		//Log.i(TAG,cursor.getString(mLastStatusColumn)==null?"test":cursor.getString(mLastStatusColumn));
-		//holder.lastStatus.setText(cursor.getString(mLastStatusColumn)==null?"test":cursor.getString(mLastStatusColumn));
 		String profileImageUrl = cursor.getString(mProfileImageUrlColumn);
 		if (useProfileImage){
 		if (!Utils.isEmpty(profileImageUrl)) {
@@ -149,35 +116,6 @@ Log.i(TAG,"load newView");
 		}
 		holder.screenName.setText(cursor.getString(mScreenNametColumn));
 		holder.userId.setText(cursor.getString(mUserIdColumn));
-//		holder.tweetUserText.setText(cursor.getString(mUserTextColumn));
-//		Utils.setSimpleTweetText(holder.tweetText, cursor.getString(mTextColumn));
-//
-//		String profileImageUrl = cursor.getString(mProfileImageUrlColumn);
-//
-//		if (useProfileImage){
-//			if (!Utils.isEmpty(profileImageUrl)) {
-//				holder.profileImage.setImageBitmap(TwitterApplication.mProfileImageCacheManager
-//						.get(profileImageUrl, callback));
-//			}
-//		}else{
-//			holder.profileImage.setVisibility(View.GONE);
-//		}
-//		
-//		if (cursor.getString(mFavorited).equals("true")) {
-//			holder.fav.setVisibility(View.VISIBLE);
-//		} else {
-//			holder.fav.setVisibility(View.INVISIBLE);
-//		}
-//
-//		try {
-//			Date createdAt = StatusDatabase.DB_DATE_FORMATTER.parse(cursor
-//					.getString(mCreatedAtColumn));
-//			holder.metaText.setText(Tweet.buildMetaText(mMetaBuilder,
-//					createdAt, cursor.getString(mSourceColumn), cursor
-//							.getString(mInReplyToScreenName)));
-//		} catch (ParseException e) {
-//			Log.w(TAG, "Invalid created at data.");
-//		}
 	}
 
 	@Override

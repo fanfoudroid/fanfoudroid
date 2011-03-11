@@ -7,7 +7,9 @@ import java.util.List;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.User;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
+import com.ch_linghu.fanfoudroid.ui.base.UserArrayBaseActivity;
 import com.ch_linghu.fanfoudroid.ui.base.UserCursorBaseActivity;
+import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 import com.ch_linghu.fanfoudroid.ui.module.UserArrayAdapter;
 import com.ch_linghu.fanfoudroid.weibo.IDs;
 import com.ch_linghu.fanfoudroid.weibo.Paging;
@@ -25,7 +27,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.ListView;
 
-public class FollowersActivity extends UserCursorBaseActivity {
+public class FollowersActivity extends UserArrayBaseActivity {
 	
 	private ListView mUserList;
 	private UserArrayAdapter mAdapter;
@@ -70,7 +72,7 @@ public class FollowersActivity extends UserCursorBaseActivity {
 		return intent;
 	}
 	
-
+/*
 	@Override
 	protected Cursor fetchUsers() {
 		//根据IDs得到UserInfo
@@ -78,11 +80,9 @@ public class FollowersActivity extends UserCursorBaseActivity {
 		
 		try {
 			
-			ids= getApi().getFollowersIDs(userId).getIDs();;//收听者全部id
-			Arrays.sort(ids);
+			ids= getApi().getFollowersIDs(userId).getIDs();//收听者全部id
 			followersCount=ids.length;//收听者总数
 			pageCount=(int)Math.ceil(followersCount/PRE_PAGE_COUNT);//总页数
-
 			userCursor=getDb().getUserInfoByIds(ids);
 			Log.i(TAG, "the user's count is "+userCursor.getCount());
 			
@@ -134,10 +134,6 @@ public class FollowersActivity extends UserCursorBaseActivity {
 		return null;
 	}
 
-	/*
-	 * 添加一批用户到数据库中
-	 * @see com.ch_linghu.fanfoudroid.ui.base.UserCursorBaseActivity#addUsers(java.util.ArrayList)
-	 */
 	@Override
 	public void addUsers(ArrayList<User> tusers) {
 		getDb().syncUsers(tusers);
@@ -145,11 +141,17 @@ public class FollowersActivity extends UserCursorBaseActivity {
 	}
 
 	@Override
-	public Paging getNextPage() {
+	protected String[] getIds() {
 		
-		//return new Paging(currentPage+1>this.pageCount?currentPage+1:currentPage);
+		return ids;
+	}
+	*/
+	
+	
+	@Override
+	public Paging getNextPage() {
 		currentPage+=1;
-return new Paging(currentPage);
+		return new Paging(currentPage);
 	}
 	
 
@@ -165,11 +167,9 @@ return new Paging(currentPage);
 	}
 
 	@Override
-	protected String[] getIds() {
-		
-		return ids;
+	protected List<com.ch_linghu.fanfoudroid.weibo.User> getUsers(
+			String userId, Paging page) throws WeiboException {
+		return getApi().getFollowersList(userId, page);
 	}
 	
-	
-
 }

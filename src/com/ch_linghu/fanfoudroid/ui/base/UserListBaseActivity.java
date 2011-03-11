@@ -69,8 +69,8 @@ implements Refreshable {
 	static final int DIALOG_WRITE_ID = 0;
 	
 	abstract protected int getLayoutId();
-	abstract protected ListView getTweetList();
-	abstract protected TweetAdapter getTweetAdapter();
+	abstract protected ListView getUserList();
+	abstract protected TweetAdapter getUserAdapter();
 	abstract protected void setupState();
 
 	abstract protected String getActivityTitle();
@@ -110,8 +110,8 @@ implements Refreshable {
 			
 			setupState();
 
-			registerForContextMenu(getTweetList());
-			registerOnClickListener(getTweetList());		
+			registerForContextMenu(getUserList());
+			registerOnClickListener(getUserList());		
 			
 			return true;
 		} else {
@@ -220,15 +220,15 @@ implements Refreshable {
 	}
 
 	private void draw() {
-		getTweetAdapter().refresh();
+		getUserAdapter().refresh();
 	}
 
 	private void goTop() {
-		getTweetList().setSelection(1);
+		getUserList().setSelection(1);
 	}
 	
 	protected void adapterRefresh(){
-		getTweetAdapter().refresh();
+		getUserAdapter().refresh();
 	}
 	
 	// for HasFavorite interface
