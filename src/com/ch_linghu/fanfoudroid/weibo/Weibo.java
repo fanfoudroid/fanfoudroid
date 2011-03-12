@@ -1254,6 +1254,14 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
     	return User.constructUsers(get(getBaseURL() + "users/followers.json", 
         		createParams(new BasicNameValuePair("id", userId)),paging, false));
     }
+    
+    
+    public List<com.ch_linghu.fanfoudroid.weibo.User> getFollowersList(String userId) throws WeiboException{
+    	return User.constructUsers(get(getBaseURL() + "users/followers.json", 
+        		createParams(new BasicNameValuePair("id", userId)), false));
+    }
+    
+    
     /**
      * Returns an array of numeric IDs for every user the authenticating user is following.
      * @return an array of numeric IDs for every user the authenticating user is following

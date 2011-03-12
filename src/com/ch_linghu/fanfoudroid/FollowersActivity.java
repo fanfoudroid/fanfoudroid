@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class FollowersActivity extends UserArrayBaseActivity {
 	
@@ -50,10 +51,11 @@ public class FollowersActivity extends UserArrayBaseActivity {
 				this.userId = extras.getString(USER_ID);
 			} else {
 				// 获取登录用户id
-				SharedPreferences preferences = PreferenceManager
-						.getDefaultSharedPreferences(this);
-				userId = preferences.getString(Preferences.CURRENT_USER_ID,
-						TwitterApplication.mApi.getUserId());
+//				SharedPreferences preferences = PreferenceManager
+//						.getDefaultSharedPreferences(this);
+//				userId = preferences.getString(Preferences.CURRENT_USER_ID,
+//						TwitterApplication.mApi.getUserId());
+				userId=TwitterApplication.getMyselfId();
 			}
 			Uri data = intent.getData();
 			if (data != null) {
@@ -61,7 +63,11 @@ public class FollowersActivity extends UserArrayBaseActivity {
 			}
 		super.onCreate(savedInstanceState);
      
-        setHeaderTitle("饭否fanfou.com");
+		String myself = TwitterApplication.getMyselfId();
+		Toast.makeText(getBaseContext(), myself+"@"+getUserId(), Toast.LENGTH_SHORT);
+		if(getUserId()==myself){
+			setHeaderTitle("关注我的人");
+		}
        
 	}
 	

@@ -55,14 +55,14 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 	//protected abstract String[] getIds();
 	protected abstract List<com.ch_linghu.fanfoudroid.weibo.User> getUsers(String userId,Paging page) throws WeiboException; 
 
-	protected abstract String getUserId();// 获得用户id
+	
 
 	private ArrayList<com.ch_linghu.fanfoudroid.data.User> allUserList;
 	@Override
 	protected boolean _onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "onCreate.");
 		if (super._onCreate(savedInstanceState)) {
-
+		
 			doRetrieve();//加载第一页
 
 			return true;
@@ -207,11 +207,11 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 		// position = position - 1;
 		// 加入footer跳过footer
 		if (position < mUserListAdapter.getCount()) {
-			Cursor cursor = (Cursor) mUserListAdapter.getItem(position);
-			if (cursor == null) {
+			User item = (User)mUserListAdapter.getItem(position);
+			if (item == null) {
 				return null;
 			} else {
-				return UserInfoTable.parseCursor(cursor);
+				return item;
 			}
 		} else {
 			return null;

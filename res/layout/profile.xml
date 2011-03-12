@@ -40,7 +40,8 @@
 				android:layout_marginRight="5.0dip"
 				>
 				</ImageView>
-				<!-- 用户昵称 -->
+			
+			<!-- 用户昵称 -->
 				<TextView
 				android:id="@+id/profilescreenname"
 				android:layout_width="fill_parent"
@@ -56,11 +57,35 @@
 				android:layout_height="wrap_content"
 				android:layout_toRightOf="@id/profileimage"
 				android:layout_below="@id/profilescreenname"
-				
-				>
-				</TextView>
+	
+				></TextView>
 			</RelativeLayout>
-			
+			<!-- 操作按钮部分-->
+		<RelativeLayout
+				android:id="@+id/relative_following"
+				android:background="@drawable/panel_bg"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:layout_margin="3.0dip"
+				>
+			<TextView
+					android:textSize="16.0sp"
+					android:id="@+id/isfollowing_text"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginLeft="10.0dip"
+					android:layout_centerVertical="true"
+					style="@style/normalText.span"
+					>
+			</TextView>
+			<Button
+				android:id="@+id/following_btn"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_toRightOf="@id/isfollowing_text"
+				android:layout_centerVertical="true"
+			></Button>
+			</RelativeLayout>
 			
 			
 			<!-- 基本信息部分 -->
