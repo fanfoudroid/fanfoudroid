@@ -4,15 +4,6 @@
   android:layout_height="fill_parent"
   android:orientation="vertical"
   >
-	 
-	 <!-- 搜索框(fake) -->
-	 <EditText android:id="@+id/edt_search"
-	 	android:layout_width="fill_parent"
-	 	android:layout_height="wrap_content"
-	 	android:hint="搜索饭否"
-	 	android:editable="false"
-	 	android:focusable="false"
-	 />
 	 <!-- 复合列表，包含保存的搜索和热门搜索 -->
 	 <ListView android:id="@+id/search_section_list"
 	  	android:layout_width="fill_parent"
