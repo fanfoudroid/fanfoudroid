@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+  android:layout_width="fill_parent"
+  android:layout_height="47dp">
+  
+   <!-- 顶部条 -->
+    <RelativeLayout android:id="@+id/LinearLayout01"
+      android:layout_width="fill_parent"
+      android:layout_height="45dp"
+      android:background="@drawable/bg_twitter_titlebar"
+      android:gravity="center_vertical"
+      android:layout_alignParentTop="true"
+      >
+      
+       <!-- BACK Button -->
+        <Button android:id="@+id/top_back"
+          android:layout_width="wrap_content"
+          android:layout_height="fill_parent"
+          android:layout_alignParentLeft="true"
+          style="@style/simple_button"
+          android:text="@string/page_label_go_back"
+          />
+           
+        <!-- 搜索按钮 -->
+        <ImageButton android:id="@+id/search"
+           android:background="@null"
+           android:src="@drawable/search"
+           android:layout_width="wrap_content"
+           android:layout_height="fill_parent"
+           android:layout_alignParentRight="true"
+           android:paddingRight="10dip"
+           android:paddingLeft="10dip"
+           /> 
+           
+        <!-- 搜索框 -->
+        <EditText android:id="@+id/search_edit"
+           android:hint="搜索饭否"
+           android:layout_width="fill_parent"
+           android:layout_height="wrap_content"
+           android:layout_toLeftOf="@id/search"
+           android:layout_toRightOf="@id/top_back"
+           android:background="@color/body_background" 
+           android:layout_centerVertical="true" android:layout_marginLeft="10dip" android:layout_marginRight="10dip"/>   
+         
+        <!-- 分割线 -->
+        <!--LinearLayout
+           android:background="#FFF"
+           android:layout_width="1dp"
+           android:layout_height="fill_parent"
+           android:layout_toLeftOf="@id/writeMessage">
+        </LinearLayout-->
+        
+         <!-- 分割线 -->
+        <!--LinearLayout
+           android:background="#FFF"
+           android:layout_width="1dp"
+           android:layout_height="fill_parent"
+           android:layout_toLeftOf="@id/search">
+        </LinearLayout-->
+      
+    </RelativeLayout>
+    
+    <!-- 渐变条 -->
+    <View android:background="@drawable/shape"
+     android:id="@+id/main_shape"
+     android:layout_below="@id/LinearLayout01"
+     android:layout_width="fill_parent"
+     android:layout_height="3dip"/>
+     
+</LinearLayout>
