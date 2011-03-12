@@ -101,4 +101,14 @@ public class TweetCommonTask {
 			return TaskResult.OK;			
 		}
 	}
+	
+//	public static class UserTask extends GenericTask{
+//
+//		@Override
+//		protected TaskResult _doInBackground(TaskParams... params) {
+//			// TODO Auto-generated method stub
+//			return null;
+//		}
+//		
+//	}
 }

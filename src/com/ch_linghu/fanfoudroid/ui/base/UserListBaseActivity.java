@@ -21,6 +21,8 @@ import com.ch_linghu.fanfoudroid.ProfileActivity;
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.StatusActivity;
 import com.ch_linghu.fanfoudroid.TwitterActivity;
+import com.ch_linghu.fanfoudroid.TwitterApplication;
+import com.ch_linghu.fanfoudroid.UserActivity;
 import com.ch_linghu.fanfoudroid.WriteActivity;
 import com.ch_linghu.fanfoudroid.WriteDmActivity;
 import com.ch_linghu.fanfoudroid.data.Tweet;
@@ -79,29 +81,42 @@ implements Refreshable {
 	abstract protected User getContextItemUser(int position);
 
 	abstract protected void updateTweet(Tweet tweet);
+	protected abstract String getUserId();// 获得用户id
 
-	public static final int CONTEXT_REPLY_ID = Menu.FIRST + 1;
-	// public static final int CONTEXT_AT_ID = Menu.FIRST + 2;
-	public static final int CONTEXT_RETWEET_ID = Menu.FIRST + 3;
-	public static final int CONTEXT_DM_ID = Menu.FIRST + 4;
-	public static final int CONTEXT_MORE_ID = Menu.FIRST + 5;
-	public static final int CONTEXT_ADD_FAV_ID = Menu.FIRST + 6;
-	public static final int CONTEXT_DEL_FAV_ID = Menu.FIRST + 7;
+	//public static final int CONTEXT_REPLY_ID = Menu.FIRST + 1;
+	//public static final int CONTEXT_AT_ID = Menu.FIRST + 2;
+	//public static final int CONTEXT_RETWEET_ID = Menu.FIRST + 3;
+	//public static final int CONTEXT_DM_ID = Menu.FIRST + 4;
+	//public static final int CONTEXT_MORE_ID = Menu.FIRST + 5;
+	//public static final int CONTEXT_ADD_FAV_ID = Menu.FIRST + 6;
+	//public static final int CONTEXT_DEL_FAV_ID = Menu.FIRST + 7;
+	
+	public static final int CONTENT_PROFILE_ID=Menu.FIRST+1;
+	//public static final int CONTENT_ADD_BLOCK_ID=Menu.FIRST+2;
+	public static final int CONTENT_STATUS_ID=Menu.FIRST+2;
+	
+	public static final int CONTENT_DEL_FRIEND=Menu.FIRST+3;
 	
 	/**
 	 * 如果增加了Context Menu常量的数量，则必须重载此方法，
 	 * 以保证其他人使用常量时不产生重复
 	 * @return 最大的Context Menu常量
 	 */
-	protected int getLastContextMenuId(){
-		return CONTEXT_DEL_FAV_ID;
-	}
+	//protected int getLastContextMenuId(){
+	//	return CONTEXT_DEL_FAV_ID;
+	//}
 	
 	@Override
 	protected boolean _onCreate(Bundle savedInstanceState){
 		if (super._onCreate(savedInstanceState)){
 			setContentView(getLayoutId());
-			initHeader(HEADER_STYLE_HOME);
+			
+			String myself = TwitterApplication.getMyselfId();
+			if(getUserId()==myself){
+				initHeader(HEADER_STYLE_HOME);
+			}else{
+				initHeader(HEADER_STYLE_BACK);
+			}
 
 			mPreferences.getInt(Preferences.TWITTER_ACTIVITY_STATE_KEY, STATE_ALL);
 
@@ -139,8 +154,17 @@ implements Refreshable {
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 
-//		if (useBasicMenu()){
-//			AdapterView.AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+		if (useBasicMenu()){
+			AdapterView.AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+			
+			User user = getContextItemUser(info.position);
+
+			if (user == null) {
+				Log.w(TAG, "Selected item not available.");
+				return ;
+			}
+			menu.add(0, CONTENT_PROFILE_ID, 0, user.screenName + getResources().getString(R.string.cmenu_user_profile_prefix));
+			menu.add(0,CONTENT_STATUS_ID,0,user.screenName+getResources().getString(R.string.cmenu_user_status));
 //			Tweet tweet = getContextItemTweet(info.position);
 //			
 //			if (tweet == null) {
@@ -158,44 +182,50 @@ implements Refreshable {
 //			} else {
 //				menu.add(0, CONTEXT_ADD_FAV_ID, 0, R.string.cmenu_add_fav);
 //			}
-//		}
+		}
 	}
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
 				.getMenuInfo();
-		Tweet tweet =null; //getContextItemTweet(info.position);
+		User user = getContextItemUser(info.position);
 
-		if (tweet == null) {
+		if (user == null) {
 			Log.w(TAG, "Selected item not available.");
 			return super.onContextItemSelected(item);
 		}
 
 		switch (item.getItemId()) {
-		case CONTEXT_MORE_ID:
-			launchActivity(ProfileActivity.createIntent(tweet.userId));
+		
+//		case CONTEXT_MORE_ID:
+//			launchActivity(ProfileActivity.createIntent(tweet.userId));
+//			return true;
+//		case CONTEXT_REPLY_ID: {
+//		    Intent intent = WriteActivity.createNewReplyIntent(tweet.screenName, tweet.id);
+//			startActivity(intent);
+//			return true;
+//		}
+//		case CONTEXT_RETWEET_ID:
+//		    Intent intent = WriteActivity.createNewRepostIntent(this,
+//		            tweet.text, tweet.screenName, tweet.id);
+//			startActivity(intent);
+//			return true;
+//		case CONTEXT_DM_ID:
+//			launchActivity(WriteDmActivity.createIntent(tweet.userId));
+//			return true;
+//		case CONTEXT_ADD_FAV_ID: 
+//			doFavorite("add", tweet.id);
+//			return true;
+//		case CONTEXT_DEL_FAV_ID: 
+//			doFavorite("del", tweet.id);
+//			return true;
+		case CONTENT_PROFILE_ID:
+			launchActivity(ProfileActivity.createIntent(user.id));
 			return true;
-		case CONTEXT_REPLY_ID: {
-			// TODO: this isn't quite perfect. It leaves extra empty spaces if
-			// you perform the reply action again.
-		    Intent intent = WriteActivity.createNewReplyIntent(tweet.screenName, tweet.id);
-			startActivity(intent);
-			return true;
-		}
-		case CONTEXT_RETWEET_ID:
-		    Intent intent = WriteActivity.createNewRepostIntent(this,
-		            tweet.text, tweet.screenName, tweet.id);
-			startActivity(intent);
-			return true;
-		case CONTEXT_DM_ID:
-			launchActivity(WriteDmActivity.createIntent(tweet.userId));
-			return true;
-		case CONTEXT_ADD_FAV_ID: 
-			doFavorite("add", tweet.id);
-			return true;
-		case CONTEXT_DEL_FAV_ID: 
-			doFavorite("del", tweet.id);
+	
+		case CONTENT_STATUS_ID:
+			launchActivity(UserActivity.createIntent(user.id, user.name));
 			return true;
 		default:
 			return super.onContextItemSelected(item);
@@ -287,4 +317,6 @@ implements Refreshable {
 			outState.putBoolean(SIS_RUNNING_KEY, true);
 		}
 	}
+	
+	
 }
