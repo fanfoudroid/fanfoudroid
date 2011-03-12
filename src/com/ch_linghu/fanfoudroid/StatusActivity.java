@@ -226,7 +226,7 @@ public class StatusActivity extends WithHeaderActivity{
 	    btn_person_more.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = UserActivity.createIntent(tweet.userId, tweet.screenName);
+                Intent intent = ProfileActivity.createIntent(tweet.userId);
                 startActivity(intent);
             }
         });
