@@ -391,7 +391,7 @@ public class TwitterDatabase {
                 if (-1 == id) {
                     Log.e(TAG, "cann't insert the tweet : " + tweet.toString());
                 } else {
-                    Log.i(TAG, "Insert a status into datebase : " + tweet.toString());
+                    Log.i(TAG, String.format("Insert a status into database[%s] : %s", owner, tweet.toString()));
                 }
             }
 
@@ -743,7 +743,6 @@ public class TwitterDatabase {
         SQLiteDatabase mDb = mOpenHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(StatusTable.FIELD_OWNER_ID, owner);
         values.put(StatusTable.FIELD_IS_UNREAD, 0);
 
         return mDb.update(StatusTable.TABLE_NAME, values,

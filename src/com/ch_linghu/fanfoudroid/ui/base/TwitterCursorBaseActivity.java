@@ -281,7 +281,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 	@Override
 	protected boolean _onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "onCreate.");
-			if (super._onCreate(savedInstanceState)){
+		if (super._onCreate(savedInstanceState)){
 			goTop(); // skip the header
 	
 			// Mark all as read.

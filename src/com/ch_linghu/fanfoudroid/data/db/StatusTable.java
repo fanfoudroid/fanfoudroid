@@ -66,7 +66,7 @@ public final class StatusTable implements BaseColumns {
         FIELD_TEXT, FIELD_PROFILE_IMAGE_URL, FIELD_IS_UNREAD, FIELD_CREATED_AT,
         FIELD_FAVORITED, FIELD_IN_REPLY_TO_STATUS_ID, FIELD_IN_REPLY_TO_USER_ID,
         FIELD_IN_REPLY_TO_SCREEN_NAME, FIELD_TRUNCATED,
-        FIELD_SOURCE, FIELD_USER_ID, FIELD_STATUS_TYPE};
+        FIELD_SOURCE, FIELD_USER_ID, FIELD_STATUS_TYPE, FIELD_OWNER_ID};
     
     public static final String CREATE_TABLE = "CREATE TABLE "
         + TABLE_NAME + " (" 
@@ -85,7 +85,7 @@ public final class StatusTable implements BaseColumns {
         + FIELD_IN_REPLY_TO_SCREEN_NAME + " text, "
         + FIELD_SOURCE + " text not null, " 
         + FIELD_TRUNCATED + " boolean ,"
-        + "PRIMARY KEY (" + _ID + ","+ FIELD_STATUS_TYPE  + "))";
+        + "PRIMARY KEY (" + _ID + ","+ FIELD_OWNER_ID + "," + FIELD_STATUS_TYPE  + "))";
     
     /**
      * 将游标解析为一条Tweet

@@ -60,12 +60,6 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 		if (super._onCreate(savedInstanceState)){
 			setHeaderTitle(getActivityTitle());
 			
-			//重置cursor
-			Cursor cursor = fetchMessages();
-			startManagingCursor(cursor);
-			mTweetAdapter.changeCursor(cursor);
-			mTweetAdapter.refresh();
-			
 			return true;
 		}else{
 			return false;
