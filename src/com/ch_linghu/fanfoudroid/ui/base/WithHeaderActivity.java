@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
@@ -24,19 +25,11 @@ import com.ch_linghu.fanfoudroid.ui.module.MenuDialog;
 public class WithHeaderActivity extends BaseActivity {
 	
 	private static final String TAG = "WithHeaderActivity";
-	
-	@Override
-	public boolean onSearchRequested() {
-		// TODO Auto-generated method stub
-		Intent intent = new Intent();
-		intent.setClass(this, SearchActivity.class);
-		startActivity(intent);
-		return true;
-	}
 
 	public static final int HEADER_STYLE_HOME  = 1;
 	public static final int HEADER_STYLE_WRITE = 2;
 	public static final int HEADER_STYLE_BACK  = 3;
+	public static final int HEADER_STYLE_SEARCH  = 4;
 
 	protected ImageButton refreshButton;
 	protected ImageButton searchButton;
@@ -45,6 +38,7 @@ public class WithHeaderActivity extends BaseActivity {
 	protected Button backButton;
 	protected ImageButton homeButton;
 	protected MenuDialog dialog;
+	protected EditText searchEdit;
 	
 	// LOGO按钮
 	protected void addTitleButton() {
@@ -128,12 +122,24 @@ public class WithHeaderActivity extends BaseActivity {
 //						R.anim.scale_lite);
 //				v.startAnimation(anim);
 				
-				//NOTE: this method has been overrided now!
-				onSearchRequested();
+				//go to SearchActivity
+				mySearch();
 			}
 		});
 	}
 	
+	// 这个方法会在SearchActivity里重写
+	protected boolean mySearch() {
+		Intent intent = new Intent();
+		intent.setClass(this, SearchActivity.class);
+		startActivity(intent);
+		return true;
+	}
+	
+	//搜索框
+	protected void addSearchBox() {
+		searchEdit = (EditText) findViewById(R.id.search_edit);
+	}
 	
 	// 撰写
 	protected void addWriteButton() {
@@ -213,6 +219,12 @@ public class WithHeaderActivity extends BaseActivity {
 			addBackButton();
 			addSearchButton();
 			addHomeButton();
+			break;
+		case HEADER_STYLE_SEARCH:
+			addHeaderView(R.layout.header_search);
+			addBackButton();
+			addSearchBox();
+			addSearchButton();
 			break;
 		}
 	}
