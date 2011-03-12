@@ -90,7 +90,7 @@ public class SearchActivity extends WithHeaderActivity {
 
 		mSearchEdit = (EditText) findViewById(R.id.search_edit);
 		mSearchEdit.setOnKeyListener(enterKeyHandler);
-		
+
 		trendsTitle = (TextView) getLayoutInflater().inflate(
 				R.layout.search_section_header, null);
 		trendsTitle.setText(getResources().getString(R.string.trends_title));
@@ -109,7 +109,7 @@ public class SearchActivity extends WithHeaderActivity {
 	protected void onResume() {
 		Log.i(TAG, "onResume()...");
 		super.onResume();
-		
+
 		refreshSearchSectionList(SearchActivity.LOADING);
 
 		trendsAndSavedSearchesTask = new TrendsAndSavedSearchesTask();
@@ -140,12 +140,23 @@ public class SearchActivity extends WithHeaderActivity {
 	 * flag: loading;network error;success
 	 */
 	private void refreshSearchSectionList(int flag) {
+		AdapterView.OnItemClickListener searchSectionListListener = new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> adapterView,
+					View view, int position, long id) {
+				initialQuery = ((TextView) view).getText()
+						.toString();
+				mySearch();
+			}
+		};
 		if (flag == SearchActivity.LOADING) {
+			mSearchSectionList.setOnItemClickListener(null);
 			savedSearch.clear();
 			trends.clear();
 			savedSearch.add(getResources().getString(R.string.search_loading));
 			trends.add(getResources().getString(R.string.search_loading));
 		} else if (flag == SearchActivity.NETWORKERROR) {
+			mSearchSectionList.setOnItemClickListener(null);
 			savedSearch.clear();
 			trends.clear();
 			savedSearch.add(getResources().getString(
@@ -159,26 +170,18 @@ public class SearchActivity extends WithHeaderActivity {
 		savedSearchesAdapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_1, savedSearch);
 		mSearchSectionAdapter.notifyDataSetChanged();
-
+		
 		if (flag == SearchActivity.SUCCESS) {
 			mSearchSectionList
-					.setOnItemClickListener(new OnItemClickListener() {
-						@Override
-						public void onItemClick(AdapterView<?> adapterView,
-								View view, int position, long id) {
-							initialQuery = ((TextView) view).getText()
-									.toString();
-							mySearch();
-						}
-					});
+					.setOnItemClickListener(searchSectionListListener);
 		}
 	}
 
 	@Override
 	protected boolean mySearch() {
 		if (!Utils.isEmpty(initialQuery)) {
-			//以下这个方法在7可用，在8就报空指针
-//			triggerSearch(initialQuery, null);
+			// 以下这个方法在7可用，在8就报空指针
+			// triggerSearch(initialQuery, null);
 			Intent i = new Intent(this, SearchResultActivity.class);
 			i.putExtra(SearchManager.QUERY, initialQuery);
 			startActivity(i);
@@ -190,10 +193,10 @@ public class SearchActivity extends WithHeaderActivity {
 		}
 		return false;
 	}
-	
+
 	@Override
 	protected void addSearchButton() {
-		searchButton  = (ImageButton) findViewById(R.id.search);
+		searchButton = (ImageButton) findViewById(R.id.search);
 		searchButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				initialQuery = mSearchEdit.getText().toString();
