@@ -40,6 +40,15 @@ public class WithHeaderActivity extends BaseActivity {
 	protected MenuDialog dialog;
 	protected EditText searchEdit;
 	
+	//搜索硬按键行为
+	@Override
+	public boolean onSearchRequested() {
+		Intent intent = new Intent();
+		intent.setClass(this, SearchActivity.class);
+		startActivity(intent);
+		return true;
+	}
+
 	// LOGO按钮
 	protected void addTitleButton() {
 		
