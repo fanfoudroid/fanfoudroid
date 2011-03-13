@@ -124,9 +124,9 @@ public class SearchActivity extends WithHeaderActivity {
 		trends.add(getResources().getString(R.string.search_loading));
 
 		trendsAdapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1, trends);
+				R.layout.search_section_view, trends);
 		savedSearchesAdapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1, savedSearch);
+				R.layout.search_section_view, savedSearch);
 
 		mSearchSectionAdapter.addView(savedSearchTitle);
 		mSearchSectionAdapter.addAdapter(savedSearchesAdapter);
@@ -165,9 +165,9 @@ public class SearchActivity extends WithHeaderActivity {
 		}
 
 		trendsAdapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1, trends);
+				R.layout.search_section_view, trends);
 		savedSearchesAdapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1, savedSearch);
+				R.layout.search_section_view, savedSearch);
 		mSearchSectionAdapter.notifyDataSetChanged();
 		
 		if (flag == SearchActivity.SUCCESS) {
