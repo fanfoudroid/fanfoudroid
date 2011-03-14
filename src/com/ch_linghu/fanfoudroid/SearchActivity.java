@@ -81,27 +81,32 @@ public class SearchActivity extends WithHeaderActivity {
 	};
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected boolean _onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "onCreate()...");
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.search);
-		initHeader(HEADER_STYLE_SEARCH);
+		if (super._onCreate(savedInstanceState)) {
+			setContentView(R.layout.search);
+			initHeader(HEADER_STYLE_SEARCH);
 
-		mSearchEdit = (EditText) findViewById(R.id.search_edit);
-		mSearchEdit.setOnKeyListener(enterKeyHandler);
+			mSearchEdit = (EditText) findViewById(R.id.search_edit);
+			mSearchEdit.setOnKeyListener(enterKeyHandler);
 
-		trendsTitle = (TextView) getLayoutInflater().inflate(
-				R.layout.search_section_header, null);
-		trendsTitle.setText(getResources().getString(R.string.trends_title));
+			trendsTitle = (TextView) getLayoutInflater().inflate(
+					R.layout.search_section_header, null);
+			trendsTitle
+					.setText(getResources().getString(R.string.trends_title));
 
-		savedSearchTitle = (TextView) getLayoutInflater().inflate(
-				R.layout.search_section_header, null);
-		savedSearchTitle.setText(getResources().getString(
-				R.string.saved_search_title));
-		mSearchSectionAdapter = new MergeAdapter();
-		mSearchSectionList = (ListView) findViewById(R.id.search_section_list);
+			savedSearchTitle = (TextView) getLayoutInflater().inflate(
+					R.layout.search_section_header, null);
+			savedSearchTitle.setText(getResources().getString(
+					R.string.saved_search_title));
+			mSearchSectionAdapter = new MergeAdapter();
+			mSearchSectionList = (ListView) findViewById(R.id.search_section_list);
 
-		initSearchSectionList();
+			initSearchSectionList();
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
@@ -141,10 +146,9 @@ public class SearchActivity extends WithHeaderActivity {
 	private void refreshSearchSectionList(int flag) {
 		AdapterView.OnItemClickListener searchSectionListListener = new AdapterView.OnItemClickListener() {
 			@Override
-			public void onItemClick(AdapterView<?> adapterView,
-					View view, int position, long id) {
-				initialQuery = ((TextView) view).getText()
-						.toString();
+			public void onItemClick(AdapterView<?> adapterView, View view,
+					int position, long id) {
+				initialQuery = ((TextView) view).getText().toString();
 				mySearch();
 			}
 		};
@@ -169,7 +173,7 @@ public class SearchActivity extends WithHeaderActivity {
 		savedSearchesAdapter = new ArrayAdapter<String>(this,
 				R.layout.search_section_view, savedSearch);
 		mSearchSectionAdapter.notifyDataSetChanged();
-		
+
 		if (flag == SearchActivity.SUCCESS) {
 			mSearchSectionList
 					.setOnItemClickListener(searchSectionListListener);
