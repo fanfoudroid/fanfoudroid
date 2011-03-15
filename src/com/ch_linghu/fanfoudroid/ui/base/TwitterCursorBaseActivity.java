@@ -77,6 +77,8 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 	private GenericTask mFollowersRetrieveTask;
 	private GenericTask mGetMoreTask;
 	
+	private int mRetrieveCount = 0;
+	
 	private TaskListener mRetrieveTaskListener = new TaskAdapter(){
 
 		@Override
@@ -93,8 +95,11 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 				editor.putLong(Preferences.LAST_TWEET_REFRESH_KEY, Utils
 						.getNowTime());
 				editor.commit();
-				//TODO: 1. StatusType(DONE) ; 2. 只有在取回的数据大于MAX时才做GC, 因为小于时可以保证数据的连续性
-				getDb().gc(getUserId(), getDatabaseType()); // GC 
+				//TODO: 1. StatusType(DONE) ; 
+				if (mRetrieveCount >= StatusTable.MAX_ROW_NUM){
+					//只有在取回的数据大于MAX时才做GC, 因为小于时可以保证数据的连续性
+					getDb().gc(getUserId(), getDatabaseType()); // GC
+				}
 				draw();
 				goTop();
 			} else {
@@ -156,7 +161,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 	public abstract String fetchMaxId();
 	public abstract String fetchMinId();
 
-	public abstract void addMessages(ArrayList<Tweet> tweets,
+	public abstract int addMessages(ArrayList<Tweet> tweets,
 			boolean isUnread);
 
 	public abstract List<Status> getMessageSinceId(String maxId)
@@ -436,6 +441,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
     }
 	
 	public void onRetrieveBegin() {
+		mRetrieveCount = 0;
 		updateProgress(getString(R.string.page_status_refreshing));
 	}
 
@@ -491,30 +497,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 				}
 			}
 
-			addMessages(tweets, false); // getDb().addMentions(tweets, false);
-//			Log.d("TAG", "publishProgress");
-//			publishProgress(1);
-//
-//			if (isCancelled()) {
-//				return TaskResult.CANCELLED;
-//			}
-//
-//			//task.publishProgress();
-//
-//			for (String imageUrl : imageUrls) {
-//				if (!Utils.isEmpty(imageUrl)) {
-//					// Fetch image to cache.
-//					try {
-//						getImageManager().put(imageUrl);
-//					} catch (IOException e) {
-//						Log.e(TAG, e.getMessage(), e);
-//					}
-//				}
-//
-//				if (isCancelled()) {
-//					return TaskResult.CANCELLED;
-//				}
-//			}
+			mRetrieveCount = addMessages(tweets, false); // getDb().addMentions(tweets, false);
 
 			return TaskResult.OK;
 		}

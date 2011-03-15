@@ -371,14 +371,18 @@ public class TwitterDatabase {
      * @param tweets
      *            需要写入的消息List
      * @return
+     * 		写入的记录条数
      */
-    public void putTweets(List<Tweet> tweets, String owner, int type, boolean isUnread) {
+    public int putTweets(List<Tweet> tweets, String owner, int type, boolean isUnread) {
         //long start = System.currentTimeMillis();
         if (null == tweets || 0 == tweets.size())
-            return;
-
+        {
+            return 0;
+        }
+        
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-
+        
+        int result = 0;
         try {
             db.beginTransaction();
 
@@ -391,6 +395,7 @@ public class TwitterDatabase {
                 if (-1 == id) {
                     Log.e(TAG, "cann't insert the tweet : " + tweet.toString());
                 } else {
+                	++result;
                     Log.i(TAG, String.format("Insert a status into database[%s] : %s", owner, tweet.toString()));
                 }
             }
@@ -400,6 +405,7 @@ public class TwitterDatabase {
         } finally {
             db.endTransaction();
         }
+        return result;
         //long end = System.currentTimeMillis();
         //Log.d("LDS", "putTweets : " + (end-start));
     }
