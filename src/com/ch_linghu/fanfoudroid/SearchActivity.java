@@ -149,7 +149,7 @@ public class SearchActivity extends WithHeaderActivity {
 			public void onItemClick(AdapterView<?> adapterView, View view,
 					int position, long id) {
 				initialQuery = ((TextView) view).getText().toString();
-				mySearch();
+				startSearch();
 			}
 		};
 		if (flag == SearchActivity.LOADING) {
@@ -181,7 +181,7 @@ public class SearchActivity extends WithHeaderActivity {
 	}
 
 	@Override
-	protected boolean mySearch() {
+	protected boolean startSearch() {
 		if (!Utils.isEmpty(initialQuery)) {
 			// 以下这个方法在7可用，在8就报空指针
 			// triggerSearch(initialQuery, null);
@@ -203,7 +203,7 @@ public class SearchActivity extends WithHeaderActivity {
 		searchButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				initialQuery = mSearchEdit.getText().toString();
-				mySearch();
+				startSearch();
 			}
 		});
 	}
@@ -215,7 +215,7 @@ public class SearchActivity extends WithHeaderActivity {
 					|| keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
 				if (event.getAction() == KeyEvent.ACTION_UP) {
 					initialQuery = mSearchEdit.getText().toString();
-					mySearch();
+					startSearch();
 				}
 				return true;
 			}

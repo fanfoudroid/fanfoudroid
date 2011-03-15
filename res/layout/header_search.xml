@@ -38,11 +38,14 @@
         <EditText android:id="@+id/search_edit"
            android:hint="搜索饭否"
            android:layout_width="fill_parent"
-           android:layout_height="wrap_content"
+           android:layout_height="35dp"
            android:layout_toLeftOf="@id/search"
            android:layout_toRightOf="@id/top_back"
            android:background="@color/body_background" 
-           android:layout_centerVertical="true" android:layout_marginLeft="10dip" android:layout_marginRight="10dip"/>   
+           android:layout_centerVertical="true"
+           android:layout_marginLeft="10dip" 
+           android:layout_marginRight="10dip"
+           android:paddingLeft="2dip"/>   
          
         <!-- 分割线 -->
         <!--LinearLayout
