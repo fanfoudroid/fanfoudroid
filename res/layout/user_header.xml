@@ -1,50 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:paddingTop="8px"              
-    android:paddingBottom="7px"          
-    android:paddingLeft="7px"
-    android:paddingRight="9px"        
-    >    
-      <!-- 头像 -->
-      <ImageView
-        android:id="@+id/profile_image"
-        android:src="@drawable/user_default_photo"        
-        android:layout_marginTop="2dp"
-        android:layout_marginLeft="3dp"
-        android:layout_marginBottom="2dp"
-        android:layout_marginRight="5dp"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-      />
-      <!-- 用户名 -->
-      <TextView      
-        android:id="@+id/tweet_user_text"
-        android:layout_toRightOf="@id/profile_image"        
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="@style/user_name"
-      />
-      <!-- 用户名 -->
-      <TextView
-        android:id="@+id/realname_text"            
-        android:layout_toRightOf="@id/profile_image"      
-        android:layout_below="@+id/tweet_user_text"        
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="@style/user_screen_name"
-      />                    
-      <!-- Follow Me -->
-      <Button
-        android:id="@+id/follow_button"
-        android:layout_alignParentRight="true"        
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"                
-        android:layout_marginRight="2dp"
-        style="@style/blue_button"
-      />          
-</RelativeLayout>
+<TextView   
+    xmlns:android="http://schemas.android.com/apk/res/android"  
+    android:id="@+id/user_timeline_query_status"
+    android:layout_width="fill_parent"  
+    android:layout_height="wrap_content"    
+    android:gravity="center"
+    android:text="test" />

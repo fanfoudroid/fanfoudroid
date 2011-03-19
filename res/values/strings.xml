@@ -68,6 +68,7 @@
     <string name="user_status_following">正在关注...</string>
     <string name="user_status_unfollowing">正在取消关注...</string>
     <string name="user_prompt_this_person_has_protected_their_updates">该用户只向关注他/她的人公开消息。</string>
+    <string name="user_query_status_success">查询成功！</string>
 
     <!-- Write页面 -->
     <string name="write_label_send">发送</string>
