@@ -132,13 +132,13 @@ public class WithHeaderActivity extends BaseActivity {
 //				v.startAnimation(anim);
 				
 				//go to SearchActivity
-				mySearch();
+				startSearch();
 			}
 		});
 	}
 	
 	// 这个方法会在SearchActivity里重写
-	protected boolean mySearch() {
+	protected boolean startSearch() {
 		Intent intent = new Intent();
 		intent.setClass(this, SearchActivity.class);
 		startActivity(intent);

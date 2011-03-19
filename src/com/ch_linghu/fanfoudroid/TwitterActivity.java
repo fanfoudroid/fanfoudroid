@@ -135,9 +135,10 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 		
 		AdapterView.AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
 		Tweet tweet = getContextItemTweet(info.position);
-		
-		if (tweet.userId.equals(getApi().getUserId())){
-			menu.add(0, CONTEXT_DELETE_ID, 0, R.string.cmenu_delete);
+		if(null!=tweet){//当按钮为 刷新/更多的时候为空
+			if (tweet.userId.equals(getApi().getUserId())){
+				menu.add(0, CONTEXT_DELETE_ID, 0, R.string.cmenu_delete);
+			}
 		}
 	}
 	
@@ -178,8 +179,8 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 	
 	// hasRetrieveListTask interface
 	@Override
-	public void addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
-	    getDb().putTweets(tweets, getUserId(), StatusTable.TYPE_HOME, isUnread);
+	public int addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
+	    return getDb().putTweets(tweets, getUserId(), StatusTable.TYPE_HOME, isUnread);
 	}
 	
 	@Override

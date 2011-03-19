@@ -299,15 +299,19 @@ public class ProfileActivity extends WithHeaderActivity {
 
 		profileScreenName.setText("@" + profileInfo.getScreenName());
 
-		if (profileInfo.isFollowing()) {
-			isFollowingText.setText(getResources().getString(R.string.profile_isfollowing));
-			followingBtn.setText("取消关注");
+		if (profileInfo.getId().equals(myself)){
+			isFollowingText.setText(R.string.profile_isyou);
+			followingBtn.setVisibility(View.GONE);
+		} else if (profileInfo.isFollowing()) {
+			isFollowingText.setText(R.string.profile_isfollowing);
+			followingBtn.setVisibility(View.VISIBLE);
+			followingBtn.setText(R.string.user_label_unfollow);
 			followingBtn.setOnClickListener(cancelFollowingListener);
 		} else {
 
-			isFollowingText.setText(getResources().getString(
-					R.string.profile_notfollowing));
-			followingBtn.setText("添加关注");
+			isFollowingText.setText(R.string.profile_notfollowing);
+			followingBtn.setVisibility(View.VISIBLE);
+			followingBtn.setText(R.string.user_label_follow);
 			followingBtn.setOnClickListener(setfollowingListener);
 		}
 

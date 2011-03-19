@@ -101,8 +101,8 @@ public class MentionActivity extends TwitterCursorBaseActivity {
 	}
 
 	@Override
-	public void addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
-		getDb().putTweets(tweets, getUserId(), StatusTable.TYPE_MENTION, isUnread);
+	public int addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
+		return getDb().putTweets(tweets, getUserId(), StatusTable.TYPE_MENTION, isUnread);
 	}
 
 	@Override

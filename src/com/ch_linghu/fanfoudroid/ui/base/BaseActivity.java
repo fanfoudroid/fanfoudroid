@@ -178,16 +178,17 @@ public class BaseActivity extends Activity {
   public boolean onCreateOptionsMenu(Menu menu) {
     super.onCreateOptionsMenu(menu);
 
-    SubMenu submenu = menu.addSubMenu(R.string.write_label_insert_picture);
-    submenu.setIcon(android.R.drawable.ic_menu_gallery);
-    
-    submenu.add(0, OPTIONS_MENU_ID_IMAGE_CAPTURE, 0, R.string.write_label_take_a_picture);
-    submenu.add(0, OPTIONS_MENU_ID_PHOTO_LIBRARY, 0, R.string.write_label_choose_a_picture);
-    
-    MenuItem item = menu.add(0, OPTIONS_MENU_ID_SEARCH, 0, R.string.omenu_search);
-    item.setIcon(android.R.drawable.ic_search_category_default);
-    item.setAlphabeticShortcut(SearchManager.MENU_KEY);
+//    SubMenu submenu = menu.addSubMenu(R.string.write_label_insert_picture);
+//    submenu.setIcon(android.R.drawable.ic_menu_gallery);
+//    
+//    submenu.add(0, OPTIONS_MENU_ID_IMAGE_CAPTURE, 0, R.string.write_label_take_a_picture);
+//    submenu.add(0, OPTIONS_MENU_ID_PHOTO_LIBRARY, 0, R.string.write_label_choose_a_picture);
+//    
+//    MenuItem item = menu.add(0, OPTIONS_MENU_ID_SEARCH, 0, R.string.omenu_search);
+//    item.setIcon(android.R.drawable.ic_search_category_default);
+//    item.setAlphabeticShortcut(SearchManager.MENU_KEY);
 
+    MenuItem item;
     item = menu.add(0, OPTIONS_MENU_ID_PREFERENCES, 0, R.string.omenu_settings);
     item.setIcon(android.R.drawable.ic_menu_preferences);
 

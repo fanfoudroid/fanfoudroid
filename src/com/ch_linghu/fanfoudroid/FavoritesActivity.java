@@ -110,8 +110,8 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 	// hasRetrieveListTask interface
 	
 	@Override
-	public void addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
-		getDb().putTweets(tweets, getUserId(), StatusTable.TYPE_FAVORITE, isUnread);
+	public int addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
+		return getDb().putTweets(tweets, getUserId(), StatusTable.TYPE_FAVORITE, isUnread);
 	}
 	
 	@Override

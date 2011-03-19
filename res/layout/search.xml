@@ -3,11 +3,18 @@
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
   android:orientation="vertical"
+  android:background="@color/body_background"
   >
 	 <!-- 复合列表，包含保存的搜索和热门搜索 -->
 	 <ListView android:id="@+id/search_section_list"
 	  	android:layout_width="fill_parent"
 	  	android:layout_height="fill_parent"
-	  	android:layout_weight="1" />
+	  	android:layout_weight="1" 
+ 	    android:cacheColorHint="#00000000"
+	    android:fadeScrollbars="true"
+    	android:divider="#FFCCCCCC"
+    	android:dividerHeight="1dip"
+    	android:fastScrollEnabled="true"
+	/>
 			  
 </LinearLayout>
