@@ -74,7 +74,8 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_marginLeft="10.0dip"
-					android:layout_centerVertical="true"
+					android:layout_alignParentLeft="true"
+					android:layout_centerInParent="true"
 					style="@style/normalText.span"
 					>
 			</TextView>
@@ -82,8 +83,10 @@
 				android:id="@+id/following_btn"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_toRightOf="@id/isfollowing_text"
-				android:layout_centerVertical="true"
+				android:layout_alignParentRight="true"
+				android:layout_centerInParent="true"
+				android:background="@drawable/blue_button_selector"
+				android:layout_marginRight="10.0dip"
 				android:visibility="gone"
 			></Button>
 			</RelativeLayout>
