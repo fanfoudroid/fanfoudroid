@@ -46,6 +46,7 @@ import com.ch_linghu.fanfoudroid.ProfileActivity;
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.TwitterActivity;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
+import com.ch_linghu.fanfoudroid.UserActivity;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 
 /**
@@ -173,18 +174,21 @@ public class MenuDialog extends Dialog {
 					int position, long id) {
 				switch (position) {
 				case PAGE_MINE:
-				    //TODO: 完成个人空间页面
-//					goTo(HomeActivity.class);
+					String user = TwitterApplication.getMyselfId();
+					//FIXME: 目前没有方便的从ID获得ScreenName的方法，
+					//       等完成UserInfo表操作之后修正此处
+					String name = "";
+					Intent intent = UserActivity.createIntent(user, name);
+					intent.setClass(getContext(), UserActivity.class);
+					getContext().startActivity(intent);
 					break;
 				case PAGE_PROFILE:
 					goTo(ProfileActivity.class);
 					break;
 				case PAGE_FOLLOWERS:
-					//TODO:我关注的页面
 					goTo(FollowersActivity.class);
 					break;
 				case PAGE_FOLLOWING:
-				    //TODO: 完成关注者页面
 					goTo(FollowingActivity.class);
 					break;
 				case PAGE_HOME:
