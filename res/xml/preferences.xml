@@ -70,11 +70,15 @@
     android:title="@string/pref_use_profile_image"
     android:summary="@string/pref_use_profile_image_summary"
     android:defaultValue="true" />
-    <CheckBoxPreference
-    android:key="use_photo_preview"
-    android:title="@string/pref_use_photo_preview"
-    android:summary="@string/pref_use_photo_preview_summary"
-    android:defaultValue="true" />
+    <ListPreference
+    android:key="photo_preview"
+    android:title="@string/pref_photo_preview"
+    android:summary="@string/pref_photo_preview_summary"
+    android:defaultValue="@string/pref_photo_preview_type_small" 
+    android:entries="@array/photo_preview_type"
+    android:entryValues="@array/photo_preview_type"
+    android:dialogTitle="@string/pref_photo_preview"                        
+    />
   </PreferenceCategory>
 
   <PreferenceCategory android:title="@string/pref_title_network">

@@ -370,8 +370,12 @@ public class StatusActivity extends WithHeaderActivity{
 	private void draw() {
 	    Log.i(TAG, "draw");
 	    
+	    String PHOTO_PREVIEW_TYPE_NONE = getString(R.string.pref_photo_preview_type_none);
+	    String PHOTO_PREVIEW_TYPE_SMALL = getString(R.string.pref_photo_preview_type_small);
+	    String PHOTO_PREVIEW_TYPE_LARGE = getString(R.string.pref_photo_preview_type_large);
+	    
 	    SharedPreferences pref = getPreferences();
-	    boolean usePhotoPreview = pref.getBoolean(Preferences.USE_PHOTO_PREVIEW, true);
+	    String photoPreviewSize = pref.getString(Preferences.PHOTO_PREVIEW, PHOTO_PREVIEW_TYPE_SMALL);
 	    
 	    tweet_screen_name.setText(tweet.screenName);
         Utils.setTweetText(tweet_text, tweet.text);
@@ -386,8 +390,8 @@ public class StatusActivity extends WithHeaderActivity{
         		.get(tweet.profileImageUrl, callback));
         
         // has photo
-        if (usePhotoPreview){
-	        String photoPageLink = Utils.getPhotoPageLink(tweet.text); 
+        if (!photoPreviewSize.equals(PHOTO_PREVIEW_TYPE_NONE)){
+	        String photoPageLink = Utils.getPhotoPageLink(tweet.text, photoPreviewSize); 
 	        if (photoPageLink != null){
 	        	status_photo.setVisibility(View.VISIBLE);
 	        	status_photo.setImageBitmap(mPhotoBitmap);

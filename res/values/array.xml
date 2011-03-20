@@ -15,5 +15,11 @@
     <item>@string/pref_network_type_cmwap</item>  
     <item>@string/pref_network_type_3g</item>  
 </string-array>
+
+<string-array name="photo_preview_type">
+	<item>@string/pref_photo_preview_type_none</item>
+	<item>@string/pref_photo_preview_type_small</item>
+	<item>@string/pref_photo_preview_type_large</item>
+</string-array>
   
 </resources>

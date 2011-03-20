@@ -260,13 +260,23 @@ public class Utils {
   /**
    * 获得消息中的照片页面链接
    * @param text 消息文本
+   * @param size 照片尺寸
    * @return 照片页面的链接，若不存在，则返回null
    */
-  public static String getPhotoPageLink(String text){
+  public static String getPhotoPageLink(String text, String size){
 	  Matcher m = PHOTO_PAGE_LINK.matcher(text);
 	  if(m.find()){
-		  //return m.group(0);
-		  return "http://m.fanfou.com" + m.group(1);
+		  String SMALL=TwitterApplication.mContext
+			.getString(R.string.pref_photo_preview_type_small);
+		  String LARGE=TwitterApplication.mContext
+			.getString(R.string.pref_photo_preview_type_large);
+		  if (size.equals(SMALL)){
+			  return "http://m.fanfou.com" + m.group(1);
+		  }else if (size.endsWith(LARGE)){
+			  return m.group(0);
+		  }else{
+			  return null;
+		  }
 	  }else{
 		  return null;
 	  }
