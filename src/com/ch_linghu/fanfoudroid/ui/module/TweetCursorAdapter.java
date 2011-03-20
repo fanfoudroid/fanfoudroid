@@ -113,7 +113,7 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		TweetCursorAdapter.ViewHolder holder = (TweetCursorAdapter.ViewHolder) view
 				.getTag();
 		
-		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(mContext);;
+		SharedPreferences pref = TwitterApplication.mPref;  //PreferenceManager.getDefaultSharedPreferences(mContext);;
 		boolean useProfileImage = pref.getBoolean(Preferences.USE_PROFILE_IMAGE, true);
 		holder.tweetUserText.setText(cursor.getString(mUserTextColumn));
 		Utils.setSimpleTweetText(holder.tweetText, cursor.getString(mTextColumn));

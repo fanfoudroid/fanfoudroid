@@ -103,7 +103,7 @@ Log.i(TAG,"load newView");
 				.getTag();
 		Log.i(TAG, "cursor count="+cursor.getCount());
 		Log.i(TAG,"holder is null?"+(holder==null?"yes":"no"));
-		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(mContext);;
+		SharedPreferences pref = TwitterApplication.mPref;  //PreferenceManager.getDefaultSharedPreferences(mContext);;
 		boolean useProfileImage = pref.getBoolean(Preferences.USE_PROFILE_IMAGE, true);
 		String profileImageUrl = cursor.getString(mProfileImageUrlColumn);
 		if (useProfileImage){

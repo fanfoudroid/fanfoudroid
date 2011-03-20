@@ -58,8 +58,8 @@ public class BaseActivity extends Activity {
 	    if (!checkIsLogedIn()){
 	    	return false;
 	    } else {
-		    PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-		    mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		    //PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+		    mPreferences = TwitterApplication.mPref; //PreferenceManager.getDefaultSharedPreferences(this);
 	
 		    manageUpdateChecks();
 		    

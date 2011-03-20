@@ -9,6 +9,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -17,6 +18,7 @@ import com.ch_linghu.fanfoudroid.data.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheManager;
+import com.ch_linghu.fanfoudroid.weibo.Configuration;
 import com.ch_linghu.fanfoudroid.weibo.Weibo;
 
 public class TwitterApplication extends Application {
@@ -28,32 +30,46 @@ public class TwitterApplication extends Application {
     public static TwitterDatabase mDb;
     public static Weibo mApi; // new API
     public static Context mContext;
+    public static SharedPreferences mPref;
     
     public static int networkType = 0;
+
+    private final static boolean DEBUG = Configuration.getDebug();
 
     
 	// 获取登录用户id
     public static String getMyselfId(){
-		SharedPreferences preferences = PreferenceManager
-				.getDefaultSharedPreferences(mContext);
-		return preferences.getString(Preferences.CURRENT_USER_ID,
+		return mPref.getString(Preferences.CURRENT_USER_ID,
 				TwitterApplication.mApi.getUserId());
     }
 
     @Override
     public void onCreate() {
-        super.onCreate();
+        //NOTE: StrictMode模式需要2.3 API支持。
+        if (DEBUG){
+        	StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+        		.detectAll()
+        		.penaltyLog()
+        		.build());
+        	StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+        		.detectAll()
+        		.penaltyLog()
+        		.build());
+        }
 
+
+    	super.onCreate();
+        
         mContext = this.getApplicationContext();
         //mImageManager = new ImageManager(this);
         mProfileImageCacheManager = new ProfileImageCacheManager();
         mApi = new Weibo();
         mDb = TwitterDatabase.getInstance(this);
 
-        SharedPreferences preferences = PreferenceManager
+        mPref = PreferenceManager
                 .getDefaultSharedPreferences(this);
-        String username = preferences.getString(Preferences.USERNAME_KEY, "");
-        String password = preferences.getString(Preferences.PASSWORD_KEY, "");
+        String username = mPref.getString(Preferences.USERNAME_KEY, "");
+        String password = mPref.getString(Preferences.PASSWORD_KEY, "");
 
         if (Weibo.isValidCredentials(username, password)) {
             mApi.setCredentials(username, password); // Setup API and HttpClient

@@ -435,8 +435,7 @@ public class TwitterDatabase {
      */
     public Cursor fetchAllTweets(int type) {
 		// 获取登录用户id
-		SharedPreferences preferences = PreferenceManager
-				.getDefaultSharedPreferences(mContext);
+		SharedPreferences preferences = TwitterApplication.mPref;
 		String myself = preferences.getString(Preferences.CURRENT_USER_ID,
 				TwitterApplication.mApi.getUserId());
 		

@@ -341,8 +341,7 @@ public class TwitterService extends Service {
 	}
 
 	public static void schedule(Context context) {
-		SharedPreferences preferences = PreferenceManager
-				.getDefaultSharedPreferences(context);
+		SharedPreferences preferences = TwitterApplication.mPref;
 
 		if (!preferences.getBoolean(Preferences.CHECK_UPDATES_KEY, false)) {
 			Log.i(TAG, "Check update preference is false.");
