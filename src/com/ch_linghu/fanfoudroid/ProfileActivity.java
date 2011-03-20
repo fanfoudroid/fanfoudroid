@@ -45,7 +45,7 @@ import android.widget.Toast;
 public class ProfileActivity extends WithHeaderActivity {
 	private static final String TAG = "ProfileActivity";
 	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.PROFILE";
-
+	private static final String STATUS_COUNT="status_count";
 	private GenericTask profileInfoTask;// 获取用户信息
 
 	private GenericTask setFollowingTask;
@@ -196,9 +196,10 @@ public class ProfileActivity extends WithHeaderActivity {
 
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				launchActivity(UserActivity.createIntent(profileInfo.getId(),
-						profileInfo.getScreenName()));
+				Intent intent=UserActivity.createIntent(profileInfo.getId(),
+						profileInfo.getScreenName());
+				intent.putExtra(STATUS_COUNT,profileInfo.getStatusesCount() );
+				launchActivity(intent);
 			}
 		});
 
@@ -226,7 +227,7 @@ public class ProfileActivity extends WithHeaderActivity {
 	private void draw() {
 		Log.i(TAG, "draw");
 		bindProfileInfo();
-		// doGetProfileInfo();
+		 doGetProfileInfo();
 	}
 
 	@Override
@@ -343,6 +344,7 @@ public class ProfileActivity extends WithHeaderActivity {
 		favouritesCount
 				.setText(String.valueOf(profileInfo.getFavouritesCount()));
 
+		
 	}
 
 	private TaskListener profileInfoTaskListener = new TaskAdapter() {
@@ -366,7 +368,7 @@ public class ProfileActivity extends WithHeaderActivity {
 				bindControl();
 
 			}
-
+			
 		}
 
 		@Override
