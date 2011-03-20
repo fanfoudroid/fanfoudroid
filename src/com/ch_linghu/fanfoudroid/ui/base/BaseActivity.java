@@ -58,8 +58,8 @@ public class BaseActivity extends Activity {
 	    if (!checkIsLogedIn()){
 	    	return false;
 	    } else {
-		    PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-		    mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		    //PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+		    mPreferences = TwitterApplication.mPref; //PreferenceManager.getDefaultSharedPreferences(this);
 	
 		    manageUpdateChecks();
 		    
@@ -201,45 +201,12 @@ public class BaseActivity extends Activity {
     return true;
   }
 
-  private static final int REQUEST_CODE_LAUNCH_ACTIVITY = 0;
-  private static final int REQUEST_CODE_PREFERENCES = 1;
-  private static final int REQUEST_IMAGE_CAPTURE = 2;
-  private static final int REQUEST_PHOTO_LIBRARY = 3;
+  protected static final int REQUEST_CODE_LAUNCH_ACTIVITY = 0;
+  protected static final int REQUEST_CODE_PREFERENCES = 1;
 
-  private File mImageFile;
-  private Uri mImageUri;
-  
-  protected void openImageCaptureMenu() {
-	  try {  
-		// TODO: API < 1.6, images size too small
-      	mImageFile = new File(Environment.getExternalStorageDirectory(), "upload.jpg");
-      	mImageUri = Uri.fromFile(mImageFile);
-          Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE); 
-          intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
-          startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);  
-      } catch (Exception e) {  
-          Log.e(TAG, e.getMessage());  
-      }  
-  }
-  
-  protected void openPhotoLibraryMenu() {
-	  Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-      intent.setType("image/*");
-      startActivityForResult(intent, REQUEST_PHOTO_LIBRARY); 
-  }
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     switch (item.getItemId()) {
-    case OPTIONS_MENU_ID_IMAGE_CAPTURE:
-    {
-    	openImageCaptureMenu();
-        return true;
-    }
-    case OPTIONS_MENU_ID_PHOTO_LIBRARY:
-    {
-    	openPhotoLibraryMenu();
-    	return true;
-    }
     case OPTIONS_MENU_ID_LOGOUT:
       logout();
       return true;
@@ -289,34 +256,6 @@ public class BaseActivity extends Activity {
     } else if (requestCode == REQUEST_CODE_LAUNCH_ACTIVITY && resultCode == RESULT_LOGOUT) {
       Log.i(TAG, "Result logout.");
       handleLoggedOut();
-    } else if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK){
-    	Intent intent = new Intent(Intent.ACTION_SEND);
-    	intent.putExtra(Intent.EXTRA_STREAM, mImageUri);
-//    	Bundle bundle = new Bundle();
-//    	bundle.putParcelable("uri", mImageUri);
-//    	bundle.putString("filename", mImageFile.getPath());
-    	
-    	intent.setClass(this, WriteActivity.class);
-//    	intent.putExtras(bundle);
-        startActivity(intent);  
-        
-        //打开发送图片界面后将自身关闭
-        finish();
-    } else if (requestCode == REQUEST_PHOTO_LIBRARY && resultCode == RESULT_OK){
-    	mImageUri = data.getData();
-
-    	Intent intent = new Intent(Intent.ACTION_SEND);
-    	intent.putExtra(Intent.EXTRA_STREAM, mImageUri);
-//    	Bundle bundle = new Bundle();
-//    	bundle.putParcelable("uri", mImageUri);
-//    	bundle.putString("filename", mImageFile.getPath());
-    	
-    	intent.setClass(this, WriteActivity.class);
-//    	intent.putExtras(bundle);
-        startActivity(intent);  	
-
-        //打开发送图片界面后将自身关闭
-        finish();
     }
   }
   

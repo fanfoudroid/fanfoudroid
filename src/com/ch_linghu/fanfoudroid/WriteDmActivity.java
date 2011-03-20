@@ -132,30 +132,30 @@ public class WriteDmActivity extends WithHeaderActivity {
 	}
 
 	// sub menu
-	protected void createInsertPhotoDialog() {
-
-		final CharSequence[] items = {
-				getString(R.string.write_label_take_a_picture),
-				getString(R.string.write_label_choose_a_picture) };
-
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(getString(R.string.write_label_insert_picture));
-		builder.setItems(items, new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int item) {
-				// Toast.makeText(getApplicationContext(), items[item],
-				// Toast.LENGTH_SHORT).show();
-				switch (item) {
-				case 0:
-					openImageCaptureMenu();
-					break;
-				case 1:
-					openPhotoLibraryMenu();
-				}
-			}
-		});
-		AlertDialog alert = builder.create();
-		alert.show();
-	}
+//	protected void createInsertPhotoDialog() {
+//
+//		final CharSequence[] items = {
+//				getString(R.string.write_label_take_a_picture),
+//				getString(R.string.write_label_choose_a_picture) };
+//
+//		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//		builder.setTitle(getString(R.string.write_label_insert_picture));
+//		builder.setItems(items, new DialogInterface.OnClickListener() {
+//			public void onClick(DialogInterface dialog, int item) {
+//				// Toast.makeText(getApplicationContext(), items[item],
+//				// Toast.LENGTH_SHORT).show();
+//				switch (item) {
+//				case 0:
+//					openImageCaptureMenu();
+//					break;
+//				case 1:
+//					openPhotoLibraryMenu();
+//				}
+//			}
+//		});
+//		AlertDialog alert = builder.create();
+//		alert.show();
+//	}
 
 	@Override
 	protected boolean _onCreate(Bundle savedInstanceState) {

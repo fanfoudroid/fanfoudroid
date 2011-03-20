@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -34,6 +35,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextWatcher;
@@ -78,6 +80,9 @@ public class WriteActivity extends WithHeaderActivity {
 	private static final String SIS_RUNNING_KEY = "running";
 	private static final String PREFS_NAME = "com.ch_linghu.fanfoudroid";
 	
+	private static final int REQUEST_IMAGE_CAPTURE = 2;
+	private static final int REQUEST_PHOTO_LIBRARY = 3;
+	
 	// View
 	private TweetEdit mTweetEdit;
 	private EditText mTweetEditText;
@@ -89,10 +94,13 @@ public class WriteActivity extends WithHeaderActivity {
 	// Picture
 	private boolean withPic = false;
 	private File mFile;
-	private Uri mImageUri;
 	private ImageView mPreview;
 	private static final int MAX_BITMAP_SIZE = 400;
 
+	private File mImageFile;
+	private Uri mImageUri;
+	  
+	
 	// Task
 	private GenericTask mSendTask;
 	
@@ -127,7 +135,27 @@ public class WriteActivity extends WithHeaderActivity {
 	private String _repost_id;
 
 	// sub menu
-	protected void createInsertPhotoDialog() {
+	protected void openImageCaptureMenu() {
+		try {
+			// TODO: API < 1.6, images size too small
+			mImageFile = new File(Environment.getExternalStorageDirectory(),
+					"upload.jpg");
+			mImageUri = Uri.fromFile(mImageFile);
+			Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+			intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
+			startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
+		} catch (Exception e) {
+			Log.e(TAG, e.getMessage());
+		}
+	}
+	
+	protected void openPhotoLibraryMenu() {
+		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+		intent.setType("image/*");
+		startActivityForResult(intent, REQUEST_PHOTO_LIBRARY);
+	}
+
+	  protected void createInsertPhotoDialog() {
 
 		final CharSequence[] items = { getString(R.string.write_label_take_a_picture),
 				getString(R.string.write_label_choose_a_picture) };
@@ -400,7 +428,7 @@ public class WriteActivity extends WithHeaderActivity {
 
 	public static Intent createNewTweetIntent(String text) {
 		Intent intent = new Intent(NEW_TWEET_ACTION);
-		intent.putExtra(EXTRA_TEXT, text);
+		intent.putExtra(Intent.EXTRA_TEXT, text);
 
 		return intent;
 	}
@@ -431,6 +459,21 @@ public class WriteActivity extends WithHeaderActivity {
         
         return intent;
     }
+	
+	public static Intent createImageIntent(Activity activity, Uri uri){
+		Intent intent = new Intent(Intent.ACTION_SEND);
+    	intent.putExtra(Intent.EXTRA_STREAM, uri);
+    	try{
+    		WriteActivity writeActivity = (WriteActivity)activity;
+    		intent.putExtra(Intent.EXTRA_TEXT, writeActivity.mTweetEdit.getText());
+    		intent.putExtra(WriteActivity.EXTRA_REPLY_ID, writeActivity._reply_id);
+    		intent.putExtra(WriteActivity.EXTRA_REPOST_ID, writeActivity._repost_id);
+    	}catch(ClassCastException e){
+    		//do nothing
+    	}
+    	return intent;
+		
+	}
 	
 
 	private class MyTextWatcher implements TextWatcher {
@@ -648,4 +691,29 @@ public class WriteActivity extends WithHeaderActivity {
 		mProgressText.setText(progress);
 	}
 
+	  @Override
+	  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	    super.onActivityResult(requestCode, resultCode, data);
+
+	    if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK){
+	    	Intent intent = WriteActivity.createImageIntent(this, mImageUri);
+	    	intent.setClass(this, WriteActivity.class);
+
+	        startActivity(intent);  
+	        
+	        //打开发送图片界面后将自身关闭
+	        finish();
+	    } else if (requestCode == REQUEST_PHOTO_LIBRARY && resultCode == RESULT_OK){
+	    	mImageUri = data.getData();
+
+	    	Intent intent = WriteActivity.createImageIntent(this, mImageUri);
+	    	intent.setClass(this, WriteActivity.class);
+
+	    	startActivity(intent);  	
+
+	        //打开发送图片界面后将自身关闭
+	        finish();
+	    }
+	  }
+	
 }

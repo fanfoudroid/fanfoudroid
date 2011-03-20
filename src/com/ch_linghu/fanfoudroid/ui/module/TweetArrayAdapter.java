@@ -75,7 +75,7 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View view;
 		
-		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(mContext);
+		SharedPreferences pref = TwitterApplication.mPref;  //PreferenceManager.getDefaultSharedPreferences(mContext);
 		boolean useProfileImage = pref.getBoolean(Preferences.USE_PROFILE_IMAGE, true);
 		
 		if (convertView == null) {

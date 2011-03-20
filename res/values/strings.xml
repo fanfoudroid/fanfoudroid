@@ -197,7 +197,7 @@
     <string name="general_lable_cancel">取消</string>
     
     <!-- PAGES -->
-    <string name="pages_mine">我的空间</string>
+    <string name="pages_mine">我的消息</string>
     <string name="pages_profile">个人资料</string>
     <string name="pages_followers">关注我的</string>
     <string name="pages_following">我关注的</string>
