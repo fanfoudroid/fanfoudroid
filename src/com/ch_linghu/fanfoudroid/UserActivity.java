@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.http.HttpAuthException;
+import com.ch_linghu.fanfoudroid.http.HttpRefusedException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
@@ -28,7 +30,7 @@ import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 public class UserActivity extends TwitterListBaseActivity implements
 		MyListView.OnNeedMoreListener, Refreshable {
 
-	private static final String TAG = "UserActivity";
+	private static final String TAG = UserActivity.class.getSimpleName();
 
 	// State.
 	private String mUsername;
@@ -47,6 +49,7 @@ public class UserActivity extends TwitterListBaseActivity implements
 	}
 
 	// Views.
+	private String msg;
 	private TextView headerView;
 	private MyListView mTweetList;
 	private static final int LOADINGFLAG = 1;
@@ -94,7 +97,7 @@ public class UserActivity extends TwitterListBaseActivity implements
 
 	private void updateHeader(int flag) {
 		if (flag == LOADINGFLAG) {
-			//重新刷新页面时从第一页开始获取数据 --- phoenix
+			// 重新刷新页面时从第一页开始获取数据 --- phoenix
 			mNextPage = 1;
 			mTweets.clear();
 			mAdapter.refresh(mTweets);
@@ -110,10 +113,7 @@ public class UserActivity extends TwitterListBaseActivity implements
 					R.string.login_status_network_or_connection_error));
 		}
 		if (flag == AUTHERRORFLAG) {
-			headerView
-					.setText(getResources()
-							.getString(
-									R.string.user_prompt_this_person_has_protected_their_updates));
+			headerView.setText(msg);
 		}
 	}
 
@@ -265,7 +265,7 @@ public class UserActivity extends TwitterListBaseActivity implements
 
 		// 旋转刷新按钮
 		animRotate(refreshButton);
-		//更新查询状态显示
+		// 更新查询状态显示
 		updateHeader(LOADINGFLAG);
 
 		if (mRetrieveTask != null
@@ -312,7 +312,15 @@ public class UserActivity extends TwitterListBaseActivity implements
 						new Paging(mNextPage));
 			} catch (WeiboException e) {
 				Log.e(TAG, e.getMessage(), e);
-				return TaskResult.IO_ERROR;
+				Throwable cause = e.getCause(); // Maybe null
+				if (cause instanceof HttpRefusedException) {
+					// AUTH ERROR
+					msg = ((HttpRefusedException) cause).getError()
+							.getMessage();
+					return TaskResult.AUTH_ERROR;
+				} else {
+					return TaskResult.IO_ERROR;
+				}
 			}
 
 			for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
@@ -358,7 +366,15 @@ public class UserActivity extends TwitterListBaseActivity implements
 						new Paging(mNextPage));
 			} catch (WeiboException e) {
 				Log.e(TAG, e.getMessage(), e);
-				return TaskResult.IO_ERROR;
+				Throwable cause = e.getCause(); // Maybe null
+				if (cause instanceof HttpRefusedException) {
+					// AUTH ERROR
+					msg = ((HttpRefusedException) cause).getError()
+							.getMessage();
+					return TaskResult.AUTH_ERROR;
+				} else {
+					return TaskResult.IO_ERROR;
+				}
 			}
 
 			for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
