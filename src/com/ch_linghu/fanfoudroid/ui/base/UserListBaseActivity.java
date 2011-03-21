@@ -1,5 +1,9 @@
 package com.ch_linghu.fanfoudroid.ui.base;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -9,9 +13,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 
@@ -37,6 +43,7 @@ import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.task.TweetCommonTask;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
+import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 public abstract class UserListBaseActivity extends WithHeaderActivity 
 implements Refreshable {
@@ -46,6 +53,7 @@ implements Refreshable {
 
 	protected static final int STATE_ALL = 0;
 	protected static final String SIS_RUNNING_KEY = "running";
+	private static final String USER_ID="userId";
 
 	// Tasks.
 	protected GenericTask mFavTask;
@@ -96,6 +104,10 @@ implements Refreshable {
 	public static final int CONTENT_STATUS_ID=Menu.FIRST+2;
 	
 	public static final int CONTENT_DEL_FRIEND=Menu.FIRST+3;
+	
+	public static final int CONTENT_ADD_FRIEND=Menu.FIRST+4;
+	
+	public static final int CONTENT_SENDDM=Menu.FIRST+5;
 	
 	/**
 	 * 如果增加了Context Menu常量的数量，则必须重载此方法，
@@ -165,23 +177,8 @@ implements Refreshable {
 			}
 			menu.add(0, CONTENT_PROFILE_ID, 0, user.screenName + getResources().getString(R.string.cmenu_user_profile_prefix));
 			menu.add(0,CONTENT_STATUS_ID,0,user.screenName+getResources().getString(R.string.cmenu_user_status));
-//			Tweet tweet = getContextItemTweet(info.position);
-//			
-//			if (tweet == null) {
-//				Log.w(TAG, "Selected item not available.");
-//				return;
-//			}
-//			
-//			menu.add(0, CONTEXT_MORE_ID, 0, tweet.screenName + getResources().getString(R.string.cmenu_user_profile_prefix));
-//			menu.add(0, CONTEXT_REPLY_ID, 0, R.string.cmenu_reply);
-//			menu.add(0, CONTEXT_RETWEET_ID, 0, R.string.cmenu_retweet);
-//			menu.add(0, CONTEXT_DM_ID, 0, R.string.cmenu_direct_message);
-//	
-//			if (tweet.favorited.equals("true")) {
-//				menu.add(0, CONTEXT_DEL_FAV_ID, 0, R.string.cmenu_del_fav);
-//			} else {
-//				menu.add(0, CONTEXT_ADD_FAV_ID, 0, R.string.cmenu_add_fav);
-//			}
+			menu.add(0,CONTENT_SENDDM,0,getResources().getString(R.string.cmenu_user_senddm_prefix)+user.screenName+getResources().getString(R.string.cmenu_user_senddm_suffix));
+
 		}
 	}
 
@@ -197,29 +194,6 @@ implements Refreshable {
 		}
 
 		switch (item.getItemId()) {
-		
-//		case CONTEXT_MORE_ID:
-//			launchActivity(ProfileActivity.createIntent(tweet.userId));
-//			return true;
-//		case CONTEXT_REPLY_ID: {
-//		    Intent intent = WriteActivity.createNewReplyIntent(tweet.screenName, tweet.id);
-//			startActivity(intent);
-//			return true;
-//		}
-//		case CONTEXT_RETWEET_ID:
-//		    Intent intent = WriteActivity.createNewRepostIntent(this,
-//		            tweet.text, tweet.screenName, tweet.id);
-//			startActivity(intent);
-//			return true;
-//		case CONTEXT_DM_ID:
-//			launchActivity(WriteDmActivity.createIntent(tweet.userId));
-//			return true;
-//		case CONTEXT_ADD_FAV_ID: 
-//			doFavorite("add", tweet.id);
-//			return true;
-//		case CONTEXT_DEL_FAV_ID: 
-//			doFavorite("del", tweet.id);
-//			return true;
 		case CONTENT_PROFILE_ID:
 			launchActivity(ProfileActivity.createIntent(user.id));
 			return true;
@@ -227,10 +201,195 @@ implements Refreshable {
 		case CONTENT_STATUS_ID:
 			launchActivity(UserActivity.createIntent(user.id, user.name));
 			return true;
+		case CONTENT_DEL_FRIEND:
+			delFriend(user.id);
+			return true;
+		case CONTENT_ADD_FRIEND:
+			addFriend(user.id);
+			return true;
+		case CONTENT_SENDDM:
+			launchActivity(WriteDmActivity.createIntent(user.id));
+			return true;
 		default:
 			return super.onContextItemSelected(item);
 		}
 	}
+	/**
+	 * 取消关注
+	 * @param id
+	 */
+	private void delFriend(final String id) {
+			Builder diaBuilder = new AlertDialog.Builder(UserListBaseActivity.this)
+			.setTitle("关注提示").setMessage("确实要取消关注吗?");
+			diaBuilder.setPositiveButton("确定",
+			new DialogInterface.OnClickListener() {
+	
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					if (cancelFollowingTask != null
+							&& cancelFollowingTask.getStatus() == GenericTask.Status.RUNNING) {
+						return;
+					} else {
+						cancelFollowingTask = new CancelFollowingTask();
+						cancelFollowingTask
+								.setListener(cancelFollowingTaskLinstener);
+						TaskParams params = new TaskParams();
+						params.put(USER_ID, id);
+						cancelFollowingTask.execute(params);
+					}
+				}
+			});
+			diaBuilder.setNegativeButton("取消",
+			new DialogInterface.OnClickListener() {
+	
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.dismiss();
+	
+				}
+			});
+			Dialog dialog = diaBuilder.create();
+			dialog.show();
+	}
+	
+	private GenericTask cancelFollowingTask;
+	
+	/**
+	 * 取消关注
+	 * 
+	 * @author Dino
+	 * 
+	 */
+	private class CancelFollowingTask extends GenericTask {
+
+		@Override
+		protected TaskResult _doInBackground(TaskParams... params) {
+			try {
+				//TODO:userid
+				String userId=params[0].getString(USER_ID);
+				getApi().destroyFriendship(userId);
+			} catch (WeiboException e) {
+				Log.w(TAG, "create friend ship error");
+				return TaskResult.FAILED;
+			}
+			return TaskResult.OK;
+		}
+
+	}
+	private TaskListener cancelFollowingTaskLinstener = new TaskAdapter() {
+		@Override
+		public void onPostExecute(GenericTask task, TaskResult result) {
+			if (result == TaskResult.OK) {
+//				followingBtn.setText("添加关注");
+//				isFollowingText.setText(getResources().getString(
+//						R.string.profile_notfollowing));
+//				followingBtn.setOnClickListener(setfollowingListener);
+				Toast.makeText(getBaseContext(), "取消关注成功", Toast.LENGTH_SHORT).show();
+
+			} else if (result == TaskResult.FAILED) {
+				Toast.makeText(getBaseContext(), "取消关注失败", Toast.LENGTH_SHORT).show();
+			}
+		}
+
+		@Override
+		public String getName() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+	};
+	
+	
+	private GenericTask setFollowingTask;
+	/**
+	 * 设置关注
+	 * @param id
+	 */
+	private void addFriend(String id){
+		Builder diaBuilder = new AlertDialog.Builder(UserListBaseActivity.this)
+		.setTitle("关注提示").setMessage("确实要添加关注吗?");
+		diaBuilder.setPositiveButton("确定",
+				new DialogInterface.OnClickListener() {
+		
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if (setFollowingTask != null
+								&& setFollowingTask.getStatus() == GenericTask.Status.RUNNING) {
+							return;
+						} else {
+							setFollowingTask = new SetFollowingTask();
+							setFollowingTask
+									.setListener(setFollowingTaskLinstener);
+							TaskParams params = new TaskParams();
+							setFollowingTask.execute(params);
+						}
+		
+					}
+				});
+		diaBuilder.setNegativeButton("取消",
+		new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+
+			}
+		});
+		Dialog dialog = diaBuilder.create();
+		dialog.show();
+	}
+	
+	/**
+	 * 设置关注
+	 * 
+	 * @author Dino
+	 * 
+	 */
+	private class SetFollowingTask extends GenericTask {
+
+		@Override
+		protected TaskResult _doInBackground(TaskParams... params) {
+
+			try {
+				String userId=params[0].getString(USER_ID);
+				getApi().createFriendship(userId);
+
+			} catch (WeiboException e) {
+				Log.w(TAG, "create friend ship error");
+				return TaskResult.FAILED;
+			}
+
+			return TaskResult.OK;
+		}
+
+	}
+
+	private TaskListener setFollowingTaskLinstener = new TaskAdapter() {
+
+		@Override
+		public void onPostExecute(GenericTask task, TaskResult result) {
+			if (result == TaskResult.OK) {
+//				followingBtn.setText("取消关注");
+//				isFollowingText.setText(getResources().getString(
+//						R.string.profile_isfollowing));
+//				followingBtn.setOnClickListener(cancelFollowingListener);
+				Toast.makeText(getBaseContext(), "关注成功", Toast.LENGTH_SHORT).show();
+
+			} else if (result == TaskResult.FAILED) {
+				Toast.makeText(getBaseContext(), "关注失败", Toast.LENGTH_SHORT).show();
+			}
+		}
+
+		@Override
+		public String getName() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+	};
+	
+	
+	
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {

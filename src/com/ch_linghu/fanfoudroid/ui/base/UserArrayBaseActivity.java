@@ -188,7 +188,6 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 		mUserList.setAdapter(mUserListAdapter);
 		allUserList=new ArrayList<com.ch_linghu.fanfoudroid.data.User>();
 		
-
 	}
 
 	@Override
@@ -325,7 +324,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 				}
 				
 				allUserList.add(User.create(user));
-
+				
 				if (isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
@@ -337,6 +336,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 
 	public void draw() {
 		mUserListAdapter.refresh(allUserList);
+		
 	}
 
 	public ImageButton getRefreshButton() {

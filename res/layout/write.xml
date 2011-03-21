@@ -69,7 +69,10 @@
 
 	<!-- 工具栏 -->
 	<RelativeLayout android:gravity="center_vertical"
-		android:layout_width="fill_parent" android:layout_height="50dp">
+		android:layout_width="fill_parent" 
+		android:layout_height="50dp"
+		android:background="@drawable/send_message_block"
+		>
 
 		<!-- 发送按钮 -->
 		<Button android:id="@+id/send_button" android:layout_width="wrap_content"

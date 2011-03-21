@@ -16,7 +16,12 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 
 public class FollowingActivity extends UserArrayBaseActivity {
 
@@ -26,6 +31,7 @@ public class FollowingActivity extends UserArrayBaseActivity {
 	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.FOLLOWING";
 	private static final String USER_ID = "userId";
 	private int currentPage=1;
+	String myself="";
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		   Intent intent = getIntent();
@@ -46,12 +52,29 @@ public class FollowingActivity extends UserArrayBaseActivity {
 			}
 			super.onCreate(savedInstanceState);
 			
-			String myself = TwitterApplication.getMyselfId();
+			myself = TwitterApplication.getMyselfId();
 			if(getUserId()==myself){
 				setHeaderTitle("我关注的人");
 			}
 	}
 	
+	/*
+	 * 添加取消关注按钮
+	 * @see com.ch_linghu.fanfoudroid.ui.base.UserListBaseActivity#onCreateContextMenu(android.view.ContextMenu, android.view.View, android.view.ContextMenu.ContextMenuInfo)
+	 */
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		if(getUserId()==myself){
+			AdapterView.AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+			User user = getContextItemUser(info.position);
+			menu.add(0,CONTENT_DEL_FRIEND,0,getResources().getString(R.string.cmenu_user_addfriend_prefix)+user.screenName+getResources().getString(R.string.cmenu_user_friend_suffix));
+
+		}
+		
+	}
+
 	public static Intent createIntent(String userId) {
 		Intent intent = new Intent(LAUNCH_ACTION);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

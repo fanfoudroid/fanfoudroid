@@ -50,6 +50,11 @@
     <string name="cmenu_more">更多</string>
     <string name="cmenu_user_profile_prefix">的空间</string>
     <string name="cmenu_user_status">的消息</string>
+    <string name="cmenu_user_addfriend_prefix">设置对</string>
+    <string name="cmenu_user_friend_suffix">的关注</string>
+    <string name="cmenu_user_delfriend_prefix">取消对</string>
+    <string name="cmenu_user_senddm_prefix">给</string>
+    <string name="cmenu_user_senddm_suffix">发私信</string>
     
     <!-- Login页面 -->
     <string name="login_label_username">帐号</string>    
@@ -104,6 +109,8 @@
 	<string name="profile_isfollowing">您已关注该用户</string>
 	<string name="profile_notfollowing">您尚未关注该用户</string>
 	<string name="profile_following_error">添加用户失败</string>
+	<string name="profile_send_dm">发私信</string>
+	<string name="profile_write_dm">写私信</string>
 	
 	<!-- 设置页面  -->
     <string name="pref_title_notifications">后台提示</string>

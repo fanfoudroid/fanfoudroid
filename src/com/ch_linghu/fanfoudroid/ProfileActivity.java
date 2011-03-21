@@ -46,6 +46,7 @@ public class ProfileActivity extends WithHeaderActivity {
 	private static final String TAG = "ProfileActivity";
 	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.PROFILE";
 	private static final String STATUS_COUNT="status_count";
+	private static final String EXTRA_USER = "user";
 	private GenericTask profileInfoTask;// 获取用户信息
 
 	private GenericTask setFollowingTask;
@@ -69,12 +70,15 @@ public class ProfileActivity extends WithHeaderActivity {
 
 	private TextView isFollowingText;// 是否收听
 	private Button followingBtn;// 收听/取消收听按钮
-
+	
+	private Button sendDmBtn;//发送私信按钮
+	
 	private RelativeLayout friendsLayout;
 	private LinearLayout followersLayout;
 	private LinearLayout statusesLayout;
 	private LinearLayout favouritesLayout;
-
+	
+	
 	private static final String FANFOUROOT = "http://fanfou.com/";
 	private static final String USER_ID = "userid";
 
@@ -135,6 +139,24 @@ public class ProfileActivity extends WithHeaderActivity {
 	}
 
 	private void initControls() {
+		String dmstr="";
+		if(userId.equals(myself)){
+			dmstr=this.getString(R.string.profile_write_dm);
+		}else{
+			dmstr=this.getString(R.string.profile_send_dm);
+		}
+		sendDmBtn=(Button)findViewById(R.id.senddm_btn);
+		sendDmBtn.setText(dmstr);
+		//发送私信
+		sendDmBtn.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				Intent intent=WriteDmActivity.createIntent(userId.equals(myself)?"":userId);
+				startActivity(intent);
+				
+			}});
+		
 		profileImageView = (ImageView) findViewById(R.id.profileimage);
 		profileName = (TextView) findViewById(R.id.profilename);
 		profileScreenName = (TextView) findViewById(R.id.profilescreenname);
