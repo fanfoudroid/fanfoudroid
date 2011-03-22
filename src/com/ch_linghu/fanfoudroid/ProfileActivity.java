@@ -71,6 +71,7 @@ public class ProfileActivity extends WithHeaderActivity {
 	private TextView isFollowingText;// 是否收听
 	private Button followingBtn;// 收听/取消收听按钮
 	
+	private Button sendMentionBtn;//发送留言按钮
 	private Button sendDmBtn;//发送私信按钮
 	
 	private RelativeLayout friendsLayout;
@@ -139,23 +140,8 @@ public class ProfileActivity extends WithHeaderActivity {
 	}
 
 	private void initControls() {
-		String dmstr="";
-		if(userId.equals(myself)){
-			dmstr=this.getString(R.string.profile_write_dm);
-		}else{
-			dmstr=this.getString(R.string.profile_send_dm);
-		}
-		sendDmBtn=(Button)findViewById(R.id.senddm_btn);
-		sendDmBtn.setText(dmstr);
-		//发送私信
-		sendDmBtn.setOnClickListener(new OnClickListener(){
-
-			@Override
-			public void onClick(View v) {
-				Intent intent=WriteDmActivity.createIntent(userId.equals(myself)?"":userId);
-				startActivity(intent);
-				
-			}});
+		sendMentionBtn = (Button)findViewById(R.id.sendmetion_btn);
+		sendDmBtn = (Button)findViewById(R.id.senddm_btn);
 		
 		profileImageView = (ImageView) findViewById(R.id.profileimage);
 		profileName = (TextView) findViewById(R.id.profilename);
@@ -310,6 +296,32 @@ public class ProfileActivity extends WithHeaderActivity {
 	}
 
 	private void bindControl() {
+		if(profileInfo.getId().equals(myself)){
+			sendMentionBtn.setVisibility(View.GONE);
+			sendDmBtn.setVisibility(View.GONE);
+		}else{
+			//发送留言
+			sendMentionBtn.setVisibility(View.VISIBLE);
+			sendMentionBtn.setOnClickListener(new OnClickListener(){
+
+				@Override
+				public void onClick(View v) {
+					Intent intent = WriteActivity.createNewTweetIntent("@"
+								+profileInfo.getScreenName());
+					startActivity(intent);
+				}});
+			
+			//发送私信
+			sendDmBtn.setVisibility(View.VISIBLE);
+			sendDmBtn.setOnClickListener(new OnClickListener(){
+
+				@Override
+				public void onClick(View v) {
+					Intent intent=WriteDmActivity.createIntent(profileInfo.getId());
+					startActivity(intent);
+				}});
+		}
+		
 		if (userId.equals(myself)) {
 			setHeaderTitle("@" + profileInfo.getScreenName());
 		}

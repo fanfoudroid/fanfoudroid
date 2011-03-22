@@ -109,8 +109,8 @@
 	<string name="profile_isfollowing">您已关注该用户</string>
 	<string name="profile_notfollowing">您尚未关注该用户</string>
 	<string name="profile_following_error">添加用户失败</string>
+	<string name="profile_send_mention">给ta留言</string>
 	<string name="profile_send_dm">发私信</string>
-	<string name="profile_write_dm">写私信</string>
 	
 	<!-- 设置页面  -->
     <string name="pref_title_notifications">后台提示</string>

@@ -41,11 +41,6 @@ public class SearchActivity extends WithHeaderActivity {
 	private ListView mSearchSectionList;
 	private TextView trendsTitle;
 	private TextView savedSearchTitle;
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-
-		super.onConfigurationChanged(newConfig);
-	}
 
 	private MergeAdapter mSearchSectionAdapter;
 	private ArrayAdapter<String> trendsAdapter;

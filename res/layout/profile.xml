@@ -35,8 +35,8 @@
 				<!-- 头像图片 -->
 				<ImageView 
 				android:id="@+id/profileimage"
-				android:layout_width="48dp"
-				android:layout_height="48dp"
+				android:layout_width="64dp"
+				android:layout_height="64dp"
 				android:layout_marginRight="5.0dip"
 				>
 				</ImageView>
@@ -57,18 +57,36 @@
 				android:layout_height="wrap_content"
 				android:layout_toRightOf="@id/profileimage"
 				android:layout_below="@id/profilescreenname"
-	
-				></TextView>
-				
-				<Button
-				android:id="@+id/senddm_btn"
-				android:layout_width="wrap_content"
-				android:layout_height="48dp"
-				android:layout_alignParentRight="true"
-				android:background="@drawable/blue_button_selector"
-				android:layout_marginRight="10.0dip"
-				
-				></Button>
+				/>
+
+				<LinearLayout
+					android:orientation="vertical"
+					android:layout_alignParentRight="true"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+				>
+					<!-- 发送回复 -->
+					<Button
+					android:id="@+id/sendmetion_btn"
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:background="@drawable/blue_button_selector"
+					android:layout_marginRight="10.0dip"
+					android:text="@string/profile_send_mention"
+					android:visibility="gone"
+					/>
+					
+					<!-- 发送私信 -->
+					<Button
+					android:id="@+id/senddm_btn"
+					android:layout_width="fill_parent"
+					android:layout_height="wrap_content"
+					android:background="@drawable/blue_button_selector"
+					android:layout_marginRight="10.0dip"
+					android:text="@string/profile_send_dm"
+					android:visibility="gone"
+					/>
+				</LinearLayout>
 			</RelativeLayout>
 			<!-- 操作按钮部分-->
 		<RelativeLayout
