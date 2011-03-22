@@ -164,7 +164,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
-        <activity android:name=".SearchActivity"/>
+        <activity android:name=".SearchActivity" android:configChanges="keyboardHidden|orientation"/>
         
         <activity android:name=".PreferencesActivity"  
                   android:label="@string/app_name" />

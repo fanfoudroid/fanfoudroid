@@ -17,6 +17,7 @@ import com.commonsware.cwac.merge.MergeAdapter;
 
 import android.app.SearchManager;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -40,6 +41,12 @@ public class SearchActivity extends WithHeaderActivity {
 	private ListView mSearchSectionList;
 	private TextView trendsTitle;
 	private TextView savedSearchTitle;
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+
+		super.onConfigurationChanged(newConfig);
+	}
+
 	private MergeAdapter mSearchSectionAdapter;
 	private ArrayAdapter<String> trendsAdapter;
 	private ArrayAdapter<String> savedSearchesAdapter;
