@@ -105,6 +105,11 @@ public class SearchActivity extends WithHeaderActivity {
 			mSearchSectionList = (ListView) findViewById(R.id.search_section_list);
 
 			initSearchSectionList();
+
+			refreshSearchSectionList(SearchActivity.LOADING);
+
+			doGetSavedSearches();
+
 			return true;
 		} else {
 			return false;
@@ -115,13 +120,18 @@ public class SearchActivity extends WithHeaderActivity {
 	protected void onResume() {
 		Log.i(TAG, "onResume()...");
 		super.onResume();
-
-		refreshSearchSectionList(SearchActivity.LOADING);
-
-		trendsAndSavedSearchesTask = new TrendsAndSavedSearchesTask();
-		trendsAndSavedSearchesTask
-				.setListener(trendsAndSavedSearchesTaskListener);
-		trendsAndSavedSearchesTask.execute();
+	}
+	
+	private void doGetSavedSearches(){
+		if (trendsAndSavedSearchesTask != null 
+				&& trendsAndSavedSearchesTask.getStatus() == GenericTask.Status.RUNNING){
+			return;
+		}else{
+			trendsAndSavedSearchesTask = new TrendsAndSavedSearchesTask();
+			trendsAndSavedSearchesTask
+					.setListener(trendsAndSavedSearchesTaskListener);
+			trendsAndSavedSearchesTask.execute();			
+		}
 	}
 
 	private void initSearchSectionList() {
