@@ -11,27 +11,43 @@ import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheManager;
 import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.task.GenericTask;
+import com.ch_linghu.fanfoudroid.task.TaskAdapter;
+import com.ch_linghu.fanfoudroid.task.TaskListener;
+import com.ch_linghu.fanfoudroid.task.TaskParams;
+import com.ch_linghu.fanfoudroid.task.TaskResult;
+import com.ch_linghu.fanfoudroid.ui.base.UserListBaseActivity;
+import com.ch_linghu.fanfoudroid.weibo.Weibo;
+import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.AlertDialog.Builder;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 //TODO：
 /*
- * 另一种实现方法
+ * 用于用户的Adapter
  */
 public class UserArrayAdapter extends BaseAdapter implements TweetAdapter{
-	private static final String TAG = "TweetArrayAdapter";
-
+	private static final String TAG = "UserArrayAdapter";
+	private static final String USER_ID="userId";
+	
 	protected ArrayList<User> mUsers;
 	private Context mContext;
 	protected LayoutInflater mInflater;
@@ -62,6 +78,7 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter{
 		public TextView screenName;
 		public TextView userId;
 		public TextView lastStatus;
+		public TextView testBtn;
 	}
 
 	@Override
@@ -79,6 +96,8 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter{
 			holder.screenName = (TextView) view.findViewById(R.id.screen_name);
 			holder.userId = (TextView) view.findViewById(R.id.user_id);
 			//holder.lastStatus = (TextView) view.findViewById(R.id.last_status);
+			holder.testBtn=(TextView)view.findViewById(R.id.test_btn);
+		
 			view.setTag(holder);
 		} else {
 			view = convertView;
@@ -86,7 +105,7 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter{
 
 		ViewHolder holder = (ViewHolder) view.getTag();
 		
-		User user = mUsers.get(position);
+		final User user = mUsers.get(position);
 
 		String profileImageUrl = user.profileImageUrl;
 		if (useProfileImage){
@@ -101,7 +120,24 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter{
 		holder.screenName.setText(user.screenName);
 		holder.userId.setText(user.id);
 		//holder.lastStatus.setText(user.lastStatus);
+		
+		
+		holder.testBtn.setText(user.isFollowing?mContext.getString(R.string.general_del_friend):mContext.getString(R.string.general_add_friend));
+		
+		holder.testBtn.setOnClickListener(user.isFollowing?new OnClickListener(){
 
+			@Override
+			public void onClick(View v) {
+				//Toast.makeText(mContext, user.name+"following", Toast.LENGTH_SHORT).show();
+				delFriend(user.id);
+			}}:new OnClickListener(){
+
+				@Override
+				public void onClick(View v) {
+					//Toast.makeText(mContext, user.name+"not following", Toast.LENGTH_SHORT).show();
+					
+					addFriend(user.id);
+				}});
 		return view;
 	}
 	public void refresh(ArrayList<User> users) {
@@ -122,5 +158,187 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter{
 		}
 		
 	};
+	
+	
+	
+	
+	/**
+	 * 取消关注
+	 * @param id
+	 */
+	private void delFriend(final String id) {
+			Builder diaBuilder = new AlertDialog.Builder(mContext)
+			.setTitle("关注提示").setMessage("确实要取消关注吗?");
+			diaBuilder.setPositiveButton("确定",
+			new DialogInterface.OnClickListener() {
+	
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					if (cancelFollowingTask != null
+							&& cancelFollowingTask.getStatus() == GenericTask.Status.RUNNING) {
+						return;
+					} else {
+						cancelFollowingTask = new CancelFollowingTask();
+						cancelFollowingTask
+								.setListener(cancelFollowingTaskLinstener);
+						TaskParams params = new TaskParams();
+						params.put(USER_ID, id);
+						cancelFollowingTask.execute(params);
+					}
+				}
+			});
+			diaBuilder.setNegativeButton("取消",
+			new DialogInterface.OnClickListener() {
+	
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.dismiss();
+	
+				}
+			});
+			Dialog dialog = diaBuilder.create();
+			dialog.show();
+	}
+	
+	private GenericTask cancelFollowingTask;
+	
+	/**
+	 * 取消关注
+	 * 
+	 * @author Dino
+	 * 
+	 */
+	private class CancelFollowingTask extends GenericTask {
+
+		@Override
+		protected TaskResult _doInBackground(TaskParams... params) {
+			try {
+				//TODO:userid
+				String userId=params[0].getString(USER_ID);
+				getApi().destroyFriendship(userId);
+			} catch (WeiboException e) {
+				Log.w(TAG, "create friend ship error");
+				return TaskResult.FAILED;
+			}
+			return TaskResult.OK;
+		}
+
+	}
+	private TaskListener cancelFollowingTaskLinstener = new TaskAdapter() {
+		@Override
+		public void onPostExecute(GenericTask task, TaskResult result) {
+			if (result == TaskResult.OK) {
+//				followingBtn.setText("添加关注");
+//				isFollowingText.setText(getResources().getString(
+//						R.string.profile_notfollowing));
+//				followingBtn.setOnClickListener(setfollowingListener);
+				Toast.makeText(mContext, "取消关注成功", Toast.LENGTH_SHORT).show();
+
+			} else if (result == TaskResult.FAILED) {
+				Toast.makeText(mContext, "取消关注失败", Toast.LENGTH_SHORT).show();
+			}
+		}
+
+		@Override
+		public String getName() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+	};
+	
+	
+	private GenericTask setFollowingTask;
+	/**
+	 * 设置关注
+	 * @param id
+	 */
+	private void addFriend(String id){
+		Builder diaBuilder = new AlertDialog.Builder(mContext)
+		.setTitle("关注提示").setMessage("确实要添加关注吗?");
+		diaBuilder.setPositiveButton("确定",
+				new DialogInterface.OnClickListener() {
+		
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if (setFollowingTask != null
+								&& setFollowingTask.getStatus() == GenericTask.Status.RUNNING) {
+							return;
+						} else {
+							setFollowingTask = new SetFollowingTask();
+							setFollowingTask
+									.setListener(setFollowingTaskLinstener);
+							TaskParams params = new TaskParams();
+							setFollowingTask.execute(params);
+						}
+		
+					}
+				});
+		diaBuilder.setNegativeButton("取消",
+		new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+
+			}
+		});
+		Dialog dialog = diaBuilder.create();
+		dialog.show();
+	}
+	
+	/**
+	 * 设置关注
+	 * 
+	 * @author Dino
+	 * 
+	 */
+	private class SetFollowingTask extends GenericTask {
+
+		@Override
+		protected TaskResult _doInBackground(TaskParams... params) {
+
+			try {
+				String userId=params[0].getString(USER_ID);
+				getApi().createFriendship(userId);
+
+			} catch (WeiboException e) {
+				Log.w(TAG, "create friend ship error");
+				return TaskResult.FAILED;
+			}
+
+			return TaskResult.OK;
+		}
+
+	}
+
+	private TaskListener setFollowingTaskLinstener = new TaskAdapter() {
+
+		@Override
+		public void onPostExecute(GenericTask task, TaskResult result) {
+			if (result == TaskResult.OK) {
+//				followingBtn.setText("取消关注");
+//				isFollowingText.setText(getResources().getString(
+//						R.string.profile_isfollowing));
+//				followingBtn.setOnClickListener(cancelFollowingListener);
+				Toast.makeText(mContext, "关注成功", Toast.LENGTH_SHORT).show();
+
+			} else if (result == TaskResult.FAILED) {
+				Toast.makeText(mContext, "关注失败", Toast.LENGTH_SHORT).show();
+			}
+		}
+
+		@Override
+		public String getName() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+	};
+	
+	  public Weibo getApi() {
+		    return TwitterApplication.mApi;
+		  }
+	
 
 }
