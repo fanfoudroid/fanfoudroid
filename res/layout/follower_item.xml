@@ -19,7 +19,7 @@
 	/>
 	
 	
-	<LinearLayout 
+	<RelativeLayout 
 	  android:orientation="vertical"
 	  android:layout_width="fill_parent"
 	  android:layout_height="wrap_content"
@@ -27,8 +27,10 @@
 	
 		<LinearLayout 
 		  android:orientation="vertical"
-		  android:layout_width="fill_parent"
+		  android:layout_width="wrap_content"
 		  android:layout_height="wrap_content"
+		  android:id="@+id/linealayout01"
+		  android:layout_alignParentLeft="true"
 		>
 		    <!-- user name -->
 			<TextView
@@ -46,14 +48,17 @@
 			  style="@drawable/tweet_meta_color"
 			/>
 		</LinearLayout>		
-		
-		<!-- Last Tweet  
-		<TextView
-		  android:id="@+id/last_status" 
-		  android:layout_width="fill_parent"
-		  android:layout_height="wrap_content"
-		  android:textColor="@drawable/tweet_color"        
-		/>		-->
-	</LinearLayout>
+			<TextView
+				android:id="@+id/test_btn"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:background="@drawable/blue_button_selector"
+				android:layout_alignParentRight="true"
+				android:clickable="true"
+				android:layout_centerInParent="true"
+				android:textColor="@color/simiple_button_color"
+				
+				></TextView>
+	</RelativeLayout>
 
 </LinearLayout>

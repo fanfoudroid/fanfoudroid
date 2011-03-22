@@ -206,7 +206,8 @@
     <!-- 通用 -->
     <string name="general_lable_ok">确定</string>
     <string name="general_lable_cancel">取消</string>
-    
+    <string name="general_del_friend">取消关注</string>
+    <string name="general_add_friend">添加关注</string>
     <!-- PAGES -->
     <string name="pages_mine">我的消息</string>
     <string name="pages_profile">个人资料</string>
