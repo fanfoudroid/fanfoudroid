@@ -60,6 +60,7 @@ public class SearchResultActivity extends TwitterListBaseActivity implements
 	private TaskListener mSearchTaskListener = new TaskAdapter(){
 		@Override
 		public void onPreExecute(GenericTask task) {
+			animRotate(refreshButton);   
 			if (mNextPage == 1) {
 				updateProgress(getString(R.string.page_status_refreshing));
 			} else {
@@ -74,6 +75,7 @@ public class SearchResultActivity extends TwitterListBaseActivity implements
 
 		@Override
 		public void onPostExecute(GenericTask task, TaskResult result) {
+			refreshButton.clearAnimation();   
 			if (result == TaskResult.AUTH_ERROR) {
 				logout();
 			} else if (result == TaskResult.OK) {
