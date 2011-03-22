@@ -107,7 +107,9 @@ implements Refreshable {
 	
 	public static final int CONTENT_ADD_FRIEND=Menu.FIRST+4;
 	
-	public static final int CONTENT_SENDDM=Menu.FIRST+5;
+	public static final int CONTENT_SEND_DM=Menu.FIRST+5;
+
+	public static final int CONTENT_SEND_MENTION=Menu.FIRST+6;
 	
 	/**
 	 * 如果增加了Context Menu常量的数量，则必须重载此方法，
@@ -177,8 +179,8 @@ implements Refreshable {
 			}
 			menu.add(0, CONTENT_PROFILE_ID, 0, user.screenName + getResources().getString(R.string.cmenu_user_profile_prefix));
 			menu.add(0,CONTENT_STATUS_ID,0,user.screenName+getResources().getString(R.string.cmenu_user_status));
-			menu.add(0,CONTENT_SENDDM,0,getResources().getString(R.string.cmenu_user_senddm_prefix)+user.screenName+getResources().getString(R.string.cmenu_user_senddm_suffix));
-
+			menu.add(0,CONTENT_SEND_MENTION,0,getResources().getString(R.string.cmenu_user_send_prefix)+user.screenName+getResources().getString(R.string.cmenu_user_sendmention_suffix));
+			menu.add(0,CONTENT_SEND_DM,0,getResources().getString(R.string.cmenu_user_send_prefix)+user.screenName+getResources().getString(R.string.cmenu_user_senddm_suffix));
 		}
 	}
 
@@ -207,7 +209,10 @@ implements Refreshable {
 		case CONTENT_ADD_FRIEND:
 			addFriend(user.id);
 			return true;
-		case CONTENT_SENDDM:
+		case CONTENT_SEND_MENTION:
+			launchActivity(WriteActivity.createNewTweetIntent("@"+user.screenName));
+			return true;
+		case CONTENT_SEND_DM:
 			launchActivity(WriteDmActivity.createIntent(user.id));
 			return true;
 		default:

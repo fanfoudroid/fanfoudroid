@@ -142,7 +142,7 @@
                       android:host="users" />                
             </intent-filter>                                      
         </activity>
-        <activity android:name=".FollowersActivity">
+        <activity android:name=".FollowersActivity"  android:configChanges="keyboardHidden|orientation">
          <intent-filter>
                 <action android:name="com.ch_linghu.fanfoudroid.FOLLOWERS" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -153,7 +153,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
             </intent-filter>
         </activity>
-        <activity android:name=".FollowingActivity">
+        <activity android:name=".FollowingActivity"  android:configChanges="keyboardHidden|orientation">
           <intent-filter>
                 <action android:name="com.ch_linghu.fanfoudroid.FOLLOWING" />
                 <category android:name="android.intent.category.DEFAULT" />

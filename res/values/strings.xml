@@ -53,8 +53,9 @@
     <string name="cmenu_user_addfriend_prefix">设置对</string>
     <string name="cmenu_user_friend_suffix">的关注</string>
     <string name="cmenu_user_delfriend_prefix">取消对</string>
-    <string name="cmenu_user_senddm_prefix">给</string>
+    <string name="cmenu_user_send_prefix">给</string>
     <string name="cmenu_user_senddm_suffix">发私信</string>
+    <string name="cmenu_user_sendmention_suffix">留言</string>
     
     <!-- Login页面 -->
     <string name="login_label_username">帐号</string>    
