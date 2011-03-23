@@ -229,16 +229,6 @@ public class LoginActivity extends Activity {
         mPasswordEdit.setText("");
 
         Log.i(TAG, "Storing credentials.");
-        SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putString(Preferences.USERNAME_KEY, mUsername);
-        editor.putString(Preferences.PASSWORD_KEY, mPassword);
-        
-        //add 存储当前用户的id
-        
-        editor.putString(Preferences.CURRENT_USER_ID, user.getId());
-        
-        editor.commit();
-
         TwitterApplication.mApi.setCredentials(mUsername, mPassword);
 
         Intent intent = getIntent().getParcelableExtra(Intent.EXTRA_INTENT);
@@ -292,6 +282,14 @@ public class LoginActivity extends Activity {
                 publishProgress(msg);
                 return TaskResult.FAILED;
             }
+
+            SharedPreferences.Editor editor = mPreferences.edit();
+            editor.putString(Preferences.USERNAME_KEY, mUsername);
+            editor.putString(Preferences.PASSWORD_KEY, mPassword);
+            //add 存储当前用户的id
+            editor.putString(Preferences.CURRENT_USER_ID, user.getId());
+            editor.commit();
+            
             return TaskResult.OK;
         }
     }
