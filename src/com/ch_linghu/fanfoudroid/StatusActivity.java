@@ -594,8 +594,8 @@ public class StatusActivity extends WithHeaderActivity{
 				Intent intent = new Intent(Intent.ACTION_SEND);
 				intent.setType("text/plain");
 				intent.putExtra(Intent.EXTRA_TEXT, 
-						String.format("@%s: %s", 
-								tweet.userId, 
+						String.format("@%s %s", 
+								tweet.screenName, 
 								Utils.getSimpleTweetText(tweet.text)));
 				startActivity(Intent.createChooser(intent, getString(R.string.cmenu_share)));
 				return true;

@@ -306,8 +306,8 @@ public class ProfileActivity extends WithHeaderActivity {
 
 				@Override
 				public void onClick(View v) {
-					Intent intent = WriteActivity.createNewTweetIntent("@"
-								+profileInfo.getScreenName());
+					Intent intent = WriteActivity.createNewTweetIntent(
+								String.format("@%s ", profileInfo.getScreenName()));
 					startActivity(intent);
 				}});
 			

@@ -210,7 +210,8 @@ implements Refreshable {
 			addFriend(user.id);
 			return true;
 		case CONTENT_SEND_MENTION:
-			launchActivity(WriteActivity.createNewTweetIntent("@"+user.screenName));
+			launchActivity(WriteActivity.createNewTweetIntent(
+					String.format("@%s ", user.screenName)));
 			return true;
 		case CONTENT_SEND_DM:
 			launchActivity(WriteDmActivity.createIntent(user.id));
