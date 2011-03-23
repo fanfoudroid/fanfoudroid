@@ -59,7 +59,9 @@ public class IDs extends WeiboResponse {
             try {
                 ids[i] = idlist.item(i).getFirstChild().getNodeValue();
             } catch (NumberFormatException nfe) {
-                throw new WeiboException("Weibo API returned malformed response: " + elem, nfe);
+                throw new WeiboException("Weibo API returned malformed response(Invalid Number): " + elem, nfe);
+            } catch (NullPointerException npe) {
+            	throw new WeiboException("Weibo API returned malformed response(NULL): " + elem, npe);
             }
         }
         previousCursor = getChildLong("previous_cursor", elem);
