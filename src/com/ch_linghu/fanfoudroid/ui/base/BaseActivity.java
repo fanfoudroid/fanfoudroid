@@ -121,10 +121,11 @@ public class BaseActivity extends Activity {
     editor.clear();
     editor.commit();
 
-    //FIXME: 对ImageCache也需要清理，现在暂时没有实现
-    //getImageManager().clear();
+    TwitterApplication.mProfileImageCacheManager
+    				  .getImageManager().clear();
 
     // TODO: cancel notifications.
+    TwitterService.unschedule(this);
 
     handleLoggedOut();
   }
