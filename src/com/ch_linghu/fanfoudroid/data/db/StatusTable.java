@@ -55,6 +55,10 @@ public final class StatusTable implements BaseColumns {
     public static final String FIELD_FAVORITED =  "favorited";
     public static final String FIELD_IS_UNREAD = "is_unread";
     public static final String FIELD_STATUS_TYPE = "status_type";
+    public static final String FIELD_PIC_THUMB = "pic_thumbnail";
+    public static final String FIELD_PIC_MID = "pic_middle";
+    public static final String FIELD_PIC_ORIG = "pic_original";
+    
 //    private static final String FIELD_PHOTO_URL = "photo_url";
 //    private double latitude = -1;
 //    private double longitude = -1;
@@ -65,7 +69,8 @@ public final class StatusTable implements BaseColumns {
     public static final String[] TABLE_COLUMNS = new String[] {_ID, FIELD_USER_SCREEN_NAME,
         FIELD_TEXT, FIELD_PROFILE_IMAGE_URL, FIELD_IS_UNREAD, FIELD_CREATED_AT,
         FIELD_FAVORITED, FIELD_IN_REPLY_TO_STATUS_ID, FIELD_IN_REPLY_TO_USER_ID,
-        FIELD_IN_REPLY_TO_SCREEN_NAME, FIELD_TRUNCATED,
+        FIELD_IN_REPLY_TO_SCREEN_NAME, FIELD_TRUNCATED, 
+        FIELD_PIC_THUMB, FIELD_PIC_MID, FIELD_PIC_ORIG,
         FIELD_SOURCE, FIELD_USER_ID, FIELD_STATUS_TYPE, FIELD_OWNER_ID};
     
     public static final String CREATE_TABLE = "CREATE TABLE "
@@ -83,6 +88,9 @@ public final class StatusTable implements BaseColumns {
         + FIELD_IN_REPLY_TO_STATUS_ID + " text, "
         + FIELD_IN_REPLY_TO_USER_ID + " text, "
         + FIELD_IN_REPLY_TO_SCREEN_NAME + " text, "
+        + FIELD_PIC_THUMB + " text, "
+        + FIELD_PIC_MID + " text, "
+        + FIELD_PIC_ORIG + " text, "
         + FIELD_SOURCE + " text not null, " 
         + FIELD_TRUNCATED + " boolean ,"
         + "PRIMARY KEY (" + _ID + ","+ FIELD_OWNER_ID + "," + FIELD_STATUS_TYPE  + "))";
@@ -116,6 +124,9 @@ public final class StatusTable implements BaseColumns {
         tweet.inReplyToStatusId = cursor.getString(cursor.getColumnIndex(FIELD_IN_REPLY_TO_STATUS_ID));
         tweet.inReplyToUserId = cursor.getString(cursor.getColumnIndex(FIELD_IN_REPLY_TO_USER_ID));
         tweet.truncated = cursor.getString(cursor.getColumnIndex(FIELD_TRUNCATED));
+        tweet.thumbnail_pic = cursor.getString(cursor.getColumnIndex(FIELD_PIC_THUMB));
+        tweet.bmiddle_pic = cursor.getString(cursor.getColumnIndex(FIELD_PIC_MID));
+        tweet.original_pic = cursor.getString(cursor.getColumnIndex(FIELD_PIC_ORIG));
         tweet.setStatusType(cursor.getInt(cursor.getColumnIndex(FIELD_STATUS_TYPE)) );
         
         return tweet;

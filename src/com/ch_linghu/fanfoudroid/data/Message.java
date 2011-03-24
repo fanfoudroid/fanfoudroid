@@ -15,5 +15,8 @@ public class Message {
   public String inReplyToStatusId;
   public String inReplyToUserId;
   public String inReplyToScreenName;
+  public String thumbnail_pic;
+  public String bmiddle_pic;
+  public String original_pic;
   
 }

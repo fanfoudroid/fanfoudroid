@@ -335,6 +335,9 @@ public class StatusDatabase {
         initialValues.put(StatusTable.FIELD_CREATED_AT,
                 DB_DATE_FORMATTER.format(tweet.createdAt));
         initialValues.put(StatusTable.FIELD_SOURCE, tweet.source);
+        initialValues.put(StatusTable.FIELD_PIC_THUMB, tweet.thumbnail_pic);
+        initialValues.put(StatusTable.FIELD_PIC_MID, tweet.bmiddle_pic);
+        initialValues.put(StatusTable.FIELD_PIC_ORIG, tweet.original_pic);
         initialValues.put(StatusTable.FIELD_IS_UNREAD, isUnread);
         initialValues.put(StatusTable.FIELD_TRUNCATED, tweet.truncated);
         // TODO: truncated

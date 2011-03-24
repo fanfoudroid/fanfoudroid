@@ -347,6 +347,9 @@ public class TwitterDatabase {
         initialValues.put(StatusTable.FIELD_USER_SCREEN_NAME, tweet.screenName);
         initialValues.put(StatusTable.FIELD_PROFILE_IMAGE_URL,
                 tweet.profileImageUrl);
+        initialValues.put(StatusTable.FIELD_PIC_THUMB, tweet.thumbnail_pic);
+        initialValues.put(StatusTable.FIELD_PIC_MID, tweet.bmiddle_pic);
+        initialValues.put(StatusTable.FIELD_PIC_ORIG, tweet.original_pic);
         initialValues.put(StatusTable.FIELD_FAVORITED, tweet.favorited);
         initialValues.put(StatusTable.FIELD_IN_REPLY_TO_STATUS_ID,
                 tweet.inReplyToStatusId);

@@ -18,8 +18,9 @@
 
 <string-array name="photo_preview_type">
 	<item>@string/pref_photo_preview_type_none</item>
-	<item>@string/pref_photo_preview_type_small</item>
-	<item>@string/pref_photo_preview_type_large</item>
+	<item>@string/pref_photo_preview_type_thumbnail</item>
+	<item>@string/pref_photo_preview_type_middle</item>
+	<item>@string/pref_photo_preview_type_original</item>
 </string-array>
   
 </resources>

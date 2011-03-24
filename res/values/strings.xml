@@ -146,8 +146,9 @@
     <string name="pref_photo_preview_summary">指定预览图片的大小</string>
     
     <string name="pref_photo_preview_type_none">不显示</string>
-    <string name="pref_photo_preview_type_small">小图像</string>
-    <string name="pref_photo_preview_type_large">大图像</string>
+    <string name="pref_photo_preview_type_thumbnail">小尺寸</string>
+    <string name="pref_photo_preview_type_middle">中等尺寸</string>
+    <string name="pref_photo_preview_type_original">大尺寸</string>
         
     <string name="pref_rt_prefix_title">转发前缀</string>
     <string name="pref_rt_prefix_summary">转发消息时的前缀</string>

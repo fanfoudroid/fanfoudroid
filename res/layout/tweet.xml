@@ -44,8 +44,17 @@
 				android:layout_gravity="right"
 				android:layout_width="16dp"
 				android:layout_height="16dp"
-				android:visibility="invisible"
+				android:visibility="gone"
 				android:src="@android:drawable/star_off"
+			/>
+			<!-- favorited icon -->
+			<ImageView
+				android:id="@+id/tweet_has_image"
+				android:layout_gravity="right"
+				android:layout_width="16dp"
+				android:layout_height="16dp"
+				android:visibility="gone"
+				android:src="@android:drawable/ic_menu_slideshow"
 			/>
 		</LinearLayout>		
 		<!-- Tweet context -->

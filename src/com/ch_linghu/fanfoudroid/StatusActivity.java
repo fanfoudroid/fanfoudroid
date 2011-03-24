@@ -371,11 +371,12 @@ public class StatusActivity extends WithHeaderActivity{
 	    Log.i(TAG, "draw");
 	    
 	    String PHOTO_PREVIEW_TYPE_NONE = getString(R.string.pref_photo_preview_type_none);
-	    String PHOTO_PREVIEW_TYPE_SMALL = getString(R.string.pref_photo_preview_type_small);
-	    String PHOTO_PREVIEW_TYPE_LARGE = getString(R.string.pref_photo_preview_type_large);
+	    String PHOTO_PREVIEW_TYPE_THUMBNAIL = getString(R.string.pref_photo_preview_type_thumbnail);
+	    String PHOTO_PREVIEW_TYPE_MIDDLE = getString(R.string.pref_photo_preview_type_middle);
+	    String PHOTO_PREVIEW_TYPE_ORIGINAL = getString(R.string.pref_photo_preview_type_original);
 	    
 	    SharedPreferences pref = getPreferences();
-	    String photoPreviewSize = pref.getString(Preferences.PHOTO_PREVIEW, PHOTO_PREVIEW_TYPE_SMALL);
+	    String photoPreviewSize = pref.getString(Preferences.PHOTO_PREVIEW, PHOTO_PREVIEW_TYPE_MIDDLE);
 	    
 	    tweet_screen_name.setText(tweet.screenName);
         Utils.setTweetText(tweet_text, tweet.text);
@@ -391,8 +392,19 @@ public class StatusActivity extends WithHeaderActivity{
         
         // has photo
         if (!photoPreviewSize.equals(PHOTO_PREVIEW_TYPE_NONE)){
-	        String photoPageLink = Utils.getPhotoPageLink(tweet.text, photoPreviewSize); 
-	        if (photoPageLink != null){
+	        String photoPageLink;
+	        if (photoPreviewSize.equals(PHOTO_PREVIEW_TYPE_THUMBNAIL)){
+	        	photoPageLink = tweet.thumbnail_pic;
+	        }else if (photoPreviewSize.equals(PHOTO_PREVIEW_TYPE_MIDDLE)){
+	        	photoPageLink = tweet.bmiddle_pic;
+	        }else if (photoPreviewSize.equals(PHOTO_PREVIEW_TYPE_ORIGINAL)){
+	        	photoPageLink = tweet.original_pic;
+	        }else{
+	        	Log.e(TAG, "Invalid Photo Preview Size Type");
+	        	photoPageLink = "";
+	        }
+
+	        if (!Utils.isEmpty(photoPageLink)){
 	        	status_photo.setVisibility(View.VISIBLE);
 	        	status_photo.setImageBitmap(mPhotoBitmap);
 	        	doGetPhoto(photoPageLink);
@@ -504,10 +516,8 @@ public class StatusActivity extends WithHeaderActivity{
         	TaskParams param = params[0];
             try {
             	String photoPageURL = param.getString("photo_page_url");
-            	String pageHtml = fetchWebPage(photoPageURL);
-            	String photoSrcURL = Utils.getPhotoURL(pageHtml);
-            	if (photoSrcURL != null){
-            		mPhotoBitmap = fetchPhotoBitmap(photoSrcURL);
+            	if (!Utils.isEmpty(photoPageURL)){
+            		mPhotoBitmap = fetchPhotoBitmap(photoPageURL);
             	}
             } catch (WeiboException e) {
                 Log.e(TAG, e.getMessage(), e);

@@ -59,6 +59,12 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 					.getColumnIndexOrThrow(StatusTable.FIELD_IN_REPLY_TO_SCREEN_NAME);
 			mFavorited = cursor
 					.getColumnIndexOrThrow(StatusTable.FIELD_FAVORITED);
+			mThumbnailPic = cursor
+					.getColumnIndexOrThrow(StatusTable.FIELD_PIC_THUMB);
+			mMiddlePic = cursor
+					.getColumnIndexOrThrow(StatusTable.FIELD_PIC_MID);
+			mOriginalPic = cursor
+					.getColumnIndexOrThrow(StatusTable.FIELD_PIC_ORIG);
 		}
 		mMetaBuilder = new StringBuilder();
 	}
@@ -72,6 +78,9 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 	private int mSourceColumn;
 	private int mInReplyToScreenName;
 	private int mFavorited;
+	private int mThumbnailPic;
+	private int mMiddlePic;
+	private int mOriginalPic;
 
 	private StringBuilder mMetaBuilder;
 	
@@ -95,6 +104,8 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		holder.profileImage = (ImageView) view.findViewById(R.id.profile_image);
 		holder.metaText = (TextView) view.findViewById(R.id.tweet_meta_text);
 		holder.fav = (ImageView) view.findViewById(R.id.tweet_fav);
+		holder.has_image = (ImageView) view.findViewById(R.id.tweet_has_image);
+		
 		view.setTag(holder);
 
 		return view;
@@ -106,6 +117,7 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		public ImageView profileImage;
 		public TextView metaText;
 		public ImageView fav;
+		public ImageView has_image;
 	}
 
 	@Override
@@ -133,6 +145,12 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 			holder.fav.setVisibility(View.VISIBLE);
 		} else {
 			holder.fav.setVisibility(View.INVISIBLE);
+		}
+		
+		if (!Utils.isEmpty(cursor.getString(mThumbnailPic))) {
+			holder.has_image.setVisibility(View.VISIBLE);
+		} else {
+			holder.has_image.setVisibility(View.GONE);
 		}
 
 		try {
