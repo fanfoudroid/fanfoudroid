@@ -376,7 +376,7 @@ public class StatusActivity extends WithHeaderActivity{
 	    String PHOTO_PREVIEW_TYPE_ORIGINAL = getString(R.string.pref_photo_preview_type_original);
 	    
 	    SharedPreferences pref = getPreferences();
-	    String photoPreviewSize = pref.getString(Preferences.PHOTO_PREVIEW, PHOTO_PREVIEW_TYPE_MIDDLE);
+	    String photoPreviewSize = pref.getString(Preferences.PHOTO_PREVIEW, PHOTO_PREVIEW_TYPE_ORIGINAL);
 	    
 	    tweet_screen_name.setText(tweet.screenName);
         Utils.setTweetText(tweet_text, tweet.text);

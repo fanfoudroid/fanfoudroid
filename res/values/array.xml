@@ -18,7 +18,8 @@
 
 <string-array name="photo_preview_type">
 	<item>@string/pref_photo_preview_type_none</item>
-	<item>@string/pref_photo_preview_type_thumbnail</item>
+	<!-- thumbnail没有实用价值，屏蔽之 -->
+	<!-- <item>@string/pref_photo_preview_type_thumbnail</item> -->
 	<item>@string/pref_photo_preview_type_middle</item>
 	<item>@string/pref_photo_preview_type_original</item>
 </string-array>
