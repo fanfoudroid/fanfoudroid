@@ -69,6 +69,7 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 		public ImageView profileImage;
 		public TextView metaText;
 		public ImageView fav;
+		public ImageView has_image;
 	}
 
 	@Override
@@ -90,6 +91,7 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 			holder.metaText = (TextView) view
 					.findViewById(R.id.tweet_meta_text);
 			holder.fav = (ImageView) view.findViewById(R.id.tweet_fav);
+			holder.has_image = (ImageView) view.findViewById(R.id.tweet_has_image);
 			view.setTag(holder);
 		} else {
 			view = convertView;
@@ -120,7 +122,13 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 		if (tweet.favorited.equals("true")) {
 			holder.fav.setVisibility(View.VISIBLE);
 		} else {
-			holder.fav.setVisibility(View.INVISIBLE);
+			holder.fav.setVisibility(View.GONE);
+		}
+		
+		if (!Utils.isEmpty(tweet.thumbnail_pic)) {
+			holder.has_image.setVisibility(View.VISIBLE);
+		} else {
+			holder.has_image.setVisibility(View.GONE);
 		}
 
 		return view;

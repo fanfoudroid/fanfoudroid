@@ -14,6 +14,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.ch_linghu.fanfoudroid.data.db.StatusTable;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
@@ -101,34 +102,32 @@ public class TwitterApplication extends Application {
     }
 
     private void cleanupImages() {
-    	//FIXME: 需要一个完善的方法来完成ImageCache的清理
-    	//       目前暂时没有实现
-//        HashSet<String> keepers = new HashSet<String>();
-//
-//        Cursor cursor = mDb.fetchAllTweets(StatusTable.TYPE_HOME);
-//
-//        if (cursor.moveToFirst()) {
-//            int imageIndex = cursor
-//                    .getColumnIndexOrThrow(StatusTable.FIELD_PROFILE_IMAGE_URL);
-//            do {
-//                keepers.add(cursor.getString(imageIndex));
-//            } while (cursor.moveToNext());
-//        }
-//
-//        cursor.close();
-//
-//        cursor = mDb.fetchAllDms(-1);
-//
-//        if (cursor.moveToFirst()) {
-//            int imageIndex = cursor
-//                    .getColumnIndexOrThrow(StatusTable.FIELD_PROFILE_IMAGE_URL);
-//            do {
-//                keepers.add(cursor.getString(imageIndex));
-//            } while (cursor.moveToNext());
-//        }
-//
-//        cursor.close();
-//
-//        mImageManager.cleanup(keepers);
+        HashSet<String> keepers = new HashSet<String>();
+
+        Cursor cursor = mDb.fetchAllTweets(StatusTable.TYPE_HOME);
+
+        if (cursor.moveToFirst()) {
+            int imageIndex = cursor
+                    .getColumnIndexOrThrow(StatusTable.FIELD_PROFILE_IMAGE_URL);
+            do {
+                keepers.add(cursor.getString(imageIndex));
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+
+        cursor = mDb.fetchAllDms(-1);
+
+        if (cursor.moveToFirst()) {
+            int imageIndex = cursor
+                    .getColumnIndexOrThrow(StatusTable.FIELD_PROFILE_IMAGE_URL);
+            do {
+                keepers.add(cursor.getString(imageIndex));
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+
+        mProfileImageCacheManager.getImageManager().cleanup(keepers);
     }
 }

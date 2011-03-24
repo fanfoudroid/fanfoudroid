@@ -74,7 +74,7 @@
     android:key="photo_preview"
     android:title="@string/pref_photo_preview"
     android:summary="@string/pref_photo_preview_summary"
-    android:defaultValue="@string/pref_photo_preview_type_small" 
+    android:defaultValue="@string/pref_photo_preview_type_original" 
     android:entries="@array/photo_preview_type"
     android:entryValues="@array/photo_preview_type"
     android:dialogTitle="@string/pref_photo_preview"                        

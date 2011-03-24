@@ -1,5 +1,6 @@
 <TextView	
-	xmlns:android="http://schemas.android.com/apk/res/android"	
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/search_section_text"	
 	android:layout_width="fill_parent"	
 	android:layout_height="wrap_content"	
 	android:paddingTop="15dip"

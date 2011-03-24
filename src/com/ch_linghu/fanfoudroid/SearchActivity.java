@@ -1,8 +1,10 @@
 package com.ch_linghu.fanfoudroid;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -16,14 +18,18 @@ import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 import com.commonsware.cwac.merge.MergeAdapter;
 
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -43,11 +49,11 @@ public class SearchActivity extends WithHeaderActivity {
 	private TextView savedSearchTitle;
 
 	private MergeAdapter mSearchSectionAdapter;
-	private ArrayAdapter<String> trendsAdapter;
-	private ArrayAdapter<String> savedSearchesAdapter;
+	private SearchAdapter trendsAdapter;
+	private SearchAdapter savedSearchesAdapter;
 
-	private ArrayList<String> trends;
-	private ArrayList<String> savedSearch;
+	private ArrayList<SearchItem> trends;
+	private ArrayList<SearchItem> savedSearch;
 	private String initialQuery;
 
 	private GenericTask trendsAndSavedSearchesTask;
@@ -135,15 +141,11 @@ public class SearchActivity extends WithHeaderActivity {
 	}
 
 	private void initSearchSectionList() {
-		trends = new ArrayList<String>();
-		savedSearch = new ArrayList<String>();
-		savedSearch.add(getResources().getString(R.string.search_loading));
-		trends.add(getResources().getString(R.string.search_loading));
+		trends = new ArrayList<SearchItem>();
+		savedSearch = new ArrayList<SearchItem>();
 
-		trendsAdapter = new ArrayAdapter<String>(this,
-				R.layout.search_section_view, trends);
-		savedSearchesAdapter = new ArrayAdapter<String>(this,
-				R.layout.search_section_view, savedSearch);
+		trendsAdapter = new SearchAdapter(this);
+		savedSearchesAdapter = new SearchAdapter(this);
 
 		mSearchSectionAdapter.addView(savedSearchTitle);
 		mSearchSectionAdapter.addAdapter(savedSearchesAdapter);
@@ -153,38 +155,87 @@ public class SearchActivity extends WithHeaderActivity {
 	}
 
 	/**
+	 * 辅助计算位置的类
+	 * @author jmx
+	 *
+	 */
+	class PositionHelper{
+		/**
+		 * 返回指定位置属于哪一个小节
+		 * @param position 绝对位置
+		 * @return 小节的序号，0是第一小节，1是第二小节, -1为无效位置
+		 */
+		public int getSectionIndex(int position){
+			int[] contentLength = new int[2];
+			contentLength[0] = savedSearchesAdapter.getCount();
+			contentLength[1] = trendsAdapter.getCount();
+			
+			if (position > 0 && position < contentLength[0]+1){
+				return 0;
+			} else if (position > contentLength[0]+1 
+					&& position < (contentLength[0]+contentLength[1]+1)+1){
+				return 1;
+			} else {
+				return -1;
+			}
+		}
+		
+		/**
+		 * 返回指定位置在自己所在小节的相对位置
+		 * @param position 绝对位置
+		 * @return 所在小节的相对位置，-1为无效位置
+		 */
+		public int getRelativePostion(int position){
+			int[] contentLength = new int[2];
+			contentLength[0] = savedSearchesAdapter.getCount();
+			contentLength[1] = trendsAdapter.getCount();
+			
+			int sectionIndex = getSectionIndex(position);
+			int offset = 0;
+			for (int i = 0; i < sectionIndex; ++i) {
+				offset += contentLength[i] + 1;
+			}
+			return position - offset - 1;
+		}
+	}
+	/**
 	 * flag: loading;network error;success
 	 */
+	PositionHelper pos_helper = new PositionHelper();
 	private void refreshSearchSectionList(int flag) {
+
 		AdapterView.OnItemClickListener searchSectionListListener = new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view,
 					int position, long id) {
-				initialQuery = ((TextView) view).getText().toString();
+				MergeAdapter adapter = (MergeAdapter)(adapterView.getAdapter());
+				SearchAdapter subAdapter = (SearchAdapter)adapter.getAdapter(position);
+				
+				//计算针对subAdapter中的相对位置
+				int relativePos = pos_helper.getRelativePostion(position);
+				
+				SearchItem item = (SearchItem)(subAdapter.getItem(relativePos));
+				initialQuery = item.query;
 				startSearch();
 			}
 		};
+
 		if (flag == SearchActivity.LOADING) {
 			mSearchSectionList.setOnItemClickListener(null);
 			savedSearch.clear();
 			trends.clear();
-			savedSearch.add(getResources().getString(R.string.search_loading));
-			trends.add(getResources().getString(R.string.search_loading));
+			savedSearchesAdapter.refresh(getString(R.string.search_loading));
+			trendsAdapter.refresh(getString(R.string.search_loading));
 		} else if (flag == SearchActivity.NETWORKERROR) {
 			mSearchSectionList.setOnItemClickListener(null);
 			savedSearch.clear();
 			trends.clear();
-			savedSearch.add(getResources().getString(
-					R.string.login_status_network_or_connection_error));
-			trends.add(getResources().getString(
-					R.string.login_status_network_or_connection_error));
+			savedSearchesAdapter.refresh(getString(R.string.login_status_network_or_connection_error));
+			trendsAdapter.refresh(getString(R.string.login_status_network_or_connection_error));
+		} else {
+			savedSearchesAdapter.refresh(savedSearch);
+			trendsAdapter.refresh(trends);
 		}
-
-		trendsAdapter = new ArrayAdapter<String>(this,
-				R.layout.search_section_view, trends);
-		savedSearchesAdapter = new ArrayAdapter<String>(this,
-				R.layout.search_section_view, savedSearch);
-		mSearchSectionAdapter.notifyDataSetChanged();
 
 		if (flag == SearchActivity.SUCCESS) {
 			mSearchSectionList
@@ -251,11 +302,18 @@ public class SearchActivity extends WithHeaderActivity {
 
 			trends.clear();
 			savedSearch.clear();
+
 			for (int i = 0; i < trendsList.length; i++) {
-				trends.add(trendsList[i].getName());
-			}
+				SearchItem item = new SearchItem();
+				item.name = trendsList[i].getName();
+				item.query = trendsList[i].getQuery();
+				trends.add(item);
+			}			
 			for (int i = 0; i < savedSearchsList.size(); i++) {
-				savedSearch.add(savedSearchsList.get(i).getName());
+				SearchItem item = new SearchItem();
+				item.name = savedSearchsList.get(i).getName();
+				item.query = savedSearchsList.get(i).getQuery();
+				savedSearch.add(item);
 			}
 
 			return TaskResult.OK;
@@ -263,4 +321,78 @@ public class SearchActivity extends WithHeaderActivity {
 
 	}
 
+}
+
+class SearchItem {
+	public String name;
+	public String query;
+}
+
+class SearchAdapter extends BaseAdapter{
+	protected ArrayList<SearchItem> mSearchList;
+	private Context mContext;
+	protected LayoutInflater mInflater;
+	protected StringBuilder mMetaBuilder;
+
+	public SearchAdapter(Context context) {
+		mSearchList = new ArrayList<SearchItem>();
+		mContext = context;
+		mInflater = LayoutInflater.from(mContext);
+		mMetaBuilder = new StringBuilder();
+	}
+	
+	public SearchAdapter(Context context, String prompt) {
+		this(context);
+		refresh(prompt);
+	}
+	
+	public void refresh(ArrayList<SearchItem> searchList){
+		mSearchList = searchList;
+		notifyDataSetChanged();
+	}
+	
+	public void refresh(String prompt){
+		SearchItem item = new SearchItem();
+		item.name = prompt;
+		item.query = null;
+
+		mSearchList.clear();
+		mSearchList.add(item);
+		
+		notifyDataSetChanged();
+	}
+	
+	@Override
+	public int getCount() {
+		return mSearchList.size();
+	}
+
+	@Override
+	public Object getItem(int position) {
+		return mSearchList.get(position);
+	}
+
+	@Override
+	public long getItemId(int position) {
+		return position;
+	}
+
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		View view;
+		if (convertView == null) {
+			view = mInflater.inflate(R.layout.search_section_view, parent, false);
+			TextView text = (TextView)view.findViewById(R.id.search_section_text);
+			view.setTag(text);
+		} else {
+			view = convertView;
+		}
+		
+		TextView text = (TextView)view.getTag();
+		
+		SearchItem item = mSearchList.get(position);
+		text.setText(item.name);
+		
+		return view;
+	}
 }

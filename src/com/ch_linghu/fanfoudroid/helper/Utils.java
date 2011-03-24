@@ -253,47 +253,5 @@ public class Utils {
 	  drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());  
 	  drawable.draw(canvas);  
 	  return bitmap;  
-  }   
-  
-  private static Pattern PHOTO_PAGE_LINK = Pattern.compile("http://fanfou.com(/photo/[-a-zA-Z0-9+&@#%?=~_|!:,.;]*[-a-zA-Z0-9+&@#%=~_|])");
-  private static Pattern PHOTO_SRC_LINK = Pattern.compile("src=\"(http:\\/\\/photo\\.fanfou\\.com\\/.*?)\"");
-  /**
-   * 获得消息中的照片页面链接
-   * @param text 消息文本
-   * @param size 照片尺寸
-   * @return 照片页面的链接，若不存在，则返回null
-   */
-  public static String getPhotoPageLink(String text, String size){
-	  Matcher m = PHOTO_PAGE_LINK.matcher(text);
-	  if(m.find()){
-		  String SMALL=TwitterApplication.mContext
-			.getString(R.string.pref_photo_preview_type_small);
-		  String LARGE=TwitterApplication.mContext
-			.getString(R.string.pref_photo_preview_type_large);
-		  if (size.equals(SMALL)){
-			  return "http://m.fanfou.com" + m.group(1);
-		  }else if (size.endsWith(LARGE)){
-			  return m.group(0);
-		  }else{
-			  return null;
-		  }
-	  }else{
-		  return null;
-	  }
-  }
-  
-  /**
-   * 获得照片页面中的照片链接
-   * @param pageHtml 照片页面文本
-   * @return 照片链接，若不存在，则返回null
-   */
-  public static String getPhotoURL(String pageHtml){
-	  Matcher m = PHOTO_SRC_LINK.matcher(pageHtml);
-	  if(m.find()){
-		  return m.group(1);
-	  }else{
-		  return null;
-	  }
-  }
-  
+  }     
 }

@@ -63,6 +63,10 @@ public class Tweet extends Message implements Parcelable {
     tweet.userId = status.getUser().getId();
     tweet.user = status.getUser();
     
+    tweet.thumbnail_pic = status.getThumbnail_pic();
+    tweet.bmiddle_pic = status.getBmiddle_pic();
+    tweet.original_pic = status.getOriginal_pic();
+    
     tweet.source = Utils.getSimpleTweetText(status.getSource());
 
     return tweet;
@@ -126,6 +130,9 @@ public class Tweet extends Message implements Parcelable {
 	  out.writeString(inReplyToScreenName);
 	  out.writeString(screenName);
 	  out.writeString(profileImageUrl);
+	  out.writeString(thumbnail_pic);
+	  out.writeString(bmiddle_pic);
+	  out.writeString(original_pic);
 	  out.writeString(userId);
 	  out.writeString(source);
   }
@@ -153,6 +160,9 @@ public class Tweet extends Message implements Parcelable {
 	  inReplyToScreenName = in.readString();
 	  screenName = in.readString();
 	  profileImageUrl = in.readString();
+	  thumbnail_pic = in.readString();
+	  bmiddle_pic = in.readString();
+	  original_pic = in.readString();
 	  userId = in.readString();
 	  source = in.readString();
   }
