@@ -6,6 +6,7 @@ import com.ch_linghu.fanfoudroid.data.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.data.db.UserInfoTable;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
+import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
@@ -45,7 +46,7 @@ import android.widget.Toast;
 public class ProfileActivity extends WithHeaderActivity {
 	private static final String TAG = "ProfileActivity";
 	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.PROFILE";
-	private static final String STATUS_COUNT="status_count";
+	private static final String STATUS_COUNT = "status_count";
 	private static final String EXTRA_USER = "user";
 	private GenericTask profileInfoTask;// 获取用户信息
 
@@ -70,16 +71,15 @@ public class ProfileActivity extends WithHeaderActivity {
 
 	private TextView isFollowingText;// 是否收听
 	private Button followingBtn;// 收听/取消收听按钮
-	
-	private Button sendMentionBtn;//发送留言按钮
-	private Button sendDmBtn;//发送私信按钮
-	
+
+	private Button sendMentionBtn;// 发送留言按钮
+	private Button sendDmBtn;// 发送私信按钮
+
 	private RelativeLayout friendsLayout;
 	private LinearLayout followersLayout;
 	private LinearLayout statusesLayout;
 	private LinearLayout favouritesLayout;
-	
-	
+
 	private static final String FANFOUROOT = "http://fanfou.com/";
 	private static final String USER_ID = "userid";
 
@@ -140,9 +140,9 @@ public class ProfileActivity extends WithHeaderActivity {
 	}
 
 	private void initControls() {
-		sendMentionBtn = (Button)findViewById(R.id.sendmetion_btn);
-		sendDmBtn = (Button)findViewById(R.id.senddm_btn);
-		
+		sendMentionBtn = (Button) findViewById(R.id.sendmetion_btn);
+		sendDmBtn = (Button) findViewById(R.id.senddm_btn);
+
 		profileImageView = (ImageView) findViewById(R.id.profileimage);
 		profileName = (TextView) findViewById(R.id.profilename);
 		profileScreenName = (TextView) findViewById(R.id.profilescreenname);
@@ -204,9 +204,14 @@ public class ProfileActivity extends WithHeaderActivity {
 
 			@Override
 			public void onClick(View v) {
-				Intent intent=UserActivity.createIntent(profileInfo.getId(),
-						profileInfo.getScreenName());
-				intent.putExtra(STATUS_COUNT,profileInfo.getStatusesCount() );
+				String showName;
+				if (!Utils.isEmpty(profileInfo.getScreenName())) {
+					showName = profileInfo.getScreenName();
+				} else {
+					showName = profileInfo.getName();
+				}
+				Intent intent = UserTimelineActivity.createIntent(
+						profileInfo.getId(), showName);
 				launchActivity(intent);
 			}
 		});
@@ -235,7 +240,7 @@ public class ProfileActivity extends WithHeaderActivity {
 	private void draw() {
 		Log.i(TAG, "draw");
 		bindProfileInfo();
-		 doGetProfileInfo();
+		doGetProfileInfo();
 	}
 
 	@Override
@@ -296,32 +301,35 @@ public class ProfileActivity extends WithHeaderActivity {
 	}
 
 	private void bindControl() {
-		if(profileInfo.getId().equals(myself)){
+		if (profileInfo.getId().equals(myself)) {
 			sendMentionBtn.setVisibility(View.GONE);
 			sendDmBtn.setVisibility(View.GONE);
-		}else{
-			//发送留言
+		} else {
+			// 发送留言
 			sendMentionBtn.setVisibility(View.VISIBLE);
-			sendMentionBtn.setOnClickListener(new OnClickListener(){
+			sendMentionBtn.setOnClickListener(new OnClickListener() {
 
 				@Override
 				public void onClick(View v) {
-					Intent intent = WriteActivity.createNewTweetIntent(
-								String.format("@%s ", profileInfo.getScreenName()));
+					Intent intent = WriteActivity.createNewTweetIntent(String
+							.format("@%s ", profileInfo.getScreenName()));
 					startActivity(intent);
-				}});
-			
-			//发送私信
+				}
+			});
+
+			// 发送私信
 			sendDmBtn.setVisibility(View.VISIBLE);
-			sendDmBtn.setOnClickListener(new OnClickListener(){
+			sendDmBtn.setOnClickListener(new OnClickListener() {
 
 				@Override
 				public void onClick(View v) {
-					Intent intent=WriteDmActivity.createIntent(profileInfo.getId());
+					Intent intent = WriteDmActivity.createIntent(profileInfo
+							.getId());
 					startActivity(intent);
-				}});
+				}
+			});
 		}
-		
+
 		if (userId.equals(myself)) {
 			setHeaderTitle("@" + profileInfo.getScreenName());
 		}
@@ -334,7 +342,7 @@ public class ProfileActivity extends WithHeaderActivity {
 
 		profileScreenName.setText("@" + profileInfo.getScreenName());
 
-		if (profileInfo.getId().equals(myself)){
+		if (profileInfo.getId().equals(myself)) {
 			isFollowingText.setText(R.string.profile_isyou);
 			followingBtn.setVisibility(View.GONE);
 		} else if (profileInfo.isFollowing()) {
@@ -378,7 +386,6 @@ public class ProfileActivity extends WithHeaderActivity {
 		favouritesCount
 				.setText(String.valueOf(profileInfo.getFavouritesCount()));
 
-		
 	}
 
 	private TaskListener profileInfoTaskListener = new TaskAdapter() {
@@ -402,7 +409,7 @@ public class ProfileActivity extends WithHeaderActivity {
 				bindControl();
 
 			}
-			
+
 		}
 
 		@Override
@@ -601,10 +608,12 @@ public class ProfileActivity extends WithHeaderActivity {
 				isFollowingText.setText(getResources().getString(
 						R.string.profile_isfollowing));
 				followingBtn.setOnClickListener(cancelFollowingListener);
-				Toast.makeText(getBaseContext(), "关注成功", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getBaseContext(), "关注成功", Toast.LENGTH_SHORT)
+						.show();
 
 			} else if (result == TaskResult.FAILED) {
-				Toast.makeText(getBaseContext(), "关注失败", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getBaseContext(), "关注失败", Toast.LENGTH_SHORT)
+						.show();
 			}
 		}
 
@@ -645,10 +654,12 @@ public class ProfileActivity extends WithHeaderActivity {
 				isFollowingText.setText(getResources().getString(
 						R.string.profile_notfollowing));
 				followingBtn.setOnClickListener(setfollowingListener);
-				Toast.makeText(getBaseContext(), "取消关注成功", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getBaseContext(), "取消关注成功", Toast.LENGTH_SHORT)
+						.show();
 
 			} else if (result == TaskResult.FAILED) {
-				Toast.makeText(getBaseContext(), "取消关注失败", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getBaseContext(), "取消关注失败", Toast.LENGTH_SHORT)
+						.show();
 			}
 		}
 

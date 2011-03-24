@@ -20,15 +20,4 @@
     android:dividerHeight="1dip"
     android:fastScrollEnabled="true"
     />                
-
-	 <!-- 提示栏 -->
-     <TextView
-     android:id="@+id/progress_text"
-     android:layout_alignParentBottom="true"
-     android:layout_alignParentRight="true"
-     android:visibility="gone"
-     style="@style/statusbar"
-     />
-    
-    
 </LinearLayout>

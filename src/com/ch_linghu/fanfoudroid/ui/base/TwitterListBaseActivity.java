@@ -41,7 +41,6 @@ import com.ch_linghu.fanfoudroid.ProfileActivity;
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.StatusActivity;
 import com.ch_linghu.fanfoudroid.TwitterActivity;
-import com.ch_linghu.fanfoudroid.UserActivity;
 import com.ch_linghu.fanfoudroid.WriteActivity;
 import com.ch_linghu.fanfoudroid.WriteDmActivity;
 import com.ch_linghu.fanfoudroid.data.Tweet;

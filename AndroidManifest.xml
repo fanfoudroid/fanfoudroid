@@ -115,9 +115,9 @@
                       android:host="search" />                
             </intent-filter>                                                                                    
         </activity>                                                
-        <activity android:name=".UserActivity">
+        <activity android:name=".UserTimelineActivity" android:configChanges="keyboardHidden|orientation">
             <intent-filter>
-                <action android:name="com.ch_linghu.fanfoudroid.USER" />
+                <action android:name="com.ch_linghu.fanfoudroid.USERTIMELINE" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>                                      
             <intent-filter>

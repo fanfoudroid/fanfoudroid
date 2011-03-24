@@ -46,7 +46,7 @@ import com.ch_linghu.fanfoudroid.ProfileActivity;
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.TwitterActivity;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
-import com.ch_linghu.fanfoudroid.UserActivity;
+import com.ch_linghu.fanfoudroid.UserTimelineActivity;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 
 /**
@@ -177,9 +177,9 @@ public class MenuDialog extends Dialog {
 					String user = TwitterApplication.getMyselfId();
 					//FIXME: 目前没有方便的从ID获得ScreenName的方法，
 					//       等完成UserInfo表操作之后修正此处
-					String name = "";
-					Intent intent = UserActivity.createIntent(user, name);
-					intent.setClass(getContext(), UserActivity.class);
+					String name = "你自己";
+					Intent intent = UserTimelineActivity.createIntent(user, name);
+					intent.setClass(getContext(), UserTimelineActivity.class);
 					getContext().startActivity(intent);
 					break;
 				case PAGE_PROFILE:

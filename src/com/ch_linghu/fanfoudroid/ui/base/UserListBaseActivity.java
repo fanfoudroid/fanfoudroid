@@ -28,7 +28,7 @@ import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.StatusActivity;
 import com.ch_linghu.fanfoudroid.TwitterActivity;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
-import com.ch_linghu.fanfoudroid.UserActivity;
+import com.ch_linghu.fanfoudroid.UserTimelineActivity;
 import com.ch_linghu.fanfoudroid.WriteActivity;
 import com.ch_linghu.fanfoudroid.WriteDmActivity;
 import com.ch_linghu.fanfoudroid.data.Tweet;
@@ -201,7 +201,7 @@ implements Refreshable {
 			return true;
 	
 		case CONTENT_STATUS_ID:
-			launchActivity(UserActivity.createIntent(user.id, user.name));
+			launchActivity(UserTimelineActivity.createIntent(user.id, user.name));
 			return true;
 		case CONTENT_DEL_FRIEND:
 			delFriend(user.id);
