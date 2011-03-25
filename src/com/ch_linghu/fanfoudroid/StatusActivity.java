@@ -377,6 +377,7 @@ public class StatusActivity extends WithHeaderActivity{
 	    
 	    SharedPreferences pref = getPreferences();
 	    String photoPreviewSize = pref.getString(Preferences.PHOTO_PREVIEW, PHOTO_PREVIEW_TYPE_ORIGINAL);
+	    boolean forceShowAllImage = pref.getBoolean(Preferences.FORCE_SHOW_ALL_IMAGE, false);
 	    
 	    tweet_screen_name.setText(tweet.screenName);
         Utils.setTweetText(tweet_text, tweet.text);
@@ -392,22 +393,29 @@ public class StatusActivity extends WithHeaderActivity{
         
         // has photo
         if (!photoPreviewSize.equals(PHOTO_PREVIEW_TYPE_NONE)){
-	        String photoPageLink;
+	        String photoLink;
+	        boolean isPageLink = false;
 	        if (photoPreviewSize.equals(PHOTO_PREVIEW_TYPE_THUMBNAIL)){
-	        	photoPageLink = tweet.thumbnail_pic;
+	        	photoLink = tweet.thumbnail_pic;
 	        }else if (photoPreviewSize.equals(PHOTO_PREVIEW_TYPE_MIDDLE)){
-	        	photoPageLink = tweet.bmiddle_pic;
+	        	photoLink = tweet.bmiddle_pic;
 	        }else if (photoPreviewSize.equals(PHOTO_PREVIEW_TYPE_ORIGINAL)){
-	        	photoPageLink = tweet.original_pic;
+	        	photoLink = tweet.original_pic;
 	        }else{
 	        	Log.e(TAG, "Invalid Photo Preview Size Type");
-	        	photoPageLink = "";
+	        	photoLink = "";
+	        }
+	        
+	        //如果选用了强制显示则再尝试分析图片链接
+	        if (forceShowAllImage){
+	        	photoLink = Utils.getPhotoPageLink(tweet.text, photoPreviewSize);
+	        	isPageLink = true;
 	        }
 
-	        if (!Utils.isEmpty(photoPageLink)){
+	        if (!Utils.isEmpty(photoLink)){
 	        	status_photo.setVisibility(View.VISIBLE);
 	        	status_photo.setImageBitmap(mPhotoBitmap);
-	        	doGetPhoto(photoPageLink);
+	        	doGetPhoto(photoLink, isPageLink);
 	        }
         }else{
         	status_photo.setVisibility(View.GONE);        	
@@ -492,7 +500,7 @@ public class StatusActivity extends WithHeaderActivity{
         }
 	}
 	
-	private void doGetPhoto(String photoPageURL) {
+	private void doGetPhoto(String photoPageURL, boolean isPageLink) {
         // 旋转刷新按钮
         animRotate(refreshButton);
         
@@ -503,7 +511,8 @@ public class StatusActivity extends WithHeaderActivity{
 	        mPhotoTask.setListener(mPhotoTaskListener);
 	        
 	        TaskParams params = new TaskParams();
-	        params.put("photo_page_url", photoPageURL);
+	        params.put("photo_url", photoPageURL);
+	        params.put("is_page_link", isPageLink);
 	        mPhotoTask.execute(params);
         }
     }
@@ -515,9 +524,18 @@ public class StatusActivity extends WithHeaderActivity{
 		protected TaskResult _doInBackground(TaskParams...params) {
         	TaskParams param = params[0];
             try {
-            	String photoPageURL = param.getString("photo_page_url");
-            	if (!Utils.isEmpty(photoPageURL)){
-            		mPhotoBitmap = fetchPhotoBitmap(photoPageURL);
+            	String photoURL = param.getString("photo_url");
+            	boolean isPageLink = param.getBoolean("is_page_link");
+            	if (!Utils.isEmpty(photoURL)){
+            		if (isPageLink){
+                    	String pageHtml = fetchWebPage(photoURL);
+                    	String photoSrcURL = Utils.getPhotoURL(pageHtml);
+                    	if (photoSrcURL != null){
+                    		mPhotoBitmap = fetchPhotoBitmap(photoSrcURL);
+                    	}            			
+            		}else{
+            			mPhotoBitmap = fetchPhotoBitmap(photoURL);
+            		}
             	}
             } catch (WeiboException e) {
                 Log.e(TAG, e.getMessage(), e);

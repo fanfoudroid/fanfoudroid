@@ -144,6 +144,8 @@
     <string name="pref_use_profile_image_summary">是否显示用户头像</string>
     <string name="pref_photo_preview">图片预览</string>
     <string name="pref_photo_preview_summary">指定预览图片的大小</string>
+    <string name="pref_force_show_all_image">强制预览所有图片</string>
+    <string name="pref_force_show_all_image_summary">即使不是饭否认为包含图片的消息也使用预览</string>
     
     <string name="pref_photo_preview_type_none">不显示</string>
     <!-- NOTE:缩略图尺寸在这里没有实用价值，在array.xml中被屏蔽 -->

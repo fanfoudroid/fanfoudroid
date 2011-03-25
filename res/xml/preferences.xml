@@ -79,6 +79,11 @@
     android:entryValues="@array/photo_preview_type"
     android:dialogTitle="@string/pref_photo_preview"                        
     />
+    <CheckBoxPreference
+    android:key="force_show_all_image"
+    android:title="@string/pref_force_show_all_image"
+    android:summary="@string/pref_force_show_all_image_summary"
+    android:defaultValue="false" />
   </PreferenceCategory>
 
   <PreferenceCategory android:title="@string/pref_title_network">
