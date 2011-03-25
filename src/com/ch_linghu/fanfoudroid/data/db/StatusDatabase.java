@@ -28,7 +28,7 @@ public class StatusDatabase {
     private static final String TAG = "DatabaseHelper";
 
     private static final String DATABASE_NAME = "status_db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 3;
 
     private static StatusDatabase instance = null;
     private DatabaseHelper mOpenHelper = null;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      android:versionName="0.6.2beta" android:versionCode="20110312" package="com.ch_linghu.fanfoudroid">
+      android:versionName="0.7" android:versionCode="20110325" package="com.ch_linghu.fanfoudroid">
     <uses-sdk android:minSdkVersion="3" />
 	<supports-screens android:anyDensity="true"/>
 	          
