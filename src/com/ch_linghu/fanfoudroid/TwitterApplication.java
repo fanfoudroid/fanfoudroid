@@ -46,17 +46,19 @@ public class TwitterApplication extends Application {
 
     @Override
     public void onCreate() {
-        //NOTE: StrictMode模式需要2.3 API支持。
-        if (DEBUG){
-        	StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-        		.detectAll()
-        		.penaltyLog()
-        		.build());
-        	StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-        		.detectAll()
-        		.penaltyLog()
-        		.build());
-        }
+    	//FIXME: StrictMode类在1.6以下的版本中没有，会导致类加载失败。
+    	//       因此将这些代码设成关闭状态，仅在做性能调试时才打开。
+//        //NOTE: StrictMode模式需要2.3 API支持。
+//        if (DEBUG){
+//        	StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+//        		.detectAll()
+//        		.penaltyLog()
+//        		.build());
+//        	StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+//        		.detectAll()
+//        		.penaltyLog()
+//        		.build());
+//        }
 
 
     	super.onCreate();
