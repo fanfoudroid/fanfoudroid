@@ -43,6 +43,7 @@ public class SearchResultActivity extends TwitterListBaseActivity implements
 	private ArrayList<Tweet> mTweets;
 	private TweetArrayAdapter mAdapter;
 	private int mNextPage = 1;
+	private String mLastId = null;
 
 	private static class State {
 		State(SearchResultActivity activity) {
@@ -195,7 +196,9 @@ public class SearchResultActivity extends TwitterListBaseActivity implements
 
 			try {
 				Query query = new Query(mSearchQuery);
-				query.setPage(mNextPage);
+				if (!Utils.isEmpty(mLastId)){
+					query.setMaxId(mLastId);
+				}
 				result = getApi().search(query);//.search(mSearchQuery, mNextPage);
 			} catch (WeiboException e) {
 				Log.e(TAG, e.getMessage(), e);
@@ -212,6 +215,7 @@ public class SearchResultActivity extends TwitterListBaseActivity implements
 				Tweet tweet;
 
 				tweet = Tweet.create(status);
+				mLastId = tweet.id;
 				mTweets.add(tweet);
 				imageUrls.add(tweet.profileImageUrl);
 

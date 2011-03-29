@@ -39,6 +39,7 @@ public class Query {
     private int rpp = -1;
     private int page = -1;
     private long sinceId = -1;
+    private String maxId = null;
     private String geocode = null;
     public Query(){
     }
@@ -106,6 +107,18 @@ public class Query {
         this.sinceId = sinceId;
     }
 
+    public String getMaxId() {
+        return maxId;
+    }
+
+    /**
+     * returns tweets with status ids less than the given id.
+     * @param maxId - returns tweets with status ids less than the given id
+     */
+    public void setMaxId(String maxId) {
+        this.maxId = maxId;
+    }
+
     public String getGeocode() {
         return geocode;
     }
@@ -130,6 +143,7 @@ public class Query {
         appendParameter("lang", lang, params);
         appendParameter("page", page, params);
         appendParameter("since_id",sinceId , params);
+        appendParameter("max_id", maxId, params);
         appendParameter("geocode", geocode, params);
         return params;
     }
