@@ -149,8 +149,8 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 				usersList=getUsers(getUserId(),getCurrentPage());
 				
 			} catch (WeiboException e) {
-				
 				e.printStackTrace();
+				return TaskResult.IO_ERROR;
 			}
 			
 			for (com.ch_linghu.fanfoudroid.weibo.User user : usersList) {
@@ -314,8 +314,8 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 						getNextPage());
 
 			} catch (WeiboException e) {
-
 				e.printStackTrace();
+				return TaskResult.IO_ERROR;
 			}
 		
 			for (com.ch_linghu.fanfoudroid.weibo.User user : usersList) {
