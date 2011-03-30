@@ -204,6 +204,10 @@ public class ProfileActivity extends WithHeaderActivity {
 
 			@Override
 			public void onClick(View v) {
+				//在没有得到profileInfo时，不允许点击事件生效
+				if(profileInfo == null) {
+					return;
+				}
 				String showName;
 				if (!Utils.isEmpty(profileInfo.getScreenName())) {
 					showName = profileInfo.getScreenName();
