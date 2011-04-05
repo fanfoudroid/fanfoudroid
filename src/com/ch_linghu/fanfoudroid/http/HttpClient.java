@@ -107,6 +107,10 @@ public class HttpClient {
         prepareHttpClient();
     }
 
+    /**
+     * @param user_id auth user 
+     * @param password auth password
+     */
     public HttpClient(String user_id, String password) {
         prepareHttpClient();
         setCredentials(user_id, password);
@@ -119,14 +123,25 @@ public class HttpClient {
         setCredentials("", "");
     }
 
+    /**
+     * @return authed user id
+     */
     public String getUserId() {
         return mUserId;
     }
 
+    /**
+     * @return authed user password 
+     */
     public String getPassword() {
         return mPassword;
     }
     
+    /**
+     * @param hostname the hostname (IP or DNS name)
+     * @param port    the port number. -1 indicates the scheme default port.
+     * @param scheme  the name of the scheme. null indicates the default scheme
+     */
     public void setProxy(String host, int port, String scheme) {
         HttpHost proxy = new HttpHost(host, port, scheme);  
         mClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
@@ -294,11 +309,10 @@ public class HttpClient {
      *            <li>HttpGet.METHOD_NAME</li>
      *            <li>HttpDelete.METHOD_NAME</li>
      * @return Response from server
-     * @throws WeiboException
+     * @throws WeiboException 此异常包装了一系列底层异常, 使用getCause()查看.
      */
-    public Response httpRequest(String url,
-            ArrayList<BasicNameValuePair> postParams, File file,
-            boolean authenticated, String httpMethod) throws WeiboException {
+    public Response httpRequest(String url, ArrayList<BasicNameValuePair> postParams,
+            File file, boolean authenticated, String httpMethod) throws WeiboException {
         Log.i(TAG, "Sending " + httpMethod + " request to " + url);
         long startTime = System.currentTimeMillis();
 

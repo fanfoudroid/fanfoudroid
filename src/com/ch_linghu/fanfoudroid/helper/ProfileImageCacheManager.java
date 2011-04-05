@@ -19,8 +19,8 @@ public class ProfileImageCacheManager {
 	private static final String TAG="ProfileImageCacheManager";
 	
 	private ImageManager mImageManager = new ImageManager(TwitterApplication.mContext);
-	private ArrayList<String> mUrlList = new ArrayList();
-	private HashMap<String, ProfileImageCacheCallback> mCallbackMap = new HashMap();
+	private ArrayList<String> mUrlList = new ArrayList<String>();
+	private HashMap<String, ProfileImageCacheCallback> mCallbackMap = new HashMap<String, ProfileImageCacheCallback>();
 	
 	private GenericTask mTask;
 	private TaskListener mTaskListener = new TaskAdapter(){
@@ -93,6 +93,14 @@ public class ProfileImageCacheManager {
 		@Override
 		protected TaskResult _doInBackground(TaskParams... params) {
 			String url = null;
+			// TODO: 这里的循环机制可以考虑进行优化, 可使用列队等待的形式进行批量下载图片操作,
+			// 因为仅靠循环来进行, 下载的速度会大大慢于一次循环的周期. 也就说在前一张图片刚开始进行下载时,
+			// 循环已经可以走了几遍了, 因此造成:
+			// Image is missing: ..
+			// 两条调试信息反复出现, 因为下载操作还在未完成的情况下又进行了对同一张图片的get操作,
+			// 就是因为循环速度大大快于下载速度所致, 在
+			// Fetching image: ..
+			// 调试信息出来前, 反复的在进行重复的get操作.
 			while (mUrlList.size() > 0){
 				synchronized(mUrlList){
 					url = mUrlList.get(0);

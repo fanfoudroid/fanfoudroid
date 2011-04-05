@@ -70,10 +70,10 @@
 					android:id="@+id/sendmetion_btn"
 					android:layout_width="fill_parent"
 					android:layout_height="wrap_content"
-					android:background="@drawable/blue_button_selector"
 					android:layout_marginRight="10.0dip"
 					android:text="@string/profile_send_mention"
 					android:visibility="gone"
+					style="@style/blue_button"
 					/>
 					
 					<!-- 发送私信 -->
@@ -81,10 +81,10 @@
 					android:id="@+id/senddm_btn"
 					android:layout_width="fill_parent"
 					android:layout_height="wrap_content"
-					android:background="@drawable/blue_button_selector"
 					android:layout_marginRight="10.0dip"
 					android:text="@string/profile_send_dm"
 					android:visibility="gone"
+					style="@style/blue_button"
 					/>
 				</LinearLayout>
 			</RelativeLayout>
@@ -107,15 +107,16 @@
 					style="@style/normalText.span"
 					>
 			</TextView>
+			<!-- 关注/取消关注 按钮 -->
 			<Button
 				android:id="@+id/following_btn"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_alignParentRight="true"
 				android:layout_centerInParent="true"
-				android:background="@drawable/blue_button_selector"
 				android:layout_marginRight="10.0dip"
 				android:visibility="gone"
+					style="@style/blue_button"
 			></Button>
 			</RelativeLayout>
 			

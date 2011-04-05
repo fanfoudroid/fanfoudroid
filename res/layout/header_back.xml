@@ -21,7 +21,6 @@
           android:layout_alignParentLeft="true"
           style="@style/simple_button"
           android:text="@string/page_label_go_back"
-          
           />
             
         <!-- 搜索按钮 -->

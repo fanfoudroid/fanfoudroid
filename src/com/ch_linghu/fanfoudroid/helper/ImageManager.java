@@ -195,8 +195,12 @@ public class ImageManager implements ImageCache {
     }
     
     /**
-     * 本地File -> 转换为Bitmap -> 写入缓存器.
+     * 将本地File -> 转换为Bitmap -> 写入缓存器.
+     * 如果图片大小超过MAX_WIDTH/MAX_HEIGHT, 则将会对图片缩放.
+     * 
      * @param file
+     * @param quality 图片质量(0~100)
+     * @param forceOverride 
      * @throws IOException
      */
     public void put(File file, int quality, boolean forceOverride) throws IOException {
@@ -322,7 +326,8 @@ public class ImageManager implements ImageCache {
             return bitmap;
         }
 
-        //TODO: why?
+        //TODO: why?  
+        //upload: see profileImageCacheManager line 96
         Log.i(TAG, "Image is missing: " + file);
         // return the default photo
         return mDefaultBitmap;
@@ -379,6 +384,7 @@ public class ImageManager implements ImageCache {
     
     /**
      * 保持长宽比缩小Bitmap
+     * 
      * @param bitmap
      * @param maxWidth
      * @param maxHeight
@@ -391,8 +397,9 @@ public class ImageManager implements ImageCache {
         int originHeight = bitmap.getHeight();
         
         // no need to resize
-        if (originWidth < maxWidth && originHeight < maxHeight) 
+        if (originWidth < maxWidth && originHeight < maxHeight) { 
             return bitmap;
+        }
         
         int width  = originWidth;
         int height = originHeight;

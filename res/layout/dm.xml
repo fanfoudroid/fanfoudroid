@@ -16,7 +16,7 @@
     android:layout_weight="1"
     android:cacheColorHint="#00000000"
     android:fadeScrollbars="false"
-    android:divider="#FFCCCCCC"
+    android:divider="@drawable/dashed_line"
     android:dividerHeight="1dip"
     android:fastScrollEnabled="false"
     />      

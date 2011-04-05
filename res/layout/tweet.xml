@@ -7,16 +7,27 @@
   android:padding="5dp"
 >
 
-    <!-- profile image -->
-	<ImageView
-	  android:id="@+id/profile_image"
-	  android:layout_marginTop="2dp"
-	  android:layout_marginLeft="2dp"
-	  android:layout_marginBottom="2dp"
-	  android:layout_marginRight="7dp"
-	  android:layout_width="48dp"
-	  android:layout_height="48dp"
-	/>
+     <!-- profile image -->
+    <FrameLayout
+     android:layout_width="48dp"
+     android:layout_height="48dp"
+     android:layout_marginTop="2dp"
+     android:layout_marginLeft="2dp"
+     android:layout_marginBottom="2dp"
+     android:layout_marginRight="7dp"
+    >
+	   <ImageView
+	       android:id="@+id/profile_image"
+	       android:layout_width="fill_parent"
+	       android:layout_height="fill_parent"
+	   />
+	   <!-- image corner -->
+       <ImageView
+           android:background="@drawable/images_border_radius"
+           android:layout_width="fill_parent"
+           android:layout_height="fill_parent"
+       />
+     </FrameLayout>
 	
 	
 	<LinearLayout 
@@ -24,7 +35,6 @@
 	  android:layout_width="fill_parent"
 	  android:layout_height="wrap_content"
 	>
-	
 		<LinearLayout 
 		  android:orientation="horizontal"
 		  android:layout_width="fill_parent"
@@ -47,7 +57,7 @@
 				android:visibility="gone"
 				android:src="@android:drawable/star_off"
 			/>
-			<!-- favorited icon -->
+			<!-- hasImage icon -->
 			<ImageView
 				android:id="@+id/tweet_has_image"
 				android:layout_gravity="right"
@@ -57,6 +67,7 @@
 				android:src="@android:drawable/ic_menu_slideshow"
 			/>
 		</LinearLayout>		
+		
 		<!-- Tweet context -->
 		<com.ch_linghu.fanfoudroid.ui.module.MyTextView
 		  android:id="@+id/tweet_text" 
@@ -65,10 +76,12 @@
 		  android:textColor="@drawable/tweet_color"        
 		/>
 		
+		<!-- Tweet Meta -->
 		<TextView
 		  android:id="@+id/tweet_meta_text" 
 		  android:layout_width="fill_parent"
 		  android:layout_height="wrap_content"
+		  android:paddingTop="2dp"
 		  android:textColor="@drawable/tweet_meta_color"
 		  android:textSize="12sp"
 		/>
