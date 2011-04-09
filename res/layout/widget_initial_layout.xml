@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="318dp" android:layout_height="222dp" android:id="@+id/linearLayout1"
+	android:orientation="vertical" android:background="@drawable/widget_bg">
+	<LinearLayout android:id="@+id/linearLayout2"
+ android:layout_height="50dp"
+ android:layout_width="wrap_content">
+		<ImageView android:id="@+id/imageView1"
+				android:layout_height="wrap_content" android:layout_width="wrap_content"
+				android:src="@drawable/icon"></ImageView>
+						<TextView android:text="EditText" android:id="@+id/editText1"
+			android:layout_width="200dp" android:layout_height="48dp"></TextView>
+		
+
+	</LinearLayout>
+	<LinearLayout android:id="@+id/linearLayout5"
+		android:layout_height="wrap_content" android:layout_width="match_parent"></LinearLayout>
+	<FrameLayout android:id="@+id/frameLayout1"
+	 android:layout_height="120dp"
+		android:layout_width="wrap_content">
+		<LinearLayout android:id="@+id/linearLayout4"
+
+			android:layout_height="match_parent" android:layout_width="wrap_content">
+
+			<ImageView android:id="@+id/imageView1"
+				android:layout_height="wrap_content" android:layout_width="wrap_content"
+				android:src="@drawable/icon"></ImageView>
+			<LinearLayout android:id="@+id/linearLayout3"
+				android:layout_height="match_parent" android:layout_width="wrap_content">
+				<TextView 
+				 android:id="@+id/message" 
+				android:layout_width="fill_parent" 
+				android:layout_height="wrap_content"
+				android:lines="5"
+				android:text=""
+				></TextView>
+
+			</LinearLayout>
+		</LinearLayout>
+	</FrameLayout>
+
+
+
+
+</LinearLayout>
