@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import org.json.JSONException;
 
-import com.ch_linghu.fanfoudroid.weibo.WeiboException;
+import com.ch_linghu.fanfoudroid.http.HttpException;
 
 
 /**
@@ -38,10 +38,10 @@ public class TaskParams {
      *
      * @param key   A key string.
      * @return      The truth.
-     * @throws      WeiboException
+     * @throws      HttpException
      *  if the value is not a Boolean or the String "true" or "false".
      */
-    public boolean getBoolean(String key) throws WeiboException {
+    public boolean getBoolean(String key) throws HttpException {
         Object object = get(key);
         if (object.equals(Boolean.FALSE) ||
                 (object instanceof String &&
@@ -52,7 +52,7 @@ public class TaskParams {
                 ((String)object).equalsIgnoreCase("true"))) {
             return true;
         }
-        throw new WeiboException(key + " is not a Boolean.");
+        throw new HttpException(key + " is not a Boolean.");
     }
 
 
@@ -60,17 +60,17 @@ public class TaskParams {
      * Get the double value associated with a key.
      * @param key   A key string.
      * @return      The numeric value.
-     * @throws WeiboException if the key is not found or
+     * @throws HttpException if the key is not found or
      *  if the value is not a Number object and cannot be converted to a number.
      */
-    public double getDouble(String key) throws WeiboException {
+    public double getDouble(String key) throws HttpException {
         Object object = get(key);
         try {
             return object instanceof Number ?
                 ((Number)object).doubleValue() :
                 Double.parseDouble((String)object);
         } catch (Exception e) {
-            throw new WeiboException(key + " is not a number.");
+            throw new HttpException(key + " is not a number.");
         }
     }
 
@@ -80,17 +80,17 @@ public class TaskParams {
      *
      * @param key   A key string.
      * @return      The integer value.
-     * @throws   WeiboException if the key is not found or if the value cannot
+     * @throws   HttpException if the key is not found or if the value cannot
      *  be converted to an integer.
      */
-    public int getInt(String key) throws WeiboException {
+    public int getInt(String key) throws HttpException {
         Object object = get(key);
         try {
             return object instanceof Number ?
                 ((Number)object).intValue() :
                 Integer.parseInt((String)object);
         } catch (Exception e) {
-            throw new WeiboException(key + " is not an int.");
+            throw new HttpException(key + " is not an int.");
         }
     }
     
@@ -101,7 +101,7 @@ public class TaskParams {
      * @return      A string which is the value.
      * @throws   JSONException if the key is not found.
      */
-    public String getString(String key) throws WeiboException {
+    public String getString(String key) throws HttpException {
         Object object = get(key);
         return object == null ? null : object.toString();
     }

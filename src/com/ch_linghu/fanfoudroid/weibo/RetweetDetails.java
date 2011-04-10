@@ -37,6 +37,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.Response;
 
 
@@ -54,38 +55,38 @@ public class RetweetDetails extends WeiboResponse implements
     private User retweetingUser;
     static final long serialVersionUID = 1957982268696560598L;
     
-    /*package*/RetweetDetails(Response res, Weibo weibo) throws WeiboException {
+    /*package*/RetweetDetails(Response res, Weibo weibo) throws HttpException {
         super(res);
         Element elem = res.asDocument().getDocumentElement();
         init(res, elem, weibo);
     }
     
-    RetweetDetails(JSONObject json) throws WeiboException {
+    RetweetDetails(JSONObject json) throws HttpException {
         super();
         init(json);
     }
     
     
 
-    private void init(JSONObject json) throws WeiboException{
+    private void init(JSONObject json) throws HttpException{
     	try {
     		retweetId = json.getInt("retweetId");
     		retweetedAt = parseDate(json.getString("retweetedAt"), "EEE MMM dd HH:mm:ss z yyyy");
     		retweetingUser=new User(json.getJSONObject("retweetingUser"));
             
         } catch (JSONException jsone) {
-            throw new WeiboException(jsone.getMessage() + ":" + json.toString(), jsone);
+            throw new HttpException(jsone.getMessage() + ":" + json.toString(), jsone);
         }
 	}
 
 	/*package*/RetweetDetails(Response res, Element elem, Weibo weibo) throws
-            WeiboException {
+            HttpException {
         super(res);
         init(res, elem, weibo);
     }
 
     private void init(Response res, Element elem, Weibo weibo) throws
-            WeiboException {
+            HttpException {
         ensureRootNodeNameIs("retweet_details", elem);
         retweetId = getChildLong("retweet_id", elem);
         retweetedAt = getChildDate("retweeted_at", elem);
@@ -106,7 +107,7 @@ public class RetweetDetails extends WeiboResponse implements
     }
     /*modify by sycheng add json*/
     /*package*/
-    static List<RetweetDetails> createRetweetDetails(Response res) throws WeiboException {
+    static List<RetweetDetails> createRetweetDetails(Response res) throws HttpException {
     	try {
             JSONArray list = res.asJSONArray();
             int size = list.length();
@@ -116,15 +117,15 @@ public class RetweetDetails extends WeiboResponse implements
             }
             return retweets;
         } catch (JSONException jsone) {
-            throw new WeiboException(jsone);
-        } catch (WeiboException te) {
+            throw new HttpException(jsone);
+        } catch (HttpException te) {
             throw te;
         }  
     }
     
     /*package*/
     static List<RetweetDetails> createRetweetDetails(Response res,
-                                          Weibo weibo) throws WeiboException {
+                                          Weibo weibo) throws HttpException {
         Document doc = res.asDocument();
         if (isRootNodeNilClasses(doc)) {
             return new ArrayList<RetweetDetails>(0);
@@ -140,7 +141,7 @@ public class RetweetDetails extends WeiboResponse implements
                     statuses.add(new RetweetDetails(res, status, weibo));
                 }
                 return statuses;
-            } catch (WeiboException te) {
+            } catch (HttpException te) {
                 ensureRootNodeNameIs("nil-classes", doc);
                 return new ArrayList<RetweetDetails>(0);
             }

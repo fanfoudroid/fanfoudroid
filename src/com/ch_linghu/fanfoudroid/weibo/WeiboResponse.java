@@ -44,6 +44,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.ch_linghu.fanfoudroid.http.HTMLEntity;
+import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.Response;
 
 
@@ -80,13 +81,13 @@ public class WeiboResponse implements java.io.Serializable {
         }
     }
 
-    protected static void ensureRootNodeNameIs(String rootName, Element elem) throws WeiboException {
+    protected static void ensureRootNodeNameIs(String rootName, Element elem) throws HttpException {
         if (!rootName.equals(elem.getNodeName())) {
-            throw new WeiboException("Unexpected root node name:" + elem.getNodeName() + ". Expected:" + rootName + ". Check the availability of the Weibo API at http://open.t.sina.com.cn/.");
+            throw new HttpException("Unexpected root node name:" + elem.getNodeName() + ". Expected:" + rootName + ". Check the availability of the Weibo API at http://open.t.sina.com.cn/.");
         }
     }
 
-    protected static void ensureRootNodeNameIs(String[] rootNames, Element elem) throws WeiboException {
+    protected static void ensureRootNodeNameIs(String[] rootNames, Element elem) throws HttpException {
         String actualRootName = elem.getNodeName();
         for (String rootName : rootNames) {
             if (rootName.equals(actualRootName)) {
@@ -100,13 +101,13 @@ public class WeiboResponse implements java.io.Serializable {
             }
             expected += rootNames[i];
         }
-        throw new WeiboException("Unexpected root node name:" + elem.getNodeName() + ". Expected:" + expected + ". Check the availability of the Weibo API at http://open.t.sina.com.cn/.");
+        throw new HttpException("Unexpected root node name:" + elem.getNodeName() + ". Expected:" + expected + ". Check the availability of the Weibo API at http://open.t.sina.com.cn/.");
     }
 
-    protected static void ensureRootNodeNameIs(String rootName, Document doc) throws WeiboException {
+    protected static void ensureRootNodeNameIs(String rootName, Document doc) throws HttpException {
         Element elem = doc.getDocumentElement();
         if (!rootName.equals(elem.getNodeName())) {
-            throw new WeiboException("Unexpected root node name:" + elem.getNodeName() + ". Expected:" + rootName + ". Check the availability of the Weibo API at http://open.t.sina.com.cn/");
+            throw new HttpException("Unexpected root node name:" + elem.getNodeName() + ". Expected:" + rootName + ". Check the availability of the Weibo API at http://open.t.sina.com.cn/");
         }
     }
 
@@ -180,14 +181,14 @@ public class WeiboResponse implements java.io.Serializable {
         String value = getTextContent(str, elem);
         return Boolean.valueOf(value);
     }
-    protected static Date getChildDate(String str, Element elem) throws WeiboException {
+    protected static Date getChildDate(String str, Element elem) throws HttpException {
         return getChildDate(str, elem, "EEE MMM d HH:mm:ss z yyyy");
     }
 
-    protected static Date getChildDate(String str, Element elem, String format) throws WeiboException {
+    protected static Date getChildDate(String str, Element elem, String format) throws HttpException {
         return parseDate(getChildText(str, elem),format);
     }
-    protected static Date parseDate(String str, String format) throws WeiboException{
+    protected static Date parseDate(String str, String format) throws HttpException{
         if(str==null||"".equals(str)){
         	return null;
         }
@@ -203,7 +204,7 @@ public class WeiboResponse implements java.io.Serializable {
                 return sdf.parse(str);
             }
         } catch (ParseException pe) {
-            throw new WeiboException("Unexpected format(" + str + ") returned from sina.com.cn");
+            throw new HttpException("Unexpected format(" + str + ") returned from sina.com.cn");
         }
     }
 

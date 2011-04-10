@@ -26,17 +26,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package com.ch_linghu.fanfoudroid.weibo;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
 
+import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.Response;
 
 /**
@@ -82,7 +78,7 @@ public class RefuseError extends WeiboResponse implements java.io.Serializable {
     
     private static final long serialVersionUID = -2105422180879273058L;
     
-    public RefuseError(Response res) throws WeiboException {
+    public RefuseError(Response res) throws HttpException {
     	String error = res.asString();
     	try{
     		//先尝试作为json object进行处理
@@ -100,23 +96,23 @@ public class RefuseError extends WeiboResponse implements java.io.Serializable {
     	}
     }
 
-    public void init(JSONObject json) throws WeiboException {
+    public void init(JSONObject json) throws HttpException {
         try {
            mRequestUrl = json.getString("request");
            mResponseError = json.getString("error");
            parseError(mResponseError);
        } catch (JSONException je) {
-           throw new WeiboException(je.getMessage() + ":" + json.toString(), je);
+           throw new HttpException(je.getMessage() + ":" + json.toString(), je);
        }
     }
 
-    public void init(XmlObject xml) throws WeiboException {
+    public void init(XmlObject xml) throws HttpException {
         try {
             mRequestUrl = xml.getString("request");
             mResponseError = xml.getString("error");
             parseError(mResponseError);
         } catch (Exception e) {
-            throw new WeiboException(e.getMessage() + ":" + xml.toString(), e);
+            throw new HttpException(e.getMessage() + ":" + xml.toString(), e);
         }
     }
 

@@ -16,11 +16,7 @@
 
 package com.ch_linghu.fanfoudroid;
 
-import java.io.IOException;
-
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -31,7 +27,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
@@ -41,6 +36,7 @@ import com.ch_linghu.fanfoudroid.data.Dm;
 import com.ch_linghu.fanfoudroid.data.db.StatusTable;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
@@ -49,7 +45,6 @@ import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
 import com.ch_linghu.fanfoudroid.ui.module.TweetEdit;
 import com.ch_linghu.fanfoudroid.weibo.DirectMessage;
-import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 //FIXME: 将WriteDmActivity和WriteActivity进行整合。
 /**
@@ -357,7 +352,7 @@ public class WriteDmActivity extends WithHeaderActivity {
 //				}
 
 				getDb().createDm(dm, false);
-			} catch (WeiboException e) {
+			} catch (HttpException e) {
 				Log.i(TAG, e.getMessage());
 				// TODO: check is this is actually the case.
 				return TaskResult.NOT_FOLLOWED_ERROR;

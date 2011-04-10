@@ -48,13 +48,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
+import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
@@ -62,7 +62,6 @@ import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
 import com.ch_linghu.fanfoudroid.ui.module.TweetEdit;
-import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 public class WriteActivity extends WithHeaderActivity {
     
@@ -610,7 +609,7 @@ public class WriteActivity extends WithHeaderActivity {
 		        	getApi().updateStatus(status); // just send a status
 		            break;
 		        }
-			} catch (WeiboException e) {
+			} catch (HttpException e) {
 				Log.e(TAG, e.getMessage(), e);
 				
 				if (e.getStatusCode() == HttpClient.NOT_AUTHORIZED) {

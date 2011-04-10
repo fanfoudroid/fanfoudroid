@@ -35,6 +35,7 @@ import android.widget.Toast;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.http.HttpAuthException;
+import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.HttpRefusedException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -42,7 +43,6 @@ import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.weibo.User;
-import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 //登录页面需要个性化的菜单绑定, 不直接继承 BaseActivity
 public class LoginActivity extends Activity { 
@@ -269,7 +269,7 @@ public class LoginActivity extends Activity {
             	String username = param.getString("username");
             	String password = param.getString("password");
                user= TwitterApplication.mApi.login(username, password);
-            } catch (WeiboException e) {
+            } catch (HttpException e) {
                 Log.e(TAG, e.getMessage(), e);
 
                 Throwable cause = e.getCause(); // Maybe null

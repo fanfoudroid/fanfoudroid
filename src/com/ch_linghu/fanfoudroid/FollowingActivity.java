@@ -1,27 +1,22 @@
 package com.ch_linghu.fanfoudroid;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.ch_linghu.fanfoudroid.data.User;
-import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.ui.base.UserArrayBaseActivity;
-import com.ch_linghu.fanfoudroid.ui.module.UserArrayAdapter;
-import com.ch_linghu.fanfoudroid.weibo.Paging;
-import com.ch_linghu.fanfoudroid.weibo.WeiboException;
-
-import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.ListView;
+
+import com.ch_linghu.fanfoudroid.data.User;
+import com.ch_linghu.fanfoudroid.http.HttpException;
+import com.ch_linghu.fanfoudroid.ui.base.UserArrayBaseActivity;
+import com.ch_linghu.fanfoudroid.ui.module.UserArrayAdapter;
+import com.ch_linghu.fanfoudroid.weibo.Paging;
 
 public class FollowingActivity extends UserArrayBaseActivity {
 
@@ -103,7 +98,7 @@ public class FollowingActivity extends UserArrayBaseActivity {
 
 	@Override
 	protected List<com.ch_linghu.fanfoudroid.weibo.User> getUsers(
-			String userId, Paging page) throws WeiboException {
+			String userId, Paging page) throws HttpException {
 		return getApi().getFriendsStatuses(userId, page);
 	}
 

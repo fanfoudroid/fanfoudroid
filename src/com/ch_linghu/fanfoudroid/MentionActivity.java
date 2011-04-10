@@ -27,10 +27,10 @@ import android.view.Menu;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.StatusTable;
+import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterCursorBaseActivity;
 import com.ch_linghu.fanfoudroid.weibo.Paging;
 import com.ch_linghu.fanfoudroid.weibo.Status;
-import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 public class MentionActivity extends TwitterCursorBaseActivity {
 	private static final String TAG = "MentionActivity";
@@ -92,7 +92,7 @@ public class MentionActivity extends TwitterCursorBaseActivity {
 	}
 
 	@Override
-	public List<Status> getMessageSinceId(String maxId) throws WeiboException {
+	public List<Status> getMessageSinceId(String maxId) throws HttpException {
 		if (maxId != null){
 			return getApi().getMentions(new Paging(maxId));
 		}else{
@@ -112,7 +112,7 @@ public class MentionActivity extends TwitterCursorBaseActivity {
 
 	@Override
 	public List<Status> getMoreMessageFromId(String minId)
-			throws WeiboException {
+			throws HttpException {
 		Paging paging = new Paging(1, 20);
 		paging.setMaxId(minId);
 		return getApi().getMentions(paging);

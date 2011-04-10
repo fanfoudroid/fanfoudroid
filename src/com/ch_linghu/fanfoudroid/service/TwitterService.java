@@ -16,7 +16,6 @@
 
 package com.ch_linghu.fanfoudroid.service;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -51,6 +50,7 @@ import com.ch_linghu.fanfoudroid.data.db.StatusTable;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
@@ -58,7 +58,6 @@ import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.weibo.Paging;
 import com.ch_linghu.fanfoudroid.weibo.Weibo;
-import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 public class TwitterService extends Service {
 	private static final String TAG = "TwitterService";
@@ -402,7 +401,7 @@ public class TwitterService extends Service {
 					}else{
 						statusList = getApi().getFriendsTimeline();
 					}
-				} catch (WeiboException e) {
+				} catch (HttpException e) {
 					Log.e(TAG, e.getMessage(), e);
 					return TaskResult.IO_ERROR;
 				}
@@ -436,7 +435,7 @@ public class TwitterService extends Service {
 					}else{
 						statusList = getApi().getMentions();						
 					}
-				} catch (WeiboException e) {
+				} catch (HttpException e) {
 					Log.e(TAG, e.getMessage(), e);
 					return TaskResult.IO_ERROR;
 				}
@@ -470,7 +469,7 @@ public class TwitterService extends Service {
 					}else{
 						dmList = getApi().getDirectMessages();
 					}
-				} catch (WeiboException e) {
+				} catch (HttpException e) {
 					Log.e(TAG, e.getMessage(), e);
 					return TaskResult.IO_ERROR;
 				}

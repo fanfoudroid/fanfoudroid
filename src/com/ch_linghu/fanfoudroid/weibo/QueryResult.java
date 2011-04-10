@@ -33,6 +33,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.Response;
 
 
@@ -55,7 +56,7 @@ public class QueryResult extends WeiboResponse {
     private List<Status> tweets;
     private static final long serialVersionUID = -9059136565234613286L;
 
-    /*package*/ QueryResult(Response res, WeiboSupport weiboSupport) throws WeiboException {
+    /*package*/ QueryResult(Response res, WeiboSupport weiboSupport) throws HttpException {
         super(res);
         // 饭否search API直接返回 "[{JSONObejet},{JSONObejet},{JSONObejet}]"的JSONArray
         //System.out.println("TAG " + res.asString());
@@ -67,10 +68,10 @@ public class QueryResult extends WeiboResponse {
                 tweets.add(new Status(tweet));
             }
         } catch (JSONException jsone) {
-            throw new WeiboException(jsone.getMessage() + ":" + array.toString(), jsone);
+            throw new HttpException(jsone.getMessage() + ":" + array.toString(), jsone);
         }
     }
-    /*package*/ QueryResult(Query query) throws WeiboException {
+    /*package*/ QueryResult(Query query) throws HttpException {
         super();
         sinceId = query.getSinceId();
         resultsPerPage = query.getRpp();

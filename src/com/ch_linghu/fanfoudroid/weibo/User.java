@@ -47,6 +47,7 @@ import android.util.Log;
 import com.ch_linghu.fanfoudroid.data.db.MessageTable;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.data.db.UserInfoTable;
+import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.Response;
 
 
@@ -99,21 +100,21 @@ public class User extends WeiboResponse implements java.io.Serializable {
     private static final long serialVersionUID = -6345893237975349030L;
 
 
-    /*package*/User(Response res, Weibo weibo) throws WeiboException {
+    /*package*/User(Response res, Weibo weibo) throws HttpException {
         super(res);
         Element elem = res.asDocument().getDocumentElement();
         init(elem, weibo);
     }
 
-    /*package*/User(Response res, Element elem, Weibo weibo) throws WeiboException {
+    /*package*/User(Response res, Element elem, Weibo weibo) throws HttpException {
         super(res);
         init(elem, weibo);
     }
-    /*package*/User(JSONObject json) throws WeiboException {
+    /*package*/User(JSONObject json) throws HttpException {
         super();
         init(json);
     }
-    /*package*/User(Response res) throws WeiboException {
+    /*package*/User(Response res) throws HttpException {
         super();
         init(res.asJSONObject());
     }
@@ -121,7 +122,7 @@ public class User extends WeiboResponse implements java.io.Serializable {
     User(){
     	
     }
-    private void init(JSONObject json) throws WeiboException {
+    private void init(JSONObject json) throws HttpException {
         try {
             id = json.getString("id");
             name = json.getString("name");
@@ -164,11 +165,11 @@ public class User extends WeiboResponse implements java.io.Serializable {
                 statusInReplyToScreenName = status.getString("in_reply_to_screen_name");
             }
         } catch (JSONException jsone) {
-            throw new WeiboException(jsone.getMessage() + ":" + json.toString(), jsone);
+            throw new HttpException(jsone.getMessage() + ":" + json.toString(), jsone);
         }
     }
 
-    private void init(Element elem, Weibo weibo) throws WeiboException {
+    private void init(Element elem, Weibo weibo) throws HttpException {
         this.weibo = weibo;
         ensureRootNodeNameIs(POSSIBLE_ROOT_NAMES, elem);
         id = getChildString("id", elem);
@@ -318,7 +319,7 @@ public class User extends WeiboResponse implements java.io.Serializable {
 //        return weibo.sendDirectMessage(this.getName(), text);
 //    }
 
-    public static List<User> constructUsers(Response res, Weibo weibo) throws WeiboException {
+    public static List<User> constructUsers(Response res, Weibo weibo) throws HttpException {
         Document doc = res.asDocument();
         if (isRootNodeNilClasses(doc)) {
             return new ArrayList<User>(0);
@@ -345,7 +346,7 @@ public class User extends WeiboResponse implements java.io.Serializable {
                 }
 
                 return users;
-            } catch (WeiboException te) {
+            } catch (HttpException te) {
                 if (isRootNodeNilClasses(doc)) {
                     return new ArrayList<User>(0);
                 } else {
@@ -355,7 +356,7 @@ public class User extends WeiboResponse implements java.io.Serializable {
         }
     }
 
-    public static UserWapper constructWapperUsers(Response res, Weibo weibo) throws WeiboException {
+    public static UserWapper constructWapperUsers(Response res, Weibo weibo) throws HttpException {
 		Document doc = res.asDocument();
 		if (isRootNodeNilClasses(doc)) {
 			return new UserWapper(new ArrayList<User>(0), 0, 0);
@@ -386,7 +387,7 @@ public class User extends WeiboResponse implements java.io.Serializable {
 					nextCursor = getChildLong("nextCurosr", root);
 				}
 				return new UserWapper(users, previousCursor, nextCursor);
-			} catch (WeiboException te) {
+			} catch (HttpException te) {
 				if (isRootNodeNilClasses(doc)) {
 					return new UserWapper(new ArrayList<User>(0), 0, 0);
 				} else {
@@ -396,7 +397,7 @@ public class User extends WeiboResponse implements java.io.Serializable {
 		}
 	}
 
-    public static List<User> constructUsers(Response res) throws WeiboException {
+    public static List<User> constructUsers(Response res) throws HttpException {
     	try {
             JSONArray list = res.asJSONArray();
             int size = list.length();
@@ -406,8 +407,8 @@ public class User extends WeiboResponse implements java.io.Serializable {
             }
             return users;
         } catch (JSONException jsone) {
-            throw new WeiboException(jsone);
-        } catch (WeiboException te) {
+            throw new HttpException(jsone);
+        } catch (HttpException te) {
             throw te;
         }  
     }
@@ -416,9 +417,9 @@ public class User extends WeiboResponse implements java.io.Serializable {
      * 
      * @param res
      * @return
-     * @throws WeiboException
+     * @throws HttpException
      */
-    public static UserWapper constructWapperUsers(Response res) throws WeiboException {
+    public static UserWapper constructWapperUsers(Response res) throws HttpException {
 		JSONObject jsonUsers = res.asJSONObject(); //asJSONArray();
 		try {
 			JSONArray user = jsonUsers.getJSONArray("users");
@@ -434,16 +435,16 @@ public class User extends WeiboResponse implements java.io.Serializable {
 			}
 			return new UserWapper(users, previousCursor, nextCursor);
 		} catch (JSONException jsone) {
-			throw new WeiboException(jsone);
+			throw new HttpException(jsone);
 		}
     }
     
     /**
      * @param res 
      * @return 
-     * @throws WeiboException
+     * @throws HttpException
      */
-    static List<User> constructResult(Response res) throws WeiboException {
+    static List<User> constructResult(Response res) throws HttpException {
     	JSONArray list = res.asJSONArray();
     		try {
 	             int size = list.length();

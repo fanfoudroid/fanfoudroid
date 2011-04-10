@@ -1,11 +1,27 @@
 package com.ch_linghu.fanfoudroid;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import com.ch_linghu.fanfoudroid.data.Tweet;
+import android.app.SearchManager;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
@@ -14,27 +30,7 @@ import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
 import com.ch_linghu.fanfoudroid.weibo.SavedSearch;
 import com.ch_linghu.fanfoudroid.weibo.Trend;
-import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 import com.commonsware.cwac.merge.MergeAdapter;
-
-import android.app.SearchManager;
-import android.content.Context;
-import android.content.Intent;
-import android.content.res.Configuration;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 public class SearchActivity extends WithHeaderActivity {
 
@@ -295,7 +291,7 @@ public class SearchActivity extends WithHeaderActivity {
 			try {
 				trendsList = getApi().getTrends().getTrends();
 				savedSearchsList = getApi().getSavedSearches();
-			} catch (WeiboException e) {
+			} catch (HttpException e) {
 				Log.e(TAG, e.getMessage(), e);
 				return TaskResult.IO_ERROR;
 			}

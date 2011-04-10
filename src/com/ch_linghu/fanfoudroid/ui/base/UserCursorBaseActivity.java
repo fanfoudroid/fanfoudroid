@@ -15,38 +15,27 @@
  */
 package com.ch_linghu.fanfoudroid.ui.base;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 
-import com.ch_linghu.fanfoudroid.ProfileActivity;
 import com.ch_linghu.fanfoudroid.R;
-import com.ch_linghu.fanfoudroid.StatusActivity;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.User;
-import com.ch_linghu.fanfoudroid.data.db.StatusTable;
 import com.ch_linghu.fanfoudroid.data.db.UserInfoTable;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
@@ -54,12 +43,9 @@ import com.ch_linghu.fanfoudroid.task.TaskManager;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
-import com.ch_linghu.fanfoudroid.ui.module.TweetCursorAdapter;
 import com.ch_linghu.fanfoudroid.ui.module.UserCursorAdapter;
-import com.ch_linghu.fanfoudroid.weibo.IDs;
 import com.ch_linghu.fanfoudroid.weibo.Paging;
 import com.ch_linghu.fanfoudroid.weibo.Status;
-import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 /**
  * TwitterCursorBaseLine用于带有静态数据来源（对应数据库的，与twitter表同构的特定表）的展现
@@ -178,16 +164,16 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity{
 	public abstract String fetchMaxId();
 	public abstract String fetchMinId();
 
-	public abstract List<com.ch_linghu.fanfoudroid.weibo.User> getUsers() throws WeiboException;
+	public abstract List<com.ch_linghu.fanfoudroid.weibo.User> getUsers() throws HttpException;
 	
 	public abstract void addUsers(ArrayList<com.ch_linghu.fanfoudroid.data.User> tusers);
 
 //	public abstract List<Status> getMessageSinceId(String maxId)
 //			throws WeiboException;
-	public abstract List<com.ch_linghu.fanfoudroid.weibo.User> getUserSinceId(String maxId) throws WeiboException;
+	public abstract List<com.ch_linghu.fanfoudroid.weibo.User> getUserSinceId(String maxId) throws HttpException;
 	
 	public abstract List<Status> getMoreMessageFromId(String minId)
-			throws WeiboException;
+			throws HttpException;
 
 	public abstract Paging getNextPage();//下一页数
 	public abstract Paging getCurrentPage();//当前页数
@@ -497,7 +483,7 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity{
 			try {
 				usersList=getApi().getFollowersList(getUserId(),getCurrentPage());
 				
-			} catch (WeiboException e) {
+			} catch (HttpException e) {
 				
 				e.printStackTrace();
 			}
@@ -532,7 +518,7 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity{
 				List<com.ch_linghu.fanfoudroid.weibo.User> t_users= getUsers();
 				getDb().syncWeiboUsers(t_users);
 				
-			} catch (WeiboException e) {
+			} catch (HttpException e) {
 				Log.e(TAG, e.getMessage(), e);
 				return TaskResult.IO_ERROR;
 			}
@@ -557,7 +543,7 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity{
 			try {
 				usersList=getApi().getFollowersList(getUserId(),getNextPage());
 				
-			} catch (WeiboException e) {
+			} catch (HttpException e) {
 				
 				e.printStackTrace();
 			}

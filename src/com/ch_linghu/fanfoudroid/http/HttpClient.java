@@ -62,7 +62,6 @@ import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.weibo.Configuration;
 import com.ch_linghu.fanfoudroid.weibo.RefuseError;
-import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 /**
  * Wrap of org.apache.http.impl.client.DefaultHttpClient
@@ -75,16 +74,32 @@ public class HttpClient {
     private static final String TAG = "HttpClient";
     private final static boolean DEBUG = Configuration.getDebug();
 
-    public static final int OK = 200;// OK: Success!
-    public static final int NOT_MODIFIED = 304;// Not Modified: There was no new data to return.
-    public static final int BAD_REQUEST = 400;// Bad Request: The request was invalid.  An accompanying error message will explain why. This is the status code will be returned during rate limiting.
-    public static final int NOT_AUTHORIZED = 401;// Not Authorized: Authentication credentials were missing or incorrect.
-    public static final int FORBIDDEN = 403;// Forbidden: The request is understood, but it has been refused.  An accompanying error message will explain why.
-    public static final int NOT_FOUND = 404;// Not Found: The URI requested is invalid or the resource requested, such as a user, does not exists.
-    public static final int NOT_ACCEPTABLE = 406;// Not Acceptable: Returned by the Search API when an invalid format is specified in the request.
-    public static final int INTERNAL_SERVER_ERROR = 500;// Internal Server Error: Something is broken.  Please post to the group so the Weibo team can investigate.
-    public static final int BAD_GATEWAY = 502;// Bad Gateway: Weibo is down or being upgraded.
-    public static final int SERVICE_UNAVAILABLE = 503;// Service Unavailable: The Weibo servers are up, but overloaded with requests. Try again later. The search and trend methods use this to indicate when you are being rate limited.
+    /** OK: Success! */
+    public static final int OK = 200;
+    /** Not Modified: There was no new data to return. */
+    public static final int NOT_MODIFIED = 304;
+    /** Bad Request: The request was invalid.  An accompanying error message will explain why. This is the status code will be returned during rate limiting. */
+    public static final int BAD_REQUEST = 400;
+    /** Not Authorized: Authentication credentials were missing or incorrect. */
+    public static final int NOT_AUTHORIZED = 401;
+    /** Forbidden: The request is understood, but it has been refused.  An accompanying error message will explain why. */
+    public static final int FORBIDDEN = 403;
+    /** Not Found: The URI requested is invalid or the resource requested, such as a user, does not exists. */
+    public static final int NOT_FOUND = 404;
+    /** Not Acceptable: Returned by the Search API when an invalid format is specified in the request. */
+    public static final int NOT_ACCEPTABLE = 406;
+    /** Internal Server Error: Something is broken.  Please post to the group so the Weibo team can investigate. */
+    public static final int INTERNAL_SERVER_ERROR = 500;
+    /** Bad Gateway: Weibo is down or being upgraded. */
+    public static final int BAD_GATEWAY = 502;
+    /** Service Unavailable: The Weibo servers are up, but overloaded with requests. Try again later. The search and trend methods use this to indicate when you are being rate limited. */
+    public static final int SERVICE_UNAVAILABLE = 503;
+    
+    private static final int CONNECTION_TIMEOUT_MS = 30 * 1000;
+    private static final int SOCKET_TIMEOUT_MS = 30 * 1000;
+    
+    public static final int RETRIEVE_LIMIT = 20;
+    public static final int RETRIED_TIME = 3;
 
     private static final String SERVER_HOST = "api.fanfou.com";
 
@@ -96,12 +111,6 @@ public class HttpClient {
     private String mPassword;
 
     private static boolean isAuthenticationEnabled = false;
-
-    private static final int CONNECTION_TIMEOUT_MS = 30 * 1000;
-    private static final int SOCKET_TIMEOUT_MS = 30 * 1000;
-
-    public static final int RETRIEVE_LIMIT = 20;
-    public static final int RETRIED_TIME = 3;
 
     public HttpClient() {
         prepareHttpClient();
@@ -154,9 +163,7 @@ public class HttpClient {
     /**
      * Setup DefaultHttpClient
      * 
-     * <p>
      * Use ThreadSafeClientConnManager.
-     * </p>
      * 
      */
     private void prepareHttpClient() {
@@ -238,7 +245,7 @@ public class HttpClient {
     }
 
     public Response post(String url, ArrayList<BasicNameValuePair> postParams,
-            boolean authenticated) throws WeiboException {
+            boolean authenticated) throws HttpException {
         if (null == postParams) {
             postParams = new ArrayList<BasicNameValuePair>();
         }
@@ -246,50 +253,59 @@ public class HttpClient {
     }
 
     public Response post(String url, ArrayList<BasicNameValuePair> params)
-            throws WeiboException {
+            throws HttpException {
         return httpRequest(url, params, false, HttpPost.METHOD_NAME);
     }
 
     public Response post(String url, boolean authenticated)
-            throws WeiboException {
+            throws HttpException {
         return httpRequest(url, null, authenticated, HttpPost.METHOD_NAME);
     }
 
-    public Response post(String url) throws WeiboException {
+    public Response post(String url) throws HttpException {
         return httpRequest(url, null, false, HttpPost.METHOD_NAME);
     }
 
-    public Response post(String url, File file) throws WeiboException {
+    public Response post(String url, File file) throws HttpException {
         return httpRequest(url, null, file, false, HttpPost.METHOD_NAME);
     }
 
+    /**
+     * POST一个文件
+     * 
+     * @param url
+     * @param file
+     * @param authenticate
+     * @return
+     * @throws HttpException
+     */
     public Response post(String url, File file, boolean authenticate)
-            throws WeiboException {
+            throws HttpException {
         return httpRequest(url, null, file, authenticate, HttpPost.METHOD_NAME);
     }
 
     public Response get(String url, ArrayList<BasicNameValuePair> params,
-            boolean authenticated) throws WeiboException {
+            boolean authenticated) throws HttpException {
         return httpRequest(url, params, authenticated, HttpGet.METHOD_NAME);
     }
 
     public Response get(String url, ArrayList<BasicNameValuePair> params)
-            throws WeiboException {
+            throws HttpException {
         return httpRequest(url, params, false, HttpGet.METHOD_NAME);
     }
 
-    public Response get(String url) throws WeiboException {
+    public Response get(String url) throws HttpException {
         return httpRequest(url, null, false, HttpGet.METHOD_NAME);
     }
 
     public Response get(String url, boolean authenticated)
-            throws WeiboException {
+            throws HttpException {
         return httpRequest(url, null, authenticated, HttpGet.METHOD_NAME);
     }
 
     public Response httpRequest(String url,
             ArrayList<BasicNameValuePair> postParams, boolean authenticated,
-            String httpMethod) throws WeiboException {
+            String httpMethod) throws HttpException {
         return httpRequest(url, postParams, null, authenticated, httpMethod);
     }
 
@@ -303,16 +319,28 @@ public class HttpClient {
      *            can be NULL
      * @param authenticated
      *            need or not
-     * @param httpMethod 
-     *            Would be: 
-     *            <li>HttpPost.METHOD_NAME</li>
-     *            <li>HttpGet.METHOD_NAME</li>
-     *            <li>HttpDelete.METHOD_NAME</li>
+     * @param httpMethod  
+     *            HttpPost.METHOD_NAME
+     *            HttpGet.METHOD_NAME
+     *            HttpDelete.METHOD_NAME
      * @return Response from server
-     * @throws WeiboException 此异常包装了一系列底层异常, 使用getCause()查看.
+     * @throws HttpException 此异常包装了一系列底层异常 <br /><br />
+     *          1. 底层异常, 可使用getCause()查看: <br />
+     *              <li>URISyntaxException, 由`new URI` 引发的.</li>
+     *              <li>IOException, 由`createMultipartEntity` 或 `UrlEncodedFormEntity` 引发的.</li>
+     *              <li>IOException和ClientProtocolException, 由`HttpClient.execute` 引发的.</li><br />
+     *         
+     *          2. 当响应码不为200时报出的各种子类异常:
+     *             <li>HttpRequestException, 通常发生在请求的错误,如请求错误了 网址导致404等, 抛出此异常,
+     *             首先检查request log, 确认不是人为错误导致请求失败</li>
+     *             <li>HttpAuthException, 通常发生在Auth失败, 检查用于验证登录的用户名/密码/KEY等</li>
+     *             <li>HttpRefusedException, 通常发生在服务器接受到请求, 但拒绝请求, 可是多种原因, 具体原因
+     *             服务器会返回拒绝理由, 调用HttpRefusedException#getError#getMessage查看</li>
+     *             <li>HttpServerException, 通常发生在服务器发生错误时, 检查服务器端是否在正常提供服务</li>
+     *             <li>HttpException, 其他未知错误.</li>
      */
     public Response httpRequest(String url, ArrayList<BasicNameValuePair> postParams,
-            File file, boolean authenticated, String httpMethod) throws WeiboException {
+            File file, boolean authenticated, String httpMethod) throws HttpException {
         Log.i(TAG, "Sending " + httpMethod + " request to " + url);
         long startTime = System.currentTimeMillis();
 
@@ -333,9 +361,9 @@ public class HttpClient {
             res = new Response(response);
         } catch (ClientProtocolException e) {
             Log.e(TAG, e.getMessage(), e);
-            throw new WeiboException(e.getMessage(), e);
+            throw new HttpException(e.getMessage(), e);
         } catch (IOException ioe) {
-            throw new WeiboException(ioe.getMessage(), ioe);
+            throw new HttpException(ioe.getMessage(), ioe);
         }
 
         if (response != null) {
@@ -350,9 +378,7 @@ public class HttpClient {
         long endTime = System.currentTimeMillis();
         Log.d(TAG, "Http request in " + (endTime - startTime));
 
-        // 不能开启此行, 开启此行会将响应的inputStream耗尽.
-        // FIXME: asString函数不能用于调试，这个函数会改变res的状态。
-        // Log.d(TAG, res.asString());
+        //TODO: response内容DEBUG输出
         return res;
 
     }
@@ -362,17 +388,17 @@ public class HttpClient {
      * 
      * @param url
      * @return request URI
-     * @throws WeiboException
+     * @throws HttpException
      *             Cause by URISyntaxException
      */
-    private URI createURI(String url) throws WeiboException {
+    private URI createURI(String url) throws HttpException {
         URI uri;
 
         try {
             uri = new URI(url);
         } catch (URISyntaxException e) {
             Log.e(TAG, e.getMessage(), e);
-            throw new WeiboException("Invalid URL.");
+            throw new HttpException("Invalid URL.");
         }
 
         return uri;
@@ -431,11 +457,11 @@ public class HttpClient {
      *            POST参数
      * @return httpMethod Request implementations for the various HTTP methods
      *         like GET and POST.
-     * @throws WeiboException
+     * @throws HttpException
      *             createMultipartEntity 或 UrlEncodedFormEntity引发的IOException
      */
     private HttpUriRequest createMethod(String httpMethod, URI uri, File file,
-            ArrayList<BasicNameValuePair> postParams) throws WeiboException {
+            ArrayList<BasicNameValuePair> postParams) throws HttpException {
         HttpUriRequest method;
 
         log("----------------- HTTP Request Start ----------------------");
@@ -465,7 +491,7 @@ public class HttpClient {
                 }
                 post.setEntity(entity);
             } catch (IOException ioe) {
-                throw new WeiboException(ioe.getMessage(), ioe);
+                throw new HttpException(ioe.getMessage(), ioe);
             }
 
             logPostForDebug(postParams, post, file);
@@ -537,20 +563,18 @@ public class HttpClient {
      *            响应的状态码
      * @param res
      *            服务器响应
-     * @throws WeiboException
-     *             当响应码不为200时都会报出此异常<br />
-     *             WeiboException其中可能包含了cause, 分别为: <br />
-     * <br />
+     * @throws HttpException
+     *             当响应码不为200时都会报出此异常:<br />
      *             <li>HttpRequestException, 通常发生在请求的错误,如请求错误了 网址导致404等, 抛出此异常,
      *             首先检查request log, 确认不是人为错误导致请求失败</li>
      *             <li>HttpAuthException, 通常发生在Auth失败, 检查用于验证登录的用户名/密码/KEY等</li>
      *             <li>HttpRefusedException, 通常发生在服务器接受到请求, 但拒绝请求, 可是多种原因, 具体原因
      *             服务器会返回拒绝理由, 调用HttpRefusedException#getError#getMessage查看</li>
      *             <li>HttpServerException, 通常发生在服务器发生错误时, 检查服务器端是否在正常提供服务</li>
-     *             <li>Cause为空, 其他未知错误.</li>
+     *             <li>HttpException, 其他未知错误.</li>
      */
     private void HandleResponseStatusCode(int statusCode, Response res)
-            throws WeiboException {
+            throws HttpException {
         String msg = getCause(statusCode) + "\n";
         RefuseError error = null;
 
@@ -564,38 +588,32 @@ public class HttpClient {
         case BAD_REQUEST:
         case NOT_FOUND:
         case NOT_ACCEPTABLE:
-            throw new WeiboException(msg + res.asString(),
-                    new HttpRequestException(), statusCode);
+            throw new HttpException(msg + res.asString(), statusCode);
 
-            // UserName/Password incorrect
+        // UserName/Password incorrect
         case NOT_AUTHORIZED:
-            error = new RefuseError(res);
-            throw new WeiboException(msg + res.asString(),
-                    new HttpAuthException(error), statusCode);
+            throw new HttpAuthException(msg + res.asString(), statusCode);
 
-            // Server will return a error message, use
-            // HttpRefusedException#getError() to see.
+        // Server will return a error message, use
+        // HttpRefusedException#getError() to see.
         case FORBIDDEN:
-            error = new RefuseError(res);
-            throw new WeiboException(msg + res.asString(),
-                    new HttpRefusedException(error), statusCode);
+            throw new HttpRefusedException(msg, statusCode);
 
-            // Something wrong with server
+        // Something wrong with server
         case INTERNAL_SERVER_ERROR:
         case BAD_GATEWAY:
         case SERVICE_UNAVAILABLE:
-            throw new WeiboException(msg + res.asString(),
-                    new HttpServerException(), statusCode);
+            throw new HttpServerException(msg, statusCode);
 
-            // Others
+        // Others
         default:
-            throw new WeiboException(msg + res.asString(), statusCode);
+            throw new HttpException(msg + res.asString(), statusCode);
         }
     }
 
     // ignore me, it's only for debug
     private void logPostForDebug(ArrayList<BasicNameValuePair> postParams,
-            HttpPost post, File file) throws WeiboException {
+            HttpPost post, File file) {
         // log post data
         if (DEBUG) {
             if (postParams != null) {
@@ -615,7 +633,7 @@ public class HttpClient {
                                 + file.getName());
                     }
                 } catch (IOException ioe) {
-                    throw new WeiboException(ioe.getMessage(), ioe);
+                    Log.e(TAG, ioe.getMessage());
                 }
             }
             if (file != null) {
@@ -652,16 +670,16 @@ public class HttpClient {
         }
     }
 
-    public static String encode(String value) throws WeiboException {
+    public static String encode(String value) throws HttpException {
         try {
             return URLEncoder.encode(value, HTTP.UTF_8);
         } catch (UnsupportedEncodingException e_e) {
-            throw new WeiboException(e_e.getMessage(), e_e);
+            throw new HttpException(e_e.getMessage(), e_e);
         }
     }
 
     public static String encodeParameters(ArrayList<BasicNameValuePair> params)
-            throws WeiboException {
+            throws HttpException {
         StringBuffer buf = new StringBuffer();
         for (int j = 0; j < params.size(); j++) {
             if (j != 0) {
@@ -673,7 +691,7 @@ public class HttpClient {
                         .append(URLEncoder.encode(params.get(j).getValue(),
                                 "UTF-8"));
             } catch (java.io.UnsupportedEncodingException neverHappen) {
-                throw new WeiboException(neverHappen.getMessage(), neverHappen);
+                throw new HttpException(neverHappen.getMessage(), neverHappen);
             }
         }
         return buf.toString();

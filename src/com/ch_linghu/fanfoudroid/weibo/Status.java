@@ -37,6 +37,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.Response;
 
 
@@ -64,19 +65,19 @@ public class Status extends WeiboResponse implements java.io.Serializable {
     private RetweetDetails retweetDetails;
     private static final long serialVersionUID = 1608000492860584608L;
 
-    /*package*/Status(Response res, Weibo weibo) throws WeiboException {
+    /*package*/Status(Response res, Weibo weibo) throws HttpException {
         super(res);
         Element elem = res.asDocument().getDocumentElement();
         init(res, elem, weibo);
     }
 
     /*package*/Status(Response res, Element elem, Weibo weibo) throws
-            WeiboException {
+            HttpException {
         super(res);
         init(res, elem, weibo);
     }
     
-    Status(Response res)throws WeiboException{
+    Status(Response res)throws HttpException{
     	super(res);
     	JSONObject json=res.asJSONObject();
     	try {
@@ -108,13 +109,13 @@ public class Status extends WeiboResponse implements java.io.Serializable {
 				retweetDetails = new RetweetDetails(json.getJSONObject("retweetDetails"));
 			}
 		} catch (JSONException je) {
-			throw new WeiboException(je.getMessage() + ":" + json.toString(), je);
+			throw new HttpException(je.getMessage() + ":" + json.toString(), je);
 		}
         
     }
     
     /* modify by sycheng add some field*/
-    public Status(JSONObject json)throws WeiboException, JSONException{
+    public Status(JSONObject json)throws HttpException, JSONException{
     	id = json.getString("id");
         text = json.getString("text");
         source = json.getString("source");
@@ -138,7 +139,7 @@ public class Status extends WeiboResponse implements java.io.Serializable {
 		}
         user = new User(json.getJSONObject("user"));
     }
-    public Status(String str) throws WeiboException, JSONException {
+    public Status(String str) throws HttpException, JSONException {
         // StatusStream uses this constructor
         super();
         JSONObject json = new JSONObject(str);
@@ -164,7 +165,7 @@ public class Status extends WeiboResponse implements java.io.Serializable {
     }
 
     private void init(Response res, Element elem, Weibo weibo) throws
-            WeiboException {
+            HttpException {
         ensureRootNodeNameIs("status", elem);
         user = new User(res, (Element) elem.getElementsByTagName("user").item(0)
                 , weibo);
@@ -342,7 +343,7 @@ public class Status extends WeiboResponse implements java.io.Serializable {
 
     /*package*/
     static List<Status> constructStatuses(Response res,
-                                          Weibo weibo) throws WeiboException {
+                                          Weibo weibo) throws HttpException {
     	
     	 Document doc = res.asDocument();
         if (isRootNodeNilClasses(doc)) {
@@ -359,7 +360,7 @@ public class Status extends WeiboResponse implements java.io.Serializable {
                     statuses.add(new Status(res, status, weibo));
                 }
                 return statuses;
-            } catch (WeiboException te) {
+            } catch (HttpException te) {
                 ensureRootNodeNameIs("nil-classes", doc);
                 return new ArrayList<Status>(0);
             }
@@ -369,7 +370,7 @@ public class Status extends WeiboResponse implements java.io.Serializable {
 
     /*modify by sycheng add json call method*/
     /*package*/
-    static List<Status> constructStatuses(Response res) throws WeiboException {
+    static List<Status> constructStatuses(Response res) throws HttpException {
     	 try {
              JSONArray list = res.asJSONArray();
              int size = list.length();
@@ -379,8 +380,8 @@ public class Status extends WeiboResponse implements java.io.Serializable {
              }
              return statuses;
          } catch (JSONException jsone) {
-             throw new WeiboException(jsone);
-         } catch (WeiboException te) {
+             throw new HttpException(jsone);
+         } catch (HttpException te) {
              throw te;
          }  
        

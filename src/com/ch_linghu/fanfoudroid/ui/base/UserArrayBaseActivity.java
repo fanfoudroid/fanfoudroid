@@ -3,8 +3,6 @@ package com.ch_linghu.fanfoudroid.ui.base;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,9 +14,7 @@ import android.widget.TextView;
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.User;
-import com.ch_linghu.fanfoudroid.data.db.UserInfoTable;
-import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
@@ -27,9 +23,7 @@ import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 import com.ch_linghu.fanfoudroid.ui.module.UserArrayAdapter;
-import com.ch_linghu.fanfoudroid.ui.module.UserCursorAdapter;
 import com.ch_linghu.fanfoudroid.weibo.Paging;
-import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 	static final String TAG = "UserArrayBaseActivity";
@@ -53,7 +47,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 	public abstract Paging getCurrentPage();// 加载
 	public abstract Paging getNextPage();// 加载
 	//protected abstract String[] getIds();
-	protected abstract List<com.ch_linghu.fanfoudroid.weibo.User> getUsers(String userId,Paging page) throws WeiboException; 
+	protected abstract List<com.ch_linghu.fanfoudroid.weibo.User> getUsers(String userId,Paging page) throws HttpException; 
 
 	
 
@@ -148,7 +142,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 			try {
 				usersList=getUsers(getUserId(),getCurrentPage());
 				
-			} catch (WeiboException e) {
+			} catch (HttpException e) {
 				e.printStackTrace();
 				return TaskResult.IO_ERROR;
 			}
@@ -313,7 +307,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 				usersList = getUsers(getUserId(),
 						getNextPage());
 
-			} catch (WeiboException e) {
+			} catch (HttpException e) {
 				e.printStackTrace();
 				return TaskResult.IO_ERROR;
 			}

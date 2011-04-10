@@ -7,10 +7,10 @@ import android.widget.Toast;
 import com.ch_linghu.fanfoudroid.LoginActivity;
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.http.HttpAuthException;
+import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.HttpRefusedException;
 import com.ch_linghu.fanfoudroid.http.HttpServerException;
 import com.ch_linghu.fanfoudroid.weibo.RefuseError;
-import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 public class ExceptionHandler {
     
@@ -20,7 +20,7 @@ public class ExceptionHandler {
         mActivity = activity;
     }
     
-    public void handle(WeiboException e) {
+    public void handle(HttpException e) {
         
         Throwable cause = e.getCause();
         if (null == cause) return;

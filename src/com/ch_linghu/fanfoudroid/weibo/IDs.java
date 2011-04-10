@@ -34,6 +34,7 @@ import org.json.JSONObject;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.Response;
 
 
@@ -49,7 +50,7 @@ public class IDs extends WeiboResponse {
     private static final long serialVersionUID = -6585026560164704953L;
     private static String[] ROOT_NODE_NAMES = {"id_list", "ids"};
 
-    /*package*/ IDs(Response res) throws WeiboException {
+    /*package*/ IDs(Response res) throws HttpException {
         super(res);
         Element elem = res.asDocument().getDocumentElement();
         ensureRootNodeNameIs(ROOT_NODE_NAMES, elem);
@@ -59,16 +60,16 @@ public class IDs extends WeiboResponse {
             try {
                 ids[i] = idlist.item(i).getFirstChild().getNodeValue();
             } catch (NumberFormatException nfe) {
-                throw new WeiboException("Weibo API returned malformed response(Invalid Number): " + elem, nfe);
+                throw new HttpException("Weibo API returned malformed response(Invalid Number): " + elem, nfe);
             } catch (NullPointerException npe) {
-            	throw new WeiboException("Weibo API returned malformed response(NULL): " + elem, npe);
+            	throw new HttpException("Weibo API returned malformed response(NULL): " + elem, npe);
             }
         }
         previousCursor = getChildLong("previous_cursor", elem);
         nextCursor = getChildLong("next_cursor", elem);
     }
 
-    /*package*/ IDs(Response res,Weibo w) throws WeiboException {
+    /*package*/ IDs(Response res,Weibo w) throws HttpException {
         super(res);
         // TODO: 饭否返回的为 JSONArray 类型， 例如["ifan","fanfouapi","\u62cd\u62cd","daoru"]
         JSONObject json=  res.asJSONObject();
@@ -86,7 +87,7 @@ public class IDs extends WeiboResponse {
         	}
         	
          } catch (JSONException jsone) {
-             throw new WeiboException(jsone);
+             throw new HttpException(jsone);
          } 
         
     }

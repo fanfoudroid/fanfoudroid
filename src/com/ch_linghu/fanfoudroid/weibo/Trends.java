@@ -37,6 +37,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.Response;
 
 
@@ -57,7 +58,7 @@ public class Trends extends WeiboResponse implements Comparable<Trends> {
     }
 
     /*package*/ Trends(Response res, Date asOf, Date trendAt, Trend[] trends)
-            throws WeiboException {
+            throws HttpException {
         super(res);
         this.asOf = asOf;
         this.trendAt = trendAt;
@@ -66,7 +67,7 @@ public class Trends extends WeiboResponse implements Comparable<Trends> {
 
     /*package*/
     static List<Trends> constructTrendsList(Response res) throws
-            WeiboException {
+            HttpException {
         JSONObject json = res.asJSONObject();
         List<Trends> trends;
         try {
@@ -95,12 +96,12 @@ public class Trends extends WeiboResponse implements Comparable<Trends> {
             Collections.sort(trends);
             return trends;
         } catch (JSONException jsone) {
-            throw new WeiboException(jsone.getMessage() + ":" + res.asString(), jsone);
+            throw new HttpException(jsone.getMessage() + ":" + res.asString(), jsone);
         }
     }
 
     /*package*/
-    static Trends constructTrends(Response res) throws WeiboException {
+    static Trends constructTrends(Response res) throws HttpException {
         JSONObject json = res.asJSONObject();
         try {
             Date asOf = parseDate(json.getString("as_of"));
@@ -108,11 +109,11 @@ public class Trends extends WeiboResponse implements Comparable<Trends> {
             Trend[] trendsArray = jsonArrayToTrendArray(array);
             return new Trends(res, asOf, asOf, trendsArray);
         } catch (JSONException jsone) {
-            throw new WeiboException(jsone.getMessage() + ":" + res.asString(), jsone);
+            throw new HttpException(jsone.getMessage() + ":" + res.asString(), jsone);
         }
     }
 
-    private static Date parseDate(String asOfStr) throws WeiboException {
+    private static Date parseDate(String asOfStr) throws HttpException {
         Date parsed;
         if (asOfStr.length() == 10) {
             parsed = new Date(Long.parseLong(asOfStr) * 1000);

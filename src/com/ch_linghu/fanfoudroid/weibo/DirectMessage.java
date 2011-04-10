@@ -37,6 +37,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.Response;
 
 
@@ -54,16 +55,16 @@ public class DirectMessage extends WeiboResponse implements java.io.Serializable
     private String recipient_screen_name;
     private static final long serialVersionUID = -3253021825891789737L;
 
-    /*package*/DirectMessage(Response res, Weibo weibo) throws WeiboException {
+    /*package*/DirectMessage(Response res, Weibo weibo) throws HttpException {
         super(res);
         init(res, res.asDocument().getDocumentElement(), weibo);
     }
-    /*package*/DirectMessage(Response res, Element elem, Weibo weibo) throws WeiboException {
+    /*package*/DirectMessage(Response res, Element elem, Weibo weibo) throws HttpException {
         super(res);
         init(res, elem, weibo);
     }
     /*modify by sycheng add json call*/
-    /*package*/DirectMessage(JSONObject json) throws WeiboException {
+    /*package*/DirectMessage(JSONObject json) throws HttpException {
         try {
         	
 			id = json.getString("id");
@@ -79,12 +80,12 @@ public class DirectMessage extends WeiboResponse implements java.io.Serializable
 			if(!json.isNull("recipient"))
 				recipient = new User(json.getJSONObject("recipient"));
 		} catch (JSONException jsone) {
-			throw new WeiboException(jsone.getMessage() + ":" + json.toString(), jsone);
+			throw new HttpException(jsone.getMessage() + ":" + json.toString(), jsone);
 		}
         
     }
     
-    private void init(Response res, Element elem, Weibo weibo) throws WeiboException{
+    private void init(Response res, Element elem, Weibo weibo) throws HttpException{
         
 
     	ensureRootNodeNameIs("direct_message", elem);
@@ -148,7 +149,7 @@ public class DirectMessage extends WeiboResponse implements java.io.Serializable
 
     /*package*/
     static List<DirectMessage> constructDirectMessages(Response res,
-                                                       Weibo weibo) throws WeiboException {
+                                                       Weibo weibo) throws HttpException {
         Document doc = res.asDocument();
         if (isRootNodeNilClasses(doc)) {
             return new ArrayList<DirectMessage>(0);
@@ -164,7 +165,7 @@ public class DirectMessage extends WeiboResponse implements java.io.Serializable
                     messages.add(new DirectMessage(res, status, weibo));
                 }
                 return messages;
-            } catch (WeiboException te) {
+            } catch (HttpException te) {
                 if (isRootNodeNilClasses(doc)) {
                     return new ArrayList<DirectMessage>(0);
                 } else {
@@ -176,7 +177,7 @@ public class DirectMessage extends WeiboResponse implements java.io.Serializable
     
     /*package*/
     static List<DirectMessage> constructDirectMessages(Response res
-                                                       ) throws WeiboException {
+                                                       ) throws HttpException {
     	JSONArray list=	 res.asJSONArray();
     	
             try {
@@ -188,7 +189,7 @@ public class DirectMessage extends WeiboResponse implements java.io.Serializable
                 }
                 return messages;
             } catch (JSONException jsone) {
-            	throw new WeiboException(jsone);
+            	throw new HttpException(jsone);
             }
     }
 

@@ -27,25 +27,24 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
-import android.view.View.OnCreateContextMenuListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.helper.ImageCache;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
 import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.http.HttpAuthException;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
+import com.ch_linghu.fanfoudroid.http.HttpException;
+import com.ch_linghu.fanfoudroid.http.HttpRefusedException;
 import com.ch_linghu.fanfoudroid.http.Response;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -54,7 +53,6 @@ import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.task.TweetCommonTask;
 import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
-import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 public class StatusActivity extends WithHeaderActivity{
 
@@ -441,14 +439,14 @@ public class StatusActivity extends WithHeaderActivity{
 		}
 	}
 
-	private String fetchWebPage(String url) throws WeiboException {
+	private String fetchWebPage(String url) throws HttpException {
 		Log.i(TAG, "Fetching WebPage: " + url);
 
 		Response res = mClient.get(url);
 		return res.asString();
 	}
 
-	private Bitmap fetchPhotoBitmap(String url) throws WeiboException, IOException {
+	private Bitmap fetchPhotoBitmap(String url) throws HttpException, IOException {
 		Log.i(TAG, "Fetching Photo: " + url);
 		Response res = mClient.get(url);
 
@@ -491,7 +489,7 @@ public class StatusActivity extends WithHeaderActivity{
                     status = getApi().showStatus(reply_id);
                     replyTweet = Tweet.create(status);
                 }
-            } catch (WeiboException e) {
+            } catch (HttpException e) {
                 Log.e(TAG, e.getMessage(), e);
                 return TaskResult.IO_ERROR;
             }
@@ -537,7 +535,7 @@ public class StatusActivity extends WithHeaderActivity{
             			mPhotoBitmap = fetchPhotoBitmap(photoURL);
             		}
             	}
-            } catch (WeiboException e) {
+            } catch (HttpException e) {
                 Log.e(TAG, e.getMessage(), e);
                 return TaskResult.IO_ERROR;
             } catch (IOException e) {

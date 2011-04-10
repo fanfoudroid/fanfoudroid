@@ -34,6 +34,7 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.StatusTable;
+import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
@@ -43,7 +44,6 @@ import com.ch_linghu.fanfoudroid.task.TweetCommonTask;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterCursorBaseActivity;
 import com.ch_linghu.fanfoudroid.weibo.Paging;
 import com.ch_linghu.fanfoudroid.weibo.Status;
-import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 public class TwitterActivity extends TwitterCursorBaseActivity {
 	private static final String TAG = "TwitterActivity";
@@ -189,7 +189,7 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 	}
 	
 	@Override
-	public List<Status> getMessageSinceId(String maxId) throws WeiboException {
+	public List<Status> getMessageSinceId(String maxId) throws HttpException {
 		if (maxId != null){
 			return getApi().getFriendsTimeline(new Paging(maxId));
 		}else{
@@ -226,7 +226,7 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 
 	@Override
 	public List<Status> getMoreMessageFromId(String minId)
-			throws WeiboException {
+			throws HttpException {
 		Paging paging = new Paging(1, 20);
 		paging.setMaxId(minId);
 		return getApi().getFriendsTimeline(paging);

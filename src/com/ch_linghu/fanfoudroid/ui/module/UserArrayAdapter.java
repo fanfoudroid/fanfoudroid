@@ -2,43 +2,36 @@ package com.ch_linghu.fanfoudroid.ui.module;
 
 import java.util.ArrayList;
 
-import com.ch_linghu.fanfoudroid.R;
-import com.ch_linghu.fanfoudroid.TwitterApplication;
-import com.ch_linghu.fanfoudroid.data.User;
-import com.ch_linghu.fanfoudroid.helper.ImageCache;
-import com.ch_linghu.fanfoudroid.helper.ImageManager;
-import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
-import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheManager;
-import com.ch_linghu.fanfoudroid.helper.Utils;
-import com.ch_linghu.fanfoudroid.task.GenericTask;
-import com.ch_linghu.fanfoudroid.task.TaskAdapter;
-import com.ch_linghu.fanfoudroid.task.TaskListener;
-import com.ch_linghu.fanfoudroid.task.TaskParams;
-import com.ch_linghu.fanfoudroid.task.TaskResult;
-import com.ch_linghu.fanfoudroid.ui.base.UserListBaseActivity;
-import com.ch_linghu.fanfoudroid.weibo.Weibo;
-import com.ch_linghu.fanfoudroid.weibo.WeiboException;
-
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.AlertDialog.Builder;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.ch_linghu.fanfoudroid.R;
+import com.ch_linghu.fanfoudroid.TwitterApplication;
+import com.ch_linghu.fanfoudroid.data.User;
+import com.ch_linghu.fanfoudroid.helper.Preferences;
+import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
+import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.http.HttpException;
+import com.ch_linghu.fanfoudroid.task.GenericTask;
+import com.ch_linghu.fanfoudroid.task.TaskAdapter;
+import com.ch_linghu.fanfoudroid.task.TaskListener;
+import com.ch_linghu.fanfoudroid.task.TaskParams;
+import com.ch_linghu.fanfoudroid.task.TaskResult;
+import com.ch_linghu.fanfoudroid.weibo.Weibo;
 
 //TODO：
 /*
@@ -216,7 +209,7 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter{
 				//TODO:userid
 				String userId=params[0].getString(USER_ID);
 				getApi().destroyFriendship(userId);
-			} catch (WeiboException e) {
+			} catch (HttpException e) {
 				Log.w(TAG, "create friend ship error");
 				return TaskResult.FAILED;
 			}
@@ -302,7 +295,7 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter{
 				String userId=params[0].getString(USER_ID);
 				getApi().createFriendship(userId);
 
-			} catch (WeiboException e) {
+			} catch (HttpException e) {
 				Log.w(TAG, "create friend ship error");
 				return TaskResult.FAILED;
 			}

@@ -34,6 +34,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.Response;
 
 
@@ -51,21 +52,21 @@ public class SavedSearch extends WeiboResponse {
     private int id;
     private static final long serialVersionUID = 3083819860391598212L;
 
-    /*package*/ SavedSearch(Response res) throws WeiboException {
+    /*package*/ SavedSearch(Response res) throws HttpException {
         super(res);
         init(res.asJSONObject());
     }
 
-    /*package*/ SavedSearch(Response res, JSONObject json) throws WeiboException {
+    /*package*/ SavedSearch(Response res, JSONObject json) throws HttpException {
         super(res);
         init(json);
     }
 
-    /*package*/ SavedSearch(JSONObject savedSearch) throws WeiboException {
+    /*package*/ SavedSearch(JSONObject savedSearch) throws HttpException {
         init(savedSearch);
     }
 
-    /*package*/ static List<SavedSearch> constructSavedSearches(Response res) throws WeiboException {
+    /*package*/ static List<SavedSearch> constructSavedSearches(Response res) throws HttpException {
             JSONArray json = res.asJSONArray();
             List<SavedSearch> savedSearches;
             try {
@@ -75,18 +76,18 @@ public class SavedSearch extends WeiboResponse {
                 }
                 return savedSearches;
             } catch (JSONException jsone) {
-                throw new WeiboException(jsone.getMessage() + ":" + res.asString(), jsone);
+                throw new HttpException(jsone.getMessage() + ":" + res.asString(), jsone);
             }
         }
 
-    private void init(JSONObject savedSearch) throws WeiboException {
+    private void init(JSONObject savedSearch) throws HttpException {
         try {
             createdAt = parseDate(savedSearch.getString("created_at"), "EEE MMM dd HH:mm:ss z yyyy");
             query = getString("query", savedSearch, true);
             name = getString("name", savedSearch, true);
             id = getInt("id", savedSearch);
         } catch (JSONException jsone) {
-            throw new WeiboException(jsone.getMessage() + ":" + savedSearch.toString(), jsone);
+            throw new HttpException(jsone.getMessage() + ":" + savedSearch.toString(), jsone);
         }
     }
 

@@ -4,16 +4,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import android.graphics.Bitmap;
+import android.util.Log;
+
 import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
-import com.ch_linghu.fanfoudroid.weibo.WeiboException;
-
-import android.graphics.Bitmap;
-import android.util.Log;
 
 public class ProfileImageCacheManager {
 	private static final String TAG="ProfileImageCacheManager";

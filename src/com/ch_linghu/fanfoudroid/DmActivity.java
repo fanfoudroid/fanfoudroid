@@ -1,6 +1,5 @@
 package com.ch_linghu.fanfoudroid;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -30,10 +29,10 @@ import android.widget.TextView;
 import com.ch_linghu.fanfoudroid.data.Dm;
 import com.ch_linghu.fanfoudroid.data.db.MessageTable;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDatabase;
-import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
 import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
@@ -42,7 +41,6 @@ import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
 import com.ch_linghu.fanfoudroid.weibo.DirectMessage;
 import com.ch_linghu.fanfoudroid.weibo.Paging;
-import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 public class DmActivity extends WithHeaderActivity {
 
@@ -326,7 +324,7 @@ public class DmActivity extends WithHeaderActivity {
 				} else {
 					dmList = getApi().getDirectMessages();
 				}
-			} catch (WeiboException e) {
+			} catch (HttpException e) {
 				Log.e(TAG, e.getMessage(), e);
 				return TaskResult.IO_ERROR;
 			}
@@ -356,7 +354,7 @@ public class DmActivity extends WithHeaderActivity {
 				} else {
 					dmList = getApi().getSentDirectMessages();
 				}
-			} catch (WeiboException e) {
+			} catch (HttpException e) {
 				Log.e(TAG, e.getMessage(), e);
 				return TaskResult.IO_ERROR;
 			}
@@ -600,7 +598,7 @@ public class DmActivity extends WithHeaderActivity {
 				DirectMessage directMessage = getApi().destroyDirectMessage(id);
 				Dm.create(directMessage, false);
 				getDb().deleteDm(id);
-			} catch (WeiboException e) {
+			} catch (HttpException e) {
 				Log.e(TAG, e.getMessage(), e);
 				return TaskResult.IO_ERROR;
 			}

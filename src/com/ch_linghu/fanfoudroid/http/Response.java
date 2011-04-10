@@ -25,10 +25,9 @@ import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import com.ch_linghu.fanfoudroid.weibo.Configuration;
-import com.ch_linghu.fanfoudroid.weibo.WeiboException;
-
 import android.util.Log;
+
+import com.ch_linghu.fanfoudroid.weibo.Configuration;
 
 public class Response {
 //    private final static String TAG = "HttpClient";
@@ -108,7 +107,7 @@ public class Response {
      *
      * Disconnects the internal HttpURLConnection silently.
      * @return response body stream
-     * @throws WeiboException
+     * @throws HttpException
      * @see #disconnect()
      */
     public InputStream asStream() {
@@ -122,9 +121,9 @@ public class Response {
      * Returns the response body as string.<br>
      * Disconnects the internal HttpURLConnection silently.
      * @return response body
-     * @throws WeiboException
+     * @throws HttpException
      */
-    public String asString() throws WeiboException{
+    public String asString() throws ResponseException {
         if(null == responseAsString){
             BufferedReader br;
             try {
@@ -145,9 +144,9 @@ public class Response {
                 streamConsumed = true;
             } catch (NullPointerException npe) {
                 // don't remember in which case npe can be thrown
-                throw new WeiboException(npe.getMessage(), npe);
+                throw new ResponseException(npe.getMessage(), npe);
             } catch (IOException ioe) {
-                throw new WeiboException(ioe.getMessage(), ioe);
+                throw new ResponseException(ioe.getMessage(), ioe);
             }
         }
         return responseAsString;
@@ -157,18 +156,18 @@ public class Response {
      * Returns the response body as org.w3c.dom.Document.<br>
      * Disconnects the internal HttpURLConnection silently.
      * @return response body as org.w3c.dom.Document
-     * @throws WeiboException
+     * @throws HttpException
      */
-    public Document asDocument() throws WeiboException {
+    public Document asDocument() throws ResponseException {
         if (null == responseAsDocument) {
             try {
                 // it should be faster to read the inputstream directly.
                 // but makes it difficult to troubleshoot
                 this.responseAsDocument = builders.get().parse(new ByteArrayInputStream(asString().getBytes("UTF-8")));
             } catch (SAXException saxe) {
-                throw new WeiboException("The response body was not well-formed:\n" + responseAsString, saxe);
+                throw new ResponseException("The response body was not well-formed:\n" + responseAsString, saxe);
             } catch (IOException ioe) {
-                throw new WeiboException("There's something with the connection.", ioe);
+                throw new ResponseException("There's something with the connection.", ioe);
             }
         }
         return responseAsDocument;
@@ -178,13 +177,13 @@ public class Response {
      * Returns the response body as sinat4j.org.json.JSONObject.<br>
      * Disconnects the internal HttpURLConnection silently.
      * @return response body as sinat4j.org.json.JSONObject
-     * @throws WeiboException
+     * @throws HttpException
      */
-    public JSONObject asJSONObject() throws WeiboException {
+    public JSONObject asJSONObject() throws ResponseException {
         try {
             return new JSONObject(asString());
         } catch (JSONException jsone) {
-            throw new WeiboException(jsone.getMessage() + ":" + this.responseAsString, jsone);
+            throw new ResponseException(jsone.getMessage() + ":" + this.responseAsString, jsone);
         }
     }
     
@@ -192,13 +191,13 @@ public class Response {
      * Returns the response body as sinat4j.org.json.JSONArray.<br>
      * Disconnects the internal HttpURLConnection silently.
      * @return response body as sinat4j.org.json.JSONArray
-     * @throws WeiboException
+     * @throws HttpException
      */
-    public JSONArray asJSONArray() throws WeiboException {
+    public JSONArray asJSONArray() throws ResponseException {
         try {
         	return  new JSONArray(asString());  
         } catch (Exception jsone) {
-            throw new WeiboException(jsone.getMessage() + ":" + this.responseAsString, jsone);
+            throw new ResponseException(jsone.getMessage() + ":" + this.responseAsString, jsone);
         }
     }
 

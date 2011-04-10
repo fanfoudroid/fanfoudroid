@@ -32,6 +32,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Element;
 
+import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.Response;
 
 
@@ -46,7 +47,7 @@ public class RateLimitStatus extends WeiboResponse {
     private Date resetTime;
     private static final long serialVersionUID = 933996804168952707L;
 
-    /* package */ RateLimitStatus(Response res) throws WeiboException {
+    /* package */ RateLimitStatus(Response res) throws HttpException {
         super(res);
         Element elem = res.asDocument().getDocumentElement();
         remainingHits = getChildInt("remaining-hits", elem);
@@ -56,7 +57,7 @@ public class RateLimitStatus extends WeiboResponse {
     }
     
     /*modify by sycheng add json call*/
-    /* package */ RateLimitStatus(Response res,Weibo w) throws WeiboException {
+    /* package */ RateLimitStatus(Response res,Weibo w) throws HttpException {
         super(res);
         JSONObject json=	res.asJSONObject();
         try {
@@ -65,7 +66,7 @@ public class RateLimitStatus extends WeiboResponse {
 			resetTimeInSeconds = json.getInt("reset_time_in_seconds");
 			resetTime = parseDate(json.getString("reset_time"), "EEE MMM dd HH:mm:ss z yyyy");
 		} catch (JSONException jsone) {
-			throw new WeiboException(jsone.getMessage() + ":" + json.toString(), jsone);
+			throw new HttpException(jsone.getMessage() + ":" + json.toString(), jsone);
 		}
     }
 

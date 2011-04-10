@@ -3,18 +3,14 @@ package com.ch_linghu.fanfoudroid;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.StatusTable;
-import com.ch_linghu.fanfoudroid.helper.Preferences;
+import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterCursorBaseActivity;
-import com.ch_linghu.fanfoudroid.weibo.Paging;
 import com.ch_linghu.fanfoudroid.weibo.Status;
-import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 /**
  * 随便看看
@@ -55,7 +51,7 @@ public class BrowseActivity extends TwitterCursorBaseActivity {
 	}
 
 	@Override
-	public List<Status> getMessageSinceId(String maxId) throws WeiboException {
+	public List<Status> getMessageSinceId(String maxId) throws HttpException {
 		return getApi().getPublicTimeline();
 	}
 
@@ -72,7 +68,7 @@ public class BrowseActivity extends TwitterCursorBaseActivity {
 
 	@Override
 	public List<Status> getMoreMessageFromId(String minId)
-			throws WeiboException {
+			throws HttpException {
 		//随便看看没有获取更多的功能
 		return null;
 	}

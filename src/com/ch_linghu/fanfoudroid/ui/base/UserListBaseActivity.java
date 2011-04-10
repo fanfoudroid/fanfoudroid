@@ -1,31 +1,27 @@
 package com.ch_linghu.fanfoudroid.ui.base;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.AlertDialog.Builder;
+import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AdapterView.OnItemClickListener;
 
 import com.ch_linghu.fanfoudroid.DmActivity;
 import com.ch_linghu.fanfoudroid.MentionActivity;
 import com.ch_linghu.fanfoudroid.ProfileActivity;
 import com.ch_linghu.fanfoudroid.R;
-import com.ch_linghu.fanfoudroid.StatusActivity;
 import com.ch_linghu.fanfoudroid.TwitterActivity;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.UserTimelineActivity;
@@ -33,9 +29,9 @@ import com.ch_linghu.fanfoudroid.WriteActivity;
 import com.ch_linghu.fanfoudroid.WriteDmActivity;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.User;
-import com.ch_linghu.fanfoudroid.data.db.UserInfoTable;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
@@ -43,7 +39,6 @@ import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.task.TweetCommonTask;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
-import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 public abstract class UserListBaseActivity extends WithHeaderActivity 
 implements Refreshable {
@@ -274,7 +269,7 @@ implements Refreshable {
 				//TODO:userid
 				String userId=params[0].getString(USER_ID);
 				getApi().destroyFriendship(userId);
-			} catch (WeiboException e) {
+			} catch (HttpException e) {
 				Log.w(TAG, "create friend ship error");
 				return TaskResult.FAILED;
 			}
@@ -360,7 +355,7 @@ implements Refreshable {
 				String userId=params[0].getString(USER_ID);
 				getApi().createFriendship(userId);
 
-			} catch (WeiboException e) {
+			} catch (HttpException e) {
 				Log.w(TAG, "create friend ship error");
 				return TaskResult.FAILED;
 			}

@@ -2,32 +2,16 @@ package com.ch_linghu.fanfoudroid;
 
 import java.text.MessageFormat;
 
-import com.ch_linghu.fanfoudroid.data.db.TwitterDatabase;
-import com.ch_linghu.fanfoudroid.data.db.UserInfoTable;
-import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
-import com.ch_linghu.fanfoudroid.helper.Utils;
-import com.ch_linghu.fanfoudroid.task.GenericTask;
-import com.ch_linghu.fanfoudroid.task.TaskAdapter;
-import com.ch_linghu.fanfoudroid.task.TaskListener;
-import com.ch_linghu.fanfoudroid.task.TaskParams;
-import com.ch_linghu.fanfoudroid.task.TaskResult;
-import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
-import com.ch_linghu.fanfoudroid.weibo.User;
-import com.ch_linghu.fanfoudroid.weibo.WeiboException;
-
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import android.util.Log;
 import android.view.View;
@@ -38,6 +22,19 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.ch_linghu.fanfoudroid.data.db.TwitterDatabase;
+import com.ch_linghu.fanfoudroid.data.db.UserInfoTable;
+import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
+import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.http.HttpException;
+import com.ch_linghu.fanfoudroid.task.GenericTask;
+import com.ch_linghu.fanfoudroid.task.TaskAdapter;
+import com.ch_linghu.fanfoudroid.task.TaskListener;
+import com.ch_linghu.fanfoudroid.task.TaskParams;
+import com.ch_linghu.fanfoudroid.task.TaskResult;
+import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
+import com.ch_linghu.fanfoudroid.weibo.User;
 
 /**
  * 
@@ -486,7 +483,7 @@ public class ProfileActivity extends WithHeaderActivity {
 			try {
 				profileInfo = getApi().showUser(userId);
 
-			} catch (WeiboException e) {
+			} catch (HttpException e) {
 
 				Log.e(TAG, e.getMessage());
 				return TaskResult.FAILED;
@@ -593,7 +590,7 @@ public class ProfileActivity extends WithHeaderActivity {
 			try {
 				getApi().createFriendship(userId);
 
-			} catch (WeiboException e) {
+			} catch (HttpException e) {
 				Log.w(TAG, "create friend ship error");
 				return TaskResult.FAILED;
 			}
@@ -641,7 +638,7 @@ public class ProfileActivity extends WithHeaderActivity {
 		protected TaskResult _doInBackground(TaskParams... params) {
 			try {
 				getApi().destroyFriendship(userId);
-			} catch (WeiboException e) {
+			} catch (HttpException e) {
 				Log.w(TAG, "create friend ship error");
 				return TaskResult.FAILED;
 			}

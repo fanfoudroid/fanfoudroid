@@ -20,21 +20,17 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.Menu;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.StatusTable;
-import com.ch_linghu.fanfoudroid.helper.Preferences;
+import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterCursorBaseActivity;
 import com.ch_linghu.fanfoudroid.weibo.Paging;
 import com.ch_linghu.fanfoudroid.weibo.Status;
-import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 //TODO: 数据来源换成 getFavorites()
 public class FavoritesActivity extends TwitterCursorBaseActivity {
@@ -120,7 +116,7 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 	}
 
 	@Override
-	public List<Status> getMessageSinceId(String maxId) throws WeiboException {
+	public List<Status> getMessageSinceId(String maxId) throws HttpException {
 		if (maxId != null){
 			return getApi().getFavorites(getUserId(), new Paging(maxId));
 		}else{
@@ -135,7 +131,7 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 
 	@Override
 	public List<Status> getMoreMessageFromId(String minId)
-			throws WeiboException {
+			throws HttpException {
 		Paging paging = new Paging(1, 20);
 		paging.setMaxId(minId);
 		return getApi().getFavorites(getUserId(), paging);

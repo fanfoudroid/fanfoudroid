@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.HttpRefusedException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -23,7 +24,6 @@ import com.ch_linghu.fanfoudroid.ui.module.MyListView;
 import com.ch_linghu.fanfoudroid.ui.module.TweetArrayAdapter;
 import com.ch_linghu.fanfoudroid.weibo.Paging;
 import com.ch_linghu.fanfoudroid.weibo.User;
-import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 public class UserTimelineActivity extends TwitterListBaseActivity implements
 		MyListView.OnNeedMoreListener, Refreshable {
@@ -234,7 +234,7 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
 				statusList = getApi().getUserTimeline(mUserID,
 						new Paging(mNextPage));
 				mUser = getApi().showUser(mUserID);
-			} catch (WeiboException e) {
+			} catch (HttpException e) {
 				Log.e(TAG, e.getMessage(), e);
 				Throwable cause = e.getCause();
 				if (cause instanceof HttpRefusedException) {
@@ -274,7 +274,7 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
 			try {
 				statusList = getApi().getUserTimeline(mUserID,
 						new Paging(mNextPage));
-			} catch (WeiboException e) {
+			} catch (HttpException e) {
 				Log.e(TAG, e.getMessage(), e);
 				Throwable cause = e.getCause();
 				if (cause instanceof HttpRefusedException) {

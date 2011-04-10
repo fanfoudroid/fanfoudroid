@@ -15,7 +15,6 @@
  */
 package com.ch_linghu.fanfoudroid.ui.base;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -23,7 +22,6 @@ import java.util.List;
 
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -38,6 +36,7 @@ import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.StatusTable;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
@@ -47,9 +46,7 @@ import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 import com.ch_linghu.fanfoudroid.ui.module.TweetCursorAdapter;
 import com.ch_linghu.fanfoudroid.weibo.IDs;
-import com.ch_linghu.fanfoudroid.weibo.Paging;
 import com.ch_linghu.fanfoudroid.weibo.Status;
-import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 /**
  * TwitterCursorBaseLine用于带有静态数据来源（对应数据库的，与twitter表同构的特定表）的展现
@@ -165,10 +162,10 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 			boolean isUnread);
 
 	public abstract List<Status> getMessageSinceId(String maxId)
-			throws WeiboException;
+			throws HttpException;
 	
 	public abstract List<Status> getMoreMessageFromId(String minId)
-			throws WeiboException;
+			throws HttpException;
 
 	public static final int CONTEXT_REPLY_ID = Menu.FIRST + 1;
 	// public static final int CONTEXT_AT_ID = Menu.FIRST + 2;
@@ -477,7 +474,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 
 			try {
 				statusList = getMessageSinceId(maxId);
-			} catch (WeiboException e) {
+			} catch (HttpException e) {
 				Log.e(TAG, e.getMessage(), e);
 				return TaskResult.IO_ERROR;
 			}
@@ -513,7 +510,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 				IDs followers = getApi().getFollowersIDs();
 				List<String> followerIds = Arrays.asList(followers.getIDs());
 				getDb().syncFollowers(followerIds);
-			} catch (WeiboException e) {
+			} catch (HttpException e) {
 				Log.e(TAG, e.getMessage(), e);
 				return TaskResult.IO_ERROR;
 			}
@@ -537,7 +534,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 
 			try {
 				statusList = getMoreMessageFromId(minId);
-			} catch (WeiboException e) {
+			} catch (HttpException e) {
 				Log.e(TAG, e.getMessage(), e);
 				return TaskResult.IO_ERROR;
 			}

@@ -1,23 +1,19 @@
 package com.ch_linghu.fanfoudroid;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
 import android.app.SearchManager;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.widget.ListView;
-import com.ch_linghu.fanfoudroid.R;
+
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.helper.ImageManager;
-import com.ch_linghu.fanfoudroid.helper.MemoryImageCache;
-import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheManager;
 import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
@@ -29,7 +25,6 @@ import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 import com.ch_linghu.fanfoudroid.ui.module.TweetArrayAdapter;
 import com.ch_linghu.fanfoudroid.weibo.Query;
 import com.ch_linghu.fanfoudroid.weibo.QueryResult;
-import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
 public class SearchResultActivity extends TwitterListBaseActivity implements
 		MyListView.OnNeedMoreListener {
@@ -200,7 +195,7 @@ public class SearchResultActivity extends TwitterListBaseActivity implements
 					query.setMaxId(mLastId);
 				}
 				result = getApi().search(query);//.search(mSearchQuery, mNextPage);
-			} catch (WeiboException e) {
+			} catch (HttpException e) {
 				Log.e(TAG, e.getMessage(), e);
 				return TaskResult.IO_ERROR;
 			}

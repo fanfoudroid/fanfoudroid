@@ -29,6 +29,8 @@ package com.ch_linghu.fanfoudroid.weibo;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.ch_linghu.fanfoudroid.http.HttpException;
+
 /**
  * A data class representing Basic user information element
  */
@@ -42,19 +44,19 @@ public class Photo extends WeiboResponse implements java.io.Serializable {
     private static final long serialVersionUID = -6345893237975349030L;
 
 
-    /*package*/Photo(JSONObject json) throws WeiboException {
+    /*package*/Photo(JSONObject json) throws HttpException {
         super();
         init(json);
     }
 
-    private void init(JSONObject json) throws WeiboException {
+    private void init(JSONObject json) throws HttpException {
         try {
         	//System.out.println(json);
         	thumbnail_pic = json.getString("thumburl");
 			bmiddle_pic = json.getString("imageurl");
 			original_pic = json.getString("largeurl");
         } catch (JSONException jsone) {
-            throw new WeiboException(jsone.getMessage() + ":" + json.toString(), jsone);
+            throw new HttpException(jsone.getMessage() + ":" + json.toString(), jsone);
         }
     }
 
