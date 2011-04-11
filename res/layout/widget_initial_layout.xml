@@ -3,43 +3,75 @@
 	android:layout_width="318dp" android:layout_height="222dp" android:id="@+id/linearLayout1"
 	android:orientation="vertical" android:background="@drawable/widget_bg">
 	<LinearLayout android:id="@+id/linearLayout2"
- android:layout_height="50dp"
- android:layout_width="wrap_content">
-		<ImageView android:id="@+id/imageView1"
-				android:layout_height="wrap_content" android:layout_width="wrap_content"
-				android:src="@drawable/icon"></ImageView>
-						<TextView android:text="EditText" android:id="@+id/editText1"
-			android:layout_width="200dp" android:layout_height="48dp"></TextView>
-		
+		android:layout_height="55dp" android:layout_width="wrap_content">
+		<ImageView android:id="@+id/profile_image"
+			android:layout_height="48dp" android:layout_width="48dp" android:src="@drawable/icon"></ImageView>
+		<LinearLayout android:id="@+id/write_message"
+			android:layout_width="200dp" android:layout_height="48dp"
+			android:background="@drawable/textfield_search_empty"
+			android:clickable="true">
+			<TextView android:layout_width="wrap_content"
+			android:textSize="20dp"
+				android:layout_height="wrap_content" android:text="说点什么呗">
+
+			</TextView>
+		</LinearLayout>
+
 
 	</LinearLayout>
 	<LinearLayout android:id="@+id/linearLayout5"
 		android:layout_height="wrap_content" android:layout_width="match_parent"></LinearLayout>
 	<FrameLayout android:id="@+id/frameLayout1"
-	 android:layout_height="120dp"
-		android:layout_width="wrap_content">
+		android:layout_height="125dp" android:layout_width="fill_parent"
+		android:padding="3dp">
 		<LinearLayout android:id="@+id/linearLayout4"
+			android:layout_height="match_parent" android:layout_width="fill_parent">
 
-			android:layout_height="match_parent" android:layout_width="wrap_content">
-
-			<ImageView android:id="@+id/imageView1"
-				android:layout_height="wrap_content" android:layout_width="wrap_content"
-				android:src="@drawable/icon"></ImageView>
+			<ImageView android:id="@+id/status_image"
+				android:layout_height="50dp" android:layout_width="50dp"
+				android:scaleType="fitXY" android:src="@drawable/icon"></ImageView>
 			<LinearLayout android:id="@+id/linearLayout3"
-				android:layout_height="match_parent" android:layout_width="wrap_content">
-				<TextView 
-				 android:id="@+id/message" 
-				android:layout_width="fill_parent" 
-				android:layout_height="wrap_content"
-				android:lines="5"
-				android:text=""
-				></TextView>
+				android:layout_height="fill_parent" android:layout_width="fill_parent"
+				android:orientation="vertical" android:padding="5dp">
+
+				<TextView android:id="@+id/status_text"
+					android:layout_width="fill_parent" android:layout_height="wrap_content"
+					android:maxLines="5"
+					android:textColor="#444"
+					android:text="【永远不要对这些人好】1有事的时候找你 ，没事的时候无视你。2受你点恩惠就对你倍儿好。3不要对谁都是一副怜惜的心情 ，不是每个人都值得你那么做 。4不要对不怀好意的人心软 。6分手了，可以是陌生人，可以是朋友，但是时刻提醒自己，不是从前。6心里没有你的人，不要妄想某天他会被你打动">
+
+				</TextView>
+				<TextView android:text="大约11分钟前来自 安能饭否" android:id="@+id/status_title"
+					android:layout_width="fill_parent" android:layout_height="wrap_content"></TextView>
 
 			</LinearLayout>
 		</LinearLayout>
 	</FrameLayout>
-
-
+	<RelativeLayout android:id="@+id/linearLayout6"
+		android:layout_width="fill_parent"
+		 android:layout_height="30dp"
+		 android:paddingLeft="5dp"
+		 android:paddingRight="5dp"
+		 >
+	
+		 <ImageView android:src="@drawable/widget_pre_btn_selector"
+		  android:id="@+id/btn_pre" 
+		  android:layout_width="wrap_content"
+		  android:layout_height="wrap_content"
+		  android:clickable="true"
+		  
+		  ></ImageView>
+	<ImageView android:src="@drawable/widget_next_btn_selector"
+		android:layout_alignRight="@+id/btn_pre"
+		android:layout_alignParentRight="true"
+		  android:id="@+id/btn_next" 
+		  android:layout_width="wrap_content"
+		  android:layout_height="wrap_content"
+		  android:clickable="true"
+		 
+		  ></ImageView>
+		 </RelativeLayout>
+	
 
 
 </LinearLayout>

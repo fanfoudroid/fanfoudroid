@@ -155,10 +155,11 @@
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_info"/>
         </receiver>
         <activity android:name=".WidgetActivity">
-	        <intent-filter>
-	         	<action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
-	        </intent-filter>
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
+            </intent-filter>
         </activity>
+        <service android:name="com.ch_linghu.fanfoudroid.service.WidgetService"/>
     </application>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
