@@ -61,10 +61,10 @@
 			<ImageView
 				android:id="@+id/tweet_has_image"
 				android:layout_gravity="right"
-				android:layout_width="16dp"
-				android:layout_height="16dp"
+				android:layout_width="13dp"
+				android:layout_height="11dp"
 				android:visibility="gone"
-				android:src="@android:drawable/ic_menu_slideshow"
+				android:src="@drawable/pic"
 			/>
 		</LinearLayout>		
 		
