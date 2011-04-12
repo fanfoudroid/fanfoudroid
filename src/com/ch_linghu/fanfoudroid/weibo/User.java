@@ -106,11 +106,11 @@ public class User extends WeiboResponse implements java.io.Serializable {
         init(elem, weibo);
     }
 
-    /*package*/User(Response res, Element elem, Weibo weibo) throws HttpException {
+    /*package*/public User(Response res, Element elem, Weibo weibo) throws HttpException {
         super(res);
         init(elem, weibo);
     }
-    /*package*/User(JSONObject json) throws HttpException {
+    /*package*/public User(JSONObject json) throws HttpException {
         super();
         init(json);
     }

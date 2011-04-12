@@ -55,18 +55,16 @@ public class RetweetDetails extends WeiboResponse implements
     private User retweetingUser;
     static final long serialVersionUID = 1957982268696560598L;
     
-    /*package*/RetweetDetails(Response res, Weibo weibo) throws HttpException {
+    public RetweetDetails(Response res, Weibo weibo) throws HttpException {
         super(res);
         Element elem = res.asDocument().getDocumentElement();
         init(res, elem, weibo);
     }
     
-    RetweetDetails(JSONObject json) throws HttpException {
+    public RetweetDetails(JSONObject json) throws HttpException {
         super();
         init(json);
     }
-    
-    
 
     private void init(JSONObject json) throws HttpException{
     	try {
@@ -79,7 +77,7 @@ public class RetweetDetails extends WeiboResponse implements
         }
 	}
 
-	/*package*/RetweetDetails(Response res, Element elem, Weibo weibo) throws
+	/*package*/public RetweetDetails(Response res, Element elem, Weibo weibo) throws
             HttpException {
         super(res);
         init(res, elem, weibo);

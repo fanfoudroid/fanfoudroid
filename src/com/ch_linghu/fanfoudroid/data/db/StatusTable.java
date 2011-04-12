@@ -1,6 +1,8 @@
 package com.ch_linghu.fanfoudroid.data.db;
 
+import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
 import android.util.Log;
 
@@ -131,4 +133,5 @@ public final class StatusTable implements BaseColumns {
         
         return tweet;
     }
+
 }

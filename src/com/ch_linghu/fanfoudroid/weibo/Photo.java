@@ -44,7 +44,7 @@ public class Photo extends WeiboResponse implements java.io.Serializable {
     private static final long serialVersionUID = -6345893237975349030L;
 
 
-    /*package*/Photo(JSONObject json) throws HttpException {
+    public Photo(JSONObject json) throws HttpException {
         super();
         init(json);
     }

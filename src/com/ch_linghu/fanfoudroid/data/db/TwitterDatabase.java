@@ -13,7 +13,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.TwitterApplication;
@@ -35,7 +34,7 @@ public class TwitterDatabase {
     private static final int DATABASE_VERSION = 1;
 
     private static TwitterDatabase instance = null;
-    private DatabaseHelper mOpenHelper = null;
+    private static DatabaseHelper mOpenHelper = null;
     private Context mContext = null;
 
     /**
@@ -121,6 +120,14 @@ public class TwitterDatabase {
     // 测试用
     public SQLiteOpenHelper getSQLiteOpenHelper() {
         return mOpenHelper;
+    }
+    
+    public static SQLiteDatabase getDb(boolean writeable) {
+        if (writeable) {
+            return mOpenHelper.getWritableDatabase();
+        } else {
+            return mOpenHelper.getReadableDatabase();
+        }
     }
 
     public void close() {
@@ -1129,25 +1136,24 @@ public class TwitterDatabase {
     	
     }
     
-    public void syncWeiboUsers(List<com.ch_linghu.fanfoudroid.weibo.User> users){
-    	SQLiteDatabase mDb = mOpenHelper.getWritableDatabase();
-    	
-    	try{
-    		 	mDb.beginTransaction();
-    	for(com.ch_linghu.fanfoudroid.weibo.User u:users){
-    		if(existsUser(u.getId())){
-    			updateWeiboUser(u);
-    		}else{
-    			createWeiboUserInfo(u);
-    		}
-    	}
-    	mDb.setTransactionSuccessful();
-    	} finally {
+    public void syncWeiboUsers(List<com.ch_linghu.fanfoudroid.weibo.User> users) {
+        SQLiteDatabase mDb = mOpenHelper.getWritableDatabase();
+
+        try {
+            mDb.beginTransaction();
+            for (com.ch_linghu.fanfoudroid.weibo.User u : users) {
+                if (existsUser(u.getId())) {
+                    updateWeiboUser(u);
+                } else {
+                    createWeiboUserInfo(u);
+                }
+            }
+            mDb.setTransactionSuccessful();
+        } finally {
             mDb.endTransaction();
         }
-   
-    }
 
+    }
     
 
 }

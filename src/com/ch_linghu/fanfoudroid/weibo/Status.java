@@ -46,6 +46,7 @@ import com.ch_linghu.fanfoudroid.http.Response;
  * @author Yusuke Yamamoto - yusuke at mac.com
  */
 public class Status extends WeiboResponse implements java.io.Serializable {
+    private static final long serialVersionUID = 1608000492860584608L;
 
     private Date createdAt;
     private String id;
@@ -63,7 +64,7 @@ public class Status extends WeiboResponse implements java.io.Serializable {
     private String original_pic;
     private String photo_url;
     private RetweetDetails retweetDetails;
-    private static final long serialVersionUID = 1608000492860584608L;
+    private User user = null;
 
     /*package*/Status(Response res, Weibo weibo) throws HttpException {
         super(res);
@@ -313,7 +314,7 @@ public class Status extends WeiboResponse implements java.io.Serializable {
 		return original_pic;
 	}
 
-	private User user = null;
+	
 
     /**
      * Return the user
@@ -322,6 +323,11 @@ public class Status extends WeiboResponse implements java.io.Serializable {
      */
     public User getUser() {
         return user;
+    }
+    
+    // TODO: 等合并Tweet, Status
+    public int getType() {
+        return -1111111;
     }
 
     /**

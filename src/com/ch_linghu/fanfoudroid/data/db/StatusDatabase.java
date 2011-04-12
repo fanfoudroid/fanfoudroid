@@ -22,6 +22,7 @@ import com.ch_linghu.fanfoudroid.data.Tweet;
  * A Database which contains all statuses and direct-messages, use
  * getInstane(Context) to get a new instance
  * 
+ * @deprecated use TwitterDatabase
  */
 public class StatusDatabase {
 
