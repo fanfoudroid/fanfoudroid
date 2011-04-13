@@ -80,42 +80,18 @@ public class TwitterService extends Service {
 
 	private GenericTask mRetrieveTask;
 	
-	private int position=0;
 	
-	public RemoteViews buildUpdate(Context context) {
-
-		RemoteViews updateViews = new RemoteViews(context.getPackageName(),
-				R.layout.widget_initial_layout);
-		updateViews
-				.setTextViewText(R.id.status_text, tweets.get(position).text);
-		return updateViews;
-
-	}
-	private Handler handler=new Handler();
-	
-	private Runnable mTask=new Runnable(){
-
-		@Override
-		public void run() {
-			Log.i(TAG, "position="+position);
-			if(position>tweets.size()){
-				position=0;
-			}
-			position++;
-			 ComponentName fanfouWidget = new ComponentName(TwitterService.this,FanfouWidget.class); 
-			 AppWidgetManager manager = AppWidgetManager.getInstance(getBaseContext());
-			 manager.updateAppWidget(fanfouWidget, buildUpdate(TwitterService.this));
-			 handler.postDelayed(mTask,10000);
-		}
-		
-	};
 	
 	public String getUserId() {
 		return TwitterApplication.getMyselfId();
 	}
 
+	/*
+	 * Widget 
+	 */
+	private int position = 0;
+
 	private List<Tweet> tweets;
-	
 	private void fetchMessages() {
 		if (tweets == null) {
 			tweets = new ArrayList<Tweet>();
@@ -132,12 +108,50 @@ public class TwitterService extends Service {
 			}
 		}
 	}
+
+	public RemoteViews buildUpdate(Context context) {
+
+		RemoteViews updateViews = new RemoteViews(context.getPackageName(),
+				R.layout.widget_initial_layout);
+		updateViews
+				.setTextViewText(R.id.status_text, tweets.get(position).text);
+		return updateViews;
+
+	}
+
+	private Handler handler = new Handler();
+	
+	public void removeHandler(){
+		Log.i(TAG, "remove handler");
+		handler.removeCallbacks(mTask);//当服务结束时，删除线程
+	}
+	private Runnable mTask = new Runnable() {
+
+		@Override
+		public void run() {
+			
+			Log.i(TAG, "tweets size="+tweets.size()+"  position=" + position);
+			if (position >= tweets.size()) {
+				position = 0;
+			}
+			ComponentName fanfouWidget = new ComponentName(TwitterService.this,
+					FanfouWidget.class);
+			AppWidgetManager manager = AppWidgetManager
+					.getInstance(getBaseContext());
+			manager.updateAppWidget(fanfouWidget,
+					buildUpdate(TwitterService.this));
+			position++;
+			handler.postDelayed(mTask, 10000);
+		}
+
+	};
+	
 	
 	@Override
 	public void onStart(Intent intent, int startId) {
-		fetchMessages();
+		//fetchMessages();
+		//handler.postDelayed(mTask, 10000);
 		super.onStart(intent, startId);
-		handler.postDelayed(mTask,10000);
 	}
 	
 	
@@ -150,7 +164,6 @@ public class TwitterService extends Service {
 				processNewDms();
 				
 			}
-			fetchMessages();
 
 			stopSelf();
 		}
@@ -405,9 +418,9 @@ public class TwitterService extends Service {
 				&& mRetrieveTask.getStatus() == GenericTask.Status.RUNNING) {
 			mRetrieveTask.cancel(true);
 		}
-
+		
 		mWakeLock.release();
-
+		removeHandler();
 		super.onDestroy();
 	}
 
@@ -448,6 +461,8 @@ public class TwitterService extends Service {
 		Log.i(TAG, "Cancelling alarms.");
 		alarm.cancel(pending);
 	}
+
+
 
 	private class RetrieveTask extends GenericTask {
 		
