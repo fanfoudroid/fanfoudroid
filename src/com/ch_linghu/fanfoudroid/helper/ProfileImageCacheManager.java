@@ -76,7 +76,10 @@ public class ProfileImageCacheManager {
 	}
 	
 	private void doGetImage(String url){
-		putUrl(url);
+		if (url != null){
+			putUrl(url);
+		}
+		
 		if (mTask != null && mTask.getStatus() == GenericTask.Status.RUNNING){
 			return;
 		}else{
@@ -92,25 +95,16 @@ public class ProfileImageCacheManager {
 		@Override
 		protected TaskResult _doInBackground(TaskParams... params) {
 			String url = null;
-			// TODO: 这里的循环机制可以考虑进行优化, 可使用列队等待的形式进行批量下载图片操作,
-			// 因为仅靠循环来进行, 下载的速度会大大慢于一次循环的周期. 也就说在前一张图片刚开始进行下载时,
-			// 循环已经可以走了几遍了, 因此造成:
-			// Image is missing: ..
-			// 两条调试信息反复出现, 因为下载操作还在未完成的情况下又进行了对同一张图片的get操作,
-			// 就是因为循环速度大大快于下载速度所致, 在
-			// Fetching image: ..
-			// 调试信息出来前, 反复的在进行重复的get操作.
-			while (mUrlList.size() > 0){
+
+			if (mUrlList.size() > 0){
 				synchronized(mUrlList){
 					url = mUrlList.get(0);
 					mUrlList.remove(0);
-				}
-				
+				}	
 				try {
 					mImageManager.put(url);
 				} catch (IOException e) {
 					Log.e(TAG,  url + " get failed!");
-					continue;
 				}
 				
 				TaskParams p = new TaskParams();
