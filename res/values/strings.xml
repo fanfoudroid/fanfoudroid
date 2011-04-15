@@ -157,6 +157,9 @@
     <string name="pref_rt_prefix_summary">转发消息时的前缀</string>
     <string name="pref_rt_prefix_default">热饭</string>
     
+    <string name="pref_rt_cursor_position_title">热饭时光标在前</string>
+    <string name="pref_rt_cursor_position_summary">选中的话转发时光标在转发消息的开头，不选中的话光标在末尾</string>
+    
     <string name="pref_title_network">网络</string>
     <string name="pref_network_type_title">网络类型</string>
     <string name="pref_network_type_cmnet">cmnet</string>
