@@ -486,8 +486,12 @@ public class StatusActivity extends WithHeaderActivity{
             try {
                 String reply_id = param.getString("reply_id");
                 if (!Utils.isEmpty(reply_id)) {
-                    status = getApi().showStatus(reply_id);
-                    replyTweet = Tweet.create(status);
+                	//首先查看是否在数据库中，如不在再去获取
+                	replyTweet = getDb().queryTweet(reply_id, -1);
+                	if (replyTweet == null) {
+	                    status = getApi().showStatus(reply_id);
+	                    replyTweet = Tweet.create(status);
+                	}
                 }
             } catch (HttpException e) {
                 Log.e(TAG, e.getMessage(), e);
