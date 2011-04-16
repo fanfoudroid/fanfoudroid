@@ -48,6 +48,15 @@
 			  android:layout_weight="1"
 			  style="@style/LinkText.Bold.Big"
 			/>
+			<!-- hasImage icon -->
+			<ImageView
+				android:id="@+id/tweet_has_image"
+				android:layout_gravity="right"
+				android:layout_width="16dp"
+				android:layout_height="16dp"
+				android:visibility="gone"
+				android:src="@drawable/pic"
+			/>
 			<!-- favorited icon -->
 			<ImageView
 				android:id="@+id/tweet_fav"
@@ -56,15 +65,6 @@
 				android:layout_height="16dp"
 				android:visibility="gone"
 				android:src="@android:drawable/star_off"
-			/>
-			<!-- hasImage icon -->
-			<ImageView
-				android:id="@+id/tweet_has_image"
-				android:layout_gravity="right"
-				android:layout_width="13dp"
-				android:layout_height="11dp"
-				android:visibility="gone"
-				android:src="@drawable/pic"
 			/>
 		</LinearLayout>		
 		

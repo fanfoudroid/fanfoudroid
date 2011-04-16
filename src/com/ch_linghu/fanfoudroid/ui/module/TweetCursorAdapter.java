@@ -144,7 +144,7 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		if (cursor.getString(mFavorited).equals("true")) {
 			holder.fav.setVisibility(View.VISIBLE);
 		} else {
-			holder.fav.setVisibility(View.INVISIBLE);
+			holder.fav.setVisibility(View.GONE);
 		}
 		
 		if (!Utils.isEmpty(cursor.getString(mThumbnailPic))) {
