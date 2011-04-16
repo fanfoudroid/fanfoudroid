@@ -9,13 +9,13 @@
        <!-- 
         android:background="@drawable/twitter_bottom_bar_bg">
         --> 
-        <TextView android:id="@+id/footer_btn_refresh"
+        <TextView android:id="@+id/footer_btn_share"
          android:layout_width="fill_parent"
          android:layout_height="fill_parent"
          android:layout_weight="1"
          style="@style/footer_button"
-         android:drawableTop="@drawable/detail_refresh_selected"
-         android:text="@string/omenu_refresh"
+         android:drawableTop="@drawable/detail_share_selected"
+         android:text="@string/cmenu_share"
          />
          <TextView android:id="@+id/footer_btn_reply"
          android:layout_width="fill_parent"

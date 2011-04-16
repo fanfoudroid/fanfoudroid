@@ -25,6 +25,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.ClipboardManager;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -41,10 +42,8 @@ import com.ch_linghu.fanfoudroid.helper.ImageCache;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
 import com.ch_linghu.fanfoudroid.helper.Utils;
-import com.ch_linghu.fanfoudroid.http.HttpAuthException;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
 import com.ch_linghu.fanfoudroid.http.HttpException;
-import com.ch_linghu.fanfoudroid.http.HttpRefusedException;
 import com.ch_linghu.fanfoudroid.http.Response;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -63,8 +62,9 @@ public class StatusActivity extends WithHeaderActivity{
 	private static final String EXTRA_TWEET = "tweet";
 	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.STATUS";
 	
-	static final private int CONTEXT_SHARE_ID = 0x0001;
-	static final private int CONTEXT_DELETE_ID = 0x0002;
+	static final private int CONTEXT_REFRESH_ID = 0x0001;
+	static final private int CONTEXT_CLIPBOARD_ID = 0x0002;
+	static final private int CONTEXT_DELETE_ID = 0x0003;
 
 	// Task TODO: tasks 
 	private GenericTask mStatusTask; 
@@ -209,6 +209,13 @@ public class StatusActivity extends WithHeaderActivity{
 			draw(); 
 			
 			// 绑定监听器
+			refreshButton.setOnClickListener(new View.OnClickListener() {
+	            @Override
+	            public void onClick(View v) {
+	                doGetStatus(tweet.id, false);
+	            }
+	        });
+			
 			bindFooterBarListener();
 			bindReplyViewListener();
 			
@@ -230,21 +237,25 @@ public class StatusActivity extends WithHeaderActivity{
         });
 	    	
 		// Footer bar 
-		TextView footer_btn_refresh = (TextView) findViewById(R.id.footer_btn_refresh);
+		TextView footer_btn_share = (TextView) findViewById(R.id.footer_btn_share);
 		TextView footer_btn_reply = (TextView) findViewById(R.id.footer_btn_reply);
 		TextView footer_btn_retweet = (TextView) findViewById(R.id.footer_btn_retweet);
 		TextView footer_btn_fav = (TextView) findViewById(R.id.footer_btn_fav);
 		TextView footer_btn_more = (TextView) findViewById(R.id.footer_btn_more);
 		
-		// 刷新
-		View.OnClickListener refreshListener =  new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                doGetStatus(tweet.id, false);
-            }
-        };
-		footer_btn_refresh.setOnClickListener(refreshListener);
-		refreshButton.setOnClickListener(refreshListener);
+		// 分享
+        footer_btn_share.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(Intent.ACTION_SEND);
+				intent.setType("text/plain");
+				intent.putExtra(Intent.EXTRA_TEXT, 
+						String.format("@%s %s", 
+								tweet.screenName, 
+								Utils.getSimpleTweetText(tweet.text)));
+				startActivity(Intent.createChooser(intent, getString(R.string.cmenu_share)));
+			}
+		});
 		
 		// 回复
 		footer_btn_reply.setOnClickListener(new View.OnClickListener() {
@@ -620,14 +631,13 @@ public class StatusActivity extends WithHeaderActivity{
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		switch(item.getItemId()){
-			case CONTEXT_SHARE_ID:
-				Intent intent = new Intent(Intent.ACTION_SEND);
-				intent.setType("text/plain");
-				intent.putExtra(Intent.EXTRA_TEXT, 
-						String.format("@%s %s", 
-								tweet.screenName, 
-								Utils.getSimpleTweetText(tweet.text)));
-				startActivity(Intent.createChooser(intent, getString(R.string.cmenu_share)));
+			case CONTEXT_REFRESH_ID:
+                doGetStatus(tweet.id, false);
+				return true;
+			case CONTEXT_CLIPBOARD_ID:
+				ClipboardManager clipboard = 
+					(ClipboardManager) getSystemService(CLIPBOARD_SERVICE); 
+				clipboard.setText(Utils.getSimpleTweetText(tweet.text));
 				return true;
 			case CONTEXT_DELETE_ID:
 				doDelete(tweet.id);
@@ -642,7 +652,8 @@ public class StatusActivity extends WithHeaderActivity{
 		menu.setHeaderIcon(android.R.drawable.ic_menu_more);
 		menu.setHeaderTitle(getString(R.string.cmenu_more));
 		
-		menu.add(0, CONTEXT_SHARE_ID, 0, R.string.cmenu_share);
+		menu.add(0, CONTEXT_REFRESH_ID, 0, R.string.omenu_refresh);
+		menu.add(0, CONTEXT_CLIPBOARD_ID, 0, R.string.cmenu_clipboard);
 		if (tweet.userId.equals(getApi().getUserId())){
 			menu.add(0, CONTEXT_DELETE_ID, 0, R.string.cmenu_delete);
 		}

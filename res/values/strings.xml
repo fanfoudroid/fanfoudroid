@@ -47,6 +47,7 @@
     <string name="cmenu_del_fav">取消收藏</string>
     <string name="cmenu_delete">删除</string>
     <string name="cmenu_share">分享</string>
+	<string name="cmenu_clipboard">复制到剪贴板</string>
     <string name="cmenu_more">更多</string>
     <string name="cmenu_user_profile_prefix">的空间</string>
     <string name="cmenu_user_status">的消息</string>
