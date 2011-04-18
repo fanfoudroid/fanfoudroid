@@ -30,11 +30,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.StatusTable;
 import com.ch_linghu.fanfoudroid.http.HttpException;
+import com.ch_linghu.fanfoudroid.http.HttpRefusedException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
@@ -136,8 +138,25 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 		AdapterView.AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
 		Tweet tweet = getContextItemTweet(info.position);
 		if(null!=tweet){//当按钮为 刷新/更多的时候为空
-			if (tweet.userId.equals(getApi().getUserId())){
-				menu.add(0, CONTEXT_DELETE_ID, 0, R.string.cmenu_delete);
+			try {
+				if (tweet.userId.equals(getApi().showUser(
+						TwitterApplication.getMyselfId()).getId())){
+					menu.add(0, CONTEXT_DELETE_ID, 0, R.string.cmenu_delete);
+				}
+			} catch (HttpException e) {
+				Log.e(TAG, e.getMessage(), e);
+				Throwable cause = e.getCause();
+				if (cause instanceof HttpRefusedException) {
+					// AUTH ERROR
+					String msg = ((HttpRefusedException) cause).getError()
+							.getMessage();
+					Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+					logout();
+				} else {
+					Toast.makeText(this,
+							R.string.login_status_network_or_connection_error,
+							Toast.LENGTH_LONG).show();
+				}
 			}
 		}
 	}

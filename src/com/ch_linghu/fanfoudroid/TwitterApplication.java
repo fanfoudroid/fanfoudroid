@@ -38,7 +38,7 @@ public class TwitterApplication extends Application {
     private final static boolean DEBUG = Configuration.getDebug();
 
     
-	// 获取登录用户id
+	// 获取登录用户id, 此ID为用户登录时使用的帐号，可以是ID,邮箱，电话号
     public static String getMyselfId(){
 		return mPref.getString(Preferences.CURRENT_USER_ID,
 				TwitterApplication.mApi.getUserId());
