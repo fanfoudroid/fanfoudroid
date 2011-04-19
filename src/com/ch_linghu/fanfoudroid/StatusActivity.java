@@ -43,6 +43,7 @@ import com.ch_linghu.fanfoudroid.helper.ImageCache;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
 import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.http.HttpAuthException;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.HttpRefusedException;
@@ -668,25 +669,9 @@ public class StatusActivity extends WithHeaderActivity {
 		menu.add(0, CONTEXT_REFRESH_ID, 0, R.string.omenu_refresh);
 		menu.add(0, CONTEXT_CLIPBOARD_ID, 0, R.string.cmenu_clipboard);
 
-		try {
-			if (tweet.userId.equals(getApi().showUser(
-					TwitterApplication.getMyselfId()).getId())) {
-				menu.add(0, CONTEXT_DELETE_ID, 0, R.string.cmenu_delete);
-			}
-		} catch (HttpException e) {
-			Log.e(TAG, e.getMessage(), e);
-			Throwable cause = e.getCause();
-			if (cause instanceof HttpRefusedException) {
-				// AUTH ERROR
-				String msg = ((HttpRefusedException) cause).getError()
-						.getMessage();
-				Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
-				logout();
-			} else {
-				Toast.makeText(this,
-						R.string.login_status_network_or_connection_error,
-						Toast.LENGTH_LONG).show();
-			}
+		if (tweet.userId.equals(TwitterApplication.getMyselfId())) {
+			menu.add(0, CONTEXT_DELETE_ID, 0, R.string.cmenu_delete);
 		}
+
 	}
 }
