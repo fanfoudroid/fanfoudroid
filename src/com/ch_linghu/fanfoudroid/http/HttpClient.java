@@ -159,6 +159,25 @@ public class HttpClient {
     public void removeProxy() {
         mClient.getParams().removeParameter(ConnRoutePNames.DEFAULT_PROXY);
     }
+    
+    private void enableDebug() {
+        Log.i(TAG, "enable apache.http debug");
+        
+        java.util.logging.Logger.getLogger("org.apache.http").setLevel(java.util.logging.Level.FINEST);
+        java.util.logging.Logger.getLogger("org.apache.http.wire").setLevel(java.util.logging.Level.FINER);
+        java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.OFF);
+        
+        /*
+        System.setProperty("log.tag.org.apache.http", "VERBOSE");
+        System.setProperty("log.tag.org.apache.http.wire", "VERBOSE");
+        System.setProperty("log.tag.org.apache.http.headers", "VERBOSE");
+        
+        在这里使用System.setProperty设置不会生效, 原因不明, 必须在终端上输入以下命令方能开启http调试信息:
+        > adb shell setprop log.tag.org.apache.http VERBOSE
+        > adb shell setprop log.tag.org.apache.http.wire VERBOSE
+        > adb shell setprop log.tag.org.apache.http.headers VERBOSE
+        */
+    }
 
     /**
      * Setup DefaultHttpClient
@@ -167,6 +186,9 @@ public class HttpClient {
      * 
      */
     private void prepareHttpClient() {
+        if (DEBUG) {
+            enableDebug();
+        }
 
         // Create and initialize HTTP parameters
         HttpParams params = new BasicHttpParams();
@@ -370,7 +392,6 @@ public class HttpClient {
             int statusCode = response.getStatusLine().getStatusCode();
             // It will throw a weiboException while status code is not 200
             HandleResponseStatusCode(statusCode, res);
-            logResponseForDebug(method, response, statusCode);
         } else {
             Log.e(TAG, "response is null");
         }
@@ -462,24 +483,15 @@ public class HttpClient {
      */
     private HttpUriRequest createMethod(String httpMethod, URI uri, File file,
             ArrayList<BasicNameValuePair> postParams) throws HttpException {
+        
         HttpUriRequest method;
-
-        log("----------------- HTTP Request Start ----------------------");
-        log("[Request]");
-        
-        Credentials c = mClient.getCredentialsProvider().getCredentials(mAuthScope);
-        log("BasicAuth username : " + c.getUserPrincipal().getName());
-        log("BasicAuth password : " + c.getPassword());
-        
 
         if (httpMethod.equalsIgnoreCase(HttpPost.METHOD_NAME)) {
             // POST METHOD
 
             HttpPost post = new HttpPost(uri);
-            // See this:
-            // http://groups.google.com/group/twitter-development-talk/browse_thread/thread/e178b1d3d63d8e3b
-            post.getParams().setBooleanParameter(
-                    "http.protocol.expect-continue", false);
+            // See this: http://groups.google.com/group/twitter-development-talk/browse_thread/thread/e178b1d3d63d8e3b
+            post.getParams().setBooleanParameter("http.protocol.expect-continue", false);
 
             try {
                 HttpEntity entity = null;
@@ -494,7 +506,6 @@ public class HttpClient {
                 throw new HttpException(ioe.getMessage(), ioe);
             }
 
-            logPostForDebug(postParams, post, file);
             method = post;
         } else if (httpMethod.equalsIgnoreCase(HttpDelete.METHOD_NAME)) {
             method = new HttpDelete(uri);
@@ -608,65 +619,6 @@ public class HttpClient {
         // Others
         default:
             throw new HttpException(msg + res.asString(), statusCode);
-        }
-    }
-
-    // ignore me, it's only for debug
-    private void logPostForDebug(ArrayList<BasicNameValuePair> postParams,
-            HttpPost post, File file) {
-        // log post data
-        if (DEBUG) {
-            if (postParams != null) {
-                log("POST Params : " + postParams.toString());
-
-                try {
-                    HttpEntity entity = post.getEntity();
-                    if (null == file) {
-                        BufferedReader in = new BufferedReader(
-                                new InputStreamReader(entity.getContent()));
-                        String line;
-                        while ((line = in.readLine()) != null) {
-                            log("POST Entity : " + line);
-                        }
-                    } else {
-                        log("POST File : " + file.getParent() + "/"
-                                + file.getName());
-                    }
-                } catch (IOException ioe) {
-                    Log.e(TAG, ioe.getMessage());
-                }
-            }
-            if (file != null) {
-
-            }
-
-        }
-    }
-
-    // ignore me, it's only for debug
-    private void logResponseForDebug(HttpUriRequest method,
-            HttpResponse response, int statusCode) {
-        if (DEBUG) {
-
-            // TODO: request headers is null
-            // log request URI and header
-            log(method.getMethod() + " " + method.getURI() + " "
-                    + method.getProtocolVersion());
-            Header[] rHeaders = method.getAllHeaders();
-            for (Header h : rHeaders) {
-                log(h.getName() + " : " + h.getValue());
-            }
-
-            // log response header
-            log("[Response]");
-            Header[] headers = response.getAllHeaders();
-            for (Header h : headers) {
-                log(h.getName() + " : " + h.getValue());
-            }
-
-            // log responseContent
-            log("StatusCode : " + statusCode);
-            log("----------------- HTTP Request END ----------------------");
         }
     }
 
