@@ -72,6 +72,8 @@ public class WidgetService extends Service {
 				R.layout.widget_initial_layout);
 		updateViews
 				.setTextViewText(R.id.status_text, tweets.get(position).text);
+		//updateViews.setOnClickPendingIntent(viewId, pendingIntent)
+
 		position++;
 		return updateViews;
 

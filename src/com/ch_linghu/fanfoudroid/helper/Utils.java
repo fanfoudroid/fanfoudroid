@@ -242,6 +242,7 @@ public class Utils {
     _userLinkMapping.clear();
   }
 
+ 
   public static Bitmap drawableToBitmap(Drawable drawable) {  
 	  Bitmap bitmap = Bitmap  
 	                  .createBitmap(  

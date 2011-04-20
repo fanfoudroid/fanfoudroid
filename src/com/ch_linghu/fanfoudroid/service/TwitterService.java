@@ -28,6 +28,7 @@ import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.PendingIntent.CanceledException;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
@@ -74,97 +75,44 @@ public class TwitterService extends Service {
 
 	private ArrayList<Tweet> mNewTweets;
 	private ArrayList<Tweet> mNewMentions;
-	
 
 	private ArrayList<Dm> mNewDms;
 
 	private GenericTask mRetrieveTask;
-	
-	
-	
+
 	public String getUserId() {
 		return TwitterApplication.getMyselfId();
 	}
 
-	/*
-	 * Widget 
-	 */
-	private int position = 0;
-
-	private List<Tweet> tweets;
-	private void fetchMessages() {
-		if (tweets == null) {
-			tweets = new ArrayList<Tweet>();
-
-		}
-		Cursor cursor = getDb().fetchAllTweets(getUserId(),
-				StatusTable.TYPE_HOME);
-		if (cursor != null) {
-			if (cursor.moveToFirst()) {
-				do {
-					Tweet tweet = StatusTable.parseCursor(cursor);
-					tweets.add(tweet);
-				} while (cursor.moveToNext());
-			}
-		}
-	}
-
-	public RemoteViews buildUpdate(Context context) {
-
-		RemoteViews updateViews = new RemoteViews(context.getPackageName(),
-				R.layout.widget_initial_layout);
-		updateViews
-				.setTextViewText(R.id.status_text, tweets.get(position).text);
-		return updateViews;
-
-	}
-
-	private Handler handler = new Handler();
-	
-	public void removeHandler(){
-		Log.i(TAG, "remove handler");
-		handler.removeCallbacks(mTask);//当服务结束时，删除线程
-	}
-	private Runnable mTask = new Runnable() {
-
-		@Override
-		public void run() {
-			
-			Log.i(TAG, "tweets size="+tweets.size()+"  position=" + position);
-			if (position >= tweets.size()) {
-				position = 0;
-			}
-			ComponentName fanfouWidget = new ComponentName(TwitterService.this,
-					FanfouWidget.class);
-			AppWidgetManager manager = AppWidgetManager
-					.getInstance(getBaseContext());
-			manager.updateAppWidget(fanfouWidget,
-					buildUpdate(TwitterService.this));
-			position++;
-			handler.postDelayed(mTask, 10000);
-		}
-
-	};
-	
-	
 	@Override
 	public void onStart(Intent intent, int startId) {
-		//fetchMessages();
-		//handler.postDelayed(mTask, 10000);
+		// fetchMessages();
+		// handler.postDelayed(mTask, 10000);
 		super.onStart(intent, startId);
 	}
-	
-	
-	private TaskListener mRetrieveTaskListener = new TaskAdapter(){
+
+	private TaskListener mRetrieveTaskListener = new TaskAdapter() {
 		@Override
 		public void onPostExecute(GenericTask task, TaskResult result) {
 			if (result == TaskResult.OK) {
 				processNewTweets();
 				processNewMentions();
 				processNewDms();
-				
-			}
 
+			}
+			try {
+				Intent intent = new Intent(TwitterService.this,
+						FanfouWidget.class);
+				intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+				PendingIntent pi = PendingIntent.getBroadcast(
+						TwitterService.this, 0, intent,
+						PendingIntent.FLAG_UPDATE_CURRENT);
+
+				pi.send();
+			} catch (CanceledException e) {
+				Log.e(TAG, e.getMessage());
+				e.printStackTrace();
+			}
 			stopSelf();
 		}
 
@@ -219,12 +167,13 @@ public class TwitterService extends Service {
 		mNewMentions = new ArrayList<Tweet>();
 		mNewDms = new ArrayList<Dm>();
 
-		if (mRetrieveTask != null && mRetrieveTask.getStatus() == GenericTask.Status.RUNNING){
+		if (mRetrieveTask != null
+				&& mRetrieveTask.getStatus() == GenericTask.Status.RUNNING) {
 			return;
-		}else{
+		} else {
 			mRetrieveTask = new RetrieveTask();
 			mRetrieveTask.setListener(mRetrieveTaskListener);
-		
+
 			TaskParams params = new TaskParams();
 			params.put("pref", mPreferences);
 			mRetrieveTask.execute(params);
@@ -238,18 +187,19 @@ public class TwitterService extends Service {
 
 		Log.i(TAG, mNewTweets.size() + " new tweets.");
 
-		int count = getDb().addNewTweetsAndCountUnread( mNewTweets, TwitterApplication.getMyselfId(), StatusTable.TYPE_HOME);
+		int count = getDb().addNewTweetsAndCountUnread(mNewTweets,
+				TwitterApplication.getMyselfId(), StatusTable.TYPE_HOME);
 
-//		for (Tweet tweet : mNewTweets) {
-//			if (!Utils.isEmpty(tweet.profileImageUrl)) {
-//				// Fetch image to cache.
-//				try {
-//					TwitterApplication.mImageManager.put(tweet.profileImageUrl);
-//				} catch (IOException e) {
-//					Log.e(TAG, e.getMessage(), e);
-//				}
-//			}
-//		}
+		// for (Tweet tweet : mNewTweets) {
+		// if (!Utils.isEmpty(tweet.profileImageUrl)) {
+		// // Fetch image to cache.
+		// try {
+		// TwitterApplication.mImageManager.put(tweet.profileImageUrl);
+		// } catch (IOException e) {
+		// Log.e(TAG, e.getMessage(), e);
+		// }
+		// }
+		// }
 
 		if (count <= 0) {
 			return;
@@ -283,18 +233,19 @@ public class TwitterService extends Service {
 
 		Log.i(TAG, mNewMentions.size() + " new mentions.");
 
-		int count = getDb().addNewTweetsAndCountUnread(mNewMentions, TwitterApplication.getMyselfId(), StatusTable.TYPE_MENTION);
+		int count = getDb().addNewTweetsAndCountUnread(mNewMentions,
+				TwitterApplication.getMyselfId(), StatusTable.TYPE_MENTION);
 
-//		for (Tweet tweet : mNewMentions) {
-//			if (!Utils.isEmpty(tweet.profileImageUrl)) {
-//				// Fetch image to cache.
-//				try {
-//					TwitterApplication.mImageManager.put(tweet.profileImageUrl);
-//				} catch (IOException e) {
-//					Log.e(TAG, e.getMessage(), e);
-//				}
-//			}
-//		}
+		// for (Tweet tweet : mNewMentions) {
+		// if (!Utils.isEmpty(tweet.profileImageUrl)) {
+		// // Fetch image to cache.
+		// try {
+		// TwitterApplication.mImageManager.put(tweet.profileImageUrl);
+		// } catch (IOException e) {
+		// Log.e(TAG, e.getMessage(), e);
+		// }
+		// }
+		// }
 
 		if (count <= 0) {
 			return;
@@ -374,16 +325,16 @@ public class TwitterService extends Service {
 			db.addDms(mNewDms, false);
 		}
 
-//		for (Dm dm : mNewDms) {
-//			if (!Utils.isEmpty(dm.profileImageUrl)) {
-//				// Fetch image to cache.
-//				try {
-//					TwitterApplication.mImageManager.put(dm.profileImageUrl);
-//				} catch (IOException e) {
-//					Log.e(TAG, e.getMessage(), e);
-//				}
-//			}
-//		}
+		// for (Dm dm : mNewDms) {
+		// if (!Utils.isEmpty(dm.profileImageUrl)) {
+		// // Fetch image to cache.
+		// try {
+		// TwitterApplication.mImageManager.put(dm.profileImageUrl);
+		// } catch (IOException e) {
+		// Log.e(TAG, e.getMessage(), e);
+		// }
+		// }
+		// }
 
 		if (count <= 0) {
 			return;
@@ -418,9 +369,8 @@ public class TwitterService extends Service {
 				&& mRetrieveTask.getStatus() == GenericTask.Status.RUNNING) {
 			mRetrieveTask.cancel(true);
 		}
-		
+
 		mWakeLock.release();
-		removeHandler();
 		super.onDestroy();
 	}
 
@@ -435,8 +385,7 @@ public class TwitterService extends Service {
 		String intervalPref = preferences
 				.getString(
 						Preferences.CHECK_UPDATE_INTERVAL_KEY,
-						context
-								.getString(R.string.pref_check_updates_interval_default));
+						context.getString(R.string.pref_check_updates_interval_default));
 		int interval = Integer.parseInt(intervalPref);
 
 		Intent intent = new Intent(context, TwitterService.class);
@@ -462,117 +411,125 @@ public class TwitterService extends Service {
 		alarm.cancel(pending);
 	}
 
-
-
 	private class RetrieveTask extends GenericTask {
-		
+
 		@Override
 		protected TaskResult _doInBackground(TaskParams... params) {
 			TaskParams param = params[0];
-			
-			SharedPreferences preferences = (SharedPreferences)param.get("pref");
 
-			boolean timeline_only = preferences.getBoolean(Preferences.TIMELINE_ONLY_KEY, false);
-			boolean replies_only = preferences.getBoolean(Preferences.REPLIES_ONLY_KEY, true);
-			boolean dm_only = preferences.getBoolean(Preferences.DM_ONLY_KEY, true);
-			
-			if (timeline_only){
-				String maxId = getDb().fetchMaxTweetId(TwitterApplication.getMyselfId(), StatusTable.TYPE_HOME);
+			SharedPreferences preferences = (SharedPreferences) param
+					.get("pref");
+
+			boolean timeline_only = preferences.getBoolean(
+					Preferences.TIMELINE_ONLY_KEY, false);
+			boolean replies_only = preferences.getBoolean(
+					Preferences.REPLIES_ONLY_KEY, true);
+			boolean dm_only = preferences.getBoolean(Preferences.DM_ONLY_KEY,
+					true);
+
+			if (timeline_only) {
+				String maxId = getDb()
+						.fetchMaxTweetId(TwitterApplication.getMyselfId(),
+								StatusTable.TYPE_HOME);
 				Log.i(TAG, "Max id is:" + maxId);
-	
+
 				List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
-	
+
 				try {
-					if (maxId != null){
-						statusList = getApi().getFriendsTimeline(new Paging(maxId));
-					}else{
+					if (maxId != null) {
+						statusList = getApi().getFriendsTimeline(
+								new Paging(maxId));
+					} else {
 						statusList = getApi().getFriendsTimeline();
 					}
 				} catch (HttpException e) {
 					Log.e(TAG, e.getMessage(), e);
 					return TaskResult.IO_ERROR;
 				}
-	
+
 				for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
 					if (isCancelled()) {
 						return TaskResult.CANCELLED;
 					}
-	
+
 					Tweet tweet;
-	
+
 					tweet = Tweet.create(status);
-	
+
 					mNewTweets.add(tweet);
 				}
-	
+
 				if (isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
 			}
-			
-			if (replies_only){
-				String maxMentionId = getDb().fetchMaxTweetId(TwitterApplication.getMyselfId(), StatusTable.TYPE_MENTION);
+
+			if (replies_only) {
+				String maxMentionId = getDb().fetchMaxTweetId(
+						TwitterApplication.getMyselfId(),
+						StatusTable.TYPE_MENTION);
 				Log.i(TAG, "Max mention id is:" + maxMentionId);
 
 				List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
-	
+
 				try {
-					if (maxMentionId != null){
-						statusList = getApi().getMentions(new Paging(maxMentionId));
-					}else{
-						statusList = getApi().getMentions();						
+					if (maxMentionId != null) {
+						statusList = getApi().getMentions(
+								new Paging(maxMentionId));
+					} else {
+						statusList = getApi().getMentions();
 					}
 				} catch (HttpException e) {
 					Log.e(TAG, e.getMessage(), e);
 					return TaskResult.IO_ERROR;
 				}
-	
+
 				for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
 					if (isCancelled()) {
 						return TaskResult.CANCELLED;
 					}
-	
+
 					Tweet tweet;
 
 					tweet = Tweet.create(status);
-	
+
 					mNewMentions.add(tweet);
 				}
-	
+
 				if (isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
 			}
-			
-			if (dm_only){
+
+			if (dm_only) {
 				String maxId = getDb().fetchMaxDmId(false);
 				Log.i(TAG, "Max DM id is:" + maxId);
-	
+
 				List<com.ch_linghu.fanfoudroid.weibo.DirectMessage> dmList;
-				
+
 				try {
-					if (maxId != null){
+					if (maxId != null) {
 						dmList = getApi().getDirectMessages(new Paging(maxId));
-					}else{
+					} else {
 						dmList = getApi().getDirectMessages();
 					}
 				} catch (HttpException e) {
 					Log.e(TAG, e.getMessage(), e);
 					return TaskResult.IO_ERROR;
 				}
-	
+
 				for (com.ch_linghu.fanfoudroid.weibo.DirectMessage directMessage : dmList) {
 					if (isCancelled()) {
 						return TaskResult.CANCELLED;
 					}
-	
+
 					Dm dm;
 
 					dm = Dm.create(directMessage, false);
-	
+
 					mNewDms.add(dm);
 				}
-	
+
 				if (isCancelled()) {
 					return TaskResult.CANCELLED;
 				}

@@ -12,7 +12,8 @@
 			android:clickable="true">
 			<TextView android:layout_width="wrap_content"
 			android:textSize="20dp"
-				android:layout_height="wrap_content" android:text="说点什么呗">
+				android:layout_height="wrap_content" 
+				android:text="说点什么呗">
 
 			</TextView>
 		</LinearLayout>
@@ -38,11 +39,27 @@
 					android:layout_width="fill_parent" android:layout_height="wrap_content"
 					android:maxLines="5"
 					android:textColor="#444"
-					android:text="【永远不要对这些人好】1有事的时候找你 ，没事的时候无视你。2受你点恩惠就对你倍儿好。3不要对谁都是一副怜惜的心情 ，不是每个人都值得你那么做 。4不要对不怀好意的人心软 。6分手了，可以是陌生人，可以是朋友，但是时刻提醒自己，不是从前。6心里没有你的人，不要妄想某天他会被你打动">
-
+					android:text="暂无消息"
+					>
+					
 				</TextView>
-				<TextView android:text="大约11分钟前来自 安能饭否" android:id="@+id/status_title"
-					android:layout_width="fill_parent" android:layout_height="wrap_content"></TextView>
+	 		      <RelativeLayout 
+		            android:layout_width="fill_parent"
+		            android:layout_height="35dp"
+		
+		            >
+             		 <TextView android:id="@+id/tweet_created_at"
+		                android:layout_width="wrap_content"
+		                android:layout_height="wrap_content"
+		                style="@style/normalText.span"/>
+		            <TextView android:id="@+id/tweet_source"
+		                android:layout_width="wrap_content"
+		                android:layout_height="wrap_content"
+		                android:layout_toRightOf="@id/tweet_created_at"
+		                style="@style/normalText.span"/>
+          
+          
+         		</RelativeLayout>
 
 			</LinearLayout>
 		</LinearLayout>
