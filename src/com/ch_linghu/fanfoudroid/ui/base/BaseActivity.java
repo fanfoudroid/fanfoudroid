@@ -165,6 +165,7 @@ public class BaseActivity extends Activity {
   protected static final int OPTIONS_MENU_ID_UNFOLLOW = 10;
   protected static final int OPTIONS_MENU_ID_IMAGE_CAPTURE = 11;
   protected static final int OPTIONS_MENU_ID_PHOTO_LIBRARY = 12;
+  protected static final int OPTIONS_MENU_ID_EXIT = 13;
   
   /**
    * 如果增加了Option Menu常量的数量，则必须重载此方法，
@@ -172,7 +173,7 @@ public class BaseActivity extends Activity {
    * @return 最大的Option Menu常量
    */
   protected int getLastOptionMenuId(){
-	  return OPTIONS_MENU_ID_PHOTO_LIBRARY;
+	  return OPTIONS_MENU_ID_EXIT;
   }
   
   @Override
@@ -198,6 +199,9 @@ public class BaseActivity extends Activity {
 
     item = menu.add(0, OPTIONS_MENU_ID_ABOUT, 0, R.string.omenu_about);
     item.setIcon(android.R.drawable.ic_menu_info_details);
+    
+    item = menu.add(0, OPTIONS_MENU_ID_EXIT, 0, R.string.omenu_exit);
+    item.setIcon(android.R.drawable.ic_menu_rotate);
 
     return true;
   }
@@ -222,9 +226,19 @@ public class BaseActivity extends Activity {
     case OPTIONS_MENU_ID_ABOUT:
       AboutDialog.show(this);
       return true;
+    case OPTIONS_MENU_ID_EXIT:
+    	exit();
+    	return true;
     }
 
     return super.onOptionsItemSelected(item);
+  }
+  
+  protected void exit() {
+	  TwitterService.unschedule(this);
+	  Intent i = new Intent(Intent.ACTION_MAIN);
+	  i.addCategory(Intent.CATEGORY_HOME);
+	  startActivity(i);
   }
 
   protected void launchActivity(Intent intent) {

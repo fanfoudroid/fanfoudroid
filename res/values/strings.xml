@@ -38,6 +38,7 @@
     <string name="omenu_settings">设置</string>
     <string name="omenu_search">搜索</string>
     <string name="omenu_about">关于</string>
+    <string name="omenu_exit">退出</string>
     
     <!-- context menu -->
     <string name="cmenu_reply">回复</string>
