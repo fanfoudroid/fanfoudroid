@@ -228,4 +228,14 @@
     <string name="pages_browse">随便看看</string>
     <string name="pages_search">收藏</string>
     <string name="pages_message">我的私信</string>
+    
+    <!-- acra 提示信息  -->
+	<string name="crash_notif_ticker_text">安能饭否发生错误，请协助提交错误报告</string>
+	<string name="crash_notif_title">安能饭否出错了</string>
+	<string name="crash_notif_text">我们需要你的帮助，请点击</string>
+	        
+	<string name="crash_dialog_title">安能饭否出错了</string>
+	<string name="crash_dialog_text">安能饭否出现了我们未曾捕获到的错误，你点击\'OK\'之后，错误报告会发送给开发者.</string>
+	<string name="crash_dialog_comment_prompt">如果你能多花点时间填写一下错误发生时你做了什么，我们将不胜感激:</string>
+	<string name="crash_dialog_ok_toast">感谢你的配合！</string>
 </resources>
