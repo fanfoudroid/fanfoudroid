@@ -630,7 +630,8 @@ public class TwitterDatabase {
         try {
             mDb.beginTransaction();
 
-            deleteAllFollowers();
+            boolean result = deleteAllFollowers();
+            Log.d(TAG, "Result of DeleteAllFollowers: " + result);
 
             for (String userId : followers) {
                 createFollower(userId);

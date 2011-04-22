@@ -17,6 +17,7 @@ import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheManager;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.weibo.Configuration;
+import com.ch_linghu.fanfoudroid.weibo.User;
 import com.ch_linghu.fanfoudroid.weibo.Weibo;
 import org.acra.*;
 import org.acra.annotation.*;
@@ -48,55 +49,50 @@ public class TwitterApplication extends Application {
 
 	private final static boolean DEBUG = Configuration.getDebug();
 
-	// 获取登录用户id, 据肉眼观察，刚注册的用户系统分配id都是~开头的，因为不知道
+	// FIXME:获取登录用户id, 据肉眼观察，刚注册的用户系统分配id都是~开头的，因为不知道
 	// 用户何时去修改这个ID，目前只有把所有以~开头的ID在每次需要UserId时都去服务器
 	// 取一次数据，看看新的ID是否已经设定，判断依据是是否以~开头。这么判断会把有些用户
 	// 就是把自己ID设置的以~开头的造成,每次都需要去服务器取数。
 	// 只是简单处理了mPref没有CURRENT_USER_ID的情况，因为用户在登陆时，肯定会记一个CURRENT_USER_ID
 	// 到mPref.
-	public static String getMyselfId() {
-		String lastestUserID = "";
-		if (!mPref.contains(Preferences.CURRENT_USER_ID)) {
-			try {
-				lastestUserID = TwitterApplication.mApi.showUser(
-						TwitterApplication.mApi.getUserId()).getId();
-			} catch (HttpException e) {
-				e.printStackTrace();
-				// mPref没有CURRENT_USER_ID属于异常
-				return null;
-			}
+	private static void fetchMyselfInfo() {
+		User myself;
+		try {
+			myself = TwitterApplication.mApi.showUser(TwitterApplication.mApi.getUserId());
 			TwitterApplication.mPref.edit().putString(
-					Preferences.CURRENT_USER_ID, lastestUserID);
+					Preferences.CURRENT_USER_ID, myself.getId());
+			TwitterApplication.mPref.edit().putString(
+					Preferences.CURRENT_USER_SCREEN_NAME, myself.getScreenName());
 			TwitterApplication.mPref.edit().commit();
-		} else if (mPref.contains(Preferences.CURRENT_USER_ID)
-				&& !mPref.getString(Preferences.CURRENT_USER_ID, "~")
-						.startsWith("~")) {
-			lastestUserID = mPref.getString(Preferences.CURRENT_USER_ID,
-					lastestUserID);
-		} else if (mPref.contains(Preferences.CURRENT_USER_ID)
-				&& mPref.getString(Preferences.CURRENT_USER_ID, "~")
-						.startsWith("~")) {
-			try {
-				lastestUserID = TwitterApplication.mApi.showUser(
-						TwitterApplication.mApi.getUserId()).getId();
-			} catch (HttpException e) {
-				e.printStackTrace();
-				return mPref.getString(Preferences.CURRENT_USER_ID, "~");
-			}
-			if (!lastestUserID.startsWith("~")) {
-				TwitterApplication.mPref.edit().putString(
-						Preferences.CURRENT_USER_ID, lastestUserID);
-				TwitterApplication.mPref.edit().commit();
-			}
+		} catch (HttpException e) {
+			e.printStackTrace();
 		}
-		return lastestUserID;
+	}
+
+	public static String getMyselfId() {
+		if (!mPref.contains(Preferences.CURRENT_USER_ID) 
+			|| mPref.getString(Preferences.CURRENT_USER_ID, "~")
+				.startsWith("~")) {
+			fetchMyselfInfo();
+		}
+		return mPref.getString(Preferences.CURRENT_USER_ID, "~");
+	}
+	
+	public static String getMyselfName() {
+		if (!mPref.contains(Preferences.CURRENT_USER_ID) 
+				|| !mPref.contains(Preferences.CURRENT_USER_SCREEN_NAME)
+				|| mPref.getString(Preferences.CURRENT_USER_ID, "~")
+					.startsWith("~")) {
+				fetchMyselfInfo();
+		}
+		return mPref.getString(Preferences.CURRENT_USER_SCREEN_NAME, "");
 	}
 
 	@Override
 	public void onCreate() {
 		// FIXME: StrictMode类在1.6以下的版本中没有，会导致类加载失败。
 		// 因此将这些代码设成关闭状态，仅在做性能调试时才打开。
-		// //NOTE: StrictMode模式需要2.3 API支持。
+		// //NOTE: StrictMode模式需要2.3+ API支持。
 		// if (DEBUG){
 		// StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
 		// .detectAll()
@@ -143,6 +139,8 @@ public class TwitterApplication extends Application {
 
 	@Override
 	public void onTerminate() {
+		//FIXME: 根据android文档，onTerminate不会在真实机器上被执行到
+		//因此这些清理动作需要再找合适的地方放置，以确保执行。
 		cleanupImages();
 		mDb.close();
 		Toast.makeText(this, "exit app", Toast.LENGTH_LONG);

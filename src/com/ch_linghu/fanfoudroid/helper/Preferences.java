@@ -48,6 +48,11 @@ public class Preferences {
   
   public static final String NETWORK_TYPE = "network_type";
   
+  //DEBUG标记
+  public static final String DEBUG="debug";
   
-  public static final String CURRENT_USER_ID="current_user_id";//当前用户id值
+  //当前用户相关信息
+  public static final String CURRENT_USER_ID="current_user_id";
+  public static final String CURRENT_USER_SCREEN_NAME="current_user_screenname";
+  
 }

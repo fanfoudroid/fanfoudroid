@@ -209,8 +209,8 @@
     <string name="search_label">安能饭否</string>
     <string name="search_hint">搜索饭否</string>
     <string name="search_box_null">您未提供任何搜索信息！\n请输入关键词或点击话题！</string>
-    <string name="trends_title">饭否热门话题</string>
-	<string name="saved_search_title">你关注的话题</string>
+    <string name="trends_title">热门话题</string>
+	<string name="saved_search_title">关注的话题</string>
 	<string name="search_loading">正在查询...</string>
     
     <!-- 通用 -->
