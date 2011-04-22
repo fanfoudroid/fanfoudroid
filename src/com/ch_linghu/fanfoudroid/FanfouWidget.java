@@ -199,16 +199,14 @@ public class FanfouWidget extends AppWidgetProvider {
 	@Override
 	public void onEnabled(Context context) {
 		Log.i(TAG, "onEnabled");
-		// Intent i = new Intent(context, WidgetService.class);
-		// context.startService(i);
-
+		
+		TwitterService.setWidgetStatus(true);
 	}
 
 	@Override
 	public void onDisabled(Context context) {
 		Log.i(TAG, "onDisabled");
-		// Intent i = new Intent(context, WidgetService.class);
-		// context.stopService(i);
 
+		TwitterService.setWidgetStatus(false);
 	}
 }

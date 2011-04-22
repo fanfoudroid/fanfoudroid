@@ -147,7 +147,9 @@ public class TwitterService extends Service {
 
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-		if (!mPreferences.getBoolean(Preferences.CHECK_UPDATES_KEY, false)) {
+		boolean needCheck = mPreferences.getBoolean(Preferences.CHECK_UPDATES_KEY, false);
+		boolean widgetIsEnabled = TwitterService.widgetIsEnabled;
+		if (!needCheck && !widgetIsEnabled) {
 			Log.i(TAG, "Check update preference is false.");
 			stopSelf();
 			return;
@@ -377,7 +379,9 @@ public class TwitterService extends Service {
 	public static void schedule(Context context) {
 		SharedPreferences preferences = TwitterApplication.mPref;
 
-		if (!preferences.getBoolean(Preferences.CHECK_UPDATES_KEY, false)) {
+		boolean needCheck = preferences.getBoolean(Preferences.CHECK_UPDATES_KEY, false);
+		boolean widgetIsEnabled = TwitterService.widgetIsEnabled;
+		if (!needCheck && !widgetIsEnabled) {
 			Log.i(TAG, "Check update preference is false.");
 			return;
 		}
@@ -399,7 +403,12 @@ public class TwitterService extends Service {
 		AlarmManager alarm = (AlarmManager) context
 				.getSystemService(Context.ALARM_SERVICE);
 		alarm.cancel(pending);
-		alarm.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pending);
+		if (needCheck){
+			alarm.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pending);
+		}else{
+			//only for widget
+			alarm.set(AlarmManager.RTC, c.getTimeInMillis(), pending);
+		}
 	}
 
 	public static void unschedule(Context context) {
@@ -409,6 +418,11 @@ public class TwitterService extends Service {
 				.getSystemService(Context.ALARM_SERVICE);
 		Log.i(TAG, "Cancelling alarms.");
 		alarm.cancel(pending);
+	}
+	
+	private static boolean widgetIsEnabled = false;
+	public static void setWidgetStatus(boolean isEnabled){
+		widgetIsEnabled = isEnabled;
 	}
 
 	private class RetrieveTask extends GenericTask {
