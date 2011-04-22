@@ -49,7 +49,11 @@ public class ProfileImageCacheManager {
 			String url = (String)p.get("url");
 			Bitmap bitmap = (Bitmap)p.get("bitmap");
 			
-			mCallbackMap.get(url).refresh(url, bitmap);
+			ProfileImageCacheCallback callback = mCallbackMap.get(url);
+			if (callback != null){
+				callback.refresh(url, bitmap);
+			}
+			mCallbackMap.remove(url);
 		}
 		
 	};

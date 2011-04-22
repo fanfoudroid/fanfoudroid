@@ -9,6 +9,7 @@ import java.util.TimerTask;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.db.StatusTable;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDatabase;
+import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.service.TwitterService;
 import com.ch_linghu.fanfoudroid.service.WidgetService;
@@ -21,6 +22,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
@@ -34,6 +36,18 @@ public class FanfouWidget extends AppWidgetProvider {
 	private static List<Tweet> tweets;
 	private static int position = 0;
 
+	class CacheCallback implements ProfileImageCacheCallback{
+		private RemoteViews updateViews;
+		
+		CacheCallback(RemoteViews updateViews){
+			this.updateViews = updateViews;
+		}
+		@Override
+		public void refresh(String url, Bitmap bitmap) {
+			updateViews.setImageViewBitmap(R.id.status_image, bitmap);
+		}
+	}
+	
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appwidgetmanager,
 			int[] appWidgetIds) {
@@ -80,9 +94,9 @@ public class FanfouWidget extends AppWidgetProvider {
 	private void refreshView(Context context, String action) {
 
 		if (action.equals(NEXTACTION)) {
-			++position;
-		} else if (action.equals(PREACTION)) {
 			--position;
+		} else if (action.equals(PREACTION)) {
+			++position;
 		}
 		Log.i(TAG, "Tweets size =" + tweets.size());
 		if (position >= tweets.size() || position < 0) {
@@ -100,17 +114,16 @@ public class FanfouWidget extends AppWidgetProvider {
 				R.layout.widget_initial_layout);
 
 		Tweet t = tweets.get(position);
-		String processedText = Utils.preprocessText(t.text);
-		Spanned fromHtml = Html.fromHtml(processedText);
 
-		updateViews.setTextViewText(R.id.status_text, fromHtml);
+		updateViews.setTextViewText(R.id.status_screen_name, t.screenName+":");
+		updateViews.setTextViewText(R.id.status_text, Utils.getSimpleTweetText(t.text));
 
 		updateViews.setTextViewText(R.id.tweet_source, context.getString(R.string.tweet_source_prefix) + t.source);
 		updateViews.setTextViewText(R.id.tweet_created_at, Utils.getRelativeDate(t.createdAt));
 		
 		updateViews.setImageViewBitmap(R.id.status_image,
 				TwitterApplication.mProfileImageCacheManager.get(
-						t.profileImageUrl, null));
+						t.profileImageUrl, new CacheCallback(updateViews)));
 
 		Intent inext = new Intent(context, FanfouWidget.class);
 		inext.setAction(NEXTACTION);
@@ -123,9 +136,17 @@ public class FanfouWidget extends AppWidgetProvider {
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		updateViews.setOnClickPendingIntent(R.id.btn_pre, pipre);
 		
-		Intent write=new Intent(context,WriteActivity.class);
-		PendingIntent piwrite=PendingIntent.getActivity(context, 0, write,PendingIntent.FLAG_UPDATE_CURRENT);
+		Intent write = WriteActivity.createNewTweetIntent("");
+		PendingIntent piwrite = PendingIntent.getActivity(context, 0, write,PendingIntent.FLAG_UPDATE_CURRENT);
 		updateViews.setOnClickPendingIntent(R.id.write_message, piwrite);
+		
+		Intent home = TwitterActivity.createIntent(context);
+		PendingIntent pihome = PendingIntent.getActivity(context, 0, home, PendingIntent.FLAG_UPDATE_CURRENT);
+		updateViews.setOnClickPendingIntent(R.id.logo_image, pihome);
+		
+		Intent status = StatusActivity.createIntent(t);
+		PendingIntent pistatus=PendingIntent.getActivity(context, 0, status, PendingIntent.FLAG_UPDATE_CURRENT);
+		updateViews.setOnClickPendingIntent(R.id.main_body, pistatus);
 		
 		return updateViews;
 

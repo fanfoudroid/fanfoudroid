@@ -1,94 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="318dp" android:layout_height="222dp" android:id="@+id/linearLayout1"
-	android:orientation="vertical" android:background="@drawable/widget_bg">
-	<LinearLayout android:id="@+id/linearLayout2"
-		android:layout_height="55dp" android:layout_width="wrap_content">
-		<ImageView android:id="@+id/profile_image"
-			android:layout_height="48dp" android:layout_width="48dp" android:src="@drawable/icon"></ImageView>
-		<LinearLayout android:id="@+id/write_message"
-			android:layout_width="200dp" android:layout_height="48dp"
-			android:background="@drawable/textfield_search_empty"
-			android:clickable="true">
-			<TextView android:layout_width="wrap_content"
-			android:textSize="20dp"
-				android:layout_height="wrap_content" 
-				android:text="说点什么呗">
-
-			</TextView>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="fill_parent">
+	<LinearLayout android:layout_width="fill_parent"
+		android:layout_height="fill_parent" android:id="@+id/linearLayout1"
+		android:orientation="vertical" android:background="@drawable/widget_bg">
+		<LinearLayout android:id="@+id/linearLayout2"
+			android:layout_height="55dp" android:layout_width="fill_parent"
+			android:gravity="left|center_vertical" android:background="#33CCFF">
+			<ImageView android:id="@+id/logo_image"
+				android:layout_height="48dp" android:layout_width="48dp"
+				android:src="@drawable/icon" 
+				android:clickable="true"/>
+			<LinearLayout android:id="@+id/write_message"
+				android:layout_width="fill_parent" android:layout_height="48dp"
+				android:layout_weight="1" android:layout_marginLeft="2dp"
+				android:layout_marginRight="2dp" android:background="@drawable/textfield_search_empty"
+				android:clickable="true">
+				<TextView android:layout_width="fill_parent"
+					android:textSize="20dp" android:layout_height="wrap_content"
+					android:text="@string/widget_input_prompt" />
+			</LinearLayout>
 		</LinearLayout>
 
-
-	</LinearLayout>
-	<LinearLayout android:id="@+id/linearLayout5"
-		android:layout_height="wrap_content" android:layout_width="match_parent"></LinearLayout>
-	<FrameLayout android:id="@+id/frameLayout1"
-		android:layout_height="125dp" android:layout_width="fill_parent"
-		android:padding="3dp">
 		<LinearLayout android:id="@+id/linearLayout4"
-			android:layout_height="match_parent" android:layout_width="fill_parent">
+			android:layout_height="match_parent" android:layout_width="fill_parent"
+			android:padding="5dp">
 
 			<ImageView android:id="@+id/status_image"
 				android:layout_height="50dp" android:layout_width="50dp"
-				android:scaleType="fitXY" android:src="@drawable/icon"></ImageView>
-			<LinearLayout android:id="@+id/linearLayout3"
+				android:scaleType="fitXY" android:src="@drawable/icon" />
+				
+			<LinearLayout android:id="@+id/main_body"
 				android:layout_height="fill_parent" android:layout_width="fill_parent"
-				android:orientation="vertical" android:padding="5dp">
+				android:orientation="vertical" android:paddingLeft="5dp"
+				android:paddingRight="5dp"
+				android:clickable="true">
 
+				<TextView android:id="@+id/status_screen_name"
+					android:layout_width="fill_parent" android:layout_height="wrap_content"
+					style="@style/LinkText.Bold.Big" />
 				<TextView android:id="@+id/status_text"
 					android:layout_width="fill_parent" android:layout_height="wrap_content"
-					android:maxLines="5"
-					android:textColor="#444"
-					android:text="暂无消息"
-					>
-					
-				</TextView>
-	 		      <RelativeLayout 
-		            android:layout_width="fill_parent"
-		            android:layout_height="35dp"
-		
-		            >
-             		 <TextView android:id="@+id/tweet_created_at"
-		                android:layout_width="wrap_content"
-		                android:layout_height="wrap_content"
-		                style="@style/normalText.span"/>
-		            <TextView android:id="@+id/tweet_source"
-		                android:layout_width="wrap_content"
-		                android:layout_height="wrap_content"
-		                android:layout_toRightOf="@id/tweet_created_at"
-		                style="@style/normalText.span"/>
-          
-          
-         		</RelativeLayout>
+					android:maxLines="5" android:textColor="@drawable/tweet_color"
+					android:text="@string/widget_no_message" />
+
+				<RelativeLayout android:layout_width="fill_parent"
+					android:layout_height="35dp">
+					<TextView android:id="@+id/tweet_created_at"
+						android:layout_width="wrap_content" android:layout_height="wrap_content"
+						android:textColor="@drawable/tweet_meta_color" />
+					<TextView android:id="@+id/tweet_source"
+						android:layout_width="wrap_content" android:layout_height="wrap_content"
+						android:layout_toRightOf="@id/tweet_created_at" android:textColor="@drawable/tweet_meta_color" />
+				</RelativeLayout>
 
 			</LinearLayout>
 		</LinearLayout>
-	</FrameLayout>
+	</LinearLayout>
+
 	<RelativeLayout android:id="@+id/linearLayout6"
-		android:layout_width="fill_parent"
-		 android:layout_height="30dp"
-		 android:paddingLeft="5dp"
-		 android:paddingRight="5dp"
-		 >
-	
-		 <ImageView android:src="@drawable/widget_pre_btn_selector"
-		  android:id="@+id/btn_pre" 
-		  android:layout_width="wrap_content"
-		  android:layout_height="wrap_content"
-		  android:clickable="true"
-		  
-		  ></ImageView>
-	<ImageView android:src="@drawable/widget_next_btn_selector"
-		android:layout_alignRight="@+id/btn_pre"
-		android:layout_alignParentRight="true"
-		  android:id="@+id/btn_next" 
-		  android:layout_width="wrap_content"
-		  android:layout_height="wrap_content"
-		  android:clickable="true"
-		 
-		  ></ImageView>
-		 </RelativeLayout>
-	
+		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		android:layout_gravity="bottom" android:layout_marginLeft="5dp"
+		android:layout_marginRight="5dp" android:layout_marginBottom="5dp">
 
-
-</LinearLayout>
+		<ImageView android:src="@drawable/widget_pre_btn_selector"
+			android:id="@+id/btn_pre" android:layout_width="50dp"
+			android:layout_height="wrap_content" android:clickable="true" />
+		<ImageView android:src="@drawable/widget_next_btn_selector"
+			android:layout_alignRight="@+id/btn_pre"
+			android:layout_alignParentRight="true" android:id="@+id/btn_next"
+			android:layout_width="50dp" android:layout_height="wrap_content"
+			android:clickable="true" />
+	</RelativeLayout>
+</FrameLayout>
+	
