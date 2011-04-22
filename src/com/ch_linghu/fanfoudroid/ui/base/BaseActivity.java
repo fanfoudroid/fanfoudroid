@@ -146,7 +146,7 @@ public class BaseActivity extends Activity {
 
     if (isEnabled) {
       TwitterService.schedule(this);
-    } else {
+    } else if (!TwitterService.isWidgetEnabled()){
       TwitterService.unschedule(this);
     }
   }

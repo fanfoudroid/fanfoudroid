@@ -69,8 +69,6 @@ import com.ch_linghu.fanfoudroid.weibo.Weibo;
 public class TwitterService extends Service {
 	private static final String TAG = "TwitterService";
 
-	private SharedPreferences mPreferences;
-
 	private NotificationManager mNotificationManager;
 
 	private ArrayList<Tweet> mNewTweets;
@@ -95,10 +93,27 @@ public class TwitterService extends Service {
 		@Override
 		public void onPostExecute(GenericTask task, TaskResult result) {
 			if (result == TaskResult.OK) {
-				processNewTweets();
-				processNewMentions();
-				processNewDms();
+				SharedPreferences preferences = TwitterApplication.mPref;
 
+				boolean needCheck = preferences.getBoolean(Preferences.CHECK_UPDATES_KEY, false);
+				boolean timeline_only = preferences.getBoolean(
+						Preferences.TIMELINE_ONLY_KEY, false);
+				boolean replies_only = preferences.getBoolean(
+						Preferences.REPLIES_ONLY_KEY, true);
+				boolean dm_only = preferences.getBoolean(Preferences.DM_ONLY_KEY,
+						true);
+				
+				if (needCheck){
+					if (timeline_only){
+						processNewTweets();
+					}
+					if (replies_only){
+						processNewMentions();
+					}
+					if (dm_only){
+						processNewDms();
+					}
+				}
 			}
 			try {
 				Intent intent = new Intent(TwitterService.this,
@@ -145,9 +160,7 @@ public class TwitterService extends Service {
 		mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
 		mWakeLock.acquire();
 
-		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-		boolean needCheck = mPreferences.getBoolean(Preferences.CHECK_UPDATES_KEY, false);
+		boolean needCheck = TwitterApplication.mPref.getBoolean(Preferences.CHECK_UPDATES_KEY, false);
 		boolean widgetIsEnabled = TwitterService.widgetIsEnabled;
 		if (!needCheck && !widgetIsEnabled) {
 			Log.i(TAG, "Check update preference is false.");
@@ -176,33 +189,12 @@ public class TwitterService extends Service {
 			mRetrieveTask = new RetrieveTask();
 			mRetrieveTask.setListener(mRetrieveTaskListener);
 
-			TaskParams params = new TaskParams();
-			params.put("pref", mPreferences);
-			mRetrieveTask.execute(params);
+			mRetrieveTask.execute((TaskParams[])null);
 		}
 	}
 
 	private void processNewTweets() {
-		if (mNewTweets.size() <= 0) {
-			return;
-		}
-
-		Log.i(TAG, mNewTweets.size() + " new tweets.");
-
-		int count = getDb().addNewTweetsAndCountUnread(mNewTweets,
-				TwitterApplication.getMyselfId(), StatusTable.TYPE_HOME);
-
-		// for (Tweet tweet : mNewTweets) {
-		// if (!Utils.isEmpty(tweet.profileImageUrl)) {
-		// // Fetch image to cache.
-		// try {
-		// TwitterApplication.mImageManager.put(tweet.profileImageUrl);
-		// } catch (IOException e) {
-		// Log.e(TAG, e.getMessage(), e);
-		// }
-		// }
-		// }
-
+		int count = mNewTweets.size();
 		if (count <= 0) {
 			return;
 		}
@@ -229,26 +221,7 @@ public class TwitterService extends Service {
 	}
 
 	private void processNewMentions() {
-		if (mNewMentions.size() <= 0) {
-			return;
-		}
-
-		Log.i(TAG, mNewMentions.size() + " new mentions.");
-
-		int count = getDb().addNewTweetsAndCountUnread(mNewMentions,
-				TwitterApplication.getMyselfId(), StatusTable.TYPE_MENTION);
-
-		// for (Tweet tweet : mNewMentions) {
-		// if (!Utils.isEmpty(tweet.profileImageUrl)) {
-		// // Fetch image to cache.
-		// try {
-		// TwitterApplication.mImageManager.put(tweet.profileImageUrl);
-		// } catch (IOException e) {
-		// Log.e(TAG, e.getMessage(), e);
-		// }
-		// }
-		// }
-
+		int count = mNewMentions.size();
 		if (count <= 0) {
 			return;
 		}
@@ -293,7 +266,7 @@ public class TwitterService extends Service {
 		notification.ledOnMS = 5000;
 		notification.ledOffMS = 5000;
 
-		String ringtoneUri = mPreferences.getString(Preferences.RINGTONE_KEY,
+		String ringtoneUri = TwitterApplication.mPref.getString(Preferences.RINGTONE_KEY,
 				null);
 
 		if (ringtoneUri == null) {
@@ -302,7 +275,7 @@ public class TwitterService extends Service {
 			notification.sound = Uri.parse(ringtoneUri);
 		}
 
-		if (mPreferences.getBoolean(Preferences.VIBRATE_KEY, false)) {
+		if (TwitterApplication.mPref.getBoolean(Preferences.VIBRATE_KEY, false)) {
 			notification.defaults |= Notification.DEFAULT_VIBRATE;
 		}
 
@@ -310,34 +283,7 @@ public class TwitterService extends Service {
 	}
 
 	private void processNewDms() {
-		if (mNewDms.size() <= 0) {
-			return;
-		}
-
-		Log.i(TAG, mNewDms.size() + " new DMs.");
-
-		int count = 0;
-
-		TwitterDatabase db = getDb();
-
-		if (db.fetchDmCount() > 0) {
-			count = db.addNewDmsAndCountUnread(mNewDms);
-		} else {
-			Log.i(TAG, "No existing DMs. Don't notify.");
-			db.addDms(mNewDms, false);
-		}
-
-		// for (Dm dm : mNewDms) {
-		// if (!Utils.isEmpty(dm.profileImageUrl)) {
-		// // Fetch image to cache.
-		// try {
-		// TwitterApplication.mImageManager.put(dm.profileImageUrl);
-		// } catch (IOException e) {
-		// Log.e(TAG, e.getMessage(), e);
-		// }
-		// }
-		// }
-
+		int count = mNewDms.size(); 
 		if (count <= 0) {
 			return;
 		}
@@ -391,6 +337,7 @@ public class TwitterService extends Service {
 						Preferences.CHECK_UPDATE_INTERVAL_KEY,
 						context.getString(R.string.pref_check_updates_interval_default));
 		int interval = Integer.parseInt(intervalPref);
+		//int interval = 1;	//for debug
 
 		Intent intent = new Intent(context, TwitterService.class);
 		PendingIntent pending = PendingIntent.getService(context, 0, intent, 0);
@@ -424,15 +371,16 @@ public class TwitterService extends Service {
 	public static void setWidgetStatus(boolean isEnabled){
 		widgetIsEnabled = isEnabled;
 	}
+	
+	public static boolean isWidgetEnabled(){
+		return widgetIsEnabled;
+	}
 
 	private class RetrieveTask extends GenericTask {
 
 		@Override
 		protected TaskResult _doInBackground(TaskParams... params) {
-			TaskParams param = params[0];
-
-			SharedPreferences preferences = (SharedPreferences) param
-					.get("pref");
+			SharedPreferences preferences = TwitterApplication.mPref;
 
 			boolean timeline_only = preferences.getBoolean(
 					Preferences.TIMELINE_ONLY_KEY, false);
@@ -441,7 +389,8 @@ public class TwitterService extends Service {
 			boolean dm_only = preferences.getBoolean(Preferences.DM_ONLY_KEY,
 					true);
 
-			if (timeline_only) {
+			Log.d(TAG, "TwitterIsEnabled? " + TwitterService.widgetIsEnabled);
+			if (timeline_only || TwitterService.widgetIsEnabled) {
 				String maxId = getDb()
 						.fetchMaxTweetId(TwitterApplication.getMyselfId(),
 								StatusTable.TYPE_HOME);
@@ -471,6 +420,15 @@ public class TwitterService extends Service {
 					tweet = Tweet.create(status);
 
 					mNewTweets.add(tweet);
+
+					Log.i(TAG, mNewTweets.size() + " new tweets.");
+
+					int count = getDb().addNewTweetsAndCountUnread(mNewTweets,
+							TwitterApplication.getMyselfId(), StatusTable.TYPE_HOME);
+
+					if (count <= 0) {
+						return TaskResult.FAILED;
+					}				
 				}
 
 				if (isCancelled()) {
@@ -508,6 +466,14 @@ public class TwitterService extends Service {
 					tweet = Tweet.create(status);
 
 					mNewMentions.add(tweet);
+					Log.i(TAG, mNewMentions.size() + " new mentions.");
+
+					int count = getDb().addNewTweetsAndCountUnread(mNewMentions,
+							TwitterApplication.getMyselfId(), StatusTable.TYPE_MENTION);
+
+					if (count <= 0) {
+						return TaskResult.FAILED;
+					}
 				}
 
 				if (isCancelled()) {
@@ -542,6 +508,22 @@ public class TwitterService extends Service {
 					dm = Dm.create(directMessage, false);
 
 					mNewDms.add(dm);
+					Log.i(TAG, mNewDms.size() + " new DMs.");
+
+					int count = 0;
+
+					TwitterDatabase db = getDb();
+
+					if (db.fetchDmCount() > 0) {
+						count = db.addNewDmsAndCountUnread(mNewDms);
+					} else {
+						Log.i(TAG, "No existing DMs. Don't notify.");
+						db.addDms(mNewDms, false);
+					}
+					
+					if (count <= 0) {
+						return TaskResult.FAILED;
+					}
 				}
 
 				if (isCancelled()) {

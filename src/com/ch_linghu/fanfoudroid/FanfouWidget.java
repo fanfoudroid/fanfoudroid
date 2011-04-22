@@ -32,7 +32,7 @@ import android.appwidget.AppWidgetManager;
 public class FanfouWidget extends AppWidgetProvider {
 	public final String TAG = "com.ch_linghu.fanfoudroid.FanfouWidget";
 	public final String NEXTACTION = "com.ch_linghu.fanfoudroid.FanfouWidget.NEXT";
-	public final String PREACTION = "com.ch_linghu.fanfoudroid.FanfouWidget.PRE";
+	public final String PREACTION = "com.ch_linghu.fanfoudroid.FanfouWidget.PREV";
 	private static List<Tweet> tweets;
 	private static int position = 0;
 
@@ -52,15 +52,20 @@ public class FanfouWidget extends AppWidgetProvider {
 	public void onUpdate(Context context, AppWidgetManager appwidgetmanager,
 			int[] appWidgetIds) {
 		Log.i(TAG, "onUpdate");
+		TwitterService.setWidgetStatus(true);
 		// if (!isRunning(context, WidgetService.class.getName())) {
 		// Intent i = new Intent(context, WidgetService.class);
 		// context.startService(i);
 		// }
 		
+		update(context);
+
+	}
+
+	private void update(Context context) {
 		fetchMessages();
 		position = 0;
 		refreshView(context, NEXTACTION);
-
 	}
 
 	private TwitterDatabase getDb() {
@@ -88,7 +93,7 @@ public class FanfouWidget extends AppWidgetProvider {
 				} while (cursor.moveToNext());
 			}
 		}
-		Log.i(TAG, "Tweets size " + tweets.size());
+		Log.d(TAG, "Tweets size " + tweets.size());
 	}
 
 	private void refreshView(Context context, String action) {
@@ -98,10 +103,11 @@ public class FanfouWidget extends AppWidgetProvider {
 		} else if (action.equals(PREACTION)) {
 			++position;
 		}
-		Log.i(TAG, "Tweets size =" + tweets.size());
+		Log.d(TAG, "Tweets size =" + tweets.size());
 		if (position >= tweets.size() || position < 0) {
 			position = 0;
 		}
+		Log.d(TAG, "position=" + position);
 		ComponentName fanfouWidget = new ComponentName(context,
 				FanfouWidget.class);
 		AppWidgetManager manager = AppWidgetManager.getInstance(context);
@@ -114,8 +120,9 @@ public class FanfouWidget extends AppWidgetProvider {
 				R.layout.widget_initial_layout);
 
 		Tweet t = tweets.get(position);
-
-		updateViews.setTextViewText(R.id.status_screen_name, t.screenName+":");
+		Log.d(TAG, "tweet=" + t);
+		
+		updateViews.setTextViewText(R.id.status_screen_name, t.screenName);
 		updateViews.setTextViewText(R.id.status_text, Utils.getSimpleTweetText(t.text));
 
 		updateViews.setTextViewText(R.id.tweet_source, context.getString(R.string.tweet_source_prefix) + t.source);
@@ -155,14 +162,14 @@ public class FanfouWidget extends AppWidgetProvider {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		Log.i(TAG, "OnReceive");
-//		Log.i(TAG, "tweets is null?" + tweets);
-//		Log.i(TAG, "Position is " + position);
+		super.onReceive(context, intent);
+
 		String action = intent.getAction();
+		Log.i(TAG, "action is" + intent.getAction());
 		if (NEXTACTION.equals(action) || PREACTION.equals(action)) {
-			Log.i(TAG, "action is" + intent.getAction());
 			refreshView(context, intent.getAction());
-		} else {
-			super.onReceive(context, intent);
+		} else if (AppWidgetManager.ACTION_APPWIDGET_UPDATE.equals(action)){
+			update(context);
 		}
 	}
 
