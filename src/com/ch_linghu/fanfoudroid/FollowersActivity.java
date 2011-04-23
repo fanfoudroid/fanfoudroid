@@ -29,7 +29,8 @@ public class FollowersActivity extends UserArrayBaseActivity {
 	
 	private String[] ids;
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected boolean _onCreate(Bundle savedInstanceState) {
+	
 		   Intent intent = getIntent();
 			Bundle extras = intent.getExtras();
 			if (extras != null) {
@@ -46,12 +47,17 @@ public class FollowersActivity extends UserArrayBaseActivity {
 			if (data != null) {
 				userId = data.getLastPathSegment();
 			}
-		super.onCreate(savedInstanceState);
+			if (super._onCreate(savedInstanceState)) {
      
-		String myself = TwitterApplication.getMyselfId();
-		Toast.makeText(getBaseContext(), myself+"@"+getUserId(), Toast.LENGTH_SHORT);
-		if(getUserId()==myself){
-			setHeaderTitle("关注我的人");
+			String myself = TwitterApplication.getMyselfId();
+			Toast.makeText(getBaseContext(), myself+"@"+getUserId(), Toast.LENGTH_SHORT);
+			if(getUserId()==myself){
+				setHeaderTitle("关注我的人");
+			}
+			return true;
+		
+		}else{
+			return false;
 		}
        
 	}

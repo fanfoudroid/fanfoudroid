@@ -28,7 +28,7 @@ public class FollowingActivity extends UserArrayBaseActivity {
 	private int currentPage=1;
 	String myself="";
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected boolean _onCreate(Bundle savedInstanceState) {
 		   Intent intent = getIntent();
 			Bundle extras = intent.getExtras();
 			if (extras != null) {
@@ -45,11 +45,15 @@ public class FollowingActivity extends UserArrayBaseActivity {
 			if (data != null) {
 				userId = data.getLastPathSegment();
 			}
-			super.onCreate(savedInstanceState);
-			
-			myself = TwitterApplication.getMyselfId();
-			if(getUserId()==myself){
-				setHeaderTitle("我关注的人");
+			if(super._onCreate(savedInstanceState)){
+				
+				myself = TwitterApplication.getMyselfId();
+				if(getUserId()==myself){
+					setHeaderTitle("我关注的人");
+				}
+				return true;
+			}else{
+				return false;
 			}
 	}
 	

@@ -1128,11 +1128,12 @@ public class TwitterDatabase {
     	try{
     		mDb.beginTransaction();
     	for(com.ch_linghu.fanfoudroid.data.User u:users){
-    		if(existsUser(u.id)){
-    			updateUser(u);
-    		}else{
-    			createUserInfo(u);
-    		}
+//    		if(existsUser(u.id)){
+//    			updateUser(u);
+//    		}else{
+//    			createUserInfo(u);
+//    		}
+    		createUserInfo(u);
     	}
     	mDb.setTransactionSuccessful();
     	} finally {
@@ -1147,11 +1148,12 @@ public class TwitterDatabase {
         try {
             mDb.beginTransaction();
             for (com.ch_linghu.fanfoudroid.weibo.User u : users) {
-                if (existsUser(u.getId())) {
-                    updateWeiboUser(u);
-                } else {
-                    createWeiboUserInfo(u);
-                }
+//                if (existsUser(u.getId())) {
+//                    updateWeiboUser(u);
+//                } else {
+//                    createWeiboUserInfo(u);
+//                }
+            	createWeiboUserInfo(u);
             }
             mDb.setTransactionSuccessful();
         } finally {

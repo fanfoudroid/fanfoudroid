@@ -311,7 +311,9 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 				e.printStackTrace();
 				return TaskResult.IO_ERROR;
 			}
-		
+			//将获取到的数据(保存/更新)到数据库
+			getDb().syncWeiboUsers(usersList);
+			
 			for (com.ch_linghu.fanfoudroid.weibo.User user : usersList) {
 				if (isCancelled()) {
 					return TaskResult.CANCELLED;
