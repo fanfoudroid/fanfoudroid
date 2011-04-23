@@ -3,6 +3,7 @@ package com.ch_linghu.fanfoudroid;
 import java.text.MessageFormat;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.content.ContentValues;
@@ -45,6 +46,7 @@ public class ProfileActivity extends WithHeaderActivity {
 	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.PROFILE";
 	private static final String STATUS_COUNT = "status_count";
 	private static final String EXTRA_USER = "user";
+    private ProgressDialog dialog;
 	private GenericTask profileInfoTask;// 获取用户信息
 
 	private GenericTask setFollowingTask;
@@ -106,7 +108,7 @@ public class ProfileActivity extends WithHeaderActivity {
 
 			Intent intent = getIntent();
 			Bundle extras = intent.getExtras();
-
+					
 			myself = TwitterApplication.getMyselfId();
 			if (extras != null) {
 				this.userId = extras.getString(USER_ID);
@@ -240,8 +242,9 @@ public class ProfileActivity extends WithHeaderActivity {
 
 	private void draw() {
 		Log.i(TAG, "draw");
+		
 		bindProfileInfo();
-		doGetProfileInfo();
+		//doGetProfileInfo();
 	}
 
 	@Override
@@ -254,6 +257,7 @@ public class ProfileActivity extends WithHeaderActivity {
 	@Override
 	protected void onStart() {
 		super.onStart();
+		
 		Log.i(TAG, "onStart.");
 
 	}
@@ -269,6 +273,7 @@ public class ProfileActivity extends WithHeaderActivity {
 	 * 从数据库获取,如果数据库不存在则创建
 	 */
 	private void bindProfileInfo() {
+		dialog=ProgressDialog.show(ProfileActivity.this, "请稍后", "正在加载信息...");
 
 		if (null != db && db.existsUser(userId)) {
 
@@ -280,6 +285,10 @@ public class ProfileActivity extends WithHeaderActivity {
 						+ userId);
 			}
 			bindControl();
+			if(dialog!=null){
+				dialog.dismiss();
+			}
+
 		} else {
 			doGetProfileInfo();
 		}
@@ -408,9 +417,12 @@ public class ProfileActivity extends WithHeaderActivity {
 				}
 				// 绑定控件
 				bindControl();
+				if(dialog!=null){
+					dialog.dismiss();
+				}
 
 			}
-
+		
 		}
 
 		@Override

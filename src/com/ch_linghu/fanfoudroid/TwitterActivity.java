@@ -184,6 +184,11 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 	// hasRetrieveListTask interface
 	@Override
 	public int addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
+		// 获取消息的时候，将status里获取的user也存储到数据库
+		
+		for (Tweet t : tweets) {
+			getDb().createWeiboUserInfo(t.user);
+		}
 		return getDb().putTweets(tweets, getUserId(), StatusTable.TYPE_HOME,
 				isUnread);
 	}

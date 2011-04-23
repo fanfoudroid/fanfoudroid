@@ -920,7 +920,7 @@ public class TwitterDatabase {
         initialValues.put(UserInfoTable.FIELD_FOLLOWING, user.isFollowing);
         
         
-        long rowId = mDb.insert(UserInfoTable.TABLE_NAME, null, initialValues);
+        long rowId = mDb.insertWithOnConflict(UserInfoTable.TABLE_NAME, null, initialValues,SQLiteDatabase.CONFLICT_REPLACE);
         if (-1 == rowId) {
             Log.e(TAG, "Cann't create Follower : " + user.id);
         } else {
@@ -933,7 +933,7 @@ public class TwitterDatabase {
         SQLiteDatabase mDb = mOpenHelper.getWritableDatabase();
     	ContentValues args = new ContentValues();
 
-		args.put(UserInfoTable._ID, user.getName());
+		args.put(UserInfoTable._ID, user.getId());
 		
 		args.put(UserInfoTable.FIELD_USER_NAME, user.getName());
 		
@@ -971,7 +971,11 @@ public class TwitterDatabase {
 		
 		args.put(UserInfoTable.FIELD_FOLLOWING, user.isFollowing());
 		
-	    long rowId = mDb.insert(UserInfoTable.TABLE_NAME, null, args);
+	    //long rowId = mDb.insert(UserInfoTable.TABLE_NAME, null, args);
+		
+		//省去判断existUser，如果存在数据则replace
+		long rowId=mDb.insertWithOnConflict(UserInfoTable.TABLE_NAME, null, args, SQLiteDatabase.CONFLICT_REPLACE);
+		
         if (-1 == rowId) {
             Log.e(TAG, "Cann't create Follower : " + user.getId());
         } else {

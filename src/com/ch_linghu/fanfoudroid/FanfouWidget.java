@@ -36,18 +36,19 @@ public class FanfouWidget extends AppWidgetProvider {
 	private static List<Tweet> tweets;
 	private static int position = 0;
 
-	class CacheCallback implements ProfileImageCacheCallback{
+	class CacheCallback implements ProfileImageCacheCallback {
 		private RemoteViews updateViews;
-		
-		CacheCallback(RemoteViews updateViews){
+
+		CacheCallback(RemoteViews updateViews) {
 			this.updateViews = updateViews;
 		}
+
 		@Override
 		public void refresh(String url, Bitmap bitmap) {
 			updateViews.setImageViewBitmap(R.id.status_image, bitmap);
 		}
 	}
-	
+
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appwidgetmanager,
 			int[] appWidgetIds) {
@@ -57,7 +58,7 @@ public class FanfouWidget extends AppWidgetProvider {
 		// Intent i = new Intent(context, WidgetService.class);
 		// context.startService(i);
 		// }
-		
+
 		update(context);
 
 	}
@@ -97,21 +98,27 @@ public class FanfouWidget extends AppWidgetProvider {
 	}
 
 	private void refreshView(Context context, String action) {
-
-		if (action.equals(NEXTACTION)) {
-			--position;
-		} else if (action.equals(PREACTION)) {
-			++position;
+		//某些情况下，tweets会为null
+		if(tweets==null){
+			fetchMessages();
 		}
-		Log.d(TAG, "Tweets size =" + tweets.size());
-		if (position >= tweets.size() || position < 0) {
-			position = 0;
+		//防止引发IndexOutOfBoundsException
+		if (tweets.size() != 0) {
+			if (action.equals(NEXTACTION)) {
+				--position;
+			} else if (action.equals(PREACTION)) {
+				++position;
+			}
+			// Log.d(TAG, "Tweets size =" + tweets.size());
+			if (position >= tweets.size() || position < 0) {
+				position = 0;
+			}
+			// Log.d(TAG, "position=" + position);
+			ComponentName fanfouWidget = new ComponentName(context,
+					FanfouWidget.class);
+			AppWidgetManager manager = AppWidgetManager.getInstance(context);
+			manager.updateAppWidget(fanfouWidget, buildUpdate(context));
 		}
-		Log.d(TAG, "position=" + position);
-		ComponentName fanfouWidget = new ComponentName(context,
-				FanfouWidget.class);
-		AppWidgetManager manager = AppWidgetManager.getInstance(context);
-		manager.updateAppWidget(fanfouWidget, buildUpdate(context));
 	}
 
 	public RemoteViews buildUpdate(Context context) {
@@ -121,13 +128,16 @@ public class FanfouWidget extends AppWidgetProvider {
 
 		Tweet t = tweets.get(position);
 		Log.d(TAG, "tweet=" + t);
-		
-		updateViews.setTextViewText(R.id.status_screen_name, t.screenName);
-		updateViews.setTextViewText(R.id.status_text, Utils.getSimpleTweetText(t.text));
 
-		updateViews.setTextViewText(R.id.tweet_source, context.getString(R.string.tweet_source_prefix) + t.source);
-		updateViews.setTextViewText(R.id.tweet_created_at, Utils.getRelativeDate(t.createdAt));
-		
+		updateViews.setTextViewText(R.id.status_screen_name, t.screenName);
+		updateViews.setTextViewText(R.id.status_text,
+				Utils.getSimpleTweetText(t.text));
+
+		updateViews.setTextViewText(R.id.tweet_source,
+				context.getString(R.string.tweet_source_prefix) + t.source);
+		updateViews.setTextViewText(R.id.tweet_created_at,
+				Utils.getRelativeDate(t.createdAt));
+
 		updateViews.setImageViewBitmap(R.id.status_image,
 				TwitterApplication.mProfileImageCacheManager.get(
 						t.profileImageUrl, new CacheCallback(updateViews)));
@@ -142,19 +152,22 @@ public class FanfouWidget extends AppWidgetProvider {
 		PendingIntent pipre = PendingIntent.getBroadcast(context, 0, ipre,
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		updateViews.setOnClickPendingIntent(R.id.btn_pre, pipre);
-		
+
 		Intent write = WriteActivity.createNewTweetIntent("");
-		PendingIntent piwrite = PendingIntent.getActivity(context, 0, write,PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent piwrite = PendingIntent.getActivity(context, 0, write,
+				PendingIntent.FLAG_UPDATE_CURRENT);
 		updateViews.setOnClickPendingIntent(R.id.write_message, piwrite);
-		
+
 		Intent home = TwitterActivity.createIntent(context);
-		PendingIntent pihome = PendingIntent.getActivity(context, 0, home, PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent pihome = PendingIntent.getActivity(context, 0, home,
+				PendingIntent.FLAG_UPDATE_CURRENT);
 		updateViews.setOnClickPendingIntent(R.id.logo_image, pihome);
-		
+
 		Intent status = StatusActivity.createIntent(t);
-		PendingIntent pistatus=PendingIntent.getActivity(context, 0, status, PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent pistatus = PendingIntent.getActivity(context, 0, status,
+				PendingIntent.FLAG_UPDATE_CURRENT);
 		updateViews.setOnClickPendingIntent(R.id.main_body, pistatus);
-		
+
 		return updateViews;
 
 	}
@@ -168,7 +181,7 @@ public class FanfouWidget extends AppWidgetProvider {
 		Log.i(TAG, "action is" + intent.getAction());
 		if (NEXTACTION.equals(action) || PREACTION.equals(action)) {
 			refreshView(context, intent.getAction());
-		} else if (AppWidgetManager.ACTION_APPWIDGET_UPDATE.equals(action)){
+		} else if (AppWidgetManager.ACTION_APPWIDGET_UPDATE.equals(action)) {
 			update(context);
 		}
 	}
@@ -179,7 +192,7 @@ public class FanfouWidget extends AppWidgetProvider {
 	 * @param serviceName
 	 * @return
 	 */
-	@Deprecated 
+	@Deprecated
 	public boolean isRunning(Context c, String serviceName) {
 		ActivityManager myAM = (ActivityManager) c
 				.getSystemService(Context.ACTIVITY_SERVICE);
@@ -206,7 +219,7 @@ public class FanfouWidget extends AppWidgetProvider {
 	@Override
 	public void onEnabled(Context context) {
 		Log.i(TAG, "onEnabled");
-		
+
 		TwitterService.setWidgetStatus(true);
 	}
 
