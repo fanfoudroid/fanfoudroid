@@ -8,6 +8,7 @@
     >
    
    <!-- Header -->
+   <include layout="@layout/header_write"/>
    
    <!-- 状态栏 -->
    <RelativeLayout android:gravity="center_vertical"

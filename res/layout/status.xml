@@ -8,6 +8,7 @@
   >
   
    <!-- Header -->
+   <include layout="@layout/header_back"/>
    
    <ScrollView 
    android:layout_width="fill_parent"

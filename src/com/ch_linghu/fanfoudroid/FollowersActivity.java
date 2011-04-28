@@ -1,13 +1,11 @@
 package com.ch_linghu.fanfoudroid;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.widget.ListView;
-import android.widget.Toast;
-
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.ui.base.UserArrayBaseActivity;
 import com.ch_linghu.fanfoudroid.ui.module.UserArrayAdapter;
@@ -20,8 +18,10 @@ public class FollowersActivity extends UserArrayBaseActivity {
 	private static final String TAG = "FollowersActivity";
 	
 	private String userId;
+	private String userName;
 	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.FOLLOWERS";
 	private static final String USER_ID = "userId";
+	private static final String USER_NAME = "userName";
 	private int currentPage=1;
 	private int followersCount=0;
 	private static final double PRE_PAGE_COUNT=100.0;//官方分页为每页100
@@ -35,24 +35,22 @@ public class FollowersActivity extends UserArrayBaseActivity {
 			Bundle extras = intent.getExtras();
 			if (extras != null) {
 				this.userId = extras.getString(USER_ID);
+				this.userName = extras.getString(USER_NAME);
 			} else {
 				// 获取登录用户id
-//				SharedPreferences preferences = PreferenceManager
-//						.getDefaultSharedPreferences(this);
-//				userId = preferences.getString(Preferences.CURRENT_USER_ID,
-//						TwitterApplication.mApi.getUserId());
 				userId=TwitterApplication.getMyselfId();
+				userName=TwitterApplication.getMyselfName();
 			}
-			Uri data = intent.getData();
-			if (data != null) {
-				userId = data.getLastPathSegment();
-			}
+
 			if (super._onCreate(savedInstanceState)) {
      
 			String myself = TwitterApplication.getMyselfId();
-			Toast.makeText(getBaseContext(), myself+"@"+getUserId(), Toast.LENGTH_SHORT);
 			if(getUserId()==myself){
-				setHeaderTitle("关注我的人");
+				setHeaderTitle(MessageFormat.format(
+						getString(R.string.profile_followers_count_title), "我"));
+			} else {
+				setHeaderTitle(MessageFormat.format(
+						getString(R.string.profile_followers_count_title), userName));
 			}
 			return true;
 		
@@ -62,10 +60,11 @@ public class FollowersActivity extends UserArrayBaseActivity {
        
 	}
 	
-	public static Intent createIntent(String userId) {
+	public static Intent createIntent(String userId, String userName) {
 		Intent intent = new Intent(LAUNCH_ACTION);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		intent.putExtra(USER_ID, userId);
+		intent.putExtra(USER_NAME, userName);
 		return intent;
 	}
 	

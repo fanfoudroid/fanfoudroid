@@ -120,12 +120,7 @@ implements Refreshable {
 		if (super._onCreate(savedInstanceState)){
 			setContentView(getLayoutId());
 			
-			String myself = TwitterApplication.getMyselfId();
-			if(getUserId()==myself){
-				initHeader(HEADER_STYLE_HOME);
-			}else{
-				initHeader(HEADER_STYLE_BACK);
-			}
+			initHeader(HEADER_STYLE_HOME);
 
 			mPreferences.getInt(Preferences.TWITTER_ACTIVITY_STATE_KEY, STATE_ALL);
 

@@ -8,6 +8,9 @@
   android:background="@color/body_background"
   >
  
+ <!-- Header -->
+ <include layout="@layout/header"/>
+ 
 <ScrollView
 		android:background="#FFEFF0F4"
 		android:scrollbars="horizontal"

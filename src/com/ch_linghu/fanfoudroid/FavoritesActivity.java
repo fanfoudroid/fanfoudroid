@@ -38,15 +38,18 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 
 	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.FAVORITES";
 	private static final String USER_ID = "userid";
+	private static final String USER_NAME = "userName";
 
 	static final int DIALOG_WRITE_ID = 0;
 	
 	private String userId = null;
+	private String userName = null;
 	
-	public static Intent createIntent(String userId) {
+	public static Intent createIntent(String userId, String userName) {
 		Intent intent = new Intent(LAUNCH_ACTION);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		intent.putExtra(USER_ID, userId);
+		intent.putExtra(USER_NAME, userName);
 
 		return intent;
 	}
@@ -63,8 +66,8 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 
 	}
 
-	public static Intent createNewTaskIntent(String userId) {
-		Intent intent = createIntent(userId);
+	public static Intent createNewTaskIntent(String userId, String userName) {
+		Intent intent = createIntent(userId, userName);
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
 		return intent;
@@ -90,7 +93,7 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 		if (getUserId().equals(TwitterApplication.getMyselfId())){
 			who = "我";
 		}else{
-			who = getUserId();
+			who = getUserName();
 		}
 		return MessageFormat.format(template, who);
 	}
@@ -153,6 +156,17 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 		}
 
 		return userId;
-		
+	}
+	
+	public String getUserName(){
+		Intent intent = getIntent();
+		Bundle extras = intent.getExtras();
+		if (extras != null){
+			userName = extras.getString(USER_NAME);
+		} else {
+			userName = TwitterApplication.getMyselfName();
+		}
+
+		return userName;		
 	}
 }

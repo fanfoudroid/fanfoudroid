@@ -5,10 +5,7 @@
 	android:background="#e7e7e7">
 
 	<!-- Header -->
-
-
-
-
+    <include layout="@layout/header_write"/>
 
 	<!-- main text input -->
 	<EditText android:id="@+id/tweet_edit" android:layout_width="fill_parent"

@@ -299,6 +299,8 @@ public class TwitterDatabase {
     public final static DateFormat DB_DATE_FORMATTER = new SimpleDateFormat(
             "yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US);
 
+	private static final int CONFLICT_REPLACE = 0x00000005;
+
     /**
      * 向Status表中写入一行数据, 此方法为私有方法, 外部插入数据请使用 putTweets()
      * 
@@ -919,8 +921,8 @@ public class TwitterDatabase {
         initialValues.put(UserInfoTable.FIELD_STATUSES_COUNT, user.statusesCount);
         initialValues.put(UserInfoTable.FIELD_FOLLOWING, user.isFollowing);
         
-        
-        long rowId = mDb.insertWithOnConflict(UserInfoTable.TABLE_NAME, null, initialValues,SQLiteDatabase.CONFLICT_REPLACE);
+        //long rowId = mDb.insertWithOnConflict(UserInfoTable.TABLE_NAME, null, initialValues,SQLiteDatabase.CONFLICT_REPLACE);
+        long rowId = insertWithOnConflict(mDb, UserInfoTable.TABLE_NAME, null, initialValues, CONFLICT_REPLACE);
         if (-1 == rowId) {
             Log.e(TAG, "Cann't create Follower : " + user.id);
         } else {
@@ -929,7 +931,22 @@ public class TwitterDatabase {
         return rowId;
     }
     
-    public long createWeiboUserInfo(com.ch_linghu.fanfoudroid.weibo.User user){
+    //SQLiteDatabase.insertWithConflict是LEVEL 8(2.2)才引入的新方法
+    //为了兼容旧版，这里给出一个简化的兼容实现
+    //要注意的是这个实现和标准的函数行为并不完全一致
+	private long insertWithOnConflict(SQLiteDatabase db, String tableName,
+			String nullColumnHack, ContentValues initialValues, int conflictReplace) {
+		
+		long rowId = db.insert(tableName, nullColumnHack, initialValues);
+		if(-1 == rowId){
+			//尝试update
+			rowId = db.update(tableName, initialValues, 
+					UserInfoTable._ID+"="+initialValues.getAsString(UserInfoTable._ID), null);
+		}
+		return rowId;
+	}
+
+	public long createWeiboUserInfo(com.ch_linghu.fanfoudroid.weibo.User user){
         SQLiteDatabase mDb = mOpenHelper.getWritableDatabase();
     	ContentValues args = new ContentValues();
 
@@ -974,9 +991,10 @@ public class TwitterDatabase {
 	    //long rowId = mDb.insert(UserInfoTable.TABLE_NAME, null, args);
 		
 		//省去判断existUser，如果存在数据则replace
-		long rowId=mDb.insertWithOnConflict(UserInfoTable.TABLE_NAME, null, args, SQLiteDatabase.CONFLICT_REPLACE);
-		
-        if (-1 == rowId) {
+		//long rowId=mDb.insertWithOnConflict(UserInfoTable.TABLE_NAME, null, args, SQLiteDatabase.CONFLICT_REPLACE);
+		long rowId=insertWithOnConflict(mDb, UserInfoTable.TABLE_NAME, null, args, CONFLICT_REPLACE);
+
+		if (-1 == rowId) {
             Log.e(TAG, "Cann't create Follower : " + user.getId());
         } else {
             Log.i(TAG, "create create follower : " + user.getId());

@@ -53,6 +53,7 @@ public class ProfileActivity extends WithHeaderActivity {
 	private GenericTask cancelFollowingTask;
 
 	private String userId;
+	private String userName;
 	private String myself;
 
 	private User profileInfo;// 用户信息
@@ -81,6 +82,7 @@ public class ProfileActivity extends WithHeaderActivity {
 
 	private static final String FANFOUROOT = "http://fanfou.com/";
 	private static final String USER_ID = "userid";
+	private static final String USER_NAME = "userName";
 
 	private TwitterDatabase db;
 
@@ -112,19 +114,19 @@ public class ProfileActivity extends WithHeaderActivity {
 			myself = TwitterApplication.getMyselfId();
 			if (extras != null) {
 				this.userId = extras.getString(USER_ID);
+				this.userName = extras.getString(USER_NAME);
 			} else {
 				this.userId = myself;
+				this.userName = TwitterApplication.getMyselfName();
 			}
 			Uri data = intent.getData();
 			if (data != null) {
 				userId = data.getLastPathSegment();
 			}
-			if (userId.equals(myself)) {
 
-				initHeader(HEADER_STYLE_HOME);
-			} else {
-				initHeader(HEADER_STYLE_BACK);
-			}
+			initHeader(HEADER_STYLE_HOME);
+			setHeaderTitle("");
+			
 			// 初始化控件
 			initControls();
 
@@ -179,7 +181,17 @@ public class ProfileActivity extends WithHeaderActivity {
 		friendsLayout.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent intent = FollowingActivity.createIntent(userId);
+				//在没有得到profileInfo时，不允许点击事件生效
+				if(profileInfo == null) {
+					return;
+				}
+				String showName;
+				if (!Utils.isEmpty(profileInfo.getScreenName())) {
+					showName = profileInfo.getScreenName();
+				} else {
+					showName = profileInfo.getName();
+				}
+				Intent intent = FollowingActivity.createIntent(userId, showName);
 				intent.setClass(ProfileActivity.this, FollowingActivity.class);
 				startActivity(intent);
 
@@ -190,9 +202,17 @@ public class ProfileActivity extends WithHeaderActivity {
 
 			@Override
 			public void onClick(View v) {
-				// Toast.makeText(getBaseContext(), "跟随他的人",
-				// Toast.LENGTH_SHORT).show();
-				Intent intent = FollowersActivity.createIntent(userId);
+				//在没有得到profileInfo时，不允许点击事件生效
+				if(profileInfo == null) {
+					return;
+				}
+				String showName;
+				if (!Utils.isEmpty(profileInfo.getScreenName())) {
+					showName = profileInfo.getScreenName();
+				} else {
+					showName = profileInfo.getName();
+				}
+				Intent intent = FollowersActivity.createIntent(userId, showName);
 				intent.setClass(ProfileActivity.this, FollowersActivity.class);
 				startActivity(intent);
 
@@ -223,7 +243,11 @@ public class ProfileActivity extends WithHeaderActivity {
 
 			@Override
 			public void onClick(View v) {
-				Intent intent = FavoritesActivity.createIntent(userId);
+				//在没有得到profileInfo时，不允许点击事件生效
+				if(profileInfo == null) {
+					return;
+				}
+				Intent intent = FavoritesActivity.createIntent(userId, profileInfo.getName());
 				intent.setClass(ProfileActivity.this, FavoritesActivity.class);
 				startActivity(intent);
 			}
@@ -341,7 +365,9 @@ public class ProfileActivity extends WithHeaderActivity {
 		}
 
 		if (userId.equals(myself)) {
-			setHeaderTitle("@" + profileInfo.getScreenName());
+			setHeaderTitle("我" + getString(R.string.cmenu_user_profile_prefix));			
+		}else{
+			setHeaderTitle(profileInfo.getScreenName() + getString(R.string.cmenu_user_profile_prefix));			
 		}
 		profileImageView
 				.setImageBitmap(TwitterApplication.mProfileImageCacheManager
@@ -350,7 +376,7 @@ public class ProfileActivity extends WithHeaderActivity {
 
 		profileName.setText(profileInfo.getId());
 
-		profileScreenName.setText("@" + profileInfo.getScreenName());
+		profileScreenName.setText(profileInfo.getScreenName());
 
 		if (profileInfo.getId().equals(myself)) {
 			isFollowingText.setText(R.string.profile_isyou);

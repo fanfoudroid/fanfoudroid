@@ -5,6 +5,9 @@
   android:orientation="vertical"
   android:background="@color/body_background"
   >
+  	 <!-- Header -->
+  	 <include layout="@layout/header_search"/>
+  	 
 	 <!-- 复合列表，包含保存的搜索和热门搜索 -->
 	 <ListView android:id="@+id/search_section_list"
 	  	android:layout_width="fill_parent"

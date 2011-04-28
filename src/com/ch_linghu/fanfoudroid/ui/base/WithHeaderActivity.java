@@ -207,30 +207,32 @@ public class WithHeaderActivity extends BaseActivity {
 	
 	
 	protected void initHeader(int style) {
-		
+		//FIXME: android 1.6似乎不支持addHeaderView中使用的方法
+		//       来增加header，造成header无法显示和使用。
+		//       改用在layout xml里include的方法来确保显示
 		switch (style) {
 		case HEADER_STYLE_HOME:
-			addHeaderView(R.layout.header);
+			//addHeaderView(R.layout.header);
 			addTitleButton();
 			addWriteButton();
 			addSearchButton();
 			addRefreshButton();
 			break;
 		case HEADER_STYLE_BACK:
-			addHeaderView(R.layout.header_back);
+			//addHeaderView(R.layout.header_back);
 			addBackButton();
 			addWriteButton();
 			addSearchButton();
 			addRefreshButton();
 			break;
 		case HEADER_STYLE_WRITE:
-			addHeaderView(R.layout.header_write);
+			//addHeaderView(R.layout.header_write);
 			addBackButton();
 			addSearchButton();
 			addHomeButton();
 			break;
 		case HEADER_STYLE_SEARCH:
-			addHeaderView(R.layout.header_search);
+			//addHeaderView(R.layout.header_search);
 			addBackButton();
 			addSearchBox();
 			addSearchButton();
