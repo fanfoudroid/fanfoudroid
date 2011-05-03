@@ -11,8 +11,8 @@ import com.ch_linghu.fanfoudroid.FanfouWidget;
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.data.db.StatusTable;
-import com.ch_linghu.fanfoudroid.data.db.TwitterDatabase;
+import com.ch_linghu.fanfoudroid.db.StatusTable;
+import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 
 import android.app.AlarmManager;

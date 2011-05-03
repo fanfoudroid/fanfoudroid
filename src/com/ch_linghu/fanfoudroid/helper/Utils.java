@@ -43,7 +43,7 @@ import android.widget.TextView.BufferType;
 
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
-import com.ch_linghu.fanfoudroid.data.db.TwitterDatabase;
+import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
 
 public class Utils {
 

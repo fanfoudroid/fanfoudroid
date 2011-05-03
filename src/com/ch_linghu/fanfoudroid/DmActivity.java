@@ -27,8 +27,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.data.Dm;
-import com.ch_linghu.fanfoudroid.data.db.MessageTable;
-import com.ch_linghu.fanfoudroid.data.db.TwitterDatabase;
+import com.ch_linghu.fanfoudroid.db.MessageTable;
+import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
 import com.ch_linghu.fanfoudroid.helper.Utils;

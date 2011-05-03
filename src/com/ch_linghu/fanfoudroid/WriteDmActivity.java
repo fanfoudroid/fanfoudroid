@@ -33,8 +33,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.data.Dm;
-import com.ch_linghu.fanfoudroid.data.db.StatusTable;
-import com.ch_linghu.fanfoudroid.data.db.TwitterDatabase;
+import com.ch_linghu.fanfoudroid.db.StatusTable;
+import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
@@ -370,7 +370,7 @@ public class WriteDmActivity extends WithHeaderActivity {
 			mInflater = LayoutInflater.from(context);
 
 			mUserTextColumn = cursor
-					.getColumnIndexOrThrow(StatusTable.FIELD_USER_SCREEN_NAME);
+					.getColumnIndexOrThrow(StatusTable.USER_SCREEN_NAME);
 		}
 
 		private LayoutInflater mInflater;

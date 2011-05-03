@@ -44,9 +44,9 @@ import org.w3c.dom.NodeList;
 import android.database.Cursor;
 import android.util.Log;
 
-import com.ch_linghu.fanfoudroid.data.db.MessageTable;
-import com.ch_linghu.fanfoudroid.data.db.TwitterDatabase;
-import com.ch_linghu.fanfoudroid.data.db.UserInfoTable;
+import com.ch_linghu.fanfoudroid.db.MessageTable;
+import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
+import com.ch_linghu.fanfoudroid.db.UserInfoTable;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.Response;
 

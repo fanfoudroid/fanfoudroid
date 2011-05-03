@@ -141,14 +141,14 @@
             </intent-filter>
         </activity>
         <activity android:name=".SearchActivity"/>
-        <activity android:label="@string/app_name" android:name=".PreferencesActivity"/>
-        <service android:name=".service.TwitterService"/>
+        <activity android:label="@string/app_name" android:name="PreferencesActivity"/>
+        <service android:name="service.TwitterService"/>
         <receiver android:name=".service.BootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
-        <receiver android:name=".FanfouWidget">
+        <receiver android:name="FanfouWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
                 <action android:name="com.ch_linghu.fanfoudroid.FanfouWidget.NEXT"/>

@@ -22,8 +22,8 @@ import android.widget.TextView;
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.data.db.StatusTable;
-import com.ch_linghu.fanfoudroid.data.db.TwitterDatabase;
+import com.ch_linghu.fanfoudroid.db.StatusTable;
+import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
 import com.ch_linghu.fanfoudroid.helper.Utils;
@@ -44,27 +44,21 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		if (cursor != null) {
 		    //TODO: 可使用:
 		    //Tweet tweet = StatusTable.parseCursor(cursor);
-		    
-			mUserTextColumn = cursor
-					.getColumnIndexOrThrow(StatusTable.FIELD_USER_SCREEN_NAME);
-			mTextColumn = cursor
-					.getColumnIndexOrThrow(StatusTable.FIELD_TEXT);
-			mProfileImageUrlColumn = cursor
-					.getColumnIndexOrThrow(StatusTable.FIELD_PROFILE_IMAGE_URL);
-			mCreatedAtColumn = cursor
-					.getColumnIndexOrThrow(StatusTable.FIELD_CREATED_AT);
-			mSourceColumn = cursor
-					.getColumnIndexOrThrow(StatusTable.FIELD_SOURCE);
-			mInReplyToScreenName = cursor
-					.getColumnIndexOrThrow(StatusTable.FIELD_IN_REPLY_TO_SCREEN_NAME);
-			mFavorited = cursor
-					.getColumnIndexOrThrow(StatusTable.FIELD_FAVORITED);
-			mThumbnailPic = cursor
-					.getColumnIndexOrThrow(StatusTable.FIELD_PIC_THUMB);
-			mMiddlePic = cursor
-					.getColumnIndexOrThrow(StatusTable.FIELD_PIC_MID);
-			mOriginalPic = cursor
-					.getColumnIndexOrThrow(StatusTable.FIELD_PIC_ORIG);
+
+            mUserTextColumn = cursor
+                    .getColumnIndexOrThrow(StatusTable.USER_SCREEN_NAME);
+            mTextColumn = cursor.getColumnIndexOrThrow(StatusTable.TEXT);
+            mProfileImageUrlColumn = cursor
+                    .getColumnIndexOrThrow(StatusTable.PROFILE_IMAGE_URL);
+            mCreatedAtColumn = cursor
+                    .getColumnIndexOrThrow(StatusTable.CREATED_AT);
+            mSourceColumn = cursor.getColumnIndexOrThrow(StatusTable.SOURCE);
+            mInReplyToScreenName = cursor
+                    .getColumnIndexOrThrow(StatusTable.IN_REPLY_TO_SCREEN_NAME);
+            mFavorited = cursor.getColumnIndexOrThrow(StatusTable.FAVORITED);
+            mThumbnailPic = cursor.getColumnIndexOrThrow(StatusTable.PIC_THUMB);
+            mMiddlePic = cursor.getColumnIndexOrThrow(StatusTable.PIC_MID);
+            mOriginalPic = cursor.getColumnIndexOrThrow(StatusTable.PIC_ORIG);
 		}
 		mMetaBuilder = new StringBuilder();
 	}

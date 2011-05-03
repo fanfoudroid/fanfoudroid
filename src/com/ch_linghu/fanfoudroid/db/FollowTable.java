@@ -1,4 +1,4 @@
-package com.ch_linghu.fanfoudroid.data.db;
+package com.ch_linghu.fanfoudroid.db;
 
 import java.text.ParseException;
 

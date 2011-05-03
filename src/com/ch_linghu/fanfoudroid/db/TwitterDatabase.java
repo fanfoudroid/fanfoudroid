@@ -1,4 +1,4 @@
-package com.ch_linghu.fanfoudroid.data.db;
+package com.ch_linghu.fanfoudroid.db;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -180,7 +180,7 @@ public class TwitterDatabase {
 
         String selection = StatusTable._ID + "=? ";
         if (-1 != type) {
-            selection += " AND " + StatusTable.FIELD_STATUS_TYPE + "=" + type;
+            selection += " AND " + StatusTable.STATUS_TYPE + "=" + type;
         }
 
         Cursor cursor = Db.query(StatusTable.TABLE_NAME,
@@ -217,8 +217,8 @@ public class TwitterDatabase {
 
         Cursor cursor = Db.query(StatusTable.TABLE_NAME,
                 new String[] { StatusTable._ID }, StatusTable._ID + " =? AND "
-                    + StatusTable.FIELD_OWNER_ID + "=? AND "    
-                	+ StatusTable.FIELD_STATUS_TYPE + " = " + type,
+                    + StatusTable.OWNER_ID + "=? AND "    
+                	+ StatusTable.STATUS_TYPE + " = " + type,
                 new String[] { tweetId, owner }, null, null, null);
 
         if (cursor != null && cursor.getCount() > 0) {
@@ -243,10 +243,10 @@ public class TwitterDatabase {
         
         String where = StatusTable._ID + " =? "; 
         if (!Utils.isEmpty(owner)){
-        	where += " AND " + StatusTable.FIELD_OWNER_ID + " = '" + owner + "' ";
+        	where += " AND " + StatusTable.OWNER_ID + " = '" + owner + "' ";
         }
         if (-1 != type) {
-           where  += " AND " + StatusTable.FIELD_STATUS_TYPE + " = " + type;
+           where  += " AND " + StatusTable.STATUS_TYPE + " = " + type;
         }
 
         return db.delete(StatusTable.TABLE_NAME, where, new String[] { tweetId });
@@ -271,7 +271,7 @@ public class TwitterDatabase {
                 + " FROM " + StatusTable.TABLE_NAME;
         boolean first = true;
         if (!Utils.isEmpty(owner)){
-        	sql += " WHERE " + StatusTable.FIELD_OWNER_ID + " = '" + owner + "' ";
+        	sql += " WHERE " + StatusTable.OWNER_ID + " = '" + owner + "' ";
         	first = false;
         }
         if (type != -1){
@@ -280,16 +280,16 @@ public class TwitterDatabase {
         	}else{
         		sql += " AND ";
         	}
-        	sql += StatusTable.FIELD_STATUS_TYPE + " = " + type + " ";
+        	sql += StatusTable.STATUS_TYPE + " = " + type + " ";
         }
-                sql += " ORDER BY " + StatusTable.FIELD_CREATED_AT + " DESC LIMIT "
+                sql += " ORDER BY " + StatusTable.CREATED_AT + " DESC LIMIT "
                 + StatusTable.MAX_ROW_NUM + ")";
 
         if (!Utils.isEmpty(owner)){
-        	sql += " AND " + StatusTable.FIELD_OWNER_ID + " = '" + owner + "' ";
+        	sql += " AND " + StatusTable.OWNER_ID + " = '" + owner + "' ";
         }
         if (type != -1) {
-            sql += " AND " + StatusTable.FIELD_STATUS_TYPE + " = " + type + " ";
+            sql += " AND " + StatusTable.STATUS_TYPE + " = " + type + " ";
         }
 
         Log.d(TAG, sql);
@@ -348,30 +348,30 @@ public class TwitterDatabase {
     private ContentValues makeTweetValues(Tweet tweet, String owner, int type, boolean isUnread) {
         // 插入一条新消息
         ContentValues initialValues = new ContentValues();
-        initialValues.put(StatusTable.FIELD_OWNER_ID, owner);
-        initialValues.put(StatusTable.FIELD_STATUS_TYPE, type);
+        initialValues.put(StatusTable.OWNER_ID, owner);
+        initialValues.put(StatusTable.STATUS_TYPE, type);
         initialValues.put(StatusTable._ID, tweet.id);
-        initialValues.put(StatusTable.FIELD_TEXT, tweet.text);
-        initialValues.put(StatusTable.FIELD_USER_ID, tweet.userId);
-        initialValues.put(StatusTable.FIELD_USER_SCREEN_NAME, tweet.screenName);
-        initialValues.put(StatusTable.FIELD_PROFILE_IMAGE_URL,
+        initialValues.put(StatusTable.TEXT, tweet.text);
+        initialValues.put(StatusTable.USER_ID, tweet.userId);
+        initialValues.put(StatusTable.USER_SCREEN_NAME, tweet.screenName);
+        initialValues.put(StatusTable.PROFILE_IMAGE_URL,
                 tweet.profileImageUrl);
-        initialValues.put(StatusTable.FIELD_PIC_THUMB, tweet.thumbnail_pic);
-        initialValues.put(StatusTable.FIELD_PIC_MID, tweet.bmiddle_pic);
-        initialValues.put(StatusTable.FIELD_PIC_ORIG, tweet.original_pic);
-        initialValues.put(StatusTable.FIELD_FAVORITED, tweet.favorited);
-        initialValues.put(StatusTable.FIELD_IN_REPLY_TO_STATUS_ID,
+        initialValues.put(StatusTable.PIC_THUMB, tweet.thumbnail_pic);
+        initialValues.put(StatusTable.PIC_MID, tweet.bmiddle_pic);
+        initialValues.put(StatusTable.PIC_ORIG, tweet.original_pic);
+        initialValues.put(StatusTable.FAVORITED, tweet.favorited);
+        initialValues.put(StatusTable.IN_REPLY_TO_STATUS_ID,
                 tweet.inReplyToStatusId);
-        initialValues.put(StatusTable.FIELD_IN_REPLY_TO_USER_ID,
+        initialValues.put(StatusTable.IN_REPLY_TO_USER_ID,
                 tweet.inReplyToUserId);
-        initialValues.put(StatusTable.FIELD_IN_REPLY_TO_SCREEN_NAME,
+        initialValues.put(StatusTable.IN_REPLY_TO_SCREEN_NAME,
                 tweet.inReplyToScreenName);
         // initialValues.put(FIELD_IS_REPLY, tweet.isReply());
-        initialValues.put(StatusTable.FIELD_CREATED_AT,
+        initialValues.put(StatusTable.CREATED_AT,
                 DB_DATE_FORMATTER.format(tweet.createdAt));
-        initialValues.put(StatusTable.FIELD_SOURCE, tweet.source);
-        initialValues.put(StatusTable.FIELD_IS_UNREAD, isUnread);
-        initialValues.put(StatusTable.FIELD_TRUNCATED, tweet.truncated);
+        initialValues.put(StatusTable.SOURCE, tweet.source);
+        initialValues.put(StatusTable.IS_UNREAD, isUnread);
+        initialValues.put(StatusTable.TRUNCATED, tweet.truncated);
         // TODO: truncated
         
         return initialValues;
@@ -433,9 +433,9 @@ public class TwitterDatabase {
         SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
 
         return mDb.query(StatusTable.TABLE_NAME, StatusTable.TABLE_COLUMNS,
-                StatusTable.FIELD_OWNER_ID + " = ? AND " + StatusTable.FIELD_STATUS_TYPE + " = " + type,  
+                StatusTable.OWNER_ID + " = ? AND " + StatusTable.STATUS_TYPE + " = " + type,  
                 new String[]{owner}, null, null,
-                StatusTable.FIELD_CREATED_AT + " DESC ");
+                StatusTable.CREATED_AT + " DESC ");
         //LIMIT " + StatusTable.MAX_ROW_NUM);
     }
 
@@ -465,7 +465,7 @@ public class TwitterDatabase {
     public int dropAllTweets(int type) {
         SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
 
-        return mDb.delete(StatusTable.TABLE_NAME, StatusTable.FIELD_STATUS_TYPE
+        return mDb.delete(StatusTable.TABLE_NAME, StatusTable.STATUS_TYPE
                 + " = " + type, null);
     }
 
@@ -494,10 +494,10 @@ public class TwitterDatabase {
 
         String sql = "SELECT " + StatusTable._ID + " FROM "
                 + StatusTable.TABLE_NAME + " WHERE "
-                + StatusTable.FIELD_STATUS_TYPE + " = " + type + " AND "
-                + StatusTable.FIELD_OWNER_ID + " = '" + owner + "' "
+                + StatusTable.STATUS_TYPE + " = " + type + " AND "
+                + StatusTable.OWNER_ID + " = '" + owner + "' "
                 + " ORDER BY "
-                + StatusTable.FIELD_CREATED_AT;
+                + StatusTable.CREATED_AT;
         if (isMax)
             sql += " DESC ";
 
@@ -531,9 +531,9 @@ public class TwitterDatabase {
 
         Cursor mCursor = mDb.rawQuery("SELECT COUNT(" + StatusTable._ID + ")"
                 + " FROM " + StatusTable.TABLE_NAME + " WHERE "
-                + StatusTable.FIELD_STATUS_TYPE + " = " + type + " AND "
-                + StatusTable.FIELD_OWNER_ID + " = '" + owner + "' AND "
-                + StatusTable.FIELD_IS_UNREAD + " = 1 ",
+                + StatusTable.STATUS_TYPE + " = " + type + " AND "
+                + StatusTable.OWNER_ID + " = '" + owner + "' AND "
+                + StatusTable.IS_UNREAD + " = 1 ",
                // "LIMIT " + StatusTable.MAX_ROW_NUM,
                 null);
 
@@ -565,7 +565,7 @@ public class TwitterDatabase {
      */
     public boolean setFavorited(String tweetId, String isFavorited) {
         ContentValues values = new ContentValues();
-        values.put(StatusTable.FIELD_FAVORITED, isFavorited);
+        values.put(StatusTable.FAVORITED, isFavorited);
         int i = updateTweet(tweetId, values);
 
         return (i > 0) ? true : false;
@@ -761,10 +761,10 @@ public class TwitterDatabase {
         SQLiteDatabase mDb = mOpenHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(StatusTable.FIELD_IS_UNREAD, 0);
+        values.put(StatusTable.IS_UNREAD, 0);
 
         return mDb.update(StatusTable.TABLE_NAME, values,
-                StatusTable.FIELD_STATUS_TYPE + "=" + type, null);
+                StatusTable.STATUS_TYPE + "=" + type, null);
     }
 
     public boolean deleteAllDms() {

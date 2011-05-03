@@ -11,8 +11,8 @@ import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
-import com.ch_linghu.fanfoudroid.data.db.StatusTable;
-import com.ch_linghu.fanfoudroid.data.db.TwitterDatabase;
+import com.ch_linghu.fanfoudroid.db.StatusTable;
+import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheManager;
 import com.ch_linghu.fanfoudroid.http.HttpException;
@@ -155,7 +155,7 @@ public class TwitterApplication extends Application {
 
 		if (cursor.moveToFirst()) {
 			int imageIndex = cursor
-					.getColumnIndexOrThrow(StatusTable.FIELD_PROFILE_IMAGE_URL);
+					.getColumnIndexOrThrow(StatusTable.PROFILE_IMAGE_URL);
 			do {
 				keepers.add(cursor.getString(imageIndex));
 			} while (cursor.moveToNext());
@@ -167,7 +167,7 @@ public class TwitterApplication extends Application {
 
 		if (cursor.moveToFirst()) {
 			int imageIndex = cursor
-					.getColumnIndexOrThrow(StatusTable.FIELD_PROFILE_IMAGE_URL);
+					.getColumnIndexOrThrow(StatusTable.PROFILE_IMAGE_URL);
 			do {
 				keepers.add(cursor.getString(imageIndex));
 			} while (cursor.moveToNext());
