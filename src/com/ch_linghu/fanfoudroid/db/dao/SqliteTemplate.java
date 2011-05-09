@@ -11,6 +11,7 @@ import android.util.Log;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
 
 /**
+ * Wrapper of SQLiteDatabase
  * Some as Spring JdbcTemplate
  * 
  * @see org.springframework.jdbc.core.JdbcTemplate
@@ -18,28 +19,47 @@ import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
  */
 public class SqliteTemplate {
     private static final String TAG = "SqliteTemplate";
-    private String mTable;
     
     /**
      * Construct
      * 
      * @param tableName table name
      */
-    public SqliteTemplate(String tableName) {
-        mTable = tableName;
+    public SqliteTemplate() {
     }
     
     /**
-     * Insert a row
+     * Insert a Row
      * 
+     * @param table
+     * @param nullColumnHack
      * @param values
      * @return the row ID of the newly inserted row, or -1 if an error occurred 
+     * 
+     * @see SQLiteDatabase#insert(String table, String nullColumnHack, ContentValues values)
      */
-    public long insert(ContentValues values) {
-        SQLiteDatabase Db = TwitterDatabase.getDb(true);
-        long id = Db.insert(mTable, null, values);
-        Log.i(TAG, ((id != -1) ? "[Success] " : "[Fail] ") + "Insert " + values.toString());
+    public long insert(Query query)
+    {
+        query.setDb(TwitterDatabase.getDb(true));
+        long id = query.insert();
+        Log.i(TAG, ((id != -1) ? "[Success] " : "[Fail] ") + "Insert " 
+                + query.getContentValues().toString());
         return id;
+    }
+    
+    /**
+     * Delete a row
+     * 
+     * @param query
+     * @return succeed or fail
+     */
+    public boolean delete(Query query)
+    {
+        query.setDb(TwitterDatabase.getDb(true));
+        int rows = query.delete();
+        Log.i(TAG, ((rows > 0) ? "[Success] " : "[Fail] ") + "Delete " 
+                + query.toString());
+        return ( rows > 0 );
     }
     
     /**
@@ -51,11 +71,10 @@ public class SqliteTemplate {
      * @return object 
      * @throws DAOException 
      */
-    public <T> T queryForObject(Query query, RowMapper<T> rowMapper) 
-    
-    {
-        SQLiteDatabase db = TwitterDatabase.getDb(false);
-        Cursor cursor = query.from(mTable, null).query(db);
+    public <T> T queryForObject(Query query, RowMapper<T> rowMapper) {
+        query.setDb(TwitterDatabase.getDb(false));
+        Cursor cursor = query.select();
+        cursor.moveToFirst();
         
         T object = rowMapper.mapRow(cursor, cursor.getCount());
         cursor.close();
@@ -88,8 +107,19 @@ public class SqliteTemplate {
      * @return a cursor
      */
     public Cursor queryForCursor(Query query) {
-        SQLiteDatabase db = TwitterDatabase.getDb(false);
-        return query.from(mTable, null).query(db);
+        query.setDb(TwitterDatabase.getDb(false));
+        return query.select();
+    }
+    
+    /**
+     * Upload a row
+     * 
+     * @param query
+     * @return the number of rows affected, or -1 if an error occurred
+     */
+    public int upload(Query query) {
+        query.setDb(TwitterDatabase.getDb(true));
+        return query.update();
     }
 
 }

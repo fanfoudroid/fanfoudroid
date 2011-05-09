@@ -17,44 +17,164 @@ public class StatusDAO {
     private SqliteTemplate sqliteTemplate;
     
     public StatusDAO() {
-        sqliteTemplate = new SqliteTemplate(StatusTable.TABLE_NAME);
+        sqliteTemplate = new SqliteTemplate();
     }
 
-    public long insertStatus(Status status, boolean isUnread) {
-        if (! isExists(status)) {
-            return sqliteTemplate.insert(statusToValues(status, isUnread));
+    /**
+     * Insert a Status
+     * 
+     * 若报 SQLiteconstraintexception 异常, 检查是否某not null字段为空
+     * @param status
+     * @param isUnread
+     * @return
+     */
+    public long insertStatus(Status status) {
+        if (!isExists(status)) {
+            Query query = new Query();
+            query.into(StatusTable.TABLE_NAME)
+                 .values(statusToValues(status));
+            
+            return sqliteTemplate.insert(query);
         }
         Log.i(TAG, status.getId() + "is exists.");
         return -1;
     }
+    
+    // TODO: 
+    public int insertStatuses(List<Status> statuses) {
+        SQLiteDatabase db = TwitterDatabase.getDb(true);
+        
+        int result = 0;
+        try {
+            db.beginTransaction();
 
-    public boolean deleteStatus() {
-        return false;
+            for (int i = statuses.size() - 1; i >= 0; i--) {
+                Status status = statuses.get(i);
+ 
+                long id = db.insert(StatusTable.TABLE_NAME, null, statusToValues(status));
+
+                if (-1 == id) {
+                    Log.e(TAG, "cann't insert the tweet : " + status.toString());
+                } else {
+                    ++result;
+                    Log.i(TAG, String.format("Insert a status into database[%s] : %s",
+                            status.getOwnerId(), status.toString()));
+                }
+            }
+
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+        return result;
+    }
+
+    /**
+     * Delete a status
+     * 
+     * @param statusId
+     * @param owner owner id
+     * @param type status type
+     * @return succeed or fail
+     * @see StatusDAO#deleteStatus(Status)
+     */
+    public boolean deleteStatus(String statusId, String owner, int type) {
+        Query query = new Query();
+        query.from(StatusTable.TABLE_NAME)
+             .where(StatusTable._ID + "=?", statusId);
+
+        if ( !Utils.isEmpty(owner) ) {
+            query.where(StatusTable.OWNER_ID + "=?", owner);
+        }
+        if ( -1 != type ) {
+            query.where(StatusTable.STATUS_TYPE + "=" + type);
+        }
+        return sqliteTemplate.delete(query);
     }
     
+    /**
+     * Delete a Status
+     * 
+     * @param status
+     * @return succeed or fail
+     * @see StatusDAO#deleteStatus(String, String, int)
+     */
+    public boolean deleteStatus(Status status) {
+        return deleteStatus(status.getId(), status.getOwnerId(), 
+                Integer.parseInt(status.getType()));
+    }
+
+    /**
+     * Find a status by status ID
+     * 
+     * @param statusId
+     * @return
+     */
     public Status findStatus(String statusId) {
         Query query = new Query();
-        query.where("_id =?", statusId)
+        query.from(StatusTable.TABLE_NAME, null)
+             .where("_id =?", statusId)
              .orderBy("created_at DESC");
         
         return sqliteTemplate.queryForObject(query, new StatusMapper());
     }
     
+    /**
+     * Find user's statuses
+     * 
+     * @param userId
+     * @param statusType
+     * @return list of statuses
+     */
     public List<Status> findStatuses(String userId, int statusType) {
         Query query = new Query();
-        query.where("owner = ?", userId)
+        query.from(StatusTable.TABLE_NAME, null)
+             .where("owner = ?", userId)
              .where("status_type = " + statusType)
              .orderBy("created_at DESC");
         
         return sqliteTemplate.queryForList(query, new StatusMapper());
     }
-
-    public boolean updateStatus(Status status) {
-        return false;
+    
+    /**
+     * Find user's statuses
+     * 
+     * @param userId
+     * @param statusType
+     * @return 
+     * @see StatusDAO#findStatuses(String, int)
+     */
+    public List<Status> findStatuses(String userId, String statusType) {
+        return findStatuses(userId, Integer.parseInt(statusType));
     }
 
     /**
-     * Check if a Status exists
+     * Update status with newValues
+     * 
+     * @param statusId
+     * @param newValues
+     * @return
+     */
+    public boolean updateStatus(String statusId, ContentValues newValues) {
+        Query query = new Query();
+        query.setTable(StatusTable.TABLE_NAME)
+             .where(StatusTable._ID + "=?", statusId)
+             .values(newValues);
+        return ( sqliteTemplate.upload(query) > 0 );
+    }
+    
+    /**
+     * Update status with fields
+     * 
+     * @param status
+     * @return
+     */
+    public boolean updateStatus(Status status) {
+        return updateStatus(status.getId(), statusToValues(status));
+    }
+
+    /**
+     * Check if status exists
      * 
      * @param status
      * @return
@@ -62,14 +182,13 @@ public class StatusDAO {
     public boolean isExists(Status status) {
         boolean result = false;
         if (null != status.getId()) {
-            Query select = new Query();
-            select.from(StatusTable.TABLE_NAME, new String[] { "_id" })
-                  .where("_id = ?", status.getId())
-                  .where("owner = ?", status.getUserId())
-                  .where("status_type = " + status.getType());
+            Query query = new Query(TwitterDatabase.getDb(false));
+            query.from(StatusTable.TABLE_NAME, new String[] { "_id" })
+                 .where("_id = ?", status.getId())
+                 .where("owner = ?", status.getUserId())
+                 .where("status_type = " + status.getType());
             
-            SQLiteDatabase db = TwitterDatabase.getDb(false);
-            Cursor cursor = select.query(db);
+            Cursor cursor = query.select();
             result = ( cursor != null && cursor.getCount() > 0);
             cursor.close();
         }
@@ -83,19 +202,20 @@ public class StatusDAO {
      * @param isUnread
      * @return
      */
-    private ContentValues statusToValues(Status status, boolean isUnread) {
+    private ContentValues statusToValues(Status status) {
         ContentValues v = new ContentValues();
         v.put(StatusTable._ID, status.getId());
         v.put(StatusTable.STATUS_TYPE, status.getType());
         v.put(StatusTable.TEXT, status.getText());
-        v.put(StatusTable.OWNER_ID, status.getUserId());
+        v.put(StatusTable.OWNER_ID, status.getOwnerId());
+        v.put(StatusTable.USER_ID, status.getUserId());
         v.put(StatusTable.USER_SCREEN_NAME, status.getUserScreenName());
         v.put(StatusTable.PROFILE_IMAGE_URL, status.getProfileImageUrl());
         v.put(StatusTable.PIC_THUMB, status.getThumbnailPic());
         v.put(StatusTable.PIC_MID, status.getBmiddlePic());
         v.put(StatusTable.PIC_ORIG, status.getOriginalPic());
         v.put(StatusTable.FAVORITED, status.isFavorited() + "");
-        v.put(StatusTable.TRUNCATED, status.isTruncated() + ""); // TODO:
+        v.put(StatusTable.TRUNCATED, status.isTruncated()); // TODO:
         v.put(StatusTable.IN_REPLY_TO_STATUS_ID, status.getInReplyToStatusId());
         v.put(StatusTable.IN_REPLY_TO_USER_ID, status.getInReplyToUserId());
         v.put(StatusTable.IN_REPLY_TO_SCREEN_NAME,
@@ -104,13 +224,16 @@ public class StatusDAO {
         v.put(StatusTable.CREATED_AT,
                 TwitterDatabase.DB_DATE_FORMATTER.format(status.getCreatedAt()));
         v.put(StatusTable.SOURCE, status.getSource());
-        v.put(StatusTable.IS_UNREAD, isUnread);
-
+        v.put(StatusTable.IS_UNREAD, status.isUnRead());
+        
         return v;
     }
     
    
-    /** For SqliteTemplate */
+    /**
+     * Cursor -> Status
+     * for SqliteTemplate
+     */
     private static final class StatusMapper implements RowMapper<Status> {
 
         @Override
@@ -121,12 +244,15 @@ public class StatusDAO {
                     cursor.getColumnIndex(StatusTable._ID)));
             status.setCreatedAt(Utils.parseDateTimeFromSqlite(cursor.getString(
                     cursor.getColumnIndex(StatusTable.CREATED_AT))));
-            status.setFavorited(cursor.getInt(
-                    cursor.getColumnIndex(StatusTable.FAVORITED)) != 0);
+            //TODO: 更改favorite 在数据库类型为boolean后改为 " != 0 "
+            status.setFavorited(cursor.getString(
+                    cursor.getColumnIndex(StatusTable.FAVORITED)).equals("true"));
             status.setUserScreenName(cursor.getString(
                     cursor.getColumnIndex(StatusTable.USER_SCREEN_NAME)));
             status.setUserId(cursor.getString(
                     cursor.getColumnIndex(StatusTable.USER_ID)));
+            status.setOwnerId(cursor.getString(
+                    cursor.getColumnIndex(StatusTable.OWNER_ID)));
             status.setText(cursor.getString(
                     cursor.getColumnIndex(StatusTable.TEXT)));
             status.setSource(cursor.getString(
@@ -139,16 +265,15 @@ public class StatusDAO {
                     cursor.getColumnIndex(StatusTable.IN_REPLY_TO_STATUS_ID)));
             status.setInReplyToUserId(cursor.getString(
                     cursor.getColumnIndex(StatusTable.IN_REPLY_TO_USER_ID)));
-            //TODO: 将数据库中的 isFav, isUnRead, isTruncated 列该改成 boolean 
-            //status.setTruncated(cursor.getString(
-            //        cursor.getColumnIndex(StatusTable.TRUNCATED)));
+            status.setTruncated(cursor.getInt(
+                   cursor.getColumnIndex(StatusTable.TRUNCATED)) != 0);
             status.setThumbnailPic(cursor.getString(
                     cursor.getColumnIndex(StatusTable.PIC_THUMB)));
             status.setBmiddlePic(cursor.getString(
                     cursor.getColumnIndex(StatusTable.PIC_MID)));
             status.setOriginalPic(cursor.getString(
                     cursor.getColumnIndex(StatusTable.PIC_ORIG)));
-            //TODO: 将数据库中的statusType改成int类型
+            //TODO: 将数据库中的statusType改成Int类型
             status.setType(cursor.getString(
                     cursor.getColumnIndex(StatusTable.STATUS_TYPE)));
 

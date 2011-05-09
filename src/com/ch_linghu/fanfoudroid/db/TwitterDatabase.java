@@ -18,6 +18,8 @@ import android.util.Log;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.data.Dm;
 import com.ch_linghu.fanfoudroid.data.Tweet;
+import com.ch_linghu.fanfoudroid.data2.Status;
+import com.ch_linghu.fanfoudroid.db.dao.StatusDAO;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 
@@ -174,6 +176,7 @@ public class TwitterDatabase {
      *              <li>StatusTable.TYPE_FAVORITE</li>
      *              <li>-1 means all types</li>
      * @return 将Cursor转换过的Tweet对象
+     * @deprecated use StatusDAO#findStatus()
      */
     public Tweet queryTweet(String tweetId, int type) {
         SQLiteDatabase Db = mOpenHelper.getWritableDatabase();
@@ -210,6 +213,7 @@ public class TwitterDatabase {
      *            <li>StatusTable.TYPE_USER</li>
      *            <li>StatusTable.TYPE_FAVORITE</li>
      * @return is exists
+     * @deprecated use StatusDAO#isExists()
      */
     public boolean isExists(String tweetId, String owner, int type) {
         SQLiteDatabase Db = mOpenHelper.getWritableDatabase();
@@ -237,6 +241,7 @@ public class TwitterDatabase {
      * @return the number of rows affected if a whereClause is passed in, 0
      *         otherwise. To remove all rows and get a count pass "1" as the
      *         whereClause.
+     * @deprecated use {@link StatusDAO#deleteStatus(String, String, int)}
      */
     public int deleteTweet(String tweetId, String owner, int type) {
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
@@ -307,6 +312,7 @@ public class TwitterDatabase {
      * @param tweet
      *            需要写入的单条消息
      * @return the row ID of the newly inserted row, or -1 if an error occurred
+     * @deprecated use {@link StatusDAO#insertStatus(Status, boolean)}
      */
     public long insertTweet(Tweet tweet, String owner, int type, boolean isUnread) {
         SQLiteDatabase Db = mOpenHelper.getWritableDatabase();
@@ -335,6 +341,7 @@ public class TwitterDatabase {
      * @param values
      *            ContentValues 需要更新字段的键值对
      * @return the number of rows affected
+     * @deprecated use {@link StatusDAO#updateStatus(String, ContentValues)}
      */
     public int updateTweet(String tweetId, ContentValues values) {
         Log.i(TAG, "Update Tweet  : " + tweetId + " " + values.toString());
@@ -345,6 +352,7 @@ public class TwitterDatabase {
                 StatusTable._ID + "=?", new String[] { tweetId });
     }
     
+    /** @deprecated */
     private ContentValues makeTweetValues(Tweet tweet, String owner, int type, boolean isUnread) {
         // 插入一条新消息
         ContentValues initialValues = new ContentValues();
@@ -428,6 +436,7 @@ public class TwitterDatabase {
      * @param userId
      * @param tableName
      * @return a cursor
+     * @deprecated use {@link StatusDAO#findStatuses(String, int)}
      */
     public Cursor fetchAllTweets(String owner, int type) {
         SQLiteDatabase mDb = mOpenHelper.getReadableDatabase();
@@ -562,6 +571,8 @@ public class TwitterDatabase {
      * @param tweetId
      * @param isFavorited
      * @return Is Succeed
+     * @deprecated use {@link Status#setFavorited(boolean)} and
+     *                 {@link StatusDAO#updateStatus(Status)}
      */
     public boolean setFavorited(String tweetId, String isFavorited) {
         ContentValues values = new ContentValues();
@@ -1058,31 +1069,18 @@ public class TwitterDatabase {
     	SQLiteDatabase Db=mOpenHelper.getWritableDatabase();
     	ContentValues args=new ContentValues();
     	args.put(UserInfoTable._ID, user.id);
-		
 		args.put(UserInfoTable.FIELD_USER_NAME, user.name);
-		
 		args.put(UserInfoTable.FIELD_USER_SCREEN_NAME, user.screenName);
-		
 		args.put(UserInfoTable.FIELD_LOCALTION, user.location);
-		
 		args.put(UserInfoTable.FIELD_DESCRIPTION, user.description);
-		
 		args.put(UserInfoTable.FIELD_PROFILE_IMAGE_URL, user.profileImageUrl);
-
 		args.put(UserInfoTable.FIELD_URL, user.url);
-
 		args.put(UserInfoTable.FIELD_PROTECTED, user.isProtected);
-		
 		args.put(UserInfoTable.FIELD_FOLLOWERS_COUNT, user.followersCount);
-		
 		args.put(UserInfoTable.FIELD_LAST_STATUS, user.lastStatus);
-		
 		args.put(UserInfoTable.FIELD_FRIENDS_COUNT, user.friendsCount);
-		
 		args.put(UserInfoTable.FIELD_FAVORITES_COUNT, user.favoritesCount);
-		
 		args.put(UserInfoTable.FIELD_STATUSES_COUNT, user.statusesCount);
-		
 		args.put(UserInfoTable.FIELD_FOLLOWING, user.isFollowing);
 		
     	return Db.update(UserInfoTable.TABLE_NAME, args, UserInfoTable._ID+"='"+user.id+"'", null)>0;

@@ -36,12 +36,13 @@ public class Status extends WeiboResponse implements java.io.Serializable {
     private String text;
     private String source;
     private String userId;
+    private String ownerId; //用于标识数据的所有者。以便于处理其他用户的信息（如其他用户的收藏）
     private String userScreenName;
     private String profileImageUrl;
     private Date createdAt;
-    
-    private String type = "-1";
     private boolean isUnRead = true;
+    private String type = "-1";
+    
     private boolean isFavorited = false;
     private boolean isTruncated = false;
     private String inReplyToStatusId = "";
@@ -298,16 +299,24 @@ public class Status extends WeiboResponse implements java.io.Serializable {
         return isUnRead;
     }
 
-    public void setUnRead(boolean isUnRead) {
+    public void setIsUnRead(boolean isUnRead) {
         this.isUnRead = isUnRead;
     }
-
+    
     public User getUser() {
         return user;
     }
 
     public void setUser(User user) {
         this.user = user;
+    }
+    
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
     }
     
     /*package*/

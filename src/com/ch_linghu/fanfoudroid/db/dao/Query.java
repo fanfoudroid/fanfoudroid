@@ -3,6 +3,7 @@ package com.ch_linghu.fanfoudroid.db.dao;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -13,30 +14,53 @@ import android.util.Log;
  * Usage:
  * ------------------------------------------------
  * Query select = new Query(SQLiteDatabase);
- * select.from("tableName", new String[] { "colName" })
- *       .where("id = ?", 123456)
- *       .where("name = ?", "jack")
- *       .orderBy("created_at DESC")
- *       .limit(1);
- * Cursor cursor = select.query();
+ * 
+ * // SELECT
+ * query.from("tableName", new String[] { "colName" })
+ *      .where("id = ?", 123456)
+ *      .where("name = ?", "jack")
+ *      .orderBy("created_at DESC")
+ *      .limit(1);
+ * Cursor cursor = query.select();
+ * 
+ * // DELETE
+ * query.from("tableName")
+ *      .where("id = ?", 123455);
+ *      .delete();
+ * 
+ * // UPDATE
+ * query.setTable("tableName")
+ *      .values(contentValues)
+ *      .update();
+ * 
+ * // INSERT
+ * query.into("tableName")
+ *      .values(contentValues)
+ *      .insert();
  * ------------------------------------------------
+ * 
+ * @see SQLiteDatabase#query(String, String[], String, String[], String, String, String, String)
  */
-public class Query {
+public class Query
+{
     private static final String TAG = "Query-Builder";
     private static boolean debug = true;
     
-    private ArrayList<String> select = new ArrayList<String>();
+    /** TEMP list for selctionArgs */
     private ArrayList<String> binds = new ArrayList<String>();
-    private SQLiteDatabase db = null;
+    private SQLiteDatabase mDb = null;
     
-    private String table;
-    private String[] columns;
-    private String selection;
-    private String[] selectionArgs;
-    private String groupBy = null;
-    private String having = null;
-    private String orderBy = null;
-    private String limit = null;
+    private String mTable;
+    private String[] mColumns;
+    private String mSelection = null;
+    private String[] mSelectionArgs = null;
+    private String mGroupBy = null;
+    private String mHaving = null;
+    private String mOrderBy = null;
+    private String mLimit = null;
+    
+    private ContentValues mValues = null;
+    private String mNullColumnHack = null;
     
     public Query() { }
     
@@ -52,29 +76,14 @@ public class Query {
     /**
      * Query the given table, returning a Cursor over the result set.
      * 
-     * @see android.database.sqlite.SQLiteDatabase.query
-     * @return
+     * @param db SQLitedatabase
+     * @return A Cursor object, which is positioned before the first entry, or NULL
      */
-    public Cursor query() {
-        Cursor cursor = null;
-        if (db != null) {
-            cursor = query(db);
-        }
-        return cursor;
-    }
-
-    /**
-     * Query the given table, returning a Cursor over the result set.
-     * 
-     * @see android.database.sqlite.SQLiteDatabase.query
-     * @param db
-     * @return
-     */
-    public Cursor query(SQLiteDatabase db) {
+    public Cursor select() {
         if ( preCheck() ) {
             buildQuery();
-            return db.query(table, columns, selection, selectionArgs,
-                        groupBy, having, orderBy, limit);
+            return mDb.query(mTable, mColumns, mSelection, mSelectionArgs,
+                        mGroupBy, mHaving, mOrderBy, mLimit);
         } else {
             //throw new SelectException("Cann't build the query . " + toString());
             Log.e(TAG, "Cann't build the query " + toString());
@@ -83,30 +92,46 @@ public class Query {
     }
     
     /**
+     * @return the number of rows affected if a whereClause is passed in, 0
+     *         otherwise. To remove all rows and get a count pass "1" as the
+     *         whereClause.
+     */
+    public int delete() {
+        if ( preCheck() ) {
+            buildQuery();
+            return mDb.delete(mTable, mSelection, mSelectionArgs);
+        } else {
+            Log.e(TAG, "Cann't build the query " + toString());
+            return -1;
+        }
+    }
+
+    
+    /**
      * Set FROM
      * 
-     * @see android.database.sqlite.SQLiteDatabase.query
      * @param table
      *            The table name to compile the query against.
      * @param columns
      *            A list of which columns to return. Passing null will return
      *            all columns, which is discouraged to prevent reading data from
      *            storage that isn't going to be used.
-     * @return
+     * @return self
+     * 
      */
     public Query from(String table, String[] columns) {
-        this.table = table;
-        this.columns = columns;
+        mTable = table;
+        mColumns = columns;
         return this;
     }
     
     /**
      * @see Query#from(String table, String[] columns)
      * @param table
-     * @return
+     * @return self
      */
     public Query from(String table) {
-        return from(table, null);
+        return from(table, null); // all columns
     }
 
     /**
@@ -120,10 +145,10 @@ public class Query {
      *            You may include ?s in selection, which will be replaced by the
      *            values from selectionArgs, in order that they appear in the
      *            selection. The values will be bound as Strings.
-     * @return
+     * @return self
      */
     public Query where(String selection, String[] selectionArgs) {
-        select.add(selection);
+        addSelection(selection);
         binds.addAll(Arrays.asList(selectionArgs));
         return this;
     }
@@ -132,7 +157,7 @@ public class Query {
      * @see Query#where(String selection, String[] selectionArgs)
      */
     public Query where(String selection, String selectionArg) {
-        select.add(selection);
+        addSelection(selection);
         binds.add(selectionArg);
         return this;
     }
@@ -141,8 +166,21 @@ public class Query {
      * @see Query#where(String selection, String[] selectionArgs)
      */
     public Query where(String selection) {
-        select.add(selection);
+        addSelection(selection);
         return this;
+    }
+    
+    /**
+     * add selection part
+     * 
+     * @param selection
+     */
+    private void addSelection(String selection) {
+        if (null == mSelection) {
+            mSelection = selection;
+        } else {
+            mSelection += " AND " + selection;
+        }
     }
     
     /**
@@ -154,10 +192,10 @@ public class Query {
      *            (excluding the HAVING itself). Passing null will cause all row
      *            groups to be included, and is required when row grouping is
      *            not being used.
-     * @return
+     * @return self
      */
     public Query having(String having) {
-        this.having = having;
+        this.mHaving = having;
         return this;
     }
 
@@ -168,10 +206,10 @@ public class Query {
      *            A filter declaring how to group rows, formatted as an SQL
      *            GROUP BY clause (excluding the GROUP BY itself). Passing null
      *            will cause the rows to not be grouped.
-     * @return
+     * @return self
      */
     public Query groupBy(String groupBy) {
-        this.groupBy = groupBy;
+        this.mGroupBy = groupBy;
         return this;
     }
 
@@ -182,10 +220,10 @@ public class Query {
      *            How to order the rows, formatted as an SQL ORDER BY clause
      *            (excluding the ORDER BY itself). Passing null will use the
      *            default sort order, which may be unordered.
-     * @return
+     * @return self
      */
     public Query orderBy(String orderBy) {
-        this.orderBy = orderBy;
+        this.mOrderBy = orderBy;
         return this;
     }
 
@@ -193,10 +231,10 @@ public class Query {
      * @param limit
      *            Limits the number of rows returned by the query, formatted as
      *            LIMIT clause. Passing null denotes no LIMIT clause.
-     * @return
+     * @return self
      */
     public Query limit(String limit) {
-        this.limit = limit;
+        this.mLimit = limit;
         return this;
     }
 
@@ -208,38 +246,101 @@ public class Query {
     }
     
     /**
-     * Build selection
+     * Merge selectionArgs
      */
     private void buildQuery() {
-        StringBuilder sb = new StringBuilder(); 
-        for (int i = 0, l = select.size(); i < l; i++) {
-            sb.append( ((0 == i) ? "" : " AND ") + select.get(i));
-        }
-        selection = sb.toString();
+        mSelectionArgs = new String[binds.size()];
+        binds.toArray(mSelectionArgs);
         
-        selectionArgs = new String[binds.size()];
-        binds.toArray(selectionArgs);
-        
-        if (debug) {
-            Log.d(TAG, toString());
-        }
+        if (debug) Log.d(TAG, toString()); 
     }
     
     private boolean preCheck() {
-        return (table != null);
+        return (mTable != null && mDb != null);
     }
     
+    // For Insert
+    
+    /**
+     * set insert table
+     * 
+     * @param table table name
+     * @return self
+     */
+    public Query into(String table) {
+        return setTable(table);
+    }
+    
+    /**
+     * Set new values
+     * 
+     * @param values new values
+     * @return self
+     */
+    public Query values(ContentValues values) {
+        mValues = values;
+        return this;
+    }
+    
+    /**
+     * Insert a row
+     * 
+     * @return the row ID of the newly inserted row, or -1 if an error occurred
+     */
+    public long insert() {
+        return mDb.insert(mTable, mNullColumnHack, mValues);
+    }
+    
+    // For update
+    
+    /**
+     * Set target table
+     * 
+     * @param table table name
+     * @return self
+     */
+    public Query setTable(String table) {
+        mTable = table;
+        return this;
+    }
+    
+    /**
+     * Update a row
+     * 
+     * @return the number of rows affected, or -1 if an error occurred
+     */
+    public int update() {
+        if ( preCheck() ) {
+            buildQuery();
+            return mDb.update(mTable, mValues, mSelection, mSelectionArgs);
+        } else {
+            Log.e(TAG, "Cann't build the query " + toString());
+            return -1;
+        }
+    }
+    
+    /**
+     * Set back-end database
+     * @param db
+     */
     public void setDb(SQLiteDatabase db) {
-        this.db = db;
+        if (null == this.mDb) {
+            this.mDb = db;
+        }
     }
 
     @Override
     public String toString() {
-        return "Query [table=" + table + ", columns="
-                + Arrays.toString(columns) + ", selection=" + selection
-                + ", selectionArgs=" + Arrays.toString(selectionArgs)
-                + ", groupBy=" + groupBy + ", having=" + having + ", orderBy="
-                + orderBy + "]";
+        return "Query [table=" + mTable + ", columns="
+                + Arrays.toString(mColumns) + ", selection=" + mSelection
+                + ", selectionArgs=" + Arrays.toString(mSelectionArgs)
+                + ", groupBy=" + mGroupBy + ", having=" + mHaving + ", orderBy="
+                + mOrderBy + "]";
+    }
+    
+    /** for debug */
+    public ContentValues getContentValues() {
+        return mValues;
     }
 
 }

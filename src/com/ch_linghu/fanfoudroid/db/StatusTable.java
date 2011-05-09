@@ -86,14 +86,14 @@ public final class StatusTable implements BaseColumns {
         + PROFILE_IMAGE_URL + " text not null, "
         + IS_UNREAD + " boolean not null, "
         + CREATED_AT + " date not null, "
-        + FAVORITED + " text, "
+        + SOURCE + " text not null, " 
+        + FAVORITED + " text, " // TODO : text -> boolean
         + IN_REPLY_TO_STATUS_ID + " text, "
         + IN_REPLY_TO_USER_ID + " text, "
         + IN_REPLY_TO_SCREEN_NAME + " text, "
         + PIC_THUMB + " text, "
         + PIC_MID + " text, "
         + PIC_ORIG + " text, "
-        + SOURCE + " text not null, " 
         + TRUNCATED + " boolean ,"
         + "PRIMARY KEY (" + _ID + ","+ OWNER_ID + "," + STATUS_TYPE  + "))";
     
