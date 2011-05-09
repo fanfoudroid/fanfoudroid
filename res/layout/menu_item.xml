@@ -18,7 +18,7 @@
       android:layout_height="wrap_content"
       android:layout_below="@id/item_image"
       android:layout_centerHorizontal="true"
-      android:text="@+id/item_text"
+      android:text=""
       style="@style/normalText"/>
       
    

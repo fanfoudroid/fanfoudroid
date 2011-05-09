@@ -28,7 +28,7 @@ import com.ch_linghu.fanfoudroid.helper.Utils;
  */
 public class TwitterDatabase {
 
-    private static final String TAG = "DatabaseHelper";
+    private static final String TAG = "TwitterDatabase";
 
     private static final String DATABASE_NAME = "status_db";
     private static final int DATABASE_VERSION = 1;
@@ -616,7 +616,7 @@ public class TwitterDatabase {
         if (-1 == rowId) {
             Log.e(TAG, "Cann't create Follower : " + userId);
         } else {
-            Log.i(TAG, "create create follower : " + userId);
+            Log.i(TAG, "Success create follower : " + userId);
         }
         return rowId;
     }
@@ -924,9 +924,9 @@ public class TwitterDatabase {
         //long rowId = mDb.insertWithOnConflict(UserInfoTable.TABLE_NAME, null, initialValues,SQLiteDatabase.CONFLICT_REPLACE);
         long rowId = insertWithOnConflict(mDb, UserInfoTable.TABLE_NAME, null, initialValues, CONFLICT_REPLACE);
         if (-1 == rowId) {
-            Log.e(TAG, "Cann't create Follower : " + user.id);
+            Log.e(TAG, "Cann't create user : " + user.id);
         } else {
-            Log.i(TAG, "create create follower : " + user.id);
+            Log.i(TAG, "create create user : " + user.id);
         }
         return rowId;
     }
@@ -995,9 +995,9 @@ public class TwitterDatabase {
 		long rowId=insertWithOnConflict(mDb, UserInfoTable.TABLE_NAME, null, args, CONFLICT_REPLACE);
 
 		if (-1 == rowId) {
-            Log.e(TAG, "Cann't create Follower : " + user.getId());
+            Log.e(TAG, "Cann't createWeiboUserInfo : " + user.getId());
         } else {
-            Log.i(TAG, "create create follower : " + user.getId());
+            Log.i(TAG, "create createWeiboUserInfo : " + user.getId());
         }
         return rowId;
     }

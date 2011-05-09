@@ -186,6 +186,7 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 	public int addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
 		// 获取消息的时候，将status里获取的user也存储到数据库
 		
+		// ::MARK::
 		for (Tweet t : tweets) {
 			getDb().createWeiboUserInfo(t.user);
 		}

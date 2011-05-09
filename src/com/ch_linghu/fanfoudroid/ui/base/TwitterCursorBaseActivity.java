@@ -52,7 +52,7 @@ import com.ch_linghu.fanfoudroid.weibo.Status;
  * TwitterCursorBaseLine用于带有静态数据来源（对应数据库的，与twitter表同构的特定表）的展现
  */
 public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
-	static final String TAG = "TwitterListBaseActivity";
+	static final String TAG = "TwitterCursorBaseActivity";
 
 	// Views.
 	protected ListView mTweetList;
