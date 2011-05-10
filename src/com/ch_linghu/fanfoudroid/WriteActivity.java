@@ -286,7 +286,7 @@ public class WriteActivity extends WithHeaderActivity {
 
 	@Override
 	protected boolean _onCreate(Bundle savedInstanceState) {
-		Log.i(TAG, "onCreate.");
+		Log.d(TAG, "onCreate.");
 		if (super._onCreate(savedInstanceState)){
 			// init View
 			setContentView(R.layout.write);
@@ -314,7 +314,7 @@ public class WriteActivity extends WithHeaderActivity {
 			chooseImagesButton = (Button) findViewById(R.id.choose_images_button);
 			chooseImagesButton.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
-					Log.i(TAG, "chooseImagesButton onClick");
+					Log.d(TAG, "chooseImagesButton onClick");
 					createInsertPhotoDialog();
 				}
 			});
@@ -369,36 +369,36 @@ public class WriteActivity extends WithHeaderActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		Log.i(TAG, "onPause.");
+		Log.d(TAG, "onPause.");
 	}
 
 	@Override
 	protected void onRestart() {
 		super.onRestart();
-		Log.i(TAG, "onRestart.");
+		Log.d(TAG, "onRestart.");
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Log.i(TAG, "onResume.");
+		Log.d(TAG, "onResume.");
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
-		Log.i(TAG, "onStart.");
+		Log.d(TAG, "onStart.");
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-		Log.i(TAG, "onStop.");
+		Log.d(TAG, "onStop.");
 	}
 
 	@Override
 	protected void onDestroy() {
-		Log.i(TAG, "onDestroy.");
+		Log.d(TAG, "onDestroy.");
 
 		if (mSendTask != null
 				&& mSendTask.getStatus() == GenericTask.Status.RUNNING) {
@@ -523,7 +523,7 @@ public class WriteActivity extends WithHeaderActivity {
 
 	private void doSend() {
 	    startTime =  System.currentTimeMillis() ;
-		Log.i(TAG, String.format("doSend, reply_id=%s", _reply_id));
+		Log.d(TAG, String.format("doSend, reply_id=%s", _reply_id));
 
 		if (mSendTask != null && mSendTask.getStatus() == GenericTask.Status.RUNNING){
 			return;
@@ -568,7 +568,7 @@ public class WriteActivity extends WithHeaderActivity {
 			    
 				int mode = param.getInt("mode");
 		    
-		        Log.i(TAG, "Send Status. Mode : " + mode);
+		        Log.d(TAG, "Send Status. Mode : " + mode);
 		        
 		        // Send status in different way
 		        switch (mode) {
@@ -652,7 +652,7 @@ public class WriteActivity extends WithHeaderActivity {
 //			Thread.sleep(500);
 //			updateProgress("");
 //		} catch (InterruptedException e) {
-//			Log.i(TAG, e.getMessage());
+//			Log.d(TAG, e.getMessage());
 //		}
 		updateProgress("");
 		

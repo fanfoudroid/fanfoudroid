@@ -11,7 +11,7 @@ public class TaskManager  extends Observable {
     public static final Integer CANCEL_ALL = 1;
     
     public void cancelAll() {
-        Log.i(TAG, "All task Cancelled.");
+        Log.d(TAG, "All task Cancelled.");
         setChanged();
         notifyObservers(CANCEL_ALL);
     }

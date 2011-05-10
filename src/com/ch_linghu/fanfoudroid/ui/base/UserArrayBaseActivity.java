@@ -54,7 +54,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 	private ArrayList<com.ch_linghu.fanfoudroid.data.User> allUserList;
 	@Override
 	protected boolean _onCreate(Bundle savedInstanceState) {
-		Log.i(TAG, "onCreate.");
+		Log.d(TAG, "onCreate.");
 		if (super._onCreate(savedInstanceState)) {
 		
 			doRetrieve();//加载第一页
@@ -67,7 +67,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 
 	@Override
 	public void doRetrieve() {
-		Log.i(TAG, "Attempting retrieve.");
+		Log.d(TAG, "Attempting retrieve.");
 
 		// 旋转刷新按钮
 		animRotate(refreshButton);
@@ -136,7 +136,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 		@Override
 		protected TaskResult _doInBackground(TaskParams... params) {
 			
-			Log.i(TAG, "load RetrieveTask");
+			Log.d(TAG, "load RetrieveTask");
 		
 			List<com.ch_linghu.fanfoudroid.weibo.User> usersList=null;
 			try {
@@ -255,7 +255,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 	}
 
 	public void doGetMore() {
-		Log.i(TAG, "Attempting getMore.");
+		Log.d(TAG, "Attempting getMore.");
 
 		// 旋转刷新按钮
 		animRotate(refreshButton);
@@ -300,7 +300,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 		@Override
 		protected TaskResult _doInBackground(TaskParams... params) {
 
-			Log.i(TAG, "load RetrieveTask");
+			Log.d(TAG, "load RetrieveTask");
 
 			List<com.ch_linghu.fanfoudroid.weibo.User> usersList = null;
 			try {

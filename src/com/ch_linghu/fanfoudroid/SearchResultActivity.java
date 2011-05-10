@@ -149,7 +149,7 @@ public class SearchResultActivity extends TwitterListBaseActivity implements
 
 	@Override
 	protected void onDestroy() {
-		Log.i(TAG, "onDestroy.");
+		Log.d(TAG, "onDestroy.");
 
 		if (mSearchTask != null
 				&& mSearchTask.getStatus() == GenericTask.Status.RUNNING) {
@@ -170,7 +170,7 @@ public class SearchResultActivity extends TwitterListBaseActivity implements
 	}
 
 	private void doSearch() {
-		Log.i(TAG, "Attempting search.");
+		Log.d(TAG, "Attempting search.");
 		
 		if (mSearchTask != null && mSearchTask.getStatus() == GenericTask.Status.RUNNING){
 			return;

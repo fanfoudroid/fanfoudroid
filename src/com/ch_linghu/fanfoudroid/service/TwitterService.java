@@ -163,13 +163,13 @@ public class TwitterService extends Service {
 		boolean needCheck = TwitterApplication.mPref.getBoolean(Preferences.CHECK_UPDATES_KEY, false);
 		boolean widgetIsEnabled = TwitterService.widgetIsEnabled;
 		if (!needCheck && !widgetIsEnabled) {
-			Log.i(TAG, "Check update preference is false.");
+			Log.d(TAG, "Check update preference is false.");
 			stopSelf();
 			return;
 		}
 
 		if (!getApi().isLoggedIn()) {
-			Log.i(TAG, "Not logged in.");
+			Log.d(TAG, "Not logged in.");
 			stopSelf();
 			return;
 		}
@@ -311,7 +311,7 @@ public class TwitterService extends Service {
 
 	@Override
 	public void onDestroy() {
-		Log.i(TAG, "IM DYING!!!");
+		Log.d(TAG, "IM DYING!!!");
 
 		if (mRetrieveTask != null
 				&& mRetrieveTask.getStatus() == GenericTask.Status.RUNNING) {
@@ -328,7 +328,7 @@ public class TwitterService extends Service {
 		boolean needCheck = preferences.getBoolean(Preferences.CHECK_UPDATES_KEY, false);
 		boolean widgetIsEnabled = TwitterService.widgetIsEnabled;
 		if (!needCheck && !widgetIsEnabled) {
-			Log.i(TAG, "Check update preference is false.");
+			Log.d(TAG, "Check update preference is false.");
 			return;
 		}
 
@@ -345,7 +345,7 @@ public class TwitterService extends Service {
 		c.add(Calendar.MINUTE, interval);
 
 		DateFormat df = new SimpleDateFormat("h:mm a");
-		Log.i(TAG, "Scheduling alarm at " + df.format(c.getTime()));
+		Log.d(TAG, "Scheduling alarm at " + df.format(c.getTime()));
 
 		AlarmManager alarm = (AlarmManager) context
 				.getSystemService(Context.ALARM_SERVICE);
@@ -363,7 +363,7 @@ public class TwitterService extends Service {
 		PendingIntent pending = PendingIntent.getService(context, 0, intent, 0);
 		AlarmManager alarm = (AlarmManager) context
 				.getSystemService(Context.ALARM_SERVICE);
-		Log.i(TAG, "Cancelling alarms.");
+		Log.d(TAG, "Cancelling alarms.");
 		alarm.cancel(pending);
 	}
 	
@@ -394,7 +394,7 @@ public class TwitterService extends Service {
 				String maxId = getDb()
 						.fetchMaxTweetId(TwitterApplication.getMyselfId(),
 								StatusTable.TYPE_HOME);
-				Log.i(TAG, "Max id is:" + maxId);
+				Log.d(TAG, "Max id is:" + maxId);
 
 				List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
 
@@ -421,7 +421,7 @@ public class TwitterService extends Service {
 
 					mNewTweets.add(tweet);
 
-					Log.i(TAG, mNewTweets.size() + " new tweets.");
+					Log.d(TAG, mNewTweets.size() + " new tweets.");
 
 					int count = getDb().addNewTweetsAndCountUnread(mNewTweets,
 							TwitterApplication.getMyselfId(), StatusTable.TYPE_HOME);
@@ -440,7 +440,7 @@ public class TwitterService extends Service {
 				String maxMentionId = getDb().fetchMaxTweetId(
 						TwitterApplication.getMyselfId(),
 						StatusTable.TYPE_MENTION);
-				Log.i(TAG, "Max mention id is:" + maxMentionId);
+				Log.d(TAG, "Max mention id is:" + maxMentionId);
 
 				List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
 
@@ -466,7 +466,7 @@ public class TwitterService extends Service {
 					tweet = Tweet.create(status);
 
 					mNewMentions.add(tweet);
-					Log.i(TAG, mNewMentions.size() + " new mentions.");
+					Log.d(TAG, mNewMentions.size() + " new mentions.");
 
 					int count = getDb().addNewTweetsAndCountUnread(mNewMentions,
 							TwitterApplication.getMyselfId(), StatusTable.TYPE_MENTION);
@@ -483,7 +483,7 @@ public class TwitterService extends Service {
 
 			if (dm_only) {
 				String maxId = getDb().fetchMaxDmId(false);
-				Log.i(TAG, "Max DM id is:" + maxId);
+				Log.d(TAG, "Max DM id is:" + maxId);
 
 				List<com.ch_linghu.fanfoudroid.weibo.DirectMessage> dmList;
 
@@ -508,7 +508,7 @@ public class TwitterService extends Service {
 					dm = Dm.create(directMessage, false);
 
 					mNewDms.add(dm);
-					Log.i(TAG, mNewDms.size() + " new DMs.");
+					Log.d(TAG, mNewDms.size() + " new DMs.");
 
 					int count = 0;
 
@@ -517,7 +517,7 @@ public class TwitterService extends Service {
 					if (db.fetchDmCount() > 0) {
 						count = db.addNewDmsAndCountUnread(mNewDms);
 					} else {
-						Log.i(TAG, "No existing DMs. Don't notify.");
+						Log.d(TAG, "No existing DMs. Don't notify.");
 						db.addDms(mNewDms, false);
 					}
 					

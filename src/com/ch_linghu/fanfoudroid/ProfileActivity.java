@@ -130,7 +130,7 @@ public class ProfileActivity extends WithHeaderActivity {
 			// 初始化控件
 			initControls();
 
-			Log.i(TAG, "the userid is " + userId);
+			Log.d(TAG, "the userid is " + userId);
 			db = this.getDb();
 			draw();
 
@@ -265,7 +265,7 @@ public class ProfileActivity extends WithHeaderActivity {
 	}
 
 	private void draw() {
-		Log.i(TAG, "draw");
+		Log.d(TAG, "draw");
 		
 		bindProfileInfo();
 		//doGetProfileInfo();
@@ -275,14 +275,14 @@ public class ProfileActivity extends WithHeaderActivity {
 	protected void onResume() {
 
 		super.onResume();
-		Log.i(TAG, "onResume.");
+		Log.d(TAG, "onResume.");
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
 		
-		Log.i(TAG, "onStart.");
+		Log.d(TAG, "onStart.");
 
 	}
 
@@ -290,7 +290,7 @@ public class ProfileActivity extends WithHeaderActivity {
 	protected void onStop() {
 
 		super.onStop();
-		Log.i(TAG, "onStop.");
+		Log.d(TAG, "onStop.");
 	}
 
 	/**

@@ -86,7 +86,7 @@ public class WidgetService extends Service {
 		@Override
 		public void run() {
 			
-			Log.i(TAG, "tweets size="+tweets.size()+"  position=" + position);
+			Log.d(TAG, "tweets size="+tweets.size()+"  position=" + position);
 			if (position >= tweets.size()) {
 				position = 0;
 			}
@@ -105,7 +105,7 @@ public class WidgetService extends Service {
 		SharedPreferences preferences = TwitterApplication.mPref;
 
 		if (!preferences.getBoolean(Preferences.CHECK_UPDATES_KEY, false)) {
-			Log.i(TAG, "Check update preference is false.");
+			Log.d(TAG, "Check update preference is false.");
 			return;
 		}
 
@@ -121,7 +121,7 @@ public class WidgetService extends Service {
 		c.add(Calendar.MINUTE, interval);
 
 		DateFormat df = new SimpleDateFormat("h:mm a");
-		Log.i(TAG, "Scheduling alarm at " + df.format(c.getTime()));
+		Log.d(TAG, "Scheduling alarm at " + df.format(c.getTime()));
 
 		AlarmManager alarm = (AlarmManager) context
 				.getSystemService(Context.ALARM_SERVICE);
@@ -143,7 +143,7 @@ public class WidgetService extends Service {
 	 */
 	@Override
 	public void onCreate() {
-		Log.i(TAG, "WidgetService onCreate");
+		Log.d(TAG, "WidgetService onCreate");
 		schedule(WidgetService.this);
 
 	}
@@ -153,7 +153,7 @@ public class WidgetService extends Service {
 	 */
 	@Override
 	public void onStart(Intent intent, int startId) {
-		Log.i(TAG, "WidgetService onStart");
+		Log.d(TAG, "WidgetService onStart");
 		
 		fetchMessages();
 		handler.removeCallbacks(mTask);
@@ -162,7 +162,7 @@ public class WidgetService extends Service {
 	}
 	@Override
 	public void onDestroy() {
-		Log.i(TAG, "WidgetService Stop ");
+		Log.d(TAG, "WidgetService Stop ");
 		handler.removeCallbacks(mTask);//当服务结束时，删除线程
 		super.onDestroy();
 	}

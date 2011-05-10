@@ -178,7 +178,7 @@ public class DmActivity extends WithHeaderActivity {
 			long nowTime = Utils.getNowTime();
 	
 			long diff = nowTime - lastRefreshTime;
-			Log.i(TAG, "Last refresh was " + diff + " ms ago.");
+			Log.d(TAG, "Last refresh was " + diff + " ms ago.");
 	
 			if (diff > REFRESH_THRESHOLD) {
 				shouldRetrieve = true;
@@ -187,7 +187,7 @@ public class DmActivity extends WithHeaderActivity {
 				// It makes no sense to resend the send request (don't want dupes)
 				// so we instead retrieve (refresh) to see if the message has
 				// posted.
-				Log.i(TAG,
+				Log.d(TAG,
 						"Was last running a retrieve or send task. Let's refresh.");
 				shouldRetrieve = true;
 			}
@@ -226,7 +226,7 @@ public class DmActivity extends WithHeaderActivity {
 
 	@Override
 	protected void onDestroy() {
-		Log.i(TAG, "onDestroy.");
+		Log.d(TAG, "onDestroy.");
 
 		if (mRetrieveTask != null
 				&& mRetrieveTask.getStatus() == GenericTask.Status.RUNNING) {
@@ -574,7 +574,7 @@ public class DmActivity extends WithHeaderActivity {
 	}
 
 	private void doDestroy(String id) {
-		Log.i(TAG, "Attempting delete.");
+		Log.d(TAG, "Attempting delete.");
 
 		if (mDeleteTask != null && mDeleteTask.getStatus() == GenericTask.Status.RUNNING){
 			return;
@@ -612,7 +612,7 @@ public class DmActivity extends WithHeaderActivity {
 	}
 
 	public void doRetrieve() {
-		Log.i(TAG, "Attempting retrieve.");
+		Log.d(TAG, "Attempting retrieve.");
 
 		// 旋转刷新按钮
 		animRotate(refreshButton);

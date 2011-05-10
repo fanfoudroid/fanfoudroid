@@ -86,7 +86,7 @@ public class SearchActivity extends WithHeaderActivity {
 
 	@Override
 	protected boolean _onCreate(Bundle savedInstanceState) {
-		Log.i(TAG, "onCreate()...");
+		Log.d(TAG, "onCreate()...");
 		if (super._onCreate(savedInstanceState)) {
 			setContentView(R.layout.search);
 			initHeader(HEADER_STYLE_SEARCH);
@@ -120,7 +120,7 @@ public class SearchActivity extends WithHeaderActivity {
 
 	@Override
 	protected void onResume() {
-		Log.i(TAG, "onResume()...");
+		Log.d(TAG, "onResume()...");
 		super.onResume();
 	}
 	

@@ -21,7 +21,7 @@ public class TestMovementMethod extends LinkMovementMethod {
       double deltaY = mY - event.getY();
       mY = event.getY();
 
-      Log.i("foo", deltaY + "");
+      Log.d("foo", deltaY + "");
       
       if (Math.abs(deltaY) > 1) {
         mIsMoving = true;

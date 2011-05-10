@@ -132,7 +132,7 @@ public class ImageManager implements ImageCache {
      * @throws IOException
      */
     public Bitmap fetchImage(String url) throws IOException {
-        Log.i(TAG, "Fetching image: " + url);
+        Log.d(TAG, "Fetching image: " + url);
 
         HttpGet get = new HttpGet(url);
         HttpConnectionParams.setConnectionTimeout(get.getParams(),
@@ -210,7 +210,7 @@ public class ImageManager implements ImageCache {
         }
         if (!forceOverride && contains(file.getPath())) {
             // Image already exists.
-            Log.i(TAG, file.getName() + " is exists");
+            Log.d(TAG, file.getName() + " is exists");
             return;
             // TODO: write to file if not present.
         }
@@ -278,7 +278,7 @@ public class ImageManager implements ImageCache {
             quality = 100;
         }
         
-        Log.i(TAG, "Writing file: " + hashedUrl);
+        Log.d(TAG, "Writing file: " + hashedUrl);
         bitmap.compress(Bitmap.CompressFormat.JPEG, quality, fos);
 
         try {
@@ -328,7 +328,7 @@ public class ImageManager implements ImageCache {
 
         //TODO: why?  
         //upload: see profileImageCacheManager line 96
-        Log.i(TAG, "Image is missing: " + file);
+        Log.w(TAG, "Image is missing: " + file);
         // return the default photo
         return mDefaultBitmap;
     }
@@ -359,7 +359,7 @@ public class ImageManager implements ImageCache {
 
         for (String file : files) {
             if (!hashedUrls.contains(file)) {
-                Log.i(TAG, "Deleting unused file: " + file);
+                Log.d(TAG, "Deleting unused file: " + file);
                 mContext.deleteFile(file);
             }
         }
@@ -420,8 +420,8 @@ public class ImageManager implements ImageCache {
             bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height);
         }
         
-//        Log.i(TAG, width + " width");
-//        Log.i(TAG, height + " height");
+//        Log.d(TAG, width + " width");
+//        Log.d(TAG, height + " height");
         
         return bitmap;
     }

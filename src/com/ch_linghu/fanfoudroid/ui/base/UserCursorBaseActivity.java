@@ -201,7 +201,7 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity{
 		mUserList = (ListView) findViewById(R.id.follower_list);
 
 	    //TODO: 需处理没有数据时的情况
-	    Log.i("LDS", cursor.getCount()+" cursor count");
+	    Log.d("LDS", cursor.getCount()+" cursor count");
 	    setupListHeader(true);
 	    
 	    mUserListAdapter = new UserCursorAdapter(this, cursor);
@@ -289,7 +289,7 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity{
 
 	@Override
     protected boolean _onCreate(Bundle savedInstanceState) {
-		Log.i(TAG, "onCreate.");
+		Log.d(TAG, "onCreate.");
 		 if (super._onCreate(savedInstanceState)){
 		
 		goTop(); // skip the header
@@ -302,7 +302,7 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity{
 		long nowTime = Utils.getNowTime();
 
 		long diff = nowTime - lastRefreshTime;
-		Log.i(TAG, "Last refresh was " + diff + " ms ago.");
+		Log.d(TAG, "Last refresh was " + diff + " ms ago.");
 /*
 		if (diff > REFRESH_THRESHOLD) {
 			shouldRetrieve = true;
@@ -311,7 +311,7 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity{
 			// It makes no sense to resend the send request (don't want dupes)
 			// so we instead retrieve (refresh) to see if the message has
 			// posted.
-			Log.i(TAG,
+			Log.d(TAG,
 					"Was last running a retrieve or send task. Let's refresh.");
 			shouldRetrieve = true;
 		}
@@ -325,12 +325,12 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity{
 				Preferences.LAST_FOLLOWERS_REFRESH_KEY, 0);
 
 		diff = nowTime - lastFollowersRefreshTime;
-		Log.i(TAG, "Last followers refresh was " + diff + " ms ago.");
+		Log.d(TAG, "Last followers refresh was " + diff + " ms ago.");
 
 		/*
 		if (diff > FOLLOWERS_REFRESH_THRESHOLD && 
 				(mRetrieveTask == null || mRetrieveTask.getStatus() != GenericTask.Status.RUNNING)) {
-			Log.i(TAG, "Refresh followers.");
+			Log.d(TAG, "Refresh followers.");
 			doRetrieveFollowers();
 		}
 		*/
@@ -342,7 +342,7 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity{
 
 	@Override
 	protected void onResume() {
-		Log.i(TAG, "onResume.");
+		Log.d(TAG, "onResume.");
 		if (lastPosition != 0) {
 			mUserList.setSelection(lastPosition);
 		}
@@ -368,7 +368,7 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity{
 
 	@Override
 	protected void onDestroy() {
-		Log.i(TAG, "onDestroy.");
+		Log.d(TAG, "onDestroy.");
 		super.onDestroy();
 		
         taskManager.cancelAll();
@@ -376,26 +376,26 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity{
 	
 	@Override
     protected void onPause() {
-		Log.i(TAG, "onPause.");
+		Log.d(TAG, "onPause.");
         super.onPause();
         lastPosition = mUserList.getFirstVisiblePosition();
     }
 
     @Override
     protected void onRestart() {
-		Log.i(TAG, "onRestart.");
+		Log.d(TAG, "onRestart.");
         super.onRestart();
     }
 
     @Override
     protected void onStart() {
-		Log.i(TAG, "onStart.");
+		Log.d(TAG, "onStart.");
         super.onStart();
     }
 
     @Override
     protected void onStop() {
-		Log.i(TAG, "onStop.");
+		Log.d(TAG, "onStop.");
         super.onStop();
     }
 
@@ -421,12 +421,12 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity{
 		mUserListAdapter.refresh();
 	}
 	public void goTop() {
-        Log.i(TAG, "goTop.");
+        Log.d(TAG, "goTop.");
         mUserList.setSelection(1);
 	}
 	
 	private void doRetrieveFollowers() {
-        Log.i(TAG, "Attempting followers retrieve.");
+        Log.d(TAG, "Attempting followers retrieve.");
 
         if (mFollowersRetrieveTask != null && mFollowersRetrieveTask.getStatus() == GenericTask.Status.RUNNING){
         	return;
@@ -446,7 +446,7 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity{
 	}
 
 	public void doRetrieve() {
-		Log.i(TAG, "Attempting retrieve.");
+		Log.d(TAG, "Attempting retrieve.");
 
 		// 旋转刷新按钮
 		animRotate(refreshButton);
@@ -477,7 +477,7 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity{
 		@Override
 		protected TaskResult _doInBackground(TaskParams... params) {
 			
-			Log.i(TAG, "load RetrieveTask");
+			Log.d(TAG, "load RetrieveTask");
 		
 			List<com.ch_linghu.fanfoudroid.weibo.User> usersList=null;
 			try {
@@ -514,7 +514,7 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity{
 		@Override
 		protected TaskResult _doInBackground(TaskParams... params) {
 			try {
-				Log.i(TAG, "load FollowersErtrieveTask");
+				Log.d(TAG, "load FollowersErtrieveTask");
 				List<com.ch_linghu.fanfoudroid.weibo.User> t_users= getUsers();
 				getDb().syncWeiboUsers(t_users);
 				
@@ -537,7 +537,7 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity{
 	    @Override
         protected TaskResult _doInBackground(TaskParams... params) {
 
-	    	Log.i(TAG, "load RetrieveTask");
+	    	Log.d(TAG, "load RetrieveTask");
 			
 			List<com.ch_linghu.fanfoudroid.weibo.User> usersList=null;
 			try {
@@ -585,7 +585,7 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity{
     };
     
     public void doGetMore() {
-        Log.i(TAG, "Attempting getMore.");
+        Log.d(TAG, "Attempting getMore.");
 
         // 旋转刷新按钮
         animRotate(refreshButton);

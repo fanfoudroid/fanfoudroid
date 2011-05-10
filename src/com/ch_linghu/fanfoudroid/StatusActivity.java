@@ -170,7 +170,7 @@ public class StatusActivity extends WithHeaderActivity {
 
 	@Override
 	protected boolean _onCreate(Bundle savedInstanceState) {
-		Log.i(TAG, "onCreate.");
+		Log.d(TAG, "onCreate.");
 		if (super._onCreate(savedInstanceState)) {
 			mClient = getApi().getHttpClient();
 
@@ -323,36 +323,36 @@ public class StatusActivity extends WithHeaderActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		Log.i(TAG, "onPause.");
+		Log.d(TAG, "onPause.");
 	}
 
 	@Override
 	protected void onRestart() {
 		super.onRestart();
-		Log.i(TAG, "onRestart.");
+		Log.d(TAG, "onRestart.");
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Log.i(TAG, "onResume.");
+		Log.d(TAG, "onResume.");
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
-		Log.i(TAG, "onStart.");
+		Log.d(TAG, "onStart.");
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-		Log.i(TAG, "onStop.");
+		Log.d(TAG, "onStop.");
 	}
 
 	@Override
 	protected void onDestroy() {
-		Log.i(TAG, "onDestroy.");
+		Log.d(TAG, "onDestroy.");
 
 		if (mStatusTask != null
 				&& mStatusTask.getStatus() == GenericTask.Status.RUNNING) {
@@ -380,7 +380,7 @@ public class StatusActivity extends WithHeaderActivity {
 	};
 
 	private void draw() {
-		Log.i(TAG, "draw");
+		Log.d(TAG, "draw");
 
 		String PHOTO_PREVIEW_TYPE_NONE = getString(R.string.pref_photo_preview_type_none);
 		String PHOTO_PREVIEW_TYPE_THUMBNAIL = getString(R.string.pref_photo_preview_type_thumbnail);
@@ -459,7 +459,7 @@ public class StatusActivity extends WithHeaderActivity {
 	}
 
 	private String fetchWebPage(String url) throws HttpException {
-		Log.i(TAG, "Fetching WebPage: " + url);
+		Log.d(TAG, "Fetching WebPage: " + url);
 
 		Response res = mClient.get(url);
 		return res.asString();
@@ -467,7 +467,7 @@ public class StatusActivity extends WithHeaderActivity {
 
 	private Bitmap fetchPhotoBitmap(String url) throws HttpException,
 			IOException {
-		Log.i(TAG, "Fetching Photo: " + url);
+		Log.d(TAG, "Fetching Photo: " + url);
 		Response res = mClient.get(url);
 
 		InputStream is = res.asStream();
@@ -478,7 +478,7 @@ public class StatusActivity extends WithHeaderActivity {
 	}
 
 	private void doGetStatus(String status_id, boolean isReply) {
-		Log.i(TAG, "Attempting get status task.");
+		Log.d(TAG, "Attempting get status task.");
 
 		// 旋转刷新按钮
 		animRotate(refreshButton);
@@ -600,7 +600,7 @@ public class StatusActivity extends WithHeaderActivity {
 			return;
 		} else {
 			if (!Utils.isEmpty(id)) {
-				Log.i(TAG, "doFavorite.");
+				Log.d(TAG, "doFavorite.");
 				mFavTask = new TweetCommonTask.FavoriteTask(this);
 				mFavTask.setListener(mFavTaskListener);
 

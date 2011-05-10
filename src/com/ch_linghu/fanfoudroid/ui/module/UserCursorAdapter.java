@@ -78,7 +78,7 @@ public class UserCursorAdapter extends CursorAdapter implements TweetAdapter {
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
 		View view = mInflater.inflate(R.layout.follower_item, parent, false);
-Log.i(TAG,"load newView");
+Log.d(TAG,"load newView");
 		UserCursorAdapter.ViewHolder holder = new ViewHolder();
 		holder.screenName=(TextView) view.findViewById(R.id.screen_name);
 		holder.profileImage=(ImageView)view.findViewById(R.id.profile_image);
@@ -101,8 +101,8 @@ Log.i(TAG,"load newView");
 	public void bindView(View view, Context context, Cursor cursor) {
 		UserCursorAdapter.ViewHolder holder = (UserCursorAdapter.ViewHolder) view
 				.getTag();
-		Log.i(TAG, "cursor count="+cursor.getCount());
-		Log.i(TAG,"holder is null?"+(holder==null?"yes":"no"));
+		Log.d(TAG, "cursor count="+cursor.getCount());
+		Log.d(TAG,"holder is null?"+(holder==null?"yes":"no"));
 		SharedPreferences pref = TwitterApplication.mPref;  //PreferenceManager.getDefaultSharedPreferences(mContext);;
 		boolean useProfileImage = pref.getBoolean(Preferences.USE_PROFILE_IMAGE, true);
 		String profileImageUrl = cursor.getString(mProfileImageUrlColumn);

@@ -60,10 +60,10 @@ public class PreferencesActivity extends PreferenceActivity implements SharedPre
             String type =  sharedPreferences.getString(Preferences.NETWORK_TYPE, "");
             
             if (type.equalsIgnoreCase(getString(R.string.pref_network_type_cmwap))) {
-                Log.i("LDS", "Set proxy for cmwap mode.");
+                Log.d("LDS", "Set proxy for cmwap mode.");
                 httpClient.setProxy("10.0.0.172", 80, "http");
             } else {
-                Log.i("LDS", "No proxy.");
+                Log.d("LDS", "No proxy.");
                 httpClient.removeProxy();
             }
         }

@@ -42,7 +42,7 @@ public class SqliteTemplate {
     {
         query.setDb(TwitterDatabase.getDb(true));
         long id = query.insert();
-        Log.i(TAG, ((id != -1) ? "[Success] " : "[Fail] ") + "Insert " 
+        Log.v(TAG, ((id != -1) ? "[Success] " : "[Fail] ") + "Insert " 
                 + query.getContentValues().toString());
         return id;
     }
@@ -57,7 +57,7 @@ public class SqliteTemplate {
     {
         query.setDb(TwitterDatabase.getDb(true));
         int rows = query.delete();
-        Log.i(TAG, ((rows > 0) ? "[Success] " : "[Fail] ") + "Delete " 
+        Log.v(TAG, ((rows > 0) ? "[Success] " : "[Fail] ") + "Delete " 
                 + query.toString());
         return ( rows > 0 );
     }

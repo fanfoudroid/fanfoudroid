@@ -98,7 +98,7 @@ public class LoginActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, "onCreate");
+        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
 
         // No Title bar
@@ -125,7 +125,7 @@ public class LoginActivity extends Activity {
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(SIS_RUNNING_KEY)) {
                 if (savedInstanceState.getBoolean(SIS_RUNNING_KEY)) {
-                    Log.i(TAG, "Was previously logging in. Restart action.");
+                    Log.d(TAG, "Was previously logging in. Restart action.");
                     doLogin();
                 }
             }
@@ -140,7 +140,7 @@ public class LoginActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        Log.i(TAG, "onDestory");
+        Log.d(TAG, "onDestory");
         if (mLoginTask != null && mLoginTask.getStatus() == GenericTask.Status.RUNNING) {
             mLoginTask.cancel(true);
         }
@@ -155,7 +155,7 @@ public class LoginActivity extends Activity {
 
     @Override
     protected void onStop() {
-        Log.i(TAG, "onStop");
+        Log.d(TAG, "onStop");
         // TODO Auto-generated method stub
         super.onStop();
     }
@@ -228,7 +228,7 @@ public class LoginActivity extends Activity {
         mUsernameEdit.setText("");
         mPasswordEdit.setText("");
 
-        Log.i(TAG, "Storing credentials.");
+        Log.d(TAG, "Storing credentials.");
         TwitterApplication.mApi.setCredentials(mUsername, mPassword);
 
         Intent intent = getIntent().getParcelableExtra(Intent.EXTRA_INTENT);

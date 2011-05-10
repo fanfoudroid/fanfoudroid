@@ -44,7 +44,6 @@ import android.util.Log;
 public class Query
 {
     private static final String TAG = "Query-Builder";
-    private static boolean debug = true;
     
     /** TEMP list for selctionArgs */
     private ArrayList<String> binds = new ArrayList<String>();
@@ -252,7 +251,7 @@ public class Query
         mSelectionArgs = new String[binds.size()];
         binds.toArray(mSelectionArgs);
         
-        if (debug) Log.d(TAG, toString()); 
+        Log.v(TAG, toString()); 
     }
     
     private boolean preCheck() {

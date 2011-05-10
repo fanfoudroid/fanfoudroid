@@ -63,7 +63,7 @@ public class WithHeaderActivity extends BaseActivity {
 				int x = top + height;
 
 				if (null == dialog) {
-					Log.i(TAG, "Create menu dialog.");
+					Log.d(TAG, "Create menu dialog.");
 					dialog = new MenuDialog(WithHeaderActivity.this);
 					dialog.bindEvent(WithHeaderActivity.this);
 					dialog.setPosition(-1, x);

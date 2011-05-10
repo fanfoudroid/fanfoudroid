@@ -1,10 +1,20 @@
 package com.ch_linghu.fanfoudroid;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
+import android.app.PendingIntent;
+import android.appwidget.AppWidgetManager;
+import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.util.Log;
+import android.widget.RemoteViews;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
@@ -12,25 +22,9 @@ import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
 import com.ch_linghu.fanfoudroid.helper.Utils;
 import com.ch_linghu.fanfoudroid.service.TwitterService;
-import com.ch_linghu.fanfoudroid.service.WidgetService;
-
-import android.app.ActivityManager;
-import android.app.PendingIntent;
-import android.app.ActivityManager.RunningServiceInfo;
-import android.appwidget.AppWidgetProvider;
-import android.content.ComponentName;
-import android.content.Intent;
-import android.content.Context;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.text.Html;
-import android.text.Spanned;
-import android.util.Log;
-import android.widget.RemoteViews;
-import android.appwidget.AppWidgetManager;
 
 public class FanfouWidget extends AppWidgetProvider {
-	public final String TAG = "com.ch_linghu.fanfoudroid.FanfouWidget";
+	public final String TAG = "FanfouWidget";
 	public final String NEXTACTION = "com.ch_linghu.fanfoudroid.FanfouWidget.NEXT";
 	public final String PREACTION = "com.ch_linghu.fanfoudroid.FanfouWidget.PREV";
 	private static List<Tweet> tweets;
@@ -52,7 +46,7 @@ public class FanfouWidget extends AppWidgetProvider {
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appwidgetmanager,
 			int[] appWidgetIds) {
-		Log.i(TAG, "onUpdate");
+		Log.d(TAG, "onUpdate");
 		TwitterService.setWidgetStatus(true);
 		// if (!isRunning(context, WidgetService.class.getName())) {
 		// Intent i = new Intent(context, WidgetService.class);
@@ -174,11 +168,11 @@ public class FanfouWidget extends AppWidgetProvider {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		Log.i(TAG, "OnReceive");
-		super.onReceive(context, intent);
+		Log.d(TAG, "OnReceive");
+		super.onReceive(context, intent); //FIXME: NullPointerException
 
 		String action = intent.getAction();
-		Log.i(TAG, "action is" + intent.getAction());
+		Log.d(TAG, "action is" + intent.getAction());
 		if (NEXTACTION.equals(action) || PREACTION.equals(action)) {
 			refreshView(context, intent.getAction());
 		} else if (AppWidgetManager.ACTION_APPWIDGET_UPDATE.equals(action)) {
@@ -213,19 +207,19 @@ public class FanfouWidget extends AppWidgetProvider {
 
 	@Override
 	public void onDeleted(Context context, int[] appWidgetIds) {
-		Log.i(TAG, "onDeleted");
+		Log.d(TAG, "onDeleted");
 	}
 
 	@Override
 	public void onEnabled(Context context) {
-		Log.i(TAG, "onEnabled");
+		Log.d(TAG, "onEnabled");
 
 		TwitterService.setWidgetStatus(true);
 	}
 
 	@Override
 	public void onDisabled(Context context) {
-		Log.i(TAG, "onDisabled");
+		Log.d(TAG, "onDisabled");
 
 		TwitterService.setWidgetStatus(false);
 	}

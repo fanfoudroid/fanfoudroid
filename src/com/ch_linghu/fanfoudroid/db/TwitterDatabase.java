@@ -69,8 +69,8 @@ public class TwitterDatabase {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            Log.i(TAG, "Create Database.");
-            // Log.i(TAG, StatusTable.STATUS_TABLE_CREATE);
+            Log.d(TAG, "Create Database.");
+            // Log.d(TAG, StatusTable.STATUS_TABLE_CREATE);
             db.execSQL(StatusTable.CREATE_TABLE);
             db.execSQL(MessageTable.CREATE_TABLE);
             db.execSQL(FollowTable.CREATE_TABLE);
@@ -81,19 +81,19 @@ public class TwitterDatabase {
 
         @Override
         public synchronized void close() {
-            Log.i(TAG, "Close Database.");
+            Log.d(TAG, "Close Database.");
             super.close();
         }
 
         @Override
         public void onOpen(SQLiteDatabase db) {
-            Log.i(TAG, "Open Database.");
+            Log.d(TAG, "Open Database.");
             super.onOpen(db);
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            Log.i(TAG, "Upgrade Database.");
+            Log.d(TAG, "Upgrade Database.");
             dropAllTables(db);
         }
 
@@ -297,7 +297,7 @@ public class TwitterDatabase {
             sql += " AND " + StatusTable.STATUS_TYPE + " = " + type + " ";
         }
 
-        Log.d(TAG, sql);
+        Log.v(TAG, sql);
         mDb.execSQL(sql);
     }
 
@@ -318,7 +318,7 @@ public class TwitterDatabase {
         SQLiteDatabase Db = mOpenHelper.getWritableDatabase();
 
         if (isExists(tweet.id, owner, type)) {
-            Log.i(TAG, tweet.id + "is exists.");
+            Log.w(TAG, tweet.id + "is exists.");
             return -1;
         }
 
@@ -328,7 +328,7 @@ public class TwitterDatabase {
         if (-1 == id) {
             Log.e(TAG, "cann't insert the tweet : " + tweet.toString());
         } else {
-            Log.i(TAG, "Insert a status into datebase : " + tweet.toString());
+            Log.v(TAG, "Insert a status into datebase : " + tweet.toString());
         }
 
         return id;
@@ -344,7 +344,7 @@ public class TwitterDatabase {
      * @deprecated use {@link StatusDAO#updateStatus(String, ContentValues)}
      */
     public int updateTweet(String tweetId, ContentValues values) {
-        Log.i(TAG, "Update Tweet  : " + tweetId + " " + values.toString());
+        Log.v(TAG, "Update Tweet  : " + tweetId + " " + values.toString());
 
         SQLiteDatabase Db = mOpenHelper.getWritableDatabase();
 
@@ -416,7 +416,7 @@ public class TwitterDatabase {
                     Log.e(TAG, "cann't insert the tweet : " + tweet.toString());
                 } else {
                 	++result;
-                    Log.i(TAG, String.format("Insert a status into database[%s] : %s", owner, tweet.toString()));
+                    Log.v(TAG, String.format("Insert a status into database[%s] : %s", owner, tweet.toString()));
                 }
             }
 
@@ -627,7 +627,7 @@ public class TwitterDatabase {
         if (-1 == rowId) {
             Log.e(TAG, "Cann't create Follower : " + userId);
         } else {
-            Log.i(TAG, "Success create follower : " + userId);
+            Log.v(TAG, "Success create follower : " + userId);
         }
         return rowId;
     }
@@ -644,7 +644,7 @@ public class TwitterDatabase {
             mDb.beginTransaction();
 
             boolean result = deleteAllFollowers();
-            Log.d(TAG, "Result of DeleteAllFollowers: " + result);
+            Log.v(TAG, "Result of DeleteAllFollowers: " + result);
 
             for (String userId : followers) {
                 createFollower(userId);
@@ -937,7 +937,7 @@ public class TwitterDatabase {
         if (-1 == rowId) {
             Log.e(TAG, "Cann't create user : " + user.id);
         } else {
-            Log.i(TAG, "create create user : " + user.id);
+            Log.v(TAG, "create create user : " + user.id);
         }
         return rowId;
     }
@@ -1008,7 +1008,7 @@ public class TwitterDatabase {
 		if (-1 == rowId) {
             Log.e(TAG, "Cann't createWeiboUserInfo : " + user.getId());
         } else {
-            Log.i(TAG, "create createWeiboUserInfo : " + user.getId());
+            Log.v(TAG, "create createWeiboUserInfo : " + user.getId());
         }
         return rowId;
     }
@@ -1026,7 +1026,7 @@ public class TwitterDatabase {
         Cursor cursor = Db.query(UserInfoTable.TABLE_NAME,
                 new String[] { UserInfoTable._ID }, UserInfoTable._ID +"='"+userId+"'",
                 null, null, null, null);
-        Log.i("testesetesteste", String.valueOf(cursor.getCount()));
+        Log.v("testesetesteste", String.valueOf(cursor.getCount()));
         if (cursor != null && cursor.getCount() > 0) {
             result = true;
         }

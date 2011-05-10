@@ -36,7 +36,7 @@ public class StatusDAO {
             
             return sqliteTemplate.insert(query);
         }
-        Log.i(TAG, status.getId() + "is exists.");
+        Log.e(TAG, status.getId() + "is exists.");
         return -1;
     }
     
@@ -57,7 +57,7 @@ public class StatusDAO {
                     Log.e(TAG, "cann't insert the tweet : " + status.toString());
                 } else {
                     ++result;
-                    Log.i(TAG, String.format("Insert a status into database[%s] : %s",
+                    Log.v(TAG, String.format("Insert a status into database[%s] : %s",
                             status.getOwnerId(), status.toString()));
                 }
             }

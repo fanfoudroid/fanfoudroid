@@ -154,7 +154,7 @@ public class WriteDmActivity extends WithHeaderActivity {
 
 	@Override
 	protected boolean _onCreate(Bundle savedInstanceState) {
-		Log.i(TAG, "onCreate.");
+		Log.d(TAG, "onCreate.");
 		if (super._onCreate(savedInstanceState)){
 			// init View
 			setContentView(R.layout.write_dm);
@@ -220,36 +220,36 @@ public class WriteDmActivity extends WithHeaderActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		Log.i(TAG, "onPause.");
+		Log.d(TAG, "onPause.");
 	}
 
 	@Override
 	protected void onRestart() {
 		super.onRestart();
-		Log.i(TAG, "onRestart.");
+		Log.d(TAG, "onRestart.");
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Log.i(TAG, "onResume.");
+		Log.d(TAG, "onResume.");
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
-		Log.i(TAG, "onStart.");
+		Log.d(TAG, "onStart.");
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-		Log.i(TAG, "onStop.");
+		Log.d(TAG, "onStop.");
 	}
 
 	@Override
 	protected void onDestroy() {
-		Log.i(TAG, "onDestroy.");
+		Log.d(TAG, "onDestroy.");
 
 		if (mSendTask != null
 				&& mSendTask.getStatus() == GenericTask.Status.RUNNING) {
@@ -353,7 +353,7 @@ public class WriteDmActivity extends WithHeaderActivity {
 
 				getDb().createDm(dm, false);
 			} catch (HttpException e) {
-				Log.i(TAG, e.getMessage());
+				Log.d(TAG, e.getMessage());
 				// TODO: check is this is actually the case.
 				return TaskResult.NOT_FOLLOWED_ERROR;
 			}

@@ -31,7 +31,7 @@ public class BootReceiver extends BroadcastReceiver {
   
   @Override
 public void onReceive(Context context, Intent intent) {
-    Log.i(TAG, "Twitta BootReceiver is receiving.");
+    Log.d(TAG, "Twitta BootReceiver is receiving.");
     if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {      
       TwitterService.schedule(context);
     }

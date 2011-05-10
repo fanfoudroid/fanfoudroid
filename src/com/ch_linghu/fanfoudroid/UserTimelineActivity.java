@@ -121,7 +121,7 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
 
 	@Override
 	protected boolean _onCreate(Bundle savedInstanceState) {
-		Log.i(TAG, "_onCreate()...");
+		Log.d(TAG, "_onCreate()...");
 		if (super._onCreate(savedInstanceState)) {
 			Intent intent = getIntent();
 			// get user id
@@ -165,7 +165,7 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
 
 	@Override
 	protected void onDestroy() {
-		Log.i(TAG, "onDestroy.");
+		Log.d(TAG, "onDestroy.");
 		if (mRetrieveTask != null
 				&& mRetrieveTask.getStatus() == GenericTask.Status.RUNNING) {
 			mRetrieveTask.cancel(true);
@@ -182,12 +182,12 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
 	}
 
 	public void goTop() {
-        Log.i(TAG, "goTop.");
+        Log.d(TAG, "goTop.");
 		mTweetList.setSelection(1);
 	}
 	
 	public void doRetrieve() {
-		Log.i(TAG, "Attempting retrieve.");
+		Log.d(TAG, "Attempting retrieve.");
 		if (mRetrieveTask != null
 				&& mRetrieveTask.getStatus() == GenericTask.Status.RUNNING) {
 			return;
@@ -199,7 +199,7 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
 	}
 
 	private void doLoadMore() {
-		Log.i(TAG, "Attempting load more.");
+		Log.d(TAG, "Attempting load more.");
 
 		if (mLoadMoreTask != null
 				&& mLoadMoreTask.getStatus() == GenericTask.Status.RUNNING) {

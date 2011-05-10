@@ -269,14 +269,14 @@ public class BaseActivity extends Activity {
     if (requestCode == REQUEST_CODE_PREFERENCES && resultCode == RESULT_OK) {
       manageUpdateChecks();
     } else if (requestCode == REQUEST_CODE_LAUNCH_ACTIVITY && resultCode == RESULT_LOGOUT) {
-      Log.i(TAG, "Result logout.");
+      Log.d(TAG, "Result logout.");
       handleLoggedOut();
     }
   }
   
   protected boolean checkIsLogedIn() {
 	  if (!getApi().isLoggedIn()) {
-			Log.i(TAG, "Not logged in.");
+			Log.d(TAG, "Not logged in.");
 			handleLoggedOut();
 			return false;
 		}

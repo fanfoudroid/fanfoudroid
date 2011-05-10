@@ -98,7 +98,7 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
      * @throws HttpException 验证失败及其他非200响应均抛出异常
      */
     public User login(String username, String password) throws HttpException {
-        Log.i(TAG, "Login attempt for " + username);
+        Log.d(TAG, "Login attempt for " + username);
         http.setCredentials(username, password);
         
         // Verify userName and password on the server. 

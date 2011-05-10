@@ -161,7 +161,7 @@ public class HttpClient {
     }
     
     private void enableDebug() {
-        Log.i(TAG, "enable apache.http debug");
+        Log.d(TAG, "enable apache.http debug");
         
         java.util.logging.Logger.getLogger("org.apache.http").setLevel(java.util.logging.Level.FINEST);
         java.util.logging.Logger.getLogger("org.apache.http.wire").setLevel(java.util.logging.Level.FINER);
@@ -363,7 +363,7 @@ public class HttpClient {
      */
     public Response httpRequest(String url, ArrayList<BasicNameValuePair> postParams,
             File file, boolean authenticated, String httpMethod) throws HttpException {
-        Log.i(TAG, "Sending " + httpMethod + " request to " + url);
+        Log.d(TAG, "Sending " + httpMethod + " request to " + url);
         long startTime = System.currentTimeMillis();
 
         URI uri = createURI(url);
