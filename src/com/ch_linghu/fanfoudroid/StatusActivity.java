@@ -70,12 +70,13 @@ public class StatusActivity extends WithHeaderActivity {
 	static final private int CONTEXT_DELETE_ID = 0x0003;
 
 	// Task TODO: tasks
+	private GenericTask mReplyTask;
 	private GenericTask mStatusTask;
 	private GenericTask mPhotoTask; // TODO: 压缩图片，提供获取图片的过程中可取消获取
 	private GenericTask mFavTask;
 	private GenericTask mDeleteTask;
 
-	private TaskListener mStatusTaskListener = new TaskAdapter() {
+	private TaskListener mReplyTaskListener = new TaskAdapter() {
 		@Override
 		public void onPostExecute(GenericTask task, TaskResult result) {
 			showReplyStatus(replyTweet);
@@ -84,11 +85,31 @@ public class StatusActivity extends WithHeaderActivity {
 
 		@Override
 		public String getName() {
-			// TODO Auto-generated method stub
+			return "GetReply";
+		}
+
+	};
+
+	private TaskListener mStatusTaskListener = new TaskAdapter() {
+		
+		@Override
+		public void onPreExecute(GenericTask task) {
+			clean();
+		}
+
+		@Override
+		public void onPostExecute(GenericTask task, TaskResult result) {
+			StatusActivity.this.refreshButton.clearAnimation();
+			draw();
+		}
+
+		@Override
+		public String getName() {
 			return "GetStatus";
 		}
 
 	};
+	
 	private TaskListener mPhotoTaskListener = new TaskAdapter() {
 		@Override
 		public void onPostExecute(GenericTask task, TaskResult result) {
@@ -213,7 +234,7 @@ public class StatusActivity extends WithHeaderActivity {
 			refreshButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					doGetStatus(tweet.id, false);
+					doGetStatus(tweet.id);
 				}
 			});
 
@@ -354,9 +375,9 @@ public class StatusActivity extends WithHeaderActivity {
 	protected void onDestroy() {
 		Log.d(TAG, "onDestroy.");
 
-		if (mStatusTask != null
-				&& mStatusTask.getStatus() == GenericTask.Status.RUNNING) {
-			mStatusTask.cancel(true);
+		if (mReplyTask != null
+				&& mReplyTask.getStatus() == GenericTask.Status.RUNNING) {
+			mReplyTask.cancel(true);
 		}
 		if (mPhotoTask != null
 				&& mPhotoTask.getStatus() == GenericTask.Status.RUNNING) {
@@ -379,6 +400,20 @@ public class StatusActivity extends WithHeaderActivity {
 
 	};
 
+	private void clean() {
+		tweet_screen_name.setText("");
+		tweet_text.setText("");
+		tweet_created_at.setText("");
+		tweet_source.setText("");
+		tweet_user_info.setText("");
+		tweet_fav.setEnabled(false);
+		profile_image.setImageBitmap(ImageCache.mDefaultBitmap);
+		status_photo.setVisibility(View.GONE);
+		
+		ViewGroup reply_wrap = (ViewGroup) findViewById(R.id.reply_wrap);
+		reply_wrap.setVisibility(View.GONE);
+	}
+	
 	private void draw() {
 		Log.d(TAG, "draw");
 
@@ -444,7 +479,7 @@ public class StatusActivity extends WithHeaderActivity {
 			reply_wrap.setVisibility(View.VISIBLE);
 			reply_status_text = (TextView) findViewById(R.id.reply_status_text);
 			reply_status_date = (TextView) findViewById(R.id.reply_tweet_created_at);
-			doGetStatus(tweet.inReplyToStatusId, true);
+			doGetReply(tweet.inReplyToStatusId);
 		}
 	}
 
@@ -452,8 +487,8 @@ public class StatusActivity extends WithHeaderActivity {
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 
-		if (mStatusTask != null
-				&& mStatusTask.getStatus() == GenericTask.Status.RUNNING) {
+		if (mReplyTask != null
+				&& mReplyTask.getStatus() == GenericTask.Status.RUNNING) {
 			outState.putBoolean(SIS_RUNNING_KEY, true);
 		}
 	}
@@ -477,7 +512,52 @@ public class StatusActivity extends WithHeaderActivity {
 		return bitmap;
 	}
 
-	private void doGetStatus(String status_id, boolean isReply) {
+	private void doGetReply(String status_id) {
+		Log.d(TAG, "Attempting get status task.");
+
+		// 旋转刷新按钮
+		animRotate(refreshButton);
+
+		if (mReplyTask != null
+				&& mReplyTask.getStatus() == GenericTask.Status.RUNNING) {
+			return;
+		} else {
+			mReplyTask = new GetReplyTask();
+			mReplyTask.setListener(mReplyTaskListener);
+
+			TaskParams params = new TaskParams();
+			params.put("reply_id", status_id);
+			mReplyTask.execute(params);
+		}
+	}
+
+	private class GetReplyTask extends GenericTask {
+
+		@Override
+		protected TaskResult _doInBackground(TaskParams... params) {
+			TaskParams param = params[0];
+			com.ch_linghu.fanfoudroid.weibo.Status status;
+			try {
+				String reply_id = param.getString("reply_id");
+
+				if (!Utils.isEmpty(reply_id)) {
+					// 首先查看是否在数据库中，如不在再去获取
+					replyTweet = getDb().queryTweet(reply_id, -1);
+					if (replyTweet == null) {
+						status = getApi().showStatus(reply_id);
+						replyTweet = Tweet.create(status);
+					}
+				}
+			} catch (HttpException e) {
+				Log.e(TAG, e.getMessage(), e);
+				return TaskResult.IO_ERROR;
+			}
+
+			return TaskResult.OK;
+		}
+	}
+
+	private void doGetStatus(String status_id) {
 		Log.d(TAG, "Attempting get status task.");
 
 		// 旋转刷新按钮
@@ -491,9 +571,7 @@ public class StatusActivity extends WithHeaderActivity {
 			mStatusTask.setListener(mStatusTaskListener);
 
 			TaskParams params = new TaskParams();
-			if (isReply) {
-				params.put("reply_id", status_id);
-			}
+			params.put("id", status_id);
 			mStatusTask.execute(params);
 		}
 	}
@@ -505,14 +583,11 @@ public class StatusActivity extends WithHeaderActivity {
 			TaskParams param = params[0];
 			com.ch_linghu.fanfoudroid.weibo.Status status;
 			try {
-				String reply_id = param.getString("reply_id");
-				if (!Utils.isEmpty(reply_id)) {
-					// 首先查看是否在数据库中，如不在再去获取
-					replyTweet = getDb().queryTweet(reply_id, -1);
-					if (replyTweet == null) {
-						status = getApi().showStatus(reply_id);
-						replyTweet = Tweet.create(status);
-					}
+				String id = param.getString("id");
+
+				if (!Utils.isEmpty(id)) {
+					status = getApi().showStatus(id);
+					tweet = Tweet.create(status);
 				}
 			} catch (HttpException e) {
 				Log.e(TAG, e.getMessage(), e);
@@ -647,7 +722,7 @@ public class StatusActivity extends WithHeaderActivity {
 	public boolean onContextItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case CONTEXT_REFRESH_ID:
-			doGetStatus(tweet.id, false);
+			doGetStatus(tweet.id);
 			return true;
 		case CONTEXT_CLIPBOARD_ID:
 			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
