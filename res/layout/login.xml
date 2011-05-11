@@ -85,7 +85,6 @@
       android:layout_width="fill_parent"
       android:layout_height="wrap_content"
       android:layout_weight="1"
-      android:background="@drawable/background_login_footer"
       >
         <TextView  android:id="@+id/register_link"
             android:text="@string/login_register_link"
