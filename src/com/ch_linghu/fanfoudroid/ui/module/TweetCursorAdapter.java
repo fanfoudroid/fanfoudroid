@@ -37,9 +37,6 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		super(context, cursor);
 		mContext = context;
 
-		if (context != null) {
-			mInflater = LayoutInflater.from(context);
-		}
 
 		if (cursor != null) {
 		    //TODO: 可使用:
@@ -63,8 +60,6 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		mMetaBuilder = new StringBuilder();
 	}
 
-	private LayoutInflater mInflater;
-
 	private int mUserTextColumn;
 	private int mTextColumn;
 	private int mProfileImageUrlColumn;
@@ -86,7 +81,9 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
-		View view = mInflater.inflate(R.layout.tweet, parent, false);
+	    // ::MARK:: 845.461
+	    final LayoutInflater inflater = LayoutInflater.from(context);
+		final View view = inflater.inflate(R.layout.tweet, parent, false);
 
 		TweetCursorAdapter.ViewHolder holder = new ViewHolder();
 		holder.tweetUserText = (TextView) view

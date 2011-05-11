@@ -182,7 +182,7 @@ public class TwitterDbAdapter {
   }
 
   public final static DateFormat DB_DATE_FORMATTER = new SimpleDateFormat(
-      "yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US);
+      "yyyy-MM-dd'T'HH:mm:ss.SSS");
 
   // TODO: move all these to the model.
   public long createTweet(String tableName, Tweet tweet, String prevId, boolean isUnread) {

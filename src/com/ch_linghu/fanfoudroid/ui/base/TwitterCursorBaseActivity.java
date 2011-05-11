@@ -15,7 +15,6 @@
  */
 package com.ch_linghu.fanfoudroid.ui.base;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -23,9 +22,9 @@ import java.util.List;
 
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ImageButton;
@@ -47,7 +46,6 @@ import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 import com.ch_linghu.fanfoudroid.ui.module.TweetCursorAdapter;
 import com.ch_linghu.fanfoudroid.weibo.IDs;
-import com.ch_linghu.fanfoudroid.weibo.Paging;
 import com.ch_linghu.fanfoudroid.weibo.Status;
 import com.ch_linghu.fanfoudroid.weibo.WeiboException;
 
@@ -202,9 +200,11 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 	 * NOTE: 必须在listView#setAdapter之前调用
 	 */
 	protected void setupListHeader(boolean addFooter) {
+	    final LayoutInflater inflater = LayoutInflater.from(this);
         
         // Add Header to ListView
-        mListHeader = View.inflate(this, R.layout.listview_header, null);
+	    // ::MARK:: 670.121
+        mListHeader = inflater.inflate(R.layout.listview_header, null);
         mTweetList.addHeaderView(mListHeader, null, true);
         mListHeader.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -215,7 +215,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
         });
         
         //TODO: 完成listView顶部和底部的事件绑定
-        mListFooter = View.inflate(this, R.layout.listview_footer, null);
+        mListFooter = inflater.inflate(R.layout.listview_footer, null);
         mTweetList.addFooterView(mListFooter, null, true);
         mListFooter.setOnClickListener(new View.OnClickListener() {
             @Override

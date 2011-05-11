@@ -5,18 +5,16 @@ import java.util.HashSet;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Debug;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.ch_linghu.fanfoudroid.data.db.StatusTable;
 import com.ch_linghu.fanfoudroid.data.db.TwitterDatabase;
-import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheManager;
 import com.ch_linghu.fanfoudroid.weibo.Configuration;
@@ -47,6 +45,7 @@ public class TwitterApplication extends Application {
     @Override
     public void onCreate() {
         //NOTE: StrictMode模式需要2.3 API支持。
+        /*
         if (DEBUG){
         	StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
         		.detectAll()
@@ -57,7 +56,7 @@ public class TwitterApplication extends Application {
         		.penaltyLog()
         		.build());
         }
-
+        */
 
     	super.onCreate();
         

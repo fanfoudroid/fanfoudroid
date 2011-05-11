@@ -68,11 +68,11 @@ public class Utils {
   
 //Wed Dec 15 02:53:36 +0000 2010
   public static final DateFormat TWITTER_DATE_FORMATTER = new SimpleDateFormat(
-      "E MMM d HH:mm:ss Z yyyy", Locale.US);
+      "E MMM d HH:mm:ss Z yyyy");
 
   public static final DateFormat TWITTER_SEARCH_API_DATE_FORMATTER = new SimpleDateFormat(
 	  //TODO: Z -> z ?
-      "E, d MMM yyyy HH:mm:ss Z", Locale.US);
+      "E, d MMM yyyy HH:mm:ss Z");
 
   public static final Date parseDateTime(String dateString) {
     try {

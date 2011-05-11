@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Debug;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -88,12 +89,23 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 	
 	@Override
     protected boolean _onCreate(Bundle savedInstanceState) {
+	    // start tracing to "/sdcard/xxxx"
+        Log.d("LDS", "start trace");
+        Debug.startMethodTracing(TAG);
+        
         if (super._onCreate(savedInstanceState)){
         	setHeaderTitle("饭否fanfou.com");
         	return true;
         }else{
         	return false;
         }
+    }
+
+    @Override
+    protected void onPause() {
+        // TODO Auto-generated method stub
+        super.onPause();
+        finish();
     }
 
     @Override
@@ -104,6 +116,10 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 		if (mDeleteTask != null && mDeleteTask.getStatus() == GenericTask.Status.RUNNING) {
 			mDeleteTask.cancel(true);
 		}
+		
+		// stop tracing
+        Log.d("LDS", "stop trace");
+	    Debug.stopMethodTracing();
 	}
 
 	@Override

@@ -268,7 +268,7 @@ public class StatusDatabase {
     }
 
     public final static DateFormat DB_DATE_FORMATTER = new SimpleDateFormat(
-            "yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US);
+            "yyyy-MM-dd'T'HH:mm:ss.SSS");
 
     /**
      * 向Status表中写入一行数据, 此方法为私有方法, 外部插入数据请使用 putTweets()

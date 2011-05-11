@@ -1381,7 +1381,7 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
 
 
     private SimpleDateFormat format = new SimpleDateFormat(
-            "EEE, d MMM yyyy HH:mm:ss z", Locale.ENGLISH);
+            "EEE, d MMM yyyy HH:mm:ss z");
 
     @Override
     public boolean equals(Object o) {

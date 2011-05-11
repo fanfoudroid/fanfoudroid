@@ -193,13 +193,15 @@ public class WeiboResponse implements java.io.Serializable {
         }
     	SimpleDateFormat sdf = formatMap.get(format);
         if (null == sdf) {
-            sdf = new SimpleDateFormat(format, Locale.ENGLISH);
+            // ::MARK:: see http://code.google.com/p/android/issues/detail?id=3147
+            sdf = new SimpleDateFormat(format);
             sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
             formatMap.put(format, sdf);
         }
         try {
             synchronized(sdf){
                 // SimpleDateFormat is not thread safe
+                // ::MARK:: 5233.079
                 return sdf.parse(str);
             }
         } catch (ParseException pe) {

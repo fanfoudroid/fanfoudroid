@@ -368,7 +368,7 @@ public class Status extends WeiboResponse implements java.io.Serializable {
     }
 
     /*modify by sycheng add json call method*/
-    /*package*/
+    /*package*/ // ::MARK:: 6112.534  ::SLOW::
     static List<Status> constructStatuses(Response res) throws WeiboException {
     	 try {
              JSONArray list = res.asJSONArray();
