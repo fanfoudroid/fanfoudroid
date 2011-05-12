@@ -194,7 +194,7 @@ public class WeiboResponse implements java.io.Serializable {
         }
     	SimpleDateFormat sdf = formatMap.get(format);
         if (null == sdf) {
-            sdf = new SimpleDateFormat(format, Locale.ENGLISH);
+            sdf = new SimpleDateFormat(format, Locale.US);
             sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
             formatMap.put(format, sdf);
         }
