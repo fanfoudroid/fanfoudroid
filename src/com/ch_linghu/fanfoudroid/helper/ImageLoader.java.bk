@@ -1,0 +1,111 @@
+package com.ch_linghu.fanfoudroid.helper;
+
+import java.io.IOException;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+import android.widget.ImageView;
+
+import com.ch_linghu.fanfoudroid.TwitterApplication;
+
+public class ImageLoader {
+	private static final String TAG="ImageLoader";
+	
+	public static final int HANDLER_MESSAGE_ID = 1;
+	public static final String BITMAP_EXTRA = "extra_bitmap";
+    public static final String IMAGE_URL_EXTRA = "extra_image_url";
+	
+	private ImageManager mImageManager = new ImageManager(TwitterApplication.mContext);
+	private BlockingQueue<PhotoToLoad> mUrlList = new ArrayBlockingQueue<ImageLoader.PhotoToLoad>(50);
+	
+	private GetImageTask mTask = new GetImageTask();
+	private ImageLoaderHandler handler = new ImageLoaderHandler();
+	
+	public Bitmap get(String url, ImageView imageView){
+		Bitmap bitmap = ImageManager.mDefaultBitmap;
+		if( mImageManager.isInCache(url) ){
+			bitmap = mImageManager.get(url);
+		}else{
+			//bitmap不存在，启动Task进行下载
+		    imageView.setTag(url);
+			doGetImage(new PhotoToLoad(url, imageView));
+		}
+		return bitmap;
+	}
+	
+	//Low-level interface to get ImageManager
+	public ImageManager getImageManager(){
+		return mImageManager;
+	}
+	
+	private void putUrl(PhotoToLoad photo){
+	    try {
+            mUrlList.put(photo);
+        } catch (InterruptedException e) {
+            Log.e(TAG, e.getMessage());
+        }
+	}
+	
+	private void doGetImage(PhotoToLoad photo){
+		if (photo.url != null){
+			putUrl(photo);
+		}
+		
+        //start thread if it's not started yet
+        if(mTask.getState()==Thread.State.NEW)
+        	mTask.start();
+	}
+	
+	private class GetImageTask extends Thread {
+	    private volatile boolean mTaskTerminated = false;
+	    
+        public void run() {
+            try {
+                while ( !mTaskTerminated ) {
+                    PhotoToLoad photo = mUrlList.take(); // blocking
+                    Bitmap bitmap = ImageManager.mDefaultBitmap;
+                    bitmap = mImageManager.safeGet(photo.url);
+                    notifyImageLoaded(photo, bitmap);
+                }
+            } catch (IOException ioe) {
+                Log.e(TAG, "Get Image failed, " + ioe.getMessage());
+            } catch (InterruptedException e) {
+                Log.e(TAG, e.getMessage());
+            } finally {
+                mTaskTerminated = true;
+            }
+        }
+        
+        public void notifyImageLoaded(PhotoToLoad photo, Bitmap bitmap) {
+            Bundle data = new Bundle();
+            data.putString(IMAGE_URL_EXTRA, photo.url);
+            data.putParcelable(BITMAP_EXTRA, bitmap);
+            
+            Message message = handler.obtainMessage(HANDLER_MESSAGE_ID);
+            message.setData(data);
+            handler.setImageView(photo.imageView);
+            handler.sendMessage(message);
+        }
+        
+        public void shutDown() throws InterruptedException {
+            mTaskTerminated = true;
+        }
+    }
+	
+    // Task for the queue
+    private class PhotoToLoad
+    {
+        public String url;
+        public ImageView imageView;
+        public PhotoToLoad(String u, ImageView i){
+            url=u; 
+            imageView=i;
+        }
+    }
+}

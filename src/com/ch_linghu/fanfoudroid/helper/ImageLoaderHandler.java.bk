@@ -1,0 +1,42 @@
+package com.ch_linghu.fanfoudroid.helper;
+
+import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.widget.ImageView;
+
+public class ImageLoaderHandler extends Handler {
+    private ImageView imageView;
+    
+    public ImageLoaderHandler() {}
+    
+    @Override
+    public final void handleMessage(Message msg) {
+        switch (msg.what) {  
+            case ImageLoader.HANDLER_MESSAGE_ID:
+                handleImageLoadedMessage(msg);
+                break;
+        }
+    }
+
+    protected final void handleImageLoadedMessage(Message msg) {
+        Bundle data = msg.getData();
+        Bitmap bitmap = data.getParcelable(ImageLoader.BITMAP_EXTRA);
+        String imageUrl = data.getString(ImageLoader.IMAGE_URL_EXTRA);
+        
+        String forUrl = (String) imageView.getTag();
+        if (imageUrl.equals(forUrl) && bitmap != null) {
+            imageView.setImageBitmap(bitmap);
+        }
+    }
+    
+    public ImageView getImageView() {
+        return imageView;
+    }
+
+    public void setImageView(ImageView imageView) {
+        this.imageView = imageView;
+    }
+}
+
