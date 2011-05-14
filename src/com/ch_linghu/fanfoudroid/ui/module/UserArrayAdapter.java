@@ -133,14 +133,15 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter{
 				}});
 		return view;
 	}
+	
 	public void refresh(ArrayList<User> users) {
 		mUsers = users;
 		notifyDataSetChanged();
 	}
+	
 	@Override
 	public void refresh() {
-		
-		
+		notifyDataSetChanged();
 	}
 	
 	private ProfileImageCacheCallback callback = new ProfileImageCacheCallback(){
