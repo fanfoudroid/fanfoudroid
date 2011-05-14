@@ -55,8 +55,8 @@ public class ImageManager implements ImageCache {
     // 饭否目前最大宽度支持496px, 超过则同比缩小
     // 最大宽度为992px, 超过从中截取
     public static final int DEFAULT_COMPRESS_QUALITY = 90;
-    public static final int MAX_WIDTH  = 496;
-    public static final int MAX_HEIGHT = 992;
+    public static final int MAX_WIDTH  = 596;
+    public static final int MAX_HEIGHT = 1192;
 
     private Context mContext;
     // In memory cache.
@@ -431,10 +431,12 @@ public class ImageManager implements ImageCache {
             bitmap = Bitmap.createScaledBitmap(bitmap, width, height, false);
         }
         
-        // 若图片过长, 则从上端截取
+        // 若图片过长, 则从中部截取
         if (height > maxHeight) {
             height = maxHeight;
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height);
+            
+        	int half_diff = (int)((originHeight - maxHeight)  / 2.0);
+            bitmap = Bitmap.createBitmap(bitmap, 0, half_diff, width, height);
         }
         
 //        Log.d(TAG, width + " width");

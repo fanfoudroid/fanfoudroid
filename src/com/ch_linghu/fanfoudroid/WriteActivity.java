@@ -29,6 +29,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -36,6 +37,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
+import android.provider.MediaStore.MediaColumns;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextWatcher;
@@ -137,7 +139,7 @@ public class WriteActivity extends WithHeaderActivity {
 	protected void openImageCaptureMenu() {
 		try {
 			// TODO: API < 1.6, images size too small
-			mImageFile = new File(Environment.getExternalStorageDirectory(),
+			mImageFile = new File(FileHelper.getBasePath(),
 					"upload.jpg");
 			mImageUri = Uri.fromFile(mImageFile);
 			Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -176,10 +178,16 @@ public class WriteActivity extends WithHeaderActivity {
 		alert.show();
 	}
 
+	private String getRealPathFromURI(Uri contentUri) {
+	    String[] proj = { MediaColumns.DATA };
+	    Cursor cursor = managedQuery(contentUri, proj, null, null, null);
+	    int column_index = cursor.getColumnIndexOrThrow(MediaColumns.DATA);
+	    cursor.moveToFirst();
+	    return cursor.getString(column_index);
+	}
+
 	private void getPic(Intent intent, Uri uri) {
 		
-		//  Cann't insert two pictures
-		chooseImagesButton.setEnabled(false);
 		// layout for picture mode
 		changeStyleWithPic();
 		
@@ -187,20 +195,14 @@ public class WriteActivity extends WithHeaderActivity {
 		mFile = null;
 
 		
+		mImageUri = uri;
     	if (uri.getScheme().equals("content")){
-    		mImageUri = uri;
+    		mFile = new File(getRealPathFromURI(mImageUri));
     	} else {
-    		//suppose that we got a file:// URI, convert it to content:// URI
-    		String path = uri.getPath();
-    		File file = new File(path);
-    		mImageUri = Uri.fromFile(file);
+    		mFile = new File(mImageUri.getPath());
     	}
 
-		//String filename = extras.getString("filename");
-		//mFile = new File(filename);
-		//TODO: 需要进一步细化
 		//TODO:想将图片放在EditText左边
-		mFile = bitmapToFile(createThumbnailBitmap(mImageUri, 800));
 		mPreview.setImageBitmap(createThumbnailBitmap(mImageUri,
 				MAX_BITMAP_SIZE));
 
@@ -212,21 +214,21 @@ public class WriteActivity extends WithHeaderActivity {
 	}
 	
 	private File bitmapToFile(Bitmap bitmap) {
-      	File file = new File(Environment.getExternalStorageDirectory(), "upload.jpg");
         try {
+          	File file = new File(FileHelper.getBasePath(), "upload.jpg");
             FileOutputStream out=new FileOutputStream(file);
-            if(bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out)){
+            if(bitmap.compress(Bitmap.CompressFormat.JPEG, ImageManager.DEFAULT_COMPRESS_QUALITY, out)){
                 out.flush();
                 out.close();
             }
+            return file;
         } catch (FileNotFoundException e) {
-            Log.e(TAG, "Sorry, the file can not be created");
+            Log.e(TAG, "Sorry, the file can not be created. " + e.getMessage());
             return null;
         } catch (IOException e) {
-            Log.e(TAG, "IOException occurred when save upload file");
+            Log.e(TAG, "IOException occurred when save upload file. " + e.getMessage());
             return null;
         }
-        return file;
 	}
 
 	private void changeStyleWithPic() {
@@ -593,7 +595,7 @@ public class WriteActivity extends WithHeaderActivity {
 		            if (null != mFile) {
 		                // Compress image
 		                try {
-		                    mFile = getImageManager().compressImage(mFile, 90);
+		                    mFile = getImageManager().compressImage(mFile, ImageManager.DEFAULT_COMPRESS_QUALITY);
 		                } catch (IOException ioe) {
 		                    Log.e(TAG, "Cann't compress images.");
 		                }
