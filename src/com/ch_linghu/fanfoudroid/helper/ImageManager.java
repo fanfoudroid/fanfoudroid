@@ -312,7 +312,7 @@ public class ImageManager implements ImageCache {
     /**
      * 判断缓存着中是否存在该文件对应的bitmap
      */
-    public boolean isInCache(String file) {
+    public boolean isContains(String file) {
     	return mCache.containsKey(file);
     }
     

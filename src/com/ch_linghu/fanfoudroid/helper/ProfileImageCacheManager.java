@@ -25,7 +25,7 @@ public class ProfileImageCacheManager {
 	
 	public Bitmap get(String url, ProfileImageCacheCallback callback){
 		Bitmap bitmap = ImageManager.mDefaultBitmap;
-		if(mImageManager.isInCache(url)){
+		if(mImageManager.isContains(url)){
 			bitmap = mImageManager.get(url);
 		}else{
 			//bitmap不存在，启动Task进行下载
@@ -42,8 +42,10 @@ public class ProfileImageCacheManager {
 	
 	private void putUrl(String url){
 		synchronized(mUrlList){
-			mUrlList.add(url);
-			mUrlList.notifyAll();
+			if (!mUrlList.contains(url)){
+				mUrlList.add(url);
+				mUrlList.notifyAll();
+			}
 		}
 	}
 	
