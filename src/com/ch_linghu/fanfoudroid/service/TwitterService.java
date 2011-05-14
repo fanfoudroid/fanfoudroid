@@ -56,7 +56,7 @@ import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.helper.utils.*;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -206,7 +206,7 @@ public class TwitterService extends Service {
 
 		if (count == 1) {
 			title = latestTweet.screenName;
-			text = Utils.getSimpleTweetText(latestTweet.text);
+			text = TextHelper.getSimpleTweetText(latestTweet.text);
 		} else {
 			title = getString(R.string.service_new_twitter_updates);
 			text = getString(R.string.service_x_new_tweets);
@@ -217,7 +217,7 @@ public class TwitterService extends Service {
 				TwitterActivity.createIntent(this), 0);
 
 		notify(intent, TWEET_NOTIFICATION_ID, R.drawable.notify_tweet,
-				Utils.getSimpleTweetText(latestTweet.text), title, text);
+				TextHelper.getSimpleTweetText(latestTweet.text), title, text);
 	}
 
 	private void processNewMentions() {
@@ -233,7 +233,7 @@ public class TwitterService extends Service {
 
 		if (count == 1) {
 			title = latestTweet.screenName;
-			text = Utils.getSimpleTweetText(latestTweet.text);
+			text = TextHelper.getSimpleTweetText(latestTweet.text);
 		} else {
 			title = getString(R.string.service_new_mention_updates);
 			text = getString(R.string.service_x_new_mentions);
@@ -244,7 +244,7 @@ public class TwitterService extends Service {
 				MentionActivity.createIntent(this), 0);
 
 		notify(intent, MENTION_NOTIFICATION_ID, R.drawable.notify_mention,
-				Utils.getSimpleTweetText(latestTweet.text), title, text);
+				TextHelper.getSimpleTweetText(latestTweet.text), title, text);
 	}
 
 	private static int TWEET_NOTIFICATION_ID = 0;
@@ -295,7 +295,7 @@ public class TwitterService extends Service {
 
 		if (count == 1) {
 			title = latest.screenName;
-			text = Utils.getSimpleTweetText(latest.text);
+			text = TextHelper.getSimpleTweetText(latest.text);
 		} else {
 			title = getString(R.string.service_new_direct_message_updates);
 			text = getString(R.string.service_x_new_direct_messages);
@@ -306,7 +306,7 @@ public class TwitterService extends Service {
 				DmActivity.createIntent(), 0);
 
 		notify(pendingIntent, DM_NOTIFICATION_ID, R.drawable.notify_dm,
-				Utils.getSimpleTweetText(latest.text), title, text);
+				TextHelper.getSimpleTweetText(latest.text), title, text);
 	}
 
 	@Override

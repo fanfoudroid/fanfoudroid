@@ -35,7 +35,7 @@ import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.helper.utils.*;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -89,8 +89,8 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 				logout();
 			} else if (result == TaskResult.OK) {
 				SharedPreferences.Editor editor = getPreferences().edit();
-				editor.putLong(Preferences.LAST_TWEET_REFRESH_KEY, Utils
-						.getNowTime());
+				editor.putLong(Preferences.LAST_TWEET_REFRESH_KEY, 
+						DateTimeHelper.getNowTime());
 				editor.commit();
 				//TODO: 1. StatusType(DONE) ; 
 				if (mRetrieveCount >= StatusTable.MAX_ROW_NUM){
@@ -133,7 +133,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 				SharedPreferences sp = getPreferences();
 				SharedPreferences.Editor editor = sp.edit();
 				editor.putLong(Preferences.LAST_FOLLOWERS_REFRESH_KEY,
-						Utils.getNowTime());
+						DateTimeHelper.getNowTime());
 				editor.commit();
 			} else {
 				// Do nothing.
@@ -295,14 +295,14 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 			//FIXME： 该子类页面全部使用了这个统一的计时器，导致进入Mention等分页面后经常不会自动刷新
 			long lastRefreshTime = mPreferences.getLong(
 					Preferences.LAST_TWEET_REFRESH_KEY, 0);
-			long nowTime = Utils.getNowTime();
+			long nowTime = DateTimeHelper.getNowTime();
 	
 			long diff = nowTime - lastRefreshTime;
 			Log.d(TAG, "Last refresh was " + diff + " ms ago.");
 	
 			if (diff > REFRESH_THRESHOLD) {
 				shouldRetrieve = true;
-			} else if (Utils.isTrue(savedInstanceState, SIS_RUNNING_KEY)) {
+			} else if (MiscHelper.isTrue(savedInstanceState, SIS_RUNNING_KEY)) {
 				// Check to see if it was running a send or retrieve task.
 				// It makes no sense to resend the send request (don't want dupes)
 				// so we instead retrieve (refresh) to see if the message has

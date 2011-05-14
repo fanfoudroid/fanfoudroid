@@ -20,7 +20,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.helper.utils.*;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -241,13 +241,13 @@ public class SearchActivity extends WithHeaderActivity {
 
 	@Override
 	protected boolean startSearch() {
-		if (!Utils.isEmpty(initialQuery)) {
+		if (!TextHelper.isEmpty(initialQuery)) {
 			// 以下这个方法在7可用，在8就报空指针
 			// triggerSearch(initialQuery, null);
 			Intent i = new Intent(this, SearchResultActivity.class);
 			i.putExtra(SearchManager.QUERY, initialQuery);
 			startActivity(i);
-		} else if (Utils.isEmpty(initialQuery)) {
+		} else if (TextHelper.isEmpty(initialQuery)) {
 			Toast.makeText(this,
 					getResources().getString(R.string.search_box_null),
 					Toast.LENGTH_SHORT).show();

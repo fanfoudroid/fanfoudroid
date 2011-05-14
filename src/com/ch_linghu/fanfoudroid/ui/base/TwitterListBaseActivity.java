@@ -45,7 +45,7 @@ import com.ch_linghu.fanfoudroid.WriteActivity;
 import com.ch_linghu.fanfoudroid.WriteDmActivity;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.helper.utils.*;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
@@ -252,7 +252,7 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 	// for HasFavorite interface
 	
 	public void doFavorite(String action, String id) {
-        if (!Utils.isEmpty(id)) {
+        if (!TextHelper.isEmpty(id)) {
 	    	if (mFavTask != null && mFavTask.getStatus() == GenericTask.Status.RUNNING){
 	    		return;	
 	    	}else{

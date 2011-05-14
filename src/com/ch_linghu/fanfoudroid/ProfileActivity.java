@@ -27,7 +27,7 @@ import android.widget.Toast;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.db.UserInfoTable;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
-import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.helper.utils.*;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -186,7 +186,7 @@ public class ProfileActivity extends WithHeaderActivity {
 					return;
 				}
 				String showName;
-				if (!Utils.isEmpty(profileInfo.getScreenName())) {
+				if (!TextHelper.isEmpty(profileInfo.getScreenName())) {
 					showName = profileInfo.getScreenName();
 				} else {
 					showName = profileInfo.getName();
@@ -207,7 +207,7 @@ public class ProfileActivity extends WithHeaderActivity {
 					return;
 				}
 				String showName;
-				if (!Utils.isEmpty(profileInfo.getScreenName())) {
+				if (!TextHelper.isEmpty(profileInfo.getScreenName())) {
 					showName = profileInfo.getScreenName();
 				} else {
 					showName = profileInfo.getName();
@@ -228,7 +228,7 @@ public class ProfileActivity extends WithHeaderActivity {
 					return;
 				}
 				String showName;
-				if (!Utils.isEmpty(profileInfo.getScreenName())) {
+				if (!TextHelper.isEmpty(profileInfo.getScreenName())) {
 					showName = profileInfo.getScreenName();
 				} else {
 					showName = profileInfo.getName();

@@ -52,7 +52,7 @@ import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.helper.utils.*;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
@@ -451,7 +451,7 @@ public class WriteActivity extends WithHeaderActivity {
                 + " @"
                 + screenName
                 + " "
-                + Utils.getSimpleTweetText(tweetText);
+                + TextHelper.getSimpleTweetText(tweetText);
         Intent intent = new Intent(WriteActivity.REPOST_TWEET_ACTION);
         intent.putExtra(Intent.EXTRA_TEXT, retweet);
         intent.putExtra(WriteActivity.EXTRA_REPOST_ID, repostId);
@@ -530,7 +530,7 @@ public class WriteActivity extends WithHeaderActivity {
 		}else{
 			String status = mTweetEdit.getText().toString();
 
-			if (! Utils.isEmpty(status) || withPic) {
+			if (! TextHelper.isEmpty(status) || withPic) {
 			    int mode = SendTask.TYPE_NORMAL;
 			    
 			    if (withPic)  {

@@ -9,7 +9,7 @@ import com.ch_linghu.fanfoudroid.helper.ImageCache;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheManager;
-import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.helper.utils.*;
 
 import android.app.Activity;
 import android.content.Context;
@@ -102,13 +102,13 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 		Tweet tweet = mTweets.get(position);
 
 		holder.tweetUserText.setText(tweet.screenName);
-		Utils.setSimpleTweetText(holder.tweetText, tweet.text);
+		TextHelper.setSimpleTweetText(holder.tweetText, tweet.text);
 		// holder.tweetText.setText(tweet.text, BufferType.SPANNABLE);
 
 		String profileImageUrl = tweet.profileImageUrl;
 
 		if (useProfileImage){
-			if (!Utils.isEmpty(profileImageUrl)) {
+			if (!TextHelper.isEmpty(profileImageUrl)) {
 				holder.profileImage.setImageBitmap(TwitterApplication.mProfileImageCacheManager
 						.get(profileImageUrl, callback));
 			}
@@ -125,7 +125,7 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 			holder.fav.setVisibility(View.GONE);
 		}
 		
-		if (!Utils.isEmpty(tweet.thumbnail_pic)) {
+		if (!TextHelper.isEmpty(tweet.thumbnail_pic)) {
 			holder.has_image.setVisibility(View.VISIBLE);
 		} else {
 			holder.has_image.setVisibility(View.GONE);

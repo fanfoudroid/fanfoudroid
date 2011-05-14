@@ -10,7 +10,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.helper.utils.*;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.HttpRefusedException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
@@ -132,7 +132,7 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
 			// Set header title
 			setHeaderTitle("@" + mShowName);
 
-			boolean wasRunning = Utils.isTrue(savedInstanceState,
+			boolean wasRunning = MiscHelper.isTrue(savedInstanceState,
 					SIS_RUNNING_KEY);
 
 			// 此处要求mTweets不为空，最好确保profile页面消息为0时不能进入这个页面

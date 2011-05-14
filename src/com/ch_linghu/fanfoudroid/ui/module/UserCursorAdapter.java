@@ -27,7 +27,7 @@ import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.db.UserInfoTable;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
-import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.helper.utils.*;
 
 public class UserCursorAdapter extends CursorAdapter implements TweetAdapter {
 	private static final String TAG = "TweetCursorAdapter";
@@ -107,7 +107,7 @@ Log.d(TAG,"load newView");
 		boolean useProfileImage = pref.getBoolean(Preferences.USE_PROFILE_IMAGE, true);
 		String profileImageUrl = cursor.getString(mProfileImageUrlColumn);
 		if (useProfileImage){
-		if (!Utils.isEmpty(profileImageUrl)) {
+		if (!TextHelper.isEmpty(profileImageUrl)) {
 			holder.profileImage.setImageBitmap(TwitterApplication.mProfileImageCacheManager
 					.get(profileImageUrl, callback));
 		}

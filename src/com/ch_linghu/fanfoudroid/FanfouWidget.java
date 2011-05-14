@@ -20,7 +20,7 @@ import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
-import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.helper.utils.*;
 import com.ch_linghu.fanfoudroid.service.TwitterService;
 
 public class FanfouWidget extends AppWidgetProvider {
@@ -125,12 +125,12 @@ public class FanfouWidget extends AppWidgetProvider {
 
 		updateViews.setTextViewText(R.id.status_screen_name, t.screenName);
 		updateViews.setTextViewText(R.id.status_text,
-				Utils.getSimpleTweetText(t.text));
+				TextHelper.getSimpleTweetText(t.text));
 
 		updateViews.setTextViewText(R.id.tweet_source,
 				context.getString(R.string.tweet_source_prefix) + t.source);
 		updateViews.setTextViewText(R.id.tweet_created_at,
-				Utils.getRelativeDate(t.createdAt));
+				DateTimeHelper.getRelativeDate(t.createdAt));
 
 		updateViews.setImageViewBitmap(R.id.status_image,
 				TwitterApplication.mProfileImageCacheManager.get(

@@ -24,7 +24,7 @@ import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.data.User;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
-import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.helper.utils.*;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -102,7 +102,7 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter{
 
 		String profileImageUrl = user.profileImageUrl;
 		if (useProfileImage){
-			if (!Utils.isEmpty(profileImageUrl)) {
+			if (!TextHelper.isEmpty(profileImageUrl)) {
 				holder.profileImage.setImageBitmap(TwitterApplication.mProfileImageCacheManager
 						.get(profileImageUrl, callback));
 			}

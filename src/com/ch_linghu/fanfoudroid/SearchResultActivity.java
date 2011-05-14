@@ -12,7 +12,7 @@ import android.view.Menu;
 import android.widget.ListView;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.helper.utils.*;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -191,7 +191,7 @@ public class SearchResultActivity extends TwitterListBaseActivity implements
 
 			try {
 				Query query = new Query(mSearchQuery);
-				if (!Utils.isEmpty(mLastId)){
+				if (!TextHelper.isEmpty(mLastId)){
 					query.setMaxId(mLastId);
 				}
 				result = getApi().search(query);//.search(mSearchQuery, mNextPage);

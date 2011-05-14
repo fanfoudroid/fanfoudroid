@@ -10,7 +10,7 @@ import android.util.Log;
 import com.ch_linghu.fanfoudroid.data2.Status;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
-import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.helper.utils.*;
 
 public class StatusDAO {
     private static final String TAG = "StatusDAO";
@@ -83,7 +83,7 @@ public class StatusDAO {
         query.from(StatusTable.TABLE_NAME)
              .where(StatusTable._ID + "=?", statusId);
 
-        if ( !Utils.isEmpty(owner) ) {
+        if ( !TextHelper.isEmpty(owner) ) {
             query.where(StatusTable.OWNER_ID + "=?", owner);
         }
         if ( -1 != type ) {
@@ -242,7 +242,7 @@ public class StatusDAO {
             
             status.setId(cursor.getString(
                     cursor.getColumnIndex(StatusTable._ID)));
-            status.setCreatedAt(Utils.parseDateTimeFromSqlite(cursor.getString(
+            status.setCreatedAt(DateTimeHelper.parseDateTimeFromSqlite(cursor.getString(
                     cursor.getColumnIndex(StatusTable.CREATED_AT))));
             //TODO: 更改favorite 在数据库类型为boolean后改为 " != 0 "
             status.setFavorited(cursor.getString(

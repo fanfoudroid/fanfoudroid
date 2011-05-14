@@ -3,7 +3,7 @@ package com.ch_linghu.fanfoudroid.data;
 import com.ch_linghu.fanfoudroid.weibo.DirectMessage;
 import com.ch_linghu.fanfoudroid.weibo.User;
 
-import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.helper.utils.*;
 
 public class Dm extends Message {
   @SuppressWarnings("unused")
@@ -21,7 +21,7 @@ public class Dm extends Message {
 
     User user = dm.isSent ? directMessage.getRecipient()
         : directMessage.getSender();
-    dm.screenName = Utils.getSimpleTweetText(user.getScreenName());
+    dm.screenName = TextHelper.getSimpleTweetText(user.getScreenName());
     dm.userId = user.getId();    
     dm.profileImageUrl = user.getProfileImageURL().toString();
 

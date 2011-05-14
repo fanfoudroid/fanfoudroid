@@ -41,7 +41,7 @@ import org.json.JSONException;
 import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.R;
-import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.helper.utils.*;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.Response;
@@ -87,7 +87,7 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
      * @return
      */
     public static boolean isValidCredentials(String username, String password) {
-        return !Utils.isEmpty(username) && !Utils.isEmpty(password);
+        return !TextHelper.isEmpty(username) && !TextHelper.isEmpty(password);
     }
     
     /**

@@ -21,7 +21,7 @@ import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data2.Status;
 import com.ch_linghu.fanfoudroid.db.dao.StatusDAO;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.helper.utils.*;
 
 /**
  * A Database which contains all statuses and direct-messages, use
@@ -247,7 +247,7 @@ public class TwitterDatabase {
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         
         String where = StatusTable._ID + " =? "; 
-        if (!Utils.isEmpty(owner)){
+        if (!TextHelper.isEmpty(owner)){
         	where += " AND " + StatusTable.OWNER_ID + " = '" + owner + "' ";
         }
         if (-1 != type) {
@@ -275,7 +275,7 @@ public class TwitterDatabase {
                 + " (SELECT " + StatusTable._ID // 子句
                 + " FROM " + StatusTable.TABLE_NAME;
         boolean first = true;
-        if (!Utils.isEmpty(owner)){
+        if (!TextHelper.isEmpty(owner)){
         	sql += " WHERE " + StatusTable.OWNER_ID + " = '" + owner + "' ";
         	first = false;
         }
@@ -290,7 +290,7 @@ public class TwitterDatabase {
                 sql += " ORDER BY " + StatusTable.CREATED_AT + " DESC LIMIT "
                 + StatusTable.MAX_ROW_NUM + ")";
 
-        if (!Utils.isEmpty(owner)){
+        if (!TextHelper.isEmpty(owner)){
         	sql += " AND " + StatusTable.OWNER_ID + " = '" + owner + "' ";
         }
         if (type != -1) {

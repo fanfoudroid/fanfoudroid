@@ -26,7 +26,7 @@ import android.os.Parcelable;
 
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
-import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.helper.utils.*;
 import com.ch_linghu.fanfoudroid.weibo.Status;
 
 public class Tweet extends Message implements Parcelable {
@@ -58,7 +58,7 @@ public class Tweet extends Message implements Parcelable {
     tweet.inReplyToUserId = status.getInReplyToUserId();
     tweet.inReplyToScreenName = status.getInReplyToScreenName();
     
-    tweet.screenName = Utils.getSimpleTweetText(status.getUser().getScreenName());
+    tweet.screenName = TextHelper.getSimpleTweetText(status.getUser().getScreenName());
     tweet.profileImageUrl = status.getUser().getProfileImageURL().toString();
     tweet.userId = status.getUser().getId();
     tweet.user = status.getUser();
@@ -67,7 +67,7 @@ public class Tweet extends Message implements Parcelable {
     tweet.bmiddle_pic = status.getBmiddle_pic();
     tweet.original_pic = status.getOriginal_pic();
     
-    tweet.source = Utils.getSimpleTweetText(status.getSource());
+    tweet.source = TextHelper.getSimpleTweetText(status.getSource());
 
     return tweet;
   }
@@ -78,17 +78,17 @@ public class Tweet extends Message implements Parcelable {
     tweet.id = jsonObject.getString("id") + "";
     //转义符放到getSimpleTweetText里去处理，这里不做处理
     tweet.text = jsonObject.getString("text");
-    tweet.createdAt = Utils.parseSearchApiDateTime(jsonObject.getString("created_at"));
+    tweet.createdAt = DateTimeHelper.parseSearchApiDateTime(jsonObject.getString("created_at"));
     tweet.favorited = jsonObject.getString("favorited");
     tweet.truncated = jsonObject.getString("truncated");
     tweet.inReplyToStatusId = jsonObject.getString("in_reply_to_status_id");
     tweet.inReplyToUserId = jsonObject.getString("in_reply_to_user_id");
     tweet.inReplyToScreenName = jsonObject.getString("in_reply_to_screen_name");
 
-    tweet.screenName = Utils.getSimpleTweetText(jsonObject.getString("from_user"));
+    tweet.screenName = TextHelper.getSimpleTweetText(jsonObject.getString("from_user"));
     tweet.profileImageUrl = jsonObject.getString("profile_image_url");
     tweet.userId = jsonObject.getString("from_user_id");
-    tweet.source = Utils.getSimpleTweetText(jsonObject.getString("source"));
+    tweet.source = TextHelper.getSimpleTweetText(jsonObject.getString("source"));
 
     return tweet;
   }
@@ -97,13 +97,13 @@ public class Tweet extends Message implements Parcelable {
       Date createdAt, String source, String replyTo) {
     builder.setLength(0);
 
-    builder.append(Utils.getRelativeDate(createdAt));
+    builder.append(DateTimeHelper.getRelativeDate(createdAt));
     builder.append(" ");
     
     builder.append(TwitterApplication.mContext.getString(R.string.tweet_source_prefix));
     builder.append(source);
     
-	if (!Utils.isEmpty(replyTo)) {
+	if (!TextHelper.isEmpty(replyTo)) {
 		builder.append(" " + TwitterApplication.mContext.getString(R.string.tweet_reply_to_prefix));
 		builder.append(replyTo);
 		builder.append(TwitterApplication.mContext.getString(R.string.tweet_reply_to_suffix));

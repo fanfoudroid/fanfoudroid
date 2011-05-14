@@ -40,6 +40,9 @@ import org.apache.http.params.HttpConnectionParams;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 /**
@@ -68,7 +71,21 @@ public class ImageManager implements ImageCache {
     private static final int CONNECTION_TIMEOUT_MS = 10 * 1000;
     private static final int SOCKET_TIMEOUT_MS = 10 * 1000;
 
-    public ImageManager(Context context) {
+	public static Bitmap drawableToBitmap(Drawable drawable) {
+		Bitmap bitmap = Bitmap
+				.createBitmap(
+						drawable.getIntrinsicWidth(),
+						drawable.getIntrinsicHeight(),
+						drawable.getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888
+								: Bitmap.Config.RGB_565);
+		Canvas canvas = new Canvas(bitmap);
+		drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable
+				.getIntrinsicHeight());
+		drawable.draw(canvas);
+		return bitmap;
+	}
+
+	public ImageManager(Context context) {
         mContext = context;
         mCache = new HashMap<String, SoftReference<Bitmap>>();
         mClient = new DefaultHttpClient();

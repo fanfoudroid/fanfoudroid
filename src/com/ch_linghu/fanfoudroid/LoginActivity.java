@@ -33,7 +33,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.helper.utils.*;
 import com.ch_linghu.fanfoudroid.http.HttpAuthException;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.HttpRefusedException;
@@ -201,7 +201,7 @@ public class LoginActivity extends Activity {
         if (mLoginTask != null && mLoginTask.getStatus() == GenericTask.Status.RUNNING){
         	return;
         }else{
-	        if (!Utils.isEmpty(mUsername) & !Utils.isEmpty(mPassword) ) {
+	        if (!TextHelper.isEmpty(mUsername) & !TextHelper.isEmpty(mPassword) ) {
 	            mLoginTask = new LoginTask();
 	            mLoginTask.setListener(mLoginTaskListener);
 	            

@@ -31,7 +31,7 @@ import com.ch_linghu.fanfoudroid.db.MessageTable;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
-import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.helper.utils.*;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -108,8 +108,8 @@ public class DmActivity extends WithHeaderActivity {
 				logout();
 			} else if (result == TaskResult.OK) {
 				SharedPreferences.Editor editor = mPreferences.edit();
-				editor.putLong(Preferences.LAST_DM_REFRESH_KEY, Utils
-						.getNowTime());
+				editor.putLong(Preferences.LAST_DM_REFRESH_KEY, 
+						DateTimeHelper.getNowTime());
 				editor.commit();
 				draw();
 				goTop();
@@ -143,7 +143,7 @@ public class DmActivity extends WithHeaderActivity {
 		Intent intent = new Intent(LAUNCH_ACTION);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-		if (!Utils.isEmpty(user)) {
+		if (!TextHelper.isEmpty(user)) {
 			intent.putExtra(EXTRA_USER, user);
 		}
 
@@ -175,14 +175,14 @@ public class DmActivity extends WithHeaderActivity {
 	
 			long lastRefreshTime = mPreferences.getLong(
 					Preferences.LAST_DM_REFRESH_KEY, 0);
-			long nowTime = Utils.getNowTime();
+			long nowTime = DateTimeHelper.getNowTime();
 	
 			long diff = nowTime - lastRefreshTime;
 			Log.d(TAG, "Last refresh was " + diff + " ms ago.");
 	
 			if (diff > REFRESH_THRESHOLD) {
 				shouldRetrieve = true;
-			} else if (Utils.isTrue(savedInstanceState, SIS_RUNNING_KEY)) {
+			} else if (MiscHelper.isTrue(savedInstanceState, SIS_RUNNING_KEY)) {
 				// Check to see if it was running a send or retrieve task.
 				// It makes no sense to resend the send request (don't want dupes)
 				// so we instead retrieve (refresh) to see if the message has
@@ -474,11 +474,11 @@ public class DmActivity extends WithHeaderActivity {
 						+ user);
 			}
 
-			Utils.setTweetText(holder.tweetText, cursor.getString(mTextColumn));
+			TextHelper.setTweetText(holder.tweetText, cursor.getString(mTextColumn));
 
 			String profileImageUrl = cursor.getString(mProfileImageUrlColumn);
 
-			if (!Utils.isEmpty(profileImageUrl)) {
+			if (!TextHelper.isEmpty(profileImageUrl)) {
 				holder.profileImage
 						.setImageBitmap(TwitterApplication.mProfileImageCacheManager
 								.get(profileImageUrl, new ProfileImageCacheCallback(){
@@ -493,7 +493,7 @@ public class DmActivity extends WithHeaderActivity {
 			}
 
 			try {
-				holder.metaText.setText(Utils
+				holder.metaText.setText(DateTimeHelper
 						.getRelativeDate(TwitterDatabase.DB_DATE_FORMATTER
 								.parse(cursor.getString(mCreatedAtColumn))));
 			} catch (ParseException e) {

@@ -34,7 +34,7 @@ import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.User;
 import com.ch_linghu.fanfoudroid.db.UserInfoTable;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.helper.utils.*;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -99,8 +99,8 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity{
 				logout();
 			} else if (result == TaskResult.OK) {
 				SharedPreferences.Editor editor = getPreferences().edit();
-				editor.putLong(Preferences.LAST_TWEET_REFRESH_KEY, Utils
-						.getNowTime());
+				editor.putLong(Preferences.LAST_TWEET_REFRESH_KEY, 
+						DateTimeHelper.getNowTime());
 				editor.commit();
 				//TODO: 1. StatusType(DONE) ; 2. 只有在取回的数据大于MAX时才做GC, 因为小于时可以保证数据的连续性
 				
@@ -142,7 +142,7 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity{
 				SharedPreferences sp = getPreferences();
 				SharedPreferences.Editor editor = sp.edit();
 				editor.putLong(Preferences.LAST_FOLLOWERS_REFRESH_KEY,
-						Utils.getNowTime());
+						DateTimeHelper.getNowTime());
 				editor.commit();
 			} else {
 				// Do nothing.
@@ -299,7 +299,7 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity{
 		//FIXME： 该子类页面全部使用了这个统一的计时器，导致进入Mention等分页面后经常不会自动刷新
 		long lastRefreshTime = mPreferences.getLong(
 				Preferences.LAST_TWEET_REFRESH_KEY, 0);
-		long nowTime = Utils.getNowTime();
+		long nowTime = DateTimeHelper.getNowTime();
 
 		long diff = nowTime - lastRefreshTime;
 		Log.d(TAG, "Last refresh was " + diff + " ms ago.");

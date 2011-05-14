@@ -26,7 +26,7 @@ import com.ch_linghu.fanfoudroid.db.StatusTable;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
-import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.helper.utils.*;
 
 public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 	private static final String TAG = "TweetCursorAdapter";
@@ -122,12 +122,12 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		SharedPreferences pref = TwitterApplication.mPref;  //PreferenceManager.getDefaultSharedPreferences(mContext);;
 		boolean useProfileImage = pref.getBoolean(Preferences.USE_PROFILE_IMAGE, true);
 		holder.tweetUserText.setText(cursor.getString(mUserTextColumn));
-		Utils.setSimpleTweetText(holder.tweetText, cursor.getString(mTextColumn));
+		TextHelper.setSimpleTweetText(holder.tweetText, cursor.getString(mTextColumn));
 
 		String profileImageUrl = cursor.getString(mProfileImageUrlColumn);
 
 		if (useProfileImage){
-			if (!Utils.isEmpty(profileImageUrl)) {
+			if (!TextHelper.isEmpty(profileImageUrl)) {
 				holder.profileImage.setImageBitmap(TwitterApplication.mProfileImageCacheManager
 						.get(profileImageUrl, callback));
 			}
@@ -141,7 +141,7 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 			holder.fav.setVisibility(View.GONE);
 		}
 		
-		if (!Utils.isEmpty(cursor.getString(mThumbnailPic))) {
+		if (!TextHelper.isEmpty(cursor.getString(mThumbnailPic))) {
 			holder.has_image.setVisibility(View.VISIBLE);
 		} else {
 			holder.has_image.setVisibility(View.GONE);

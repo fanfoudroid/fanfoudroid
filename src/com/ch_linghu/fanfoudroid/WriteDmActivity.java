@@ -35,7 +35,7 @@ import android.widget.TextView;
 import com.ch_linghu.fanfoudroid.data.Dm;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
-import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.helper.utils.*;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -119,7 +119,7 @@ public class WriteDmActivity extends WithHeaderActivity {
 		Intent intent = new Intent(LAUNCH_ACTION);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-		if (!Utils.isEmpty(user)) {
+		if (!TextHelper.isEmpty(user)) {
 			intent.putExtra(EXTRA_USER, user);
 		}
 
@@ -189,7 +189,7 @@ public class WriteDmActivity extends WithHeaderActivity {
 			// With extras
 		    if (extras != null) {
 		      String to = extras.getString(EXTRA_USER);
-		      if (!Utils.isEmpty(to)) {
+		      if (!TextHelper.isEmpty(to)) {
 		        mToEdit.setText(to);
 		        mTweetEdit.requestFocus();
 		      }
@@ -318,13 +318,13 @@ public class WriteDmActivity extends WithHeaderActivity {
 			String to = mToEdit.getText().toString();
 			String status = mTweetEdit.getText().toString();
 
-			if (!Utils.isEmpty(status) && !Utils.isEmpty(to)) {
+			if (!TextHelper.isEmpty(status) && !TextHelper.isEmpty(to)) {
 				mSendTask = new DmSendTask();
 				mSendTask.setListener(mSendTaskListener);
 				mSendTask.execute();
-			} else if (Utils.isEmpty(status)) {
+			} else if (TextHelper.isEmpty(status)) {
 				updateProgress(getString(R.string.direct_meesage_status_texting_is_null));
-			} else if (Utils.isEmpty(to)) {
+			} else if (TextHelper.isEmpty(to)) {
 				updateProgress(getString(R.string.direct_meesage_status_user_is_null));
 			}
 		}

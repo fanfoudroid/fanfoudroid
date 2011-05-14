@@ -7,7 +7,7 @@ import android.provider.BaseColumns;
 import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.helper.utils.*;
 
 /**
  * Table - Statuses
@@ -115,7 +115,7 @@ public final class StatusTable implements BaseColumns {
         
         Tweet tweet = new Tweet();
         tweet.id = cursor.getString(cursor.getColumnIndex(_ID));
-        tweet.createdAt = Utils.parseDateTimeFromSqlite(cursor.getString(cursor.getColumnIndex(CREATED_AT)));
+        tweet.createdAt = DateTimeHelper.parseDateTimeFromSqlite(cursor.getString(cursor.getColumnIndex(CREATED_AT)));
         tweet.favorited = cursor.getString(cursor.getColumnIndex(FAVORITED));
         tweet.screenName = cursor.getString(cursor.getColumnIndex(USER_SCREEN_NAME));
         tweet.userId = cursor.getString(cursor.getColumnIndex(USER_ID));

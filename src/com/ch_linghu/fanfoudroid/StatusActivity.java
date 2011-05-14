@@ -42,7 +42,7 @@ import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.helper.ImageCache;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
-import com.ch_linghu.fanfoudroid.helper.Utils;
+import com.ch_linghu.fanfoudroid.helper.utils.*;
 import com.ch_linghu.fanfoudroid.http.HttpAuthException;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
 import com.ch_linghu.fanfoudroid.http.HttpException;
@@ -274,7 +274,7 @@ public class StatusActivity extends WithHeaderActivity {
 				intent.putExtra(
 						Intent.EXTRA_TEXT,
 						String.format("@%s %s", tweet.screenName,
-								Utils.getSimpleTweetText(tweet.text)));
+								TextHelper.getSimpleTweetText(tweet.text)));
 				startActivity(Intent.createChooser(intent,
 						getString(R.string.cmenu_share)));
 			}
@@ -329,7 +329,7 @@ public class StatusActivity extends WithHeaderActivity {
 
 			@Override
 			public void onClick(View v) {
-				if (!Utils.isEmpty(tweet.inReplyToStatusId)) {
+				if (!TextHelper.isEmpty(tweet.inReplyToStatusId)) {
 					if (replyTweet == null) {
 						Log.w(TAG, "Selected item not available.");
 					} else {
@@ -429,8 +429,8 @@ public class StatusActivity extends WithHeaderActivity {
 				Preferences.FORCE_SHOW_ALL_IMAGE, false);
 
 		tweet_screen_name.setText(tweet.screenName);
-		Utils.setTweetText(tweet_text, tweet.text);
-		tweet_created_at.setText(Utils.getRelativeDate(tweet.createdAt));
+		TextHelper.setTweetText(tweet_text, tweet.text);
+		tweet_created_at.setText(DateTimeHelper.getRelativeDate(tweet.createdAt));
 		tweet_source.setText(getString(R.string.tweet_source_prefix)
 				+ tweet.source);
 		tweet_user_info.setText(tweet.userId);
@@ -460,12 +460,12 @@ public class StatusActivity extends WithHeaderActivity {
 
 			// 如果选用了强制显示则再尝试分析图片链接
 			if (forceShowAllImage) {
-				photoLink = Utils
+				photoLink = PhotoHelper
 						.getPhotoPageLink(tweet.text, photoPreviewSize);
 				isPageLink = true;
 			}
 
-			if (!Utils.isEmpty(photoLink)) {
+			if (!TextHelper.isEmpty(photoLink)) {
 				status_photo.setVisibility(View.VISIBLE);
 				status_photo.setImageBitmap(mPhotoBitmap);
 				doGetPhoto(photoLink, isPageLink);
@@ -474,7 +474,7 @@ public class StatusActivity extends WithHeaderActivity {
 			status_photo.setVisibility(View.GONE);
 		}
 		// has reply
-		if (!Utils.isEmpty(tweet.inReplyToStatusId)) {
+		if (!TextHelper.isEmpty(tweet.inReplyToStatusId)) {
 			ViewGroup reply_wrap = (ViewGroup) findViewById(R.id.reply_wrap);
 			reply_wrap.setVisibility(View.VISIBLE);
 			reply_status_text = (TextView) findViewById(R.id.reply_status_text);
@@ -540,7 +540,7 @@ public class StatusActivity extends WithHeaderActivity {
 			try {
 				String reply_id = param.getString("reply_id");
 
-				if (!Utils.isEmpty(reply_id)) {
+				if (!TextHelper.isEmpty(reply_id)) {
 					// 首先查看是否在数据库中，如不在再去获取
 					replyTweet = getDb().queryTweet(reply_id, -1);
 					if (replyTweet == null) {
@@ -585,7 +585,7 @@ public class StatusActivity extends WithHeaderActivity {
 			try {
 				String id = param.getString("id");
 
-				if (!Utils.isEmpty(id)) {
+				if (!TextHelper.isEmpty(id)) {
 					status = getApi().showStatus(id);
 					tweet = Tweet.create(status);
 				}
@@ -624,10 +624,10 @@ public class StatusActivity extends WithHeaderActivity {
 			try {
 				String photoURL = param.getString("photo_url");
 				boolean isPageLink = param.getBoolean("is_page_link");
-				if (!Utils.isEmpty(photoURL)) {
+				if (!TextHelper.isEmpty(photoURL)) {
 					if (isPageLink) {
 						String pageHtml = fetchWebPage(photoURL);
-						String photoSrcURL = Utils.getPhotoURL(pageHtml);
+						String photoSrcURL = PhotoHelper.getPhotoURL(pageHtml);
 						if (photoSrcURL != null) {
 							mPhotoBitmap = fetchPhotoBitmap(photoSrcURL);
 						}
@@ -649,8 +649,8 @@ public class StatusActivity extends WithHeaderActivity {
 	private void showReplyStatus(Tweet tweet) {
 		if (tweet != null) {
 			String text = tweet.screenName + " : " + tweet.text;
-			Utils.setSimpleTweetText(reply_status_text, text);
-			reply_status_date.setText(Utils.getRelativeDate(tweet.createdAt));
+			TextHelper.setSimpleTweetText(reply_status_text, text);
+			reply_status_date.setText(DateTimeHelper.getRelativeDate(tweet.createdAt));
 		} else {
 			String msg = MessageFormat.format(
 					getString(R.string.status_status_reply_cannot_display),
@@ -674,7 +674,7 @@ public class StatusActivity extends WithHeaderActivity {
 				&& mFavTask.getStatus() == GenericTask.Status.RUNNING) {
 			return;
 		} else {
-			if (!Utils.isEmpty(id)) {
+			if (!TextHelper.isEmpty(id)) {
 				Log.d(TAG, "doFavorite.");
 				mFavTask = new TweetCommonTask.FavoriteTask(this);
 				mFavTask.setListener(mFavTaskListener);
@@ -726,7 +726,7 @@ public class StatusActivity extends WithHeaderActivity {
 			return true;
 		case CONTEXT_CLIPBOARD_ID:
 			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-			clipboard.setText(Utils.getSimpleTweetText(tweet.text));
+			clipboard.setText(TextHelper.getSimpleTweetText(tweet.text));
 			return true;
 		case CONTEXT_DELETE_ID:
 			doDelete(tweet.id);
