@@ -202,7 +202,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
         
         // Add Header to ListView
         mListHeader = View.inflate(this, R.layout.listview_header, null);
-        mTweetList.addHeaderView(mListHeader, null, true);
+        mTweetList.addHeaderView(mListHeader, null, false);
         mListHeader.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -213,7 +213,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
         
         //TODO: 完成listView顶部和底部的事件绑定
         mListFooter = View.inflate(this, R.layout.listview_footer, null);
-        mTweetList.addFooterView(mListFooter, null, true);
+        mTweetList.addFooterView(mListFooter, null, false);
         mListFooter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
