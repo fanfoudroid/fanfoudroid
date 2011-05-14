@@ -60,10 +60,9 @@ public class TwitterApplication extends Application {
 		try {
 			myself = TwitterApplication.mApi.showUser(TwitterApplication.mApi.getUserId());
 			TwitterApplication.mPref.edit().putString(
-					Preferences.CURRENT_USER_ID, myself.getId());
+					Preferences.CURRENT_USER_ID, myself.getId()).commit();
 			TwitterApplication.mPref.edit().putString(
-					Preferences.CURRENT_USER_SCREEN_NAME, myself.getScreenName());
-			TwitterApplication.mPref.edit().commit();
+					Preferences.CURRENT_USER_SCREEN_NAME, myself.getScreenName()).commit();
 		} catch (HttpException e) {
 			e.printStackTrace();
 		}
