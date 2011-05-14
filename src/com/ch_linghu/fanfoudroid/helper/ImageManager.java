@@ -310,6 +310,45 @@ public class ImageManager implements ImageCache {
     }
     
     /**
+     * 判断缓存着中是否存在该文件对应的bitmap
+     */
+    public boolean isInCache(String file) {
+    	return mCache.containsKey(file);
+    }
+    
+    /**
+     * 获得指定file/URL对应的Bitmap，首先找本地文件，如果有直接使用，否则去网上获取
+     * @param file file URL/file PATH
+     * @param bitmap
+     * @param quality
+     */
+    public Bitmap safeGet(String file) throws IOException{
+        SoftReference<Bitmap> ref;
+        Bitmap bitmap;
+
+        // first try file.
+        bitmap = lookupFile(file);
+
+        if (bitmap != null) {
+            synchronized (this) {
+                mCache.put(file, new SoftReference<Bitmap>(bitmap));
+            }
+
+            return bitmap;
+        } else {
+        	//get from web
+        	String url = file;
+            bitmap = fetchImage(url);
+        }
+        
+        //写入Cache
+        put(file, bitmap);
+        
+        return bitmap;
+    	
+    }
+    
+    /**
      * 从缓存器中读取文件
      * @param file file URL/file PATH
      * @param bitmap
