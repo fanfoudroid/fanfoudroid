@@ -1,9 +1,8 @@
 package com.ch_linghu.fanfoudroid.helper;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-
+import java.util.HashSet;
 import android.graphics.Bitmap;
 import android.util.Log;
 
@@ -18,7 +17,7 @@ public class ProfileImageCacheManager {
 	private static final String TAG="ProfileImageCacheManager";
 	
 	private ImageManager mImageManager = new ImageManager(TwitterApplication.mContext);
-	private ArrayList<String> mUrlList = new ArrayList<String>();
+	private HashSet<String> mUrlList = new HashSet<String>();
 	private HashMap<String, ProfileImageCacheCallback> mCallbackMap = new HashMap<String, ProfileImageCacheCallback>();
 	
 	private GenericTask mTask;
@@ -102,8 +101,8 @@ public class ProfileImageCacheManager {
 
 			if (mUrlList.size() > 0){
 				synchronized(mUrlList){
-					url = mUrlList.get(0);
-					mUrlList.remove(0);
+					url = (String)(mUrlList.toArray()[0]);
+					mUrlList.remove(url);
 				}	
 				try {
 					mImageManager.put(url);
