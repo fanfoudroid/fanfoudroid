@@ -253,15 +253,6 @@ public class BaseActivity extends Activity {
       startActivity(intent);
   }
 
-  private String getRealPathFromURI(Uri contentUri) {
-          String[] proj = { MediaColumns.DATA };
-          Cursor cursor = managedQuery(contentUri, proj, null, null, null);
-          int column_index = cursor.getColumnIndexOrThrow(MediaColumns.DATA);
-          cursor.moveToFirst();
-          return cursor.getString(column_index);
-      }
-
-
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
