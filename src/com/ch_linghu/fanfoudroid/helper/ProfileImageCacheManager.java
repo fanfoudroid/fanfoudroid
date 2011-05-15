@@ -1,9 +1,11 @@
 package com.ch_linghu.fanfoudroid.helper;
 
 import java.io.IOException;
+import java.lang.Thread.State;
 import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -59,18 +61,29 @@ public class ProfileImageCacheManager {
         }
 
         // start thread if it's not started yet
-        if (mTask.getState() == Thread.State.NEW) {
+        Log.i("LDS", mTask.getState() +"");
+        
+        State state = mTask.getState();
+        if (Thread.State.NEW == state) { 
+            mTask.start();
+        } else if (Thread.State.TERMINATED == state) {
+            mTask = new GetImageTask(); // restart thread
             mTask.start();
         }
     }
 
     private class GetImageTask extends Thread {
         private volatile boolean mTaskTerminated = false;
+        private static final int TIMEOUT = 3; 
 
         public void run() {
             try {
-                while (!mTaskTerminated) {
-                    String url = mUrlList.take(); // blocking
+                while ( !mTaskTerminated ) {
+                    String url = mUrlList.poll(TIMEOUT, TimeUnit.MINUTES); // waiting
+                    if (null == url) {
+                        break; // no more, shutdown
+                    }
+                    
                     Bitmap bitmap = ImageManager.mDefaultBitmap;
                     bitmap = mImageManager.safeGet(url);
 
@@ -84,8 +97,9 @@ public class ProfileImageCacheManager {
             } catch (IOException ioe) {
                 Log.e(TAG, "Get Image failed, " + ioe.getMessage());
             } catch (InterruptedException e) {
-                Log.e(TAG, e.getMessage());
+                Log.w(TAG, e.getMessage());
             } finally {
+                Log.v(TAG, "Get image task terminated.");
                 mTaskTerminated = true;
             }
         }
