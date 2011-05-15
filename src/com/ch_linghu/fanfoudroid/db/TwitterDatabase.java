@@ -328,7 +328,7 @@ public class TwitterDatabase {
         if (-1 == id) {
             Log.e(TAG, "cann't insert the tweet : " + tweet.toString());
         } else {
-            Log.v(TAG, "Insert a status into datebase : " + tweet.toString());
+            //Log.v(TAG, "Insert a status into database : " + tweet.toString());
         }
 
         return id;
@@ -416,7 +416,7 @@ public class TwitterDatabase {
                     Log.e(TAG, "cann't insert the tweet : " + tweet.toString());
                 } else {
                 	++result;
-                    Log.v(TAG, String.format("Insert a status into database[%s] : %s", owner, tweet.toString()));
+                    //Log.v(TAG, String.format("Insert a status into database[%s] : %s", owner, tweet.toString()));
                 }
             }
 

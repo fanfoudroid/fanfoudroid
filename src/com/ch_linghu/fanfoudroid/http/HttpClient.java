@@ -1,9 +1,7 @@
 package com.ch_linghu.fanfoudroid.http;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -12,7 +10,6 @@ import java.util.ArrayList;
 
 import javax.net.ssl.SSLHandshakeException;
 
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpHost;
@@ -364,7 +361,6 @@ public class HttpClient {
     public Response httpRequest(String url, ArrayList<BasicNameValuePair> postParams,
             File file, boolean authenticated, String httpMethod) throws HttpException {
         Log.d(TAG, "Sending " + httpMethod + " request to " + url);
-        long startTime = System.currentTimeMillis();
 
         URI uri = createURI(url);
 
@@ -396,12 +392,7 @@ public class HttpClient {
             Log.e(TAG, "response is null");
         }
 
-        long endTime = System.currentTimeMillis();
-        Log.d(TAG, "Http request in " + (endTime - startTime));
-
-        //TODO: response内容DEBUG输出
         return res;
-
     }
 
     /**

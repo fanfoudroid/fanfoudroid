@@ -374,23 +374,22 @@ public class Status extends WeiboResponse implements java.io.Serializable {
        
     }
 
-    /*modify by sycheng add json call method*/
-    /*package*/
+    /* modify by sycheng add json call method */
+    /* package */
     static List<Status> constructStatuses(Response res) throws HttpException {
-    	 try {
-             JSONArray list = res.asJSONArray();
-             int size = list.length();
-             List<Status> statuses = new ArrayList<Status>(size);
-             for (int i = 0; i < size; i++) {
-                 statuses.add(new Status(list.getJSONObject(i)));
-             }
-             return statuses;
-         } catch (JSONException jsone) {
-             throw new HttpException(jsone);
-         } catch (HttpException te) {
-             throw te;
-         }  
-       
+        try {
+            JSONArray list = res.asJSONArray();
+            int size = list.length();
+            List<Status> statuses = new ArrayList<Status>(size);
+            for (int i = 0; i < size; i++) {
+                statuses.add(new Status(list.getJSONObject(i)));
+            }
+            return statuses;
+        } catch (JSONException jsone) {
+            throw new HttpException(jsone);
+        } catch (HttpException te) {
+            throw te;
+        }
     }
     
     @Override

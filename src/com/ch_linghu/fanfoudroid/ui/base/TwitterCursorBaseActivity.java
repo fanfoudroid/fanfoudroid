@@ -35,7 +35,8 @@ import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.utils.*;
+import com.ch_linghu.fanfoudroid.helper.utils.DateTimeHelper;
+import com.ch_linghu.fanfoudroid.helper.utils.MiscHelper;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -88,6 +89,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 			if (result == TaskResult.AUTH_ERROR) {
 				logout();
 			} else if (result == TaskResult.OK) {
+			    // TODO: XML处理, GC压力 
 				SharedPreferences.Editor editor = getPreferences().edit();
 				editor.putLong(Preferences.LAST_TWEET_REFRESH_KEY, 
 						DateTimeHelper.getNowTime());
@@ -495,7 +497,6 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 			}
 
 			mRetrieveCount = addMessages(tweets, false); // getDb().addMentions(tweets, false);
-
 			return TaskResult.OK;
 		}
 		

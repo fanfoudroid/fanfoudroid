@@ -78,6 +78,12 @@ public class Response {
             // the response is gzipped
             is = new GZIPInputStream(is);
         }
+        
+        /*
+        if (DEBUG) {
+            HttpEntity debugEntity = new BufferedHttpEntity(entity);
+        }
+        */
     }
 
     // for test purpose
@@ -133,13 +139,12 @@ public class Response {
                 }
                 br = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
                 StringBuffer buf = new StringBuffer();
-                String line;
-                while (null != (line = br.readLine())) {
-                    buf.append(line).append("\n");
+                char[] buffer = new char[1024];
+                while ( (br.read(buffer)) != -1 ) {
+                    buf.append(buffer);
                 }
                 this.responseAsString = buf.toString();
-                    this.responseAsString = unescape(responseAsString);
-//              log(responseAsString);
+                this.responseAsString = unescape(responseAsString);
                 stream.close();
                 streamConsumed = true;
             } catch (NullPointerException npe) {
