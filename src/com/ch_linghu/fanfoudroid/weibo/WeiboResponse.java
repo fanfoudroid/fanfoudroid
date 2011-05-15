@@ -67,18 +67,6 @@ public class WeiboResponse implements java.io.Serializable {
     }
 
     public WeiboResponse(Response res) {
-        String limit = res.getResponseHeader("X-RateLimit-Limit");
-        if(null != limit){
-            rateLimitLimit = Integer.parseInt(limit);
-        }
-        String remaining = res.getResponseHeader("X-RateLimit-Remaining");
-        if(null != remaining){
-            rateLimitRemaining = Integer.parseInt(remaining);
-        }
-        String reset = res.getResponseHeader("X-RateLimit-Reset");
-        if(null != reset){
-            rateLimitReset = Long.parseLong(reset);
-        }
     }
 
     protected static void ensureRootNodeNameIs(String rootName, Element elem) throws HttpException {

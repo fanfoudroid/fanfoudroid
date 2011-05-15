@@ -61,12 +61,6 @@ public class Status extends WeiboResponse implements java.io.Serializable {
     public Status() {
     }
 
-    public Status(Response res, Weibo weibo) throws HttpException {
-        super(res);
-        Element elem = res.asDocument().getDocumentElement();
-        init(res, elem, weibo);
-    }
-
     public Status(Response res, Element elem, Weibo weibo) throws HttpException
     {
         super(res);
@@ -319,33 +313,6 @@ public class Status extends WeiboResponse implements java.io.Serializable {
         this.ownerId = ownerId;
     }
     
-    /*package*/
-    static List<Status> constructStatuses(Response res,
-                                          Weibo weibo) throws HttpException {
-    	
-    	 Document doc = res.asDocument();
-        if (isRootNodeNilClasses(doc)) {
-            return new ArrayList<Status>(0);
-        } else {
-            try {
-                ensureRootNodeNameIs("statuses", doc);
-                NodeList list = doc.getDocumentElement().getElementsByTagName(
-                        "status");
-                int size = list.getLength();
-                List<Status> statuses = new ArrayList<Status>(size);
-                for (int i = 0; i < size; i++) {
-                    Element status = (Element) list.item(i);
-                    statuses.add(new Status(res, status, weibo));
-                }
-                return statuses;
-            } catch (HttpException te) {
-                ensureRootNodeNameIs("nil-classes", doc);
-                return new ArrayList<Status>(0);
-            }
-        }
-       
-    }
-
     /*modify by sycheng add json call method*/
     /*package*/
     static List<Status> constructStatuses(Response res) throws HttpException {

@@ -5,6 +5,8 @@ import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import android.util.Log;
+
 /**
  * Debug Timer
  * 
@@ -54,6 +56,7 @@ public class DebugTimer {
      * @return
      */
     public static long between(String tag, int startOrEnd) {
+        Log.v("DEBUG", tag + " " + startOrEnd);
         switch (startOrEnd) {
             case START:
                 return mark(tag);

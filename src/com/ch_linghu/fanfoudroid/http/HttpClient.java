@@ -31,7 +31,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.params.ConnManagerParams;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.conn.scheme.PlainSocketFactory;
@@ -57,6 +56,7 @@ import org.apache.http.protocol.HttpContext;
 
 import android.util.Log;
 
+import com.ch_linghu.fanfoudroid.debug.DebugTimer;
 import com.ch_linghu.fanfoudroid.weibo.Configuration;
 import com.ch_linghu.fanfoudroid.weibo.RefuseError;
 
@@ -200,9 +200,9 @@ public class HttpClient {
                 .getSocketFactory(), 443));
 
         // Create an HttpClient with the ThreadSafeClientConnManager.
-        ClientConnectionManager cm = new ThreadSafeClientConnManager(params,
+        ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager(params,
                 schemeRegistry);
-        mClient = new DefaultHttpClient(cm, params);
+        mClient = new DefaultHttpClient();
 
         // TODO: need to release this connection in httpRequest()
         // cm.releaseConnection(conn, validDuration, timeUnit);
@@ -361,6 +361,7 @@ public class HttpClient {
     public Response httpRequest(String url, ArrayList<BasicNameValuePair> postParams,
             File file, boolean authenticated, String httpMethod) throws HttpException {
         Log.d(TAG, "Sending " + httpMethod + " request to " + url);
+        DebugTimer.betweenStart("HTTP");
 
         URI uri = createURI(url);
 
@@ -392,6 +393,7 @@ public class HttpClient {
             Log.e(TAG, "response is null");
         }
 
+        DebugTimer.betweenEnd("HTTP");
         return res;
     }
 

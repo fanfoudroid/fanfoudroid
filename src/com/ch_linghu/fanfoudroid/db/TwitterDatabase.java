@@ -20,6 +20,7 @@ import com.ch_linghu.fanfoudroid.data.Dm;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data2.Status;
 import com.ch_linghu.fanfoudroid.db.dao.StatusDAO;
+import com.ch_linghu.fanfoudroid.debug.DebugTimer;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.utils.*;
 
@@ -394,7 +395,7 @@ public class TwitterDatabase {
      * 		写入的记录条数
      */
     public int putTweets(List<Tweet> tweets, String owner, int type, boolean isUnread) {
-        //long start = System.currentTimeMillis();
+        DebugTimer.betweenStart("Status DB");
         if (null == tweets || 0 == tweets.size())
         {
             return 0;
@@ -417,6 +418,7 @@ public class TwitterDatabase {
                 } else {
                 	++result;
                     //Log.v(TAG, String.format("Insert a status into database[%s] : %s", owner, tweet.toString()));
+                	Log.v("TAG", "Insert Status");
                 }
             }
 
@@ -425,9 +427,8 @@ public class TwitterDatabase {
         } finally {
             db.endTransaction();
         }
+        DebugTimer.betweenEnd("Status DB");
         return result;
-        //long end = System.currentTimeMillis();
-        //Log.d("LDS", "putTweets : " + (end-start));
     }
 
     /**

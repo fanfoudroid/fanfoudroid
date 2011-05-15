@@ -34,6 +34,7 @@ import android.widget.TextView;
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
+import com.ch_linghu.fanfoudroid.debug.DebugTimer;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.utils.DateTimeHelper;
 import com.ch_linghu.fanfoudroid.helper.utils.MiscHelper;
@@ -109,11 +110,15 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 			getRefreshButton().clearAnimation();
             loadMoreGIFTop.setVisibility(View.GONE);
 			updateProgress("");
+			DebugTimer.stop();
+			
+			Log.v("DEBUG", DebugTimer.getProfileAsString());
 		}
 
 		@Override
 		public void onPreExecute(GenericTask task) {
 			onRetrieveBegin();
+			DebugTimer.start();
 		}
 
 		@Override
