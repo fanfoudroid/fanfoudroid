@@ -9,8 +9,6 @@ import java.util.Date;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,8 +23,8 @@ import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
-import com.ch_linghu.fanfoudroid.helper.utils.*;
+import com.ch_linghu.fanfoudroid.helper.SimpleImageLoader;
+import com.ch_linghu.fanfoudroid.helper.utils.TextHelper;
 
 public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 	private static final String TAG = "TweetCursorAdapter";
@@ -78,6 +76,7 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 
 	private StringBuilder mMetaBuilder;
 	
+	/*
 	private ProfileImageCacheCallback callback = new ProfileImageCacheCallback(){
 
 		@Override
@@ -86,6 +85,7 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		}
 		
 	};
+	*/
 
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
@@ -123,15 +123,11 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		boolean useProfileImage = pref.getBoolean(Preferences.USE_PROFILE_IMAGE, true);
 		holder.tweetUserText.setText(cursor.getString(mUserTextColumn));
 		TextHelper.setSimpleTweetText(holder.tweetText, cursor.getString(mTextColumn));
-
+		
 		String profileImageUrl = cursor.getString(mProfileImageUrlColumn);
-
-		if (useProfileImage){
-			if (!TextHelper.isEmpty(profileImageUrl)) {
-				holder.profileImage.setImageBitmap(TwitterApplication.mProfileImageCacheManager
-						.get(profileImageUrl, callback));
-			}
-		}else{
+		if (useProfileImage && !TextHelper.isEmpty(profileImageUrl)) {
+		    SimpleImageLoader.display(holder.profileImage, profileImageUrl);
+		} else {
 			holder.profileImage.setVisibility(View.GONE);
 		}
 		

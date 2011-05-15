@@ -7,8 +7,6 @@ import android.os.Message;
 import android.widget.ImageView;
 
 public class ImageLoaderHandler extends Handler {
-    private ImageView imageView;
-    
     public ImageLoaderHandler() {}
     
     @Override
@@ -24,6 +22,7 @@ public class ImageLoaderHandler extends Handler {
         Bundle data = msg.getData();
         Bitmap bitmap = data.getParcelable(ImageLoader.BITMAP_EXTRA);
         String imageUrl = data.getString(ImageLoader.IMAGE_URL_EXTRA);
+        ImageView imageView = (ImageView) msg.obj;
         
         String forUrl = (String) imageView.getTag();
         if (imageUrl.equals(forUrl) && bitmap != null) {
@@ -31,12 +30,5 @@ public class ImageLoaderHandler extends Handler {
         }
     }
     
-    public ImageView getImageView() {
-        return imageView;
-    }
-
-    public void setImageView(ImageView imageView) {
-        this.imageView = imageView;
-    }
 }
 

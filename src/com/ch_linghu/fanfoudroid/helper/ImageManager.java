@@ -17,6 +17,7 @@
 package com.ch_linghu.fanfoudroid.helper;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -171,8 +172,7 @@ public class ImageManager implements ImageCache {
         }
 
         HttpEntity entity = response.getEntity();
-        BufferedInputStream bis = new BufferedInputStream(entity.getContent(),
-                8 * 1024);
+        BufferedInputStream bis = new BufferedInputStream(entity.getContent());
         Bitmap bitmap = BitmapFactory.decodeStream(bis);
         bis.close();
 
@@ -279,30 +279,27 @@ public class ImageManager implements ImageCache {
             return;
         }
 
-        String hashedUrl = getMd5(file);
-
-        FileOutputStream fos;
-
+        BufferedOutputStream bos = null;
         try {
-            fos = mContext.openFileOutput(hashedUrl, Context.MODE_PRIVATE);
-        } catch (FileNotFoundException e) {
-            Log.w(TAG, "Error creating file.");
-            return;
+            String hashedUrl = getMd5(file);
+            bos = new BufferedOutputStream(
+                    mContext.openFileOutput(hashedUrl, Context.MODE_PRIVATE));
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, bos);
+            Log.d(TAG, "Writing file: " + file);
+        } catch (IOException ioe) {
+            Log.e(TAG, ioe.getMessage());
+        } finally {
+            try {
+                if (bos != null) {
+                    bos.flush();
+                    bos.close();
+                }
+                //bitmap.recycle();
+            } catch (IOException e) {
+                Log.e(TAG, "Could not close file.");
+            }
         }
-        
-        // image is too small
-        if (bitmap.getWidth() < 100 && bitmap.getHeight() < 100) {
-            quality = 100;
-        }
-        
-        Log.d(TAG, "Writing file: " + hashedUrl);
-        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, fos);
-
-        try {
-            fos.close();
-        } catch (IOException e) {
-            Log.w(TAG, "Could not close file.");
-        }
+       
     }
     
     public Bitmap get(File file) {

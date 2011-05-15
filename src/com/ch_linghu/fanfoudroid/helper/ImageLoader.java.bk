@@ -29,9 +29,9 @@ public class ImageLoader {
 	
 	public Bitmap get(String url, ImageView imageView){
 		Bitmap bitmap = ImageManager.mDefaultBitmap;
-		if( mImageManager.isInCache(url) ){
+		if ( mImageManager.isContains(url) ) {
 			bitmap = mImageManager.get(url);
-		}else{
+		} else {
 			//bitmap不存在，启动Task进行下载
 		    imageView.setTag(url);
 			doGetImage(new PhotoToLoad(url, imageView));
@@ -71,7 +71,10 @@ public class ImageLoader {
                     PhotoToLoad photo = mUrlList.take(); // blocking
                     Bitmap bitmap = ImageManager.mDefaultBitmap;
                     bitmap = mImageManager.safeGet(photo.url);
-                    notifyImageLoaded(photo, bitmap);
+                    
+                    BitmapDisplayer bd = new BitmapDisplayer(bitmap, photo.imageView);
+                    Activity a = (Activity) photo.imageView.getContext();
+                    a.runOnUiThread(bd);
                 }
             } catch (IOException ioe) {
                 Log.e(TAG, "Get Image failed, " + ioe.getMessage());
@@ -87,9 +90,8 @@ public class ImageLoader {
             data.putString(IMAGE_URL_EXTRA, photo.url);
             data.putParcelable(BITMAP_EXTRA, bitmap);
             
-            Message message = handler.obtainMessage(HANDLER_MESSAGE_ID);
+            Message message = handler.obtainMessage(HANDLER_MESSAGE_ID, photo.imageView);
             message.setData(data);
-            handler.setImageView(photo.imageView);
             handler.sendMessage(message);
         }
         
@@ -104,8 +106,21 @@ public class ImageLoader {
         public String url;
         public ImageView imageView;
         public PhotoToLoad(String u, ImageView i){
-            url=u; 
-            imageView=i;
+            url = u; 
+            imageView = i;
+        }
+    }
+    
+    //Used to display bitmap in the UI thread
+    class BitmapDisplayer implements Runnable
+    {
+        Bitmap bitmap;
+        ImageView imageView;
+        public BitmapDisplayer(Bitmap b, ImageView i){bitmap=b;imageView=i;}
+        public void run()
+        {
+            if( bitmap != null )
+                imageView.setImageBitmap(bitmap);
         }
     }
 }
