@@ -31,19 +31,14 @@ import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.net.Uri;
-import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
-import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.RemoteViews;
 
 import com.ch_linghu.fanfoudroid.DmActivity;
 import com.ch_linghu.fanfoudroid.FanfouWidget;
@@ -56,7 +51,7 @@ import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.utils.*;
+import com.ch_linghu.fanfoudroid.helper.utils.TextHelper;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -73,7 +68,6 @@ public class TwitterService extends Service {
 
 	private ArrayList<Tweet> mNewTweets;
 	private ArrayList<Tweet> mNewMentions;
-
 	private ArrayList<Dm> mNewDms;
 
 	private GenericTask mRetrieveTask;
@@ -83,10 +77,11 @@ public class TwitterService extends Service {
 	}
 
 	@Override
-	public void onStart(Intent intent, int startId) {
+	public int onStartCommand(Intent intent, int flags, int startId) { 
 		// fetchMessages();
 		// handler.postDelayed(mTask, 10000);
-		super.onStart(intent, startId);
+	    Log.d(TAG, "Start Once");
+		return super.onStartCommand(intent, flags, startId);
 	}
 
 	private TaskListener mRetrieveTaskListener = new TaskAdapter() {
@@ -154,6 +149,7 @@ public class TwitterService extends Service {
 
 	@Override
 	public void onCreate() {
+	    Log.v(TAG, "Server Created");
 		super.onCreate();
 
 		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
@@ -162,6 +158,7 @@ public class TwitterService extends Service {
 
 		boolean needCheck = TwitterApplication.mPref.getBoolean(Preferences.CHECK_UPDATES_KEY, false);
 		boolean widgetIsEnabled = TwitterService.widgetIsEnabled;
+		Log.v(TAG, "Check Updates is " + needCheck + "/wg:" + widgetIsEnabled);
 		if (!needCheck && !widgetIsEnabled) {
 			Log.d(TAG, "Check update preference is false.");
 			stopSelf();
@@ -188,7 +185,6 @@ public class TwitterService extends Service {
 		} else {
 			mRetrieveTask = new RetrieveTask();
 			mRetrieveTask.setListener(mRetrieveTaskListener);
-
 			mRetrieveTask.execute((TaskParams[])null);
 		}
 	}
@@ -337,14 +333,14 @@ public class TwitterService extends Service {
 						Preferences.CHECK_UPDATE_INTERVAL_KEY,
 						context.getString(R.string.pref_check_updates_interval_default));
 		int interval = Integer.parseInt(intervalPref);
-		//int interval = 1;	//for debug
+		//interval = 1;	//for debug
 
 		Intent intent = new Intent(context, TwitterService.class);
 		PendingIntent pending = PendingIntent.getService(context, 0, intent, 0);
 		Calendar c = new GregorianCalendar();
 		c.add(Calendar.MINUTE, interval);
 
-		DateFormat df = new SimpleDateFormat("h:mm a");
+		DateFormat df = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss z");
 		Log.d(TAG, "Scheduling alarm at " + df.format(c.getTime()));
 
 		AlarmManager alarm = (AlarmManager) context
