@@ -3,7 +3,7 @@
   
 <string-array name="check_intervals">  
     <!-- item>1</item-->  <!--  MUST REMOVE. Just for testing. -->
-    <item>5</item>  
+    <item>3</item>  
     <item>10</item>  
     <item>30</item>  
     <item>60</item>

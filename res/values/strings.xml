@@ -134,7 +134,7 @@
     <string name="pref_check_updates_interval_summary">两次检查的间隔分钟数</string>
         
     <string name="pref_check_updates_interval_dialog_title">间隔分钟数:</string>
-    <string name="pref_check_updates_interval_default">60</string>
+    <string name="pref_check_updates_interval_default">3</string>
 
     <string name="pref_check_updates_vibrate_title">振动</string>
     <string name="pref_check_updates_vibrate_summary">有新消息提示时手机振动</string>
