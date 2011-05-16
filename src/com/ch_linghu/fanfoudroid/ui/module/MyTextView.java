@@ -19,7 +19,7 @@ import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 
 public class MyTextView extends TextView {
-    private static float mFontSize = 16;
+    private static float mFontSize = 15;
     private static boolean mFontSizeChanged = true;
 
     public MyTextView(Context context) {

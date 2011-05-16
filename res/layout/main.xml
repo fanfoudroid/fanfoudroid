@@ -19,7 +19,6 @@
     android:fadeScrollbars="false"
     android:divider="@drawable/dashed_line"
     android:dividerHeight="1dip"
-    android:fadingEdge="none"
     android:fastScrollEnabled="true"
     />          
     

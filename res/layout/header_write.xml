@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:orientation="vertical"
-  android:layout_width="fill_parent"
-  android:layout_height="47dp">
-  
-   <!-- 顶部条 -->
-    <RelativeLayout android:id="@+id/LinearLayout01"
+<!-- 顶部条 -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     android:id="@+id/LinearLayout01"
       android:layout_width="fill_parent"
-      android:layout_height="45dp"
-      android:background="@drawable/bg_twitter_titlebar"
+      android:layout_height="47dp"
+      android:background="@drawable/bg_header"
       android:gravity="center_vertical"
       android:layout_alignParentTop="true"
       >
@@ -23,7 +18,7 @@
           android:text="@string/page_label_go_back"
           />
            
-        <!-- 搜索按钮 -->
+        <!-- 搜索按钮 TODO: 改为发送按钮 -->
         <ImageButton android:id="@+id/search"
            android:background="@null"
            android:src="@drawable/search"
@@ -45,29 +40,5 @@
            android:paddingLeft="10dip"
            />   
          
-        <!-- 分割线 -->
-        <!--LinearLayout
-           android:background="#FFF"
-           android:layout_width="1dp"
-           android:layout_height="fill_parent"
-           android:layout_toLeftOf="@id/writeMessage">
-        </LinearLayout-->
-        
-         <!-- 分割线 -->
-        <!--LinearLayout
-           android:background="#FFF"
-           android:layout_width="1dp"
-           android:layout_height="fill_parent"
-           android:layout_toLeftOf="@id/search">
-        </LinearLayout-->
-      
     </RelativeLayout>
     
-    <!-- 渐变条 -->
-    <View android:background="@drawable/shape"
-     android:id="@+id/main_shape"
-     android:layout_below="@id/LinearLayout01"
-     android:layout_width="fill_parent"
-     android:layout_height="3dip"/>
-     
-</LinearLayout>

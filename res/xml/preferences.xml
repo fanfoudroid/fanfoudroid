@@ -85,7 +85,7 @@
 	    
 	    <ListPreference  
             android:key="ui_font_size"
-            android:defaultValue="16"
+            android:defaultValue="15"
             android:title="@string/pref_ui_font_size_title"  
             android:summary="@string/pref_ui_font_size_summary"
             android:entries="@array/ui_font_size"
