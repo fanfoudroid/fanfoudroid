@@ -17,6 +17,8 @@
 package com.ch_linghu.fanfoudroid;
 
 import android.app.Activity;
+import android.app.PendingIntent;
+import android.app.PendingIntent.CanceledException;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -239,7 +241,17 @@ public class LoginActivity extends Activity {
             // Or else default to the main activity.
             intent = new Intent(this, TwitterActivity.class);
         }
-
+		//发送消息给widget
+		Intent reflogin = new Intent(this.getBaseContext(), FanfouWidget.class);
+		reflogin.setAction("android.appwidget.action.APPWIDGET_UPDATE");
+		PendingIntent l = PendingIntent.getBroadcast(this.getBaseContext(), 0, reflogin,
+				PendingIntent.FLAG_UPDATE_CURRENT);
+		try {
+			l.send();
+		} catch (CanceledException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         startActivity(intent);
         finish();
     }
@@ -271,11 +283,14 @@ public class LoginActivity extends Activity {
                user= TwitterApplication.mApi.login(username, password);
             } catch (HttpException e) {
                 Log.e(TAG, e.getMessage(), e);
-
-                Throwable cause = e.getCause(); // Maybe null
-                if (cause instanceof HttpAuthException) {
-                    // Invalid userName/password
-                    msg = ((HttpRefusedException) cause).getError().getMessage();
+                //TODO:确切的应该从HttpException中返回的消息中获取错误信息
+                //Throwable cause = e.getCause(); // Maybe null
+               // if (cause instanceof HttpAuthException) {
+                if (e instanceof HttpAuthException) {
+                // Invalid userName/password
+//                    msg = ((HttpRefusedException) cause).getError().getMessage();
+                	//msg=((HttpAuthException) e).getMessage();
+                	msg=getString(R.string.login_status_invalid_username_or_password);
                 } else {
                     msg = getString(R.string.login_status_network_or_connection_error);
                 }

@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.hardware.SensorManager;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -28,6 +29,7 @@ public class FanfouWidget extends AppWidgetProvider {
 	public final String NEXTACTION = "com.ch_linghu.fanfoudroid.FanfouWidget.NEXT";
 	public final String PREACTION = "com.ch_linghu.fanfoudroid.FanfouWidget.PREV";
 	private static List<Tweet> tweets;
+	private SensorManager sensorManager;
 	private static int position = 0;
 
 	class CacheCallback implements ProfileImageCacheCallback {
@@ -58,6 +60,7 @@ public class FanfouWidget extends AppWidgetProvider {
 	}
 
 	private void update(Context context) {
+
 		fetchMessages();
 		position = 0;
 		refreshView(context, NEXTACTION);
@@ -72,6 +75,7 @@ public class FanfouWidget extends AppWidgetProvider {
 	}
 
 	private void fetchMessages() {
+
 		if (tweets == null) {
 			tweets = new ArrayList<Tweet>();
 
@@ -91,12 +95,33 @@ public class FanfouWidget extends AppWidgetProvider {
 		Log.d(TAG, "Tweets size " + tweets.size());
 	}
 
+	private void refreshView(Context context) {
+		ComponentName fanfouWidget = new ComponentName(context,
+				FanfouWidget.class);
+		AppWidgetManager manager = AppWidgetManager.getInstance(context);
+		manager.updateAppWidget(fanfouWidget, buildLogin(context));
+	}
+
+	private RemoteViews buildLogin(Context context) {
+		RemoteViews updateViews = new RemoteViews(context.getPackageName(),
+				R.layout.widget_initial_layout);
+		updateViews.setTextViewText(R.id.status_text,
+				TextHelper.getSimpleTweetText("请登录"));
+		
+		updateViews.setTextViewText(R.id.status_screen_name,"");
+
+		updateViews.setTextViewText(R.id.tweet_source,"");
+		updateViews.setTextViewText(R.id.tweet_created_at,
+				"");
+		return updateViews;
+	}
+
 	private void refreshView(Context context, String action) {
-		//某些情况下，tweets会为null
-		if(tweets==null){
+		// 某些情况下，tweets会为null
+		if (tweets == null) {
 			fetchMessages();
 		}
-		//防止引发IndexOutOfBoundsException
+		// 防止引发IndexOutOfBoundsException
 		if (tweets.size() != 0) {
 			if (action.equals(NEXTACTION)) {
 				--position;
@@ -169,14 +194,20 @@ public class FanfouWidget extends AppWidgetProvider {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		Log.d(TAG, "OnReceive");
-		super.onReceive(context, intent); //FIXME: NullPointerException
+		
+		// FIXME: NullPointerException
+		Log.i(TAG, context.getApplicationContext().toString());
+		if (!TwitterApplication.mApi.isLoggedIn()) {
+			refreshView(context);
+		} else {
+			super.onReceive(context, intent);
+			String action = intent.getAction();
 
-		String action = intent.getAction();
-		Log.d(TAG, "action is" + intent.getAction());
-		if (NEXTACTION.equals(action) || PREACTION.equals(action)) {
-			refreshView(context, intent.getAction());
-		} else if (AppWidgetManager.ACTION_APPWIDGET_UPDATE.equals(action)) {
-			update(context);
+			if (NEXTACTION.equals(action) || PREACTION.equals(action)) {
+				refreshView(context, intent.getAction());
+			} else if (AppWidgetManager.ACTION_APPWIDGET_UPDATE.equals(action)) {
+				update(context);
+			}
 		}
 	}
 
@@ -215,6 +246,7 @@ public class FanfouWidget extends AppWidgetProvider {
 		Log.d(TAG, "onEnabled");
 
 		TwitterService.setWidgetStatus(true);
+
 	}
 
 	@Override
