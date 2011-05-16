@@ -18,14 +18,15 @@
           android:text="@string/page_label_go_back"
           />
            
-        <!-- 搜索按钮 TODO: 改为发送按钮 -->
-        <ImageButton android:id="@+id/search"
+        <!-- 发送按钮 -->
+        <ImageButton
+         android:id="@+id/top_send_btn"
            android:background="@null"
-           android:src="@drawable/search"
+           android:src="@drawable/top_send"
            android:layout_width="wrap_content"
            android:layout_height="fill_parent"
            android:layout_alignParentRight="true"
-           android:paddingRight="10dip"
+           android:paddingRight="15dip"
            android:paddingLeft="10dip"
            /> 
            
@@ -38,6 +39,7 @@
            android:layout_toLeftOf="@id/search"
            android:paddingRight="10dip"
            android:paddingLeft="10dip"
+           android:visibility="gone"
            />   
          
     </RelativeLayout>

@@ -27,9 +27,12 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.data.Dm;
@@ -171,6 +174,7 @@ public class WriteDmActivity extends WithHeaderActivity {
 			TwitterDatabase db = getDb();
 	
 			//FIXME: 暂时取消收件人自动完成功能
+			//FIXME: 可根据目前以后内容重新完成自动完成功能
 		    //mToEdit = (AutoCompleteTextView) findViewById(R.id.to_edit);
 		    //Cursor cursor = db.getFollowerUsernames("");
 		    //// startManagingCursor(cursor);
@@ -194,15 +198,21 @@ public class WriteDmActivity extends WithHeaderActivity {
 		        mTweetEdit.requestFocus();
 		      }
 		    }
-	
-			
+		    
+		    View.OnClickListener sendListenner = new View.OnClickListener() {
+                public void onClick(View v) {
+                    Animation anim = AnimationUtils.loadAnimation(v.getContext(),
+                            R.anim.scale_lite);
+                    v.startAnimation(anim);
+                    doSend();
+                }
+            };
 	
 			mSendButton = (Button) findViewById(R.id.send_button);
-			mSendButton.setOnClickListener(new View.OnClickListener() {
-				public void onClick(View v) {
-					doSend();
-				}
-			});
+			mSendButton.setOnClickListener(sendListenner);
+            
+            ImageButton mTopSendButton = (ImageButton) findViewById(R.id.top_send_btn);
+            mTopSendButton.setOnClickListener(sendListenner);
 			
 			return true;
 		}else{

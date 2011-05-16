@@ -34,7 +34,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.provider.MediaStore.MediaColumns;
@@ -45,16 +44,20 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.utils.*;
+import com.ch_linghu.fanfoudroid.helper.utils.FileHelper;
+import com.ch_linghu.fanfoudroid.helper.utils.TextHelper;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
@@ -352,13 +355,22 @@ public class WriteActivity extends WithHeaderActivity {
 			    int position = (isAppendToTheBeginning) ? 1 : etext.length();  
 			    Selection.setSelection(etext, position);
 			}
+			
+			
+			View.OnClickListener sendListenner = new View.OnClickListener() {
+                public void onClick(View v) {
+                    Animation anim = AnimationUtils.loadAnimation(v.getContext(),
+                            R.anim.scale_lite);
+                    v.startAnimation(anim);
+                    doSend();
+                }
+            };
 	
 			mSendButton = (Button) findViewById(R.id.send_button);
-			mSendButton.setOnClickListener(new View.OnClickListener() {
-				public void onClick(View v) {
-					doSend();
-				}
-			});
+			mSendButton.setOnClickListener(sendListenner);
+			        
+			ImageButton mTopSendButton = (ImageButton) findViewById(R.id.top_send_btn);
+			mTopSendButton.setOnClickListener(sendListenner);
 			
 			return true;
 		}else{

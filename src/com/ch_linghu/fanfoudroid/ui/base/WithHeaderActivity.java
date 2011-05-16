@@ -228,8 +228,7 @@ public class WithHeaderActivity extends BaseActivity {
 		case HEADER_STYLE_WRITE:
 			//addHeaderView(R.layout.header_write);
 			addBackButton();
-			addSearchButton();
-			addHomeButton();
+			//addHomeButton();
 			break;
 		case HEADER_STYLE_SEARCH:
 			//addHeaderView(R.layout.header_search);
