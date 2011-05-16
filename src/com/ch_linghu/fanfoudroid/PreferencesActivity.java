@@ -25,6 +25,7 @@ import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
+import com.ch_linghu.fanfoudroid.ui.module.MyTextView;
 
 public class PreferencesActivity extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
     @Override
@@ -66,6 +67,8 @@ public class PreferencesActivity extends PreferenceActivity implements SharedPre
                 Log.d("LDS", "No proxy.");
                 httpClient.removeProxy();
             }
+        } else if ( key.equalsIgnoreCase(Preferences.UI_FONT_SIZE)) {
+            MyTextView.setFontSizeChanged(true);
         }
         
     }

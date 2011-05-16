@@ -30,7 +30,6 @@ import java.util.Arrays;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -69,27 +68,23 @@ public class IDs extends WeiboResponse {
         nextCursor = getChildLong("next_cursor", elem);
     }
 
-    /*package*/ IDs(Response res,Weibo w) throws HttpException {
+    /* package */IDs(Response res, Weibo w) throws HttpException {
         super(res);
-        // TODO: 饭否返回的为 JSONArray 类型， 例如["ifan","fanfouapi","\u62cd\u62cd","daoru"]
-        JSONObject json=  res.asJSONObject();
+        // TODO: 饭否返回的为 JSONArray 类型，
+        // 例如["ifan","fanfouapi","\u62cd\u62cd","daoru"]
+        // JSONObject json= res.asJSONObject();
+        JSONArray jsona = res.asJSONArray();
         try {
-        	previousCursor = json.getLong("previous_cursor");
-            nextCursor = json.getLong("next_cursor");
-        	
-            if(!json.isNull("ids")){
-        		JSONArray jsona= json.getJSONArray("ids");
-        		int size=jsona.length();
-        		ids = new String[size];
-        		for (int i = 0; i < size; i++) {
-        			ids[i] =jsona.getString(i);
-				}
-        	}
-        	
-         } catch (JSONException jsone) {
-             throw new HttpException(jsone);
-         } 
-        
+            int size = jsona.length();
+            ids = new String[size];
+            for (int i = 0; i < size; i++) {
+                ids[i] = jsona.getString(i);
+            }
+
+        } catch (JSONException jsone) {
+            throw new HttpException(jsone);
+        }
+
     }
 
     public String[] getIDs() {

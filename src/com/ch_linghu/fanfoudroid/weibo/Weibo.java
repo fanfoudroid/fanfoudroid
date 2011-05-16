@@ -462,8 +462,8 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
      */
     public List<Status> getUserTimeline(String id, Paging paging)
             throws HttpException {
-        return Status.constructStatuses(get(getBaseURL() + "statuses/user_timeline/" + id + ".xml",
-                null, paging, http.isAuthenticationEnabled()), this);
+        return Status.constructStatuses(get(getBaseURL() + "statuses/user_timeline/" + id + ".json",
+                null, paging, http.isAuthenticationEnabled()));
     }
 
     /**
@@ -1236,7 +1236,7 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
      * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Followers/ids">followers/ids </a>
      */
     public IDs getFollowersIDs(String userId) throws HttpException {
-        return new IDs(get(getBaseURL() + "followers/ids.xml?user_id=" + userId, true));
+        return new IDs(get(getBaseURL() + "followers/ids.json?user_id=" + userId, true), this);
     }
     
     /**
@@ -1248,7 +1248,7 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
      * @see <a href="http://open.t.sina.com.cn/wiki/index.php/Followers/ids">followers/ids </a>
      */
     public IDs getFollowersIDs() throws HttpException {
-        return new IDs(get(getBaseURL() + "followers/ids.xml", true));
+        return new IDs(get(getBaseURL() + "followers/ids.json", true), this);
     }
 
 
@@ -1286,7 +1286,7 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
      * @see <a href="http://code.google.com/p/fanfou-api/wiki/ApiDocumentation"</a>
      */
     public IDs getFriendsIDs(long cursor) throws HttpException {
-        return new IDs(get(getBaseURL() + "friends/ids.xml?cursor=" + cursor, true));
+        return new IDs(get(getBaseURL() + "friends/ids.json?cursor=" + cursor, true), this);
     }
    
     /**
@@ -1296,7 +1296,7 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
      * @throws HttpException
      */
     public IDs getFriendsIDs(String userId) throws HttpException{
-    	return new IDs(get(getBaseURL() + "friends/ids.xml?id=" +userId , true));
+    	return new IDs(get(getBaseURL() + "friends/ids.json?id=" +userId , true), this);
     }
     
     /* 账户方法 */

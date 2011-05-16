@@ -118,7 +118,7 @@
 	<!-- 设置页面  -->
     <string name="pref_title_notifications">后台提示</string>
     <string name="pref_title_apperance">外观</string>
-    <string name="pref_title_misc">杂项</string>
+    <string name="pref_title_misc">其他</string>
     
     <string name="pref_check_updates_title">设置后台提醒</string>
     <string name="pref_check_updates_summary">选中可以在后台提醒新发言、提到我的和私信</string>
@@ -154,6 +154,9 @@
     <string name="pref_photo_preview_type_thumbnail">缩略图尺寸</string>
     <string name="pref_photo_preview_type_middle">小尺寸</string>
     <string name="pref_photo_preview_type_original">大尺寸</string>
+    
+    <string name="pref_ui_font_size_title">字体大小</string>
+    <string name="pref_ui_font_size_summary">消息列表中的字体大小, 重启页面后生效.</string>
         
     <string name="pref_rt_prefix_title">转发前缀</string>
     <string name="pref_rt_prefix_summary">转发消息时的前缀</string>

@@ -55,4 +55,6 @@ public class Preferences {
   public static final String CURRENT_USER_ID="current_user_id";
   public static final String CURRENT_USER_SCREEN_NAME="current_user_screenname";
   
+  public static final String UI_FONT_SIZE = "ui_font_size";
+  
 }

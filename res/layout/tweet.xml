@@ -14,7 +14,7 @@
      android:layout_marginTop="2dp"
      android:layout_marginLeft="2dp"
      android:layout_marginBottom="2dp"
-     android:layout_marginRight="7dp"
+     android:layout_marginRight="10dp"
     >
 	   <ImageView
 	       android:id="@+id/profile_image"
@@ -74,6 +74,7 @@
 		  android:layout_width="fill_parent"
 		  android:layout_height="wrap_content"
 		  android:textColor="@drawable/tweet_color"        
+		  android:lineSpacingExtra="2sp"
 		/>
 		
 		<!-- Tweet Meta -->

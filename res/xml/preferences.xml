@@ -1,15 +1,14 @@
 <PreferenceScreen
         xmlns:android="http://schemas.android.com/apk/res/android">
 
+  <!-- 后台提醒 -->
   <PreferenceCategory android:title="@string/pref_title_notifications">
-
    <CheckBoxPreference  
             android:key="check_updates"  
             android:defaultValue="true"
             android:title="@string/pref_check_updates_title"
             android:summary="@string/pref_check_updates_summary"
             />  
-
 
    <CheckBoxPreference  
             android:key="timeline_only"
@@ -33,7 +32,6 @@
             android:title="@string/pref_check_updates_direct_message_only_title"
             android:summary="@string/pref_check_updates_direct_message_only_summary"
             />  
-
  
    <ListPreference  
             android:key="check_update_interval"
@@ -61,31 +59,42 @@
             android:title="@string/pref_check_updates_vibrate_title"
             android:summary="@string/pref_check_updates_vibrate_summary"
             />  
-
   </PreferenceCategory>
 
+  <!-- 外观 -->
   <PreferenceCategory android:title="@string/pref_title_apperance">
-    <CheckBoxPreference
-    android:key="use_profile_image"
-    android:title="@string/pref_use_profile_image"
-    android:summary="@string/pref_use_profile_image_summary"
-    android:defaultValue="true" />
-    <ListPreference
-    android:key="photo_preview"
-    android:title="@string/pref_photo_preview"
-    android:summary="@string/pref_photo_preview_summary"
-    android:defaultValue="@string/pref_photo_preview_type_original" 
-    android:entries="@array/photo_preview_type"
-    android:entryValues="@array/photo_preview_type"
-    android:dialogTitle="@string/pref_photo_preview"                        
-    />
-    <CheckBoxPreference
-    android:key="force_show_all_image"
-    android:title="@string/pref_force_show_all_image"
-    android:summary="@string/pref_force_show_all_image_summary"
-    android:defaultValue="false" />
+	    <CheckBoxPreference
+	    android:key="use_profile_image"
+	    android:title="@string/pref_use_profile_image"
+	    android:summary="@string/pref_use_profile_image_summary"
+	    android:defaultValue="true" />
+	    <ListPreference
+	    android:key="photo_preview"
+	    android:title="@string/pref_photo_preview"
+	    android:summary="@string/pref_photo_preview_summary"
+	    android:defaultValue="@string/pref_photo_preview_type_original" 
+	    android:entries="@array/photo_preview_type"
+	    android:entryValues="@array/photo_preview_type"
+	    android:dialogTitle="@string/pref_photo_preview"                        
+	    />
+	    <CheckBoxPreference
+	    android:key="force_show_all_image"
+	    android:title="@string/pref_force_show_all_image"
+	    android:summary="@string/pref_force_show_all_image_summary"
+	    android:defaultValue="false" />
+	    
+	    <ListPreference  
+            android:key="ui_font_size"
+            android:defaultValue="16"
+            android:title="@string/pref_ui_font_size_title"  
+            android:summary="@string/pref_ui_font_size_summary"
+            android:entries="@array/ui_font_size"
+            android:entryValues="@array/ui_font_size"
+            android:dialogTitle="@string/pref_ui_font_size_title"                        
+            />
   </PreferenceCategory>
 
+  <!-- 网络 -->
   <PreferenceCategory android:title="@string/pref_title_network">
      <ListPreference  
        android:key="network_type"
@@ -98,6 +107,7 @@
        />
   </PreferenceCategory>
 
+  <!-- 其他 -->
   <PreferenceCategory android:title="@string/pref_title_misc">
     <EditTextPreference
     android:key="rt_prefix"

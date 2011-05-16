@@ -23,5 +23,12 @@
 	<item>@string/pref_photo_preview_type_middle</item>
 	<item>@string/pref_photo_preview_type_original</item>
 </string-array>
+
+<string-array name="ui_font_size">
+    <item>14</item>
+    <item>16</item>
+    <item>18</item>
+    <item>20</item>
+</string-array>
   
 </resources>
