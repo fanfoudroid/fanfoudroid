@@ -463,7 +463,7 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity{
 		}
 	}
 	// for Retrievable interface
-	public ImageButton getRefreshButton() {
+	public ProgressBar getRefreshButton() {
 		return refreshButton;
 	}
 	

@@ -467,7 +467,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 		}
 	}
 	// for Retrievable interface
-	public ImageButton getRefreshButton() {
+	public ProgressBar getRefreshButton() {
 		return refreshButton;
 	}
 	

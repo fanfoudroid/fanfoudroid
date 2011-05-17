@@ -41,15 +41,24 @@
            android:paddingLeft="10dip"
            />
            
-        <!-- 刷新按钮 -->
-        <ImageButton android:id="@+id/top_refresh"
+        <!--ImageButton android:id="@+id/top_refresh"
            android:background="@null"
            android:src="@drawable/top_refresh_selector"
+           android:layout_toLeftOf="@id/writeMessage"
            android:layout_width="wrap_content"
            android:layout_height="fill_parent"
-           android:layout_toLeftOf="@id/writeMessage"
            android:paddingRight="10dip"
            android:paddingLeft="10dip"
-           />
+           
+           /-->
+           
+        <!-- 刷新按钮 -->
+        <ProgressBar   
+            android:id="@+id/top_refresh"    
+            android:layout_width="32px"   
+            android:layout_height="32px"
+            android:layout_toLeftOf="@id/writeMessage"
+            android:layout_centerVertical="true"
+            style="@style/topRefreshProgressBar" 
+       /> 
     </RelativeLayout>
-    

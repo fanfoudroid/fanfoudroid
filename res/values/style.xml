@@ -98,8 +98,12 @@
          <item name="android:clickable">true</item>
     </style>
     
-     <style name="customProgressBar">
+    <style name="customProgressBar">
         <item name="android:indeterminateDrawable">@anim/loading_blue_16</item>
+    </style>
+    
+    <style name="topRefreshProgressBar">
+        <item name="android:indeterminateDrawable">@anim/top_refresh</item>
     </style>
     
 </resources>

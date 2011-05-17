@@ -2,8 +2,8 @@ package com.ch_linghu.fanfoudroid.ui.base;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.Bundle;
 import android.text.TextPaint;
 import android.util.Log;
 import android.view.View;
@@ -13,6 +13,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
@@ -31,7 +32,7 @@ public class WithHeaderActivity extends BaseActivity {
 	public static final int HEADER_STYLE_BACK  = 3;
 	public static final int HEADER_STYLE_SEARCH  = 4;
 
-	protected ImageButton refreshButton;
+	protected ProgressBar refreshButton;
 	protected ImageButton searchButton;
 	protected ImageButton writeButton;
 	protected TextView titleButton;
@@ -39,6 +40,8 @@ public class WithHeaderActivity extends BaseActivity {
 	protected ImageButton homeButton;
 	protected MenuDialog dialog;
 	protected EditText searchEdit;
+	
+	protected AnimationDrawable mRefreshAnimation;
 	
 	//搜索硬按键行为
 	@Override
@@ -97,27 +100,41 @@ public class WithHeaderActivity extends BaseActivity {
 	// 刷新
 	protected void addRefreshButton() {
 		final Activity that = this;
-		refreshButton = (ImageButton) findViewById(R.id.top_refresh);
+		refreshButton = (ProgressBar) findViewById(R.id.top_refresh);
+        mRefreshAnimation = (AnimationDrawable) refreshButton.getIndeterminateDrawable();
+        /*
+        mRefreshAnimation.setOneShot(true);
+        mRefreshAnimation.stop();
+        */
 		
 		refreshButton.setOnClickListener(new View.OnClickListener() {
+		    
 			public void onClick(View v) {
-				// 旋转动画
-				animRotate(v);
-				
+			    animRotate(v);
+			    
 				if (that instanceof Refreshable) {
 					((Refreshable) that).doRetrieve();
 				} else {
 					Log.e(TAG, "The current view " + that.getClass().getName() + " cann't be retrieved");
 				}
 			}
+			
 		});
 	}
 	
+	/**
+	 * @param v
+	 * @deprecated
+	 */
 	protected void animRotate(View v) {
-		if (null != v) {
+		if (null != mRefreshAnimation) {
+		    mRefreshAnimation.stop();
+		    
+		    /*
 			Animation anim = AnimationUtils.loadAnimation(v.getContext(),
 					R.anim.rotate360);
 			v.startAnimation(anim);
+			*/
 		}
 	}
 	

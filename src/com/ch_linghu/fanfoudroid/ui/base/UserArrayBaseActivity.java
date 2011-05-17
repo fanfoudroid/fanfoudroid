@@ -335,7 +335,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 		
 	}
 
-	public ImageButton getRefreshButton() {
+	public ProgressBar getRefreshButton() {
 		return refreshButton;
 	}
 	
