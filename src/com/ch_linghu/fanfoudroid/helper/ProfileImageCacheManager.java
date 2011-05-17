@@ -75,13 +75,17 @@ public class ProfileImageCacheManager {
     private class GetImageTask extends Thread {
         private volatile boolean mTaskTerminated = false;
         private static final int TIMEOUT = 3; 
-
+        private boolean isPermanent = true;
+        
         public void run() {
             try {
                 while ( !mTaskTerminated ) {
-                    String url = mUrlList.poll(TIMEOUT, TimeUnit.MINUTES); // waiting
-                    if (null == url) {
-                        break; // no more, shutdown
+                    String url;
+                    if (isPermanent) {
+                        url = mUrlList.take();
+                    } else {
+                        url = mUrlList.poll(TIMEOUT, TimeUnit.MINUTES); // waiting
+                        if (null == url) { break; } // no more, shutdown
                     }
                     
                     Bitmap bitmap = ImageManager.mDefaultBitmap;
@@ -102,6 +106,14 @@ public class ProfileImageCacheManager {
                 Log.v(TAG, "Get image task terminated.");
                 mTaskTerminated = true;
             }
+        }
+            
+        public boolean isPermanent() {
+            return isPermanent;
+        }
+
+        public void setPermanent(boolean isPermanent) {
+            this.isPermanent = isPermanent;
         }
 
         public void shutDown() throws InterruptedException {
