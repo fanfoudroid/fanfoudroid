@@ -1,11 +1,6 @@
 package com.ch_linghu.fanfoudroid.debug;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Arrays;
 import java.util.HashMap;
-
-import android.util.Log;
 
 /**
  * Debug Timer
@@ -56,7 +51,7 @@ public class DebugTimer {
      * @return
      */
     public static long between(String tag, boolean isEnd) {
-        Log.v("DEBUG", tag + ((!isEnd) ? " Start" : " End"));
+        //Log.v("DEBUG", tag + ((!isEnd) ? " Start" : " End"));
         if (!isEnd) {
             return mark(tag);
         } else {
@@ -112,7 +107,7 @@ public class DebugTimer {
     public static void reset() {
         mTime = new HashMap<String, Long>();
         mStartTime = 0;
-        mLastTime = 0;
+        setLastTime(0);
     }
 
     /**
@@ -125,66 +120,49 @@ public class DebugTimer {
     }
     
     private static long touch() {
-        return mLastTime = System.currentTimeMillis();
+        return setLastTime(System.currentTimeMillis());
     }
     
-    public static DebugProfile[] getProfile() {
-        DebugProfile[] profile = new DebugProfile[mTime.size()];
+    public static TimerProfile getProfile() {
+        TimerProfile profile = new TimerProfile();
         
         long totel = mTime.get("_TOTLE");
         
         int i = 0;
         for (String key : mTime.keySet()) {
             long time = mTime.get(key);
-            profile[i] = new DebugProfile(key, time, time/(totel*1.0) );
+            profile.writeRow(key, time, time/(totel*1.0) );
             i++;
         }
         
-        Arrays.sort(profile);
         return profile;
     }
     
     public static String getProfileAsString() {
-        StringBuilder sb = new StringBuilder();
-        for (DebugProfile p : getProfile()) {
-            sb.append("TAG: ");
-            sb.append(p.tag);
-            sb.append("\t INC: ");
-            sb.append(p.inc);
-            sb.append("\t INCP: ");
-            sb.append(p.incPercent);
-            sb.append("\n");
-        }
-        return sb.toString();
+        TimerProfile profile = getProfile();
+        ProfileFormater formater = new PlainTextFormater();
+        return formater.format(profile);
     }
     
     @Override
     public String toString() {
         return __toString();
     }
-    
-   
+
+    public static long setLastTime(long mLastTime) {
+        DebugTimer.mLastTime = mLastTime;
+        return mLastTime;
+    }
+
+    public static long getLastTime() {
+        return mLastTime;
+    }
 }
 
-class DebugProfile implements Comparable<DebugProfile> {
-    private static NumberFormat percent = NumberFormat.getPercentInstance();
-    
-    public String tag;
-    public long inc;
-    public String incPercent;
-    
-    public DebugProfile(String tag, long inc, double incPercent) {
-        this.tag = tag;
-        this.inc = inc;
-        
-        percent = new DecimalFormat("0.00#%");
-        this.incPercent = percent.format(incPercent);
-    }
+class TimerProfile extends DebugProfile {
 
-    @Override
-    public int compareTo(DebugProfile o) {
-        // TODO Auto-generated method stub
-        return (int) (o.inc - this.inc);
+    public TimerProfile() {
+        super();
+        // TODO Auto-generated constructor stub
     }
-    
 }

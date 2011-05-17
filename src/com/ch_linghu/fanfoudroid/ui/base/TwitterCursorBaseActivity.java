@@ -23,6 +23,7 @@ import java.util.List;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -35,6 +36,7 @@ import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
 import com.ch_linghu.fanfoudroid.debug.DebugTimer;
+import com.ch_linghu.fanfoudroid.debug.ProfileFileWriter;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.utils.DateTimeHelper;
 import com.ch_linghu.fanfoudroid.helper.utils.MiscHelper;
@@ -112,12 +114,20 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 			updateProgress("");
 			DebugTimer.stop();
 			
+			// DEBUG
 			Log.v("DEBUG", DebugTimer.getProfileAsString());
+			/*
+			ProfileFileWriter writer = new ProfileFileWriter();
+	        writer.setFile(Environment.getExternalStorageDirectory() + "/profile.txt");
+	        writer.write(DebugTimer.getProfileAsString());
+	        */
 		}
 
 		@Override
 		public void onPreExecute(GenericTask task) {
 			onRetrieveBegin();
+			
+			// DEBUG
 			DebugTimer.start();
 		}
 

@@ -40,11 +40,9 @@ public class Response {
             is = new GZIPInputStream(is);
         }
 
-        DebugTimer.betweenStart("GSON");
         JsonParser jsonParser = new JsonParser();
         List<Status> statuses = jsonParser.parseToStatuses(is);
         DebugTimer.betweenEnd("GSON");
-
         Log.v("DEBUG", "Parser statuses :" + statuses.size());
         /*
         for (Status s : statuses) {
@@ -56,15 +54,17 @@ public class Response {
     public InputStream asStream() throws ResponseException {
         HttpEntity entity = mResponse.getEntity();
         
+        /*
         if (DEBUG && entity != null) {
             try {
                 entity = new BufferedHttpEntity(entity);
-                debugEntity(new BufferedHttpEntity(entity)); // copy 
+                debugEntity(entity); // copy 
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
+        */
 
         InputStream is = null;
         try {
@@ -85,7 +85,6 @@ public class Response {
     }
 
     public String asString() throws ResponseException {
-        DebugTimer.betweenStart("RES AS STRING");
 
         String str = null;
         InputStream is = asStream();
@@ -117,7 +116,6 @@ public class Response {
                 }
             }
         }
-        DebugTimer.betweenEnd("RES AS STRING");
         return str;
     }
 
