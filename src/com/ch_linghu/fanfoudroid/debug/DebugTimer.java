@@ -2,6 +2,8 @@ package com.ch_linghu.fanfoudroid.debug;
 
 import java.util.HashMap;
 
+import android.util.Log;
+
 /**
  * Debug Timer
  * 
@@ -51,7 +53,7 @@ public class DebugTimer {
      * @return
      */
     public static long between(String tag, boolean isEnd) {
-        //Log.v("DEBUG", tag + ((!isEnd) ? " Start" : " End"));
+        Log.v("DEBUG", tag + ((!isEnd) ? " Start" : " End"));
         if (!isEnd) {
             return mark(tag);
         } else {

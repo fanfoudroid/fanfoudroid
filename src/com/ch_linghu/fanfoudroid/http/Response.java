@@ -31,30 +31,11 @@ public class Response {
     public Response(HttpResponse res) {
         mResponse = res;
     }
-    
-    private void debugEntity(HttpEntity entity) throws IOException,
-            JsonParserException {
-        InputStream is = entity.getContent();
-        Header ceheader = entity.getContentEncoding();
-        if (ceheader != null && ceheader.getValue().equalsIgnoreCase("gzip")) {
-            is = new GZIPInputStream(is);
-        }
-
-        JsonParser jsonParser = new JsonParser();
-        List<Status> statuses = jsonParser.parseToStatuses(is);
-        DebugTimer.betweenEnd("GSON");
-        Log.v("DEBUG", "Parser statuses :" + statuses.size());
-        /*
-        for (Status s : statuses) {
-            Log.v("DEBUG", s.toString());
-        }
-        */
-    }
 
     public InputStream asStream() throws ResponseException {
         HttpEntity entity = mResponse.getEntity();
         
-        /*
+        /* copy response content for debug
         if (DEBUG && entity != null) {
             try {
                 entity = new BufferedHttpEntity(entity);
@@ -152,6 +133,26 @@ public class Response {
     public Document asDocument() {
         // TODO Auto-generated method stub
         return null;
+    }
+    
+    // ignore me, it's only for debug
+    private void debugEntity(HttpEntity entity) throws IOException,
+            JsonParserException {
+        InputStream is = entity.getContent();
+        Header ceheader = entity.getContentEncoding();
+        if (ceheader != null && ceheader.getValue().equalsIgnoreCase("gzip")) {
+            is = new GZIPInputStream(is);
+        }
+
+        JsonParser jsonParser = new JsonParser();
+        List<Status> statuses = jsonParser.parseToStatuses(is);
+        DebugTimer.betweenEnd("GSON");
+        Log.v("DEBUG", "Parser statuses :" + statuses.size());
+        /*
+        for (Status s : statuses) {
+            Log.v("DEBUG", s.toString());
+        }
+        */
     }
 
 }

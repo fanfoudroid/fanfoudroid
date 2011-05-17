@@ -114,7 +114,8 @@ public class WithHeaderActivity extends BaseActivity {
 	}
 	
 	protected void animRotate(View v) {
-		if (null != v) {
+	    // TODO: 经过几天的测试发现, 旋转按钮才是真正的性能瓶颈, 它增加了N倍的GC压力, 使得所有其他操作都变得缓慢.
+		if (false && null != v) {
 			Animation anim = AnimationUtils.loadAnimation(v.getContext(),
 					R.anim.rotate360);
 			v.startAnimation(anim);
