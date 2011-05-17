@@ -75,7 +75,7 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
 
 		@Override
 		public void onPostExecute(GenericTask task, TaskResult result) {
-			refreshButton.clearAnimation();
+			setRefreshAnimation(false);
 			if (result == TaskResult.AUTH_ERROR) {
 				updateHeader(AUTHERRORFLAG);
 				return;
@@ -107,7 +107,7 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
 			if (result == TaskResult.AUTH_ERROR) {
 				logout();
 			} else if (result == TaskResult.OK) {
-				refreshButton.clearAnimation();
+				setRefreshAnimation(false);
 				updateFooter(SUCCESSFLAG);
 				draw();
 			}

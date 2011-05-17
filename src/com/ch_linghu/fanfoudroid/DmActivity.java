@@ -118,7 +118,7 @@ public class DmActivity extends WithHeaderActivity {
 			}
 
 			// 刷新按钮停止旋转
-			refreshButton.clearAnimation();
+			setRefreshAnimation(false);
 			updateProgress("");
 		}
 

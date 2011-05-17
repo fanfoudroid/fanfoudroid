@@ -26,7 +26,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -107,7 +107,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 			}
 
 			// 刷新按钮停止旋转
-			getRefreshButton().clearAnimation();
+			setRefreshAnimation(false);
             loadMoreGIFTop.setVisibility(View.GONE);
 			updateProgress("");
 			DebugTimer.stop();
@@ -467,7 +467,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 		}
 	}
 	// for Retrievable interface
-	public ProgressBar getRefreshButton() {
+	public ImageView getRefreshButton() {
 		return refreshButton;
 	}
 	
@@ -582,7 +582,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
         public void onPostExecute(GenericTask task, TaskResult result) {
             super.onPostExecute(task, result);
             draw();
-            getRefreshButton().clearAnimation();
+             setRefreshAnimation(false);
             loadMoreGIF.setVisibility(View.GONE);
         }
         

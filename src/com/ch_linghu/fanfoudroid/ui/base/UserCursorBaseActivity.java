@@ -24,7 +24,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -34,7 +34,7 @@ import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.User;
 import com.ch_linghu.fanfoudroid.db.UserInfoTable;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.utils.*;
+import com.ch_linghu.fanfoudroid.helper.utils.DateTimeHelper;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -113,7 +113,7 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity{
 			}
 
 			// 刷新按钮停止旋转
-			getRefreshButton().clearAnimation();
+			 setRefreshAnimation(false);
             //loadMoreGIFTop.setVisibility(View.GONE);
 			updateProgress("");
 		}
@@ -463,7 +463,7 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity{
 		}
 	}
 	// for Retrievable interface
-	public ProgressBar getRefreshButton() {
+	public ImageView getRefreshButton() {
 		return refreshButton;
 	}
 	
@@ -578,7 +578,7 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity{
         public void onPostExecute(GenericTask task, TaskResult result) {
             super.onPostExecute(task, result);
             draw();
-            getRefreshButton().clearAnimation();
+             setRefreshAnimation(false);
             loadMoreGIF.setVisibility(View.GONE);
         }
         

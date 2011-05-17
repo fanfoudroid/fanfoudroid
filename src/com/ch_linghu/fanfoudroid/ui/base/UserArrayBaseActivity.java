@@ -6,7 +6,7 @@ import java.util.List;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -102,7 +102,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 			} 
 
 			// 刷新按钮停止旋转
-			getRefreshButton().clearAnimation();
+			 setRefreshAnimation(false);
 
 			updateProgress("");
 		}
@@ -284,7 +284,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 		public void onPostExecute(GenericTask task, TaskResult result) {
 			super.onPostExecute(task, result);
 			draw();
-			getRefreshButton().clearAnimation();
+			 setRefreshAnimation(false);
 			loadMoreGIF.setVisibility(View.GONE);
 		}
 
@@ -335,7 +335,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 		
 	}
 
-	public ProgressBar getRefreshButton() {
+	public ImageView getRefreshButton() {
 		return refreshButton;
 	}
 	

@@ -427,7 +427,7 @@ public class ProfileActivity extends WithHeaderActivity {
 	private TaskListener profileInfoTaskListener = new TaskAdapter() {
 		@Override
 		public void onPostExecute(GenericTask task, TaskResult result) {
-			refreshButton.clearAnimation();
+			setRefreshAnimation(false);
 
 			// 加载成功
 			if (result == TaskResult.OK) {

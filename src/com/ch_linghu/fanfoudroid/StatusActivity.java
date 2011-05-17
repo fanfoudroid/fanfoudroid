@@ -80,7 +80,7 @@ public class StatusActivity extends WithHeaderActivity {
 		@Override
 		public void onPostExecute(GenericTask task, TaskResult result) {
 			showReplyStatus(replyTweet);
-			StatusActivity.this.refreshButton.clearAnimation();
+			StatusActivity.this.setRefreshAnimation(false);
 		}
 
 		@Override
@@ -99,7 +99,7 @@ public class StatusActivity extends WithHeaderActivity {
 
 		@Override
 		public void onPostExecute(GenericTask task, TaskResult result) {
-			StatusActivity.this.refreshButton.clearAnimation();
+			StatusActivity.this.setRefreshAnimation(false);
 			draw();
 		}
 
@@ -118,7 +118,7 @@ public class StatusActivity extends WithHeaderActivity {
 			} else {
 				status_photo.setVisibility(View.GONE);
 			}
-			StatusActivity.this.refreshButton.clearAnimation();
+			StatusActivity.this.setRefreshAnimation(false);
 		}
 
 		@Override

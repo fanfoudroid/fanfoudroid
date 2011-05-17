@@ -71,7 +71,7 @@ public class SearchResultActivity extends TwitterListBaseActivity implements
 
 		@Override
 		public void onPostExecute(GenericTask task, TaskResult result) {
-			refreshButton.clearAnimation();   
+			setRefreshAnimation(false);   
 			if (result == TaskResult.AUTH_ERROR) {
 				logout();
 			} else if (result == TaskResult.OK) {

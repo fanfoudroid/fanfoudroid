@@ -13,6 +13,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
@@ -32,7 +33,7 @@ public class WithHeaderActivity extends BaseActivity {
 	public static final int HEADER_STYLE_BACK  = 3;
 	public static final int HEADER_STYLE_SEARCH  = 4;
 
-	protected ProgressBar refreshButton;
+	protected ImageView refreshButton;
 	protected ImageButton searchButton;
 	protected ImageButton writeButton;
 	protected TextView titleButton;
@@ -100,18 +101,13 @@ public class WithHeaderActivity extends BaseActivity {
 	// 刷新
 	protected void addRefreshButton() {
 		final Activity that = this;
-		refreshButton = (ProgressBar) findViewById(R.id.top_refresh);
-        mRefreshAnimation = (AnimationDrawable) refreshButton.getIndeterminateDrawable();
-        /*
-        mRefreshAnimation.setOneShot(true);
-        mRefreshAnimation.stop();
-        */
+		refreshButton = (ImageView) findViewById(R.id.top_refresh);
+		refreshButton.setBackgroundResource(R.drawable.top_refresh);
+        mRefreshAnimation = (AnimationDrawable) refreshButton.getBackground();
 		
 		refreshButton.setOnClickListener(new View.OnClickListener() {
 		    
 			public void onClick(View v) {
-			    animRotate(v);
-			    
 				if (that instanceof Refreshable) {
 					((Refreshable) that).doRetrieve();
 				} else {
@@ -124,20 +120,31 @@ public class WithHeaderActivity extends BaseActivity {
 	
 	/**
 	 * @param v
-	 * @deprecated
+	 * @deprecated use {@link WithHeaderActivity#setRefreshAnimation(boolean)}
 	 */
 	protected void animRotate(View v) {
-		if (null != mRefreshAnimation) {
-		    mRefreshAnimation.stop();
-		    
-		    /*
-			Animation anim = AnimationUtils.loadAnimation(v.getContext(),
-					R.anim.rotate360);
-			v.startAnimation(anim);
-			*/
-		}
+	    setRefreshAnimation(true);
 	}
 	
+    /**
+     * Start/Stop Top Refresh Button's Animation
+     * 
+     * @param animate start or stop
+     */
+	protected void setRefreshAnimation(boolean animate) {
+	    if (mRefreshAnimation != null) {
+	        if (animate) {
+	            mRefreshAnimation.start();
+	        } else {
+	            mRefreshAnimation.setVisible(true, true); // restart
+	            mRefreshAnimation.start(); // goTo frame 0
+	            mRefreshAnimation.stop();
+	        }
+	    } else {
+	        Log.w(TAG, "mRefreshAnimation is null");
+	    }
+	}
+
 	// 搜索
 	protected void addSearchButton() {
 		searchButton  = (ImageButton) findViewById(R.id.search);
@@ -220,8 +227,6 @@ public class WithHeaderActivity extends BaseActivity {
 			}
 		});
 	}
-	
-	
 	
 	protected void initHeader(int style) {
 		//FIXME: android 1.6似乎不支持addHeaderView中使用的方法
