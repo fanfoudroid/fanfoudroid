@@ -4,28 +4,67 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.entity.BufferedHttpEntity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
 
+import android.util.Log;
+
+import com.ch_linghu.fanfoudroid.data.json.JsonParser;
+import com.ch_linghu.fanfoudroid.data.json.JsonParserException;
+import com.ch_linghu.fanfoudroid.data2.Status;
 import com.ch_linghu.fanfoudroid.debug.DebugTimer;
 
 public class Response {
+    private static boolean DEBUG = true;
     private HttpResponse mResponse = null;
     private boolean mStreamConsumed = false;
     
     public Response(HttpResponse res) {
         mResponse = res;
     }
+    
+    private void debugEntity(HttpEntity entity) throws IOException,
+            JsonParserException {
+        InputStream is = entity.getContent();
+        Header ceheader = entity.getContentEncoding();
+        if (ceheader != null && ceheader.getValue().equalsIgnoreCase("gzip")) {
+            is = new GZIPInputStream(is);
+        }
+
+        DebugTimer.betweenStart("GSON");
+        JsonParser jsonParser = new JsonParser();
+        List<Status> statuses = jsonParser.parseToStatuses(is);
+        DebugTimer.betweenEnd("GSON");
+
+        Log.v("DEBUG", "Parser statuses :" + statuses.size());
+        /*
+        for (Status s : statuses) {
+            Log.v("DEBUG", s.toString());
+        }
+        */
+    }
 
     public InputStream asStream() throws ResponseException {
         HttpEntity entity = mResponse.getEntity();
+        
+        if (DEBUG && entity != null) {
+            try {
+                entity = new BufferedHttpEntity(entity);
+                debugEntity(new BufferedHttpEntity(entity)); // copy 
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
 
         InputStream is = null;
         try {
@@ -46,7 +85,7 @@ public class Response {
     }
 
     public String asString() throws ResponseException {
-        DebugTimer.betweenStart("AS STRING");
+        DebugTimer.betweenStart("RES AS STRING");
 
         String str = null;
         InputStream is = asStream();
@@ -78,7 +117,7 @@ public class Response {
                 }
             }
         }
-        DebugTimer.betweenEnd("AS STRING");
+        DebugTimer.betweenEnd("RES AS STRING");
         return str;
     }
 

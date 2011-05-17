@@ -37,6 +37,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import com.ch_linghu.fanfoudroid.debug.DebugTimer;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.Response;
 
@@ -377,6 +378,7 @@ public class Status extends WeiboResponse implements java.io.Serializable {
     /* modify by sycheng add json call method */
     /* package */
     static List<Status> constructStatuses(Response res) throws HttpException {
+        DebugTimer.betweenStart("TO STATUSES");
         try {
             JSONArray list = res.asJSONArray();
             int size = list.length();
@@ -384,6 +386,7 @@ public class Status extends WeiboResponse implements java.io.Serializable {
             for (int i = 0; i < size; i++) {
                 statuses.add(new Status(list.getJSONObject(i)));
             }
+            DebugTimer.betweenEnd("TO STATUSES");
             return statuses;
         } catch (JSONException jsone) {
             throw new HttpException(jsone);

@@ -55,25 +55,23 @@ public class DebugTimer {
      * @param tag mark tag
      * @return
      */
-    public static long between(String tag, int startOrEnd) {
-        Log.v("DEBUG", tag + " " + startOrEnd);
-        switch (startOrEnd) {
-            case START:
-                return mark(tag);
-            case END:
-                long time = System.currentTimeMillis() - mStartTime - get(tag, mStartTime);
-                mTime.put(tag, time);
-                //touch();
-                return time;
-            default:
-                return -1;
+    public static long between(String tag, boolean isEnd) {
+        Log.v("DEBUG", tag + ((!isEnd) ? " Start" : " End"));
+        if (!isEnd) {
+            return mark(tag);
+        } else {
+            long time = System.currentTimeMillis() - mStartTime
+                    - get(tag, mStartTime);
+            mTime.put(tag, time);
+            // touch();
+            return time;
         }
     }
     public static long betweenStart(String tag) {
-        return between(tag, START);
+        return between(tag, false);
     }
     public static long betweenEnd(String tag) {
-        return between(tag, END);
+        return between(tag, true);
     }
     
     /**
