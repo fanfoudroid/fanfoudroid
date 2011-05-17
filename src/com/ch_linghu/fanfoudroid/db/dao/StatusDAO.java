@@ -7,10 +7,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.ch_linghu.fanfoudroid.data2.Photo;
 import com.ch_linghu.fanfoudroid.data2.Status;
+import com.ch_linghu.fanfoudroid.data2.User;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
-import com.ch_linghu.fanfoudroid.helper.utils.*;
+import com.ch_linghu.fanfoudroid.helper.utils.DateTimeHelper;
+import com.ch_linghu.fanfoudroid.helper.utils.TextHelper;
 
 public class StatusDAO {
     private static final String TAG = "StatusDAO";
@@ -57,8 +60,8 @@ public class StatusDAO {
                     Log.e(TAG, "cann't insert the tweet : " + status.toString());
                 } else {
                     ++result;
-                    Log.v(TAG, String.format("Insert a status into database[%s] : %s",
-                            status.getOwnerId(), status.toString()));
+                    Log.v(TAG, String.format("Insert a status into database : %s",
+                             status.toString()));
                 }
             }
 
@@ -100,8 +103,8 @@ public class StatusDAO {
      * @see StatusDAO#deleteStatus(String, String, int)
      */
     public boolean deleteStatus(Status status) {
-        return deleteStatus(status.getId(), status.getOwnerId(), 
-                Integer.parseInt(status.getType()));
+        return deleteStatus(status.getId(), status.getOwnerId(),
+                status.getType());
     }
 
     /**
@@ -185,7 +188,7 @@ public class StatusDAO {
             Query query = new Query(TwitterDatabase.getDb(false));
             query.from(StatusTable.TABLE_NAME, new String[] { "_id" })
                  .where("_id = ?", status.getId())
-                 .where("owner = ?", status.getUserId())
+                 .where("owner = ?", status.getUser().getId())
                  .where("status_type = " + status.getType());
             
             Cursor cursor = query.select();
@@ -208,12 +211,13 @@ public class StatusDAO {
         v.put(StatusTable.STATUS_TYPE, status.getType());
         v.put(StatusTable.TEXT, status.getText());
         v.put(StatusTable.OWNER_ID, status.getOwnerId());
-        v.put(StatusTable.USER_ID, status.getUserId());
-        v.put(StatusTable.USER_SCREEN_NAME, status.getUserScreenName());
-        v.put(StatusTable.PROFILE_IMAGE_URL, status.getProfileImageUrl());
-        v.put(StatusTable.PIC_THUMB, status.getThumbnailPic());
-        v.put(StatusTable.PIC_MID, status.getBmiddlePic());
-        v.put(StatusTable.PIC_ORIG, status.getOriginalPic());
+        v.put(StatusTable.USER_ID, status.getUser().getId());
+        v.put(StatusTable.USER_SCREEN_NAME, status.getUser().getScreenName());
+        v.put(StatusTable.PROFILE_IMAGE_URL, status.getUser().getProfileImageUrl());
+        Photo photo = status.getPhotoUrl();
+        v.put(StatusTable.PIC_THUMB, photo.getThumburl());
+        v.put(StatusTable.PIC_MID, photo.getImageurl());
+        v.put(StatusTable.PIC_ORIG, photo.getLargeurl());
         v.put(StatusTable.FAVORITED, status.isFavorited() + "");
         v.put(StatusTable.TRUNCATED, status.isTruncated()); // TODO:
         v.put(StatusTable.IN_REPLY_TO_STATUS_ID, status.getInReplyToStatusId());
@@ -238,8 +242,30 @@ public class StatusDAO {
 
         @Override
         public Status mapRow(Cursor cursor, int rowNum) {
-            Status status = new Status();
+            Photo photo = new Photo();
+            photo.setImageurl(cursor.getString(
+                    cursor.getColumnIndex(StatusTable.PIC_MID)));
+            photo.setLargeurl(cursor.getString(
+                    cursor.getColumnIndex(StatusTable.PIC_ORIG)));
+            photo.setThumburl(cursor.getString(
+                    cursor.getColumnIndex(StatusTable.PIC_THUMB)));
             
+            User user = new User();
+            user.setScreenName(cursor.getString(
+                    cursor.getColumnIndex(StatusTable.USER_SCREEN_NAME)));
+            user.setId(cursor.getString(
+                    cursor.getColumnIndex(StatusTable.USER_ID)));
+            user.setProfileImageUrl(cursor.getString(
+                    cursor.getColumnIndex(StatusTable.PROFILE_IMAGE_URL)));
+            
+            Status status = new Status();
+            status.setPhotoUrl(photo);
+            status.setUser(user);
+            status.setOwnerId(cursor.getString(
+                    cursor.getColumnIndex(StatusTable.OWNER_ID)));
+            //TODO: 将数据库中的statusType改成Int类型
+            status.setType(cursor.getInt(
+                    cursor.getColumnIndex(StatusTable.STATUS_TYPE)));
             status.setId(cursor.getString(
                     cursor.getColumnIndex(StatusTable._ID)));
             status.setCreatedAt(DateTimeHelper.parseDateTimeFromSqlite(cursor.getString(
@@ -247,18 +273,10 @@ public class StatusDAO {
             //TODO: 更改favorite 在数据库类型为boolean后改为 " != 0 "
             status.setFavorited(cursor.getString(
                     cursor.getColumnIndex(StatusTable.FAVORITED)).equals("true"));
-            status.setUserScreenName(cursor.getString(
-                    cursor.getColumnIndex(StatusTable.USER_SCREEN_NAME)));
-            status.setUserId(cursor.getString(
-                    cursor.getColumnIndex(StatusTable.USER_ID)));
-            status.setOwnerId(cursor.getString(
-                    cursor.getColumnIndex(StatusTable.OWNER_ID)));
             status.setText(cursor.getString(
                     cursor.getColumnIndex(StatusTable.TEXT)));
             status.setSource(cursor.getString(
                     cursor.getColumnIndex(StatusTable.SOURCE)));
-            status.setProfileImageUrl(cursor.getString(
-                    cursor.getColumnIndex(StatusTable.PROFILE_IMAGE_URL)));
             status.setInReplyToScreenName(cursor.getString(
                     cursor.getColumnIndex(StatusTable.IN_REPLY_TO_SCREEN_NAME)));
             status.setInReplyToStatusId(cursor.getString(
@@ -267,16 +285,6 @@ public class StatusDAO {
                     cursor.getColumnIndex(StatusTable.IN_REPLY_TO_USER_ID)));
             status.setTruncated(cursor.getInt(
                    cursor.getColumnIndex(StatusTable.TRUNCATED)) != 0);
-            status.setThumbnailPic(cursor.getString(
-                    cursor.getColumnIndex(StatusTable.PIC_THUMB)));
-            status.setBmiddlePic(cursor.getString(
-                    cursor.getColumnIndex(StatusTable.PIC_MID)));
-            status.setOriginalPic(cursor.getString(
-                    cursor.getColumnIndex(StatusTable.PIC_ORIG)));
-            //TODO: 将数据库中的statusType改成Int类型
-            status.setType(cursor.getString(
-                    cursor.getColumnIndex(StatusTable.STATUS_TYPE)));
-
             return status;
         }
     }
