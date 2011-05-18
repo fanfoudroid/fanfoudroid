@@ -173,6 +173,7 @@ public class StatusDAO {
     /**
      * Check if status exists
      * 
+     * TODO: 取消使用Query
      * @param status
      * @return
      */
