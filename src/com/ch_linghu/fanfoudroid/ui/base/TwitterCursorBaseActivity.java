@@ -17,7 +17,6 @@ package com.ch_linghu.fanfoudroid.ui.base;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 import android.content.SharedPreferences;
@@ -41,6 +40,7 @@ import com.ch_linghu.fanfoudroid.helper.utils.MiscHelper;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
+import com.ch_linghu.fanfoudroid.task.TaskFeedback;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskManager;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
@@ -88,6 +88,8 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 		@Override
 		public void onPostExecute(GenericTask task, TaskResult result) {
 			if (result == TaskResult.AUTH_ERROR) {
+				TaskFeedback.getInstance(TaskFeedback.REFRESH_MODE,
+						TwitterCursorBaseActivity.this).failed("登录信息出错");
 				logout();
 			} else if (result == TaskResult.OK) {
 			    // TODO: XML处理, GC压力 
@@ -101,15 +103,29 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 					getDb().gc(getUserId(), getDatabaseType()); // GC
 				}
 				draw();
-				goTop();
+				if(task == mRetrieveTask){
+					goTop();
+				}
+				TaskFeedback.getInstance(TaskFeedback.REFRESH_MODE,
+						TwitterCursorBaseActivity.this).success("");
+			} else if (result == TaskResult.IO_ERROR){
+				if (task == mRetrieveTask){
+					TaskFeedback.getInstance(TaskFeedback.REFRESH_MODE,
+							TwitterCursorBaseActivity.this).failed(((RetrieveTask)task).getErrorMsg());					
+				} else if (task == mGetMoreTask){
+					TaskFeedback.getInstance(TaskFeedback.REFRESH_MODE,
+							TwitterCursorBaseActivity.this).failed(((GetMoreTask)task).getErrorMsg());										
+				}
 			} else {
-				// Do nothing.
+				TaskFeedback.getInstance(TaskFeedback.REFRESH_MODE,
+						TwitterCursorBaseActivity.this).success("");
+				
 			}
 
 			// 刷新按钮停止旋转
-			setRefreshAnimation(false);
             loadMoreGIFTop.setVisibility(View.GONE);
-			updateProgress("");
+            loadMoreGIF.setVisibility(View.GONE);
+            
 			DebugTimer.stop();
 			
 			Log.v("DEBUG", DebugTimer.getProfileAsString());
@@ -117,7 +133,9 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 
 		@Override
 		public void onPreExecute(GenericTask task) {
-			onRetrieveBegin();
+			mRetrieveCount = 0;
+			TaskFeedback.getInstance(TaskFeedback.REFRESH_MODE,
+					TwitterCursorBaseActivity.this).start("正在获取信息，请稍候");
 			DebugTimer.start();
 		}
 
@@ -127,6 +145,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 			draw();
 		}
 	};
+	
 	private TaskListener mFollowerRetrieveTaskListener = new TaskAdapter(){
 
 		@Override
@@ -218,7 +237,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
             }
         });
         
-        //TODO: 完成listView顶部和底部的事件绑定
+        //完成listView顶部和底部的事件绑定
         mListFooter = View.inflate(this, R.layout.listview_footer, null);
         mTweetList.addFooterView(mListFooter, null, false);
         mListFooter.setOnClickListener(new View.OnClickListener() {
@@ -406,7 +425,6 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 	
 	@Override
     protected String getActivityTitle() {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -443,17 +461,9 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
         	mFollowersRetrieveTask.setCancelable(false);
         }
     }
-	
-	public void onRetrieveBegin() {
-		mRetrieveCount = 0;
-		updateProgress(getString(R.string.page_status_refreshing));
-	}
 
 	public void doRetrieve() {
 		Log.d(TAG, "Attempting retrieve.");
-
-		// 旋转刷新按钮
-		animRotate(refreshButton);
 
 		if (mRetrieveTask != null && mRetrieveTask.getStatus() == GenericTask.Status.RUNNING){
 			return;
@@ -472,6 +482,10 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 	}
 	
 	private class RetrieveTask extends GenericTask{
+		private String _errorMsg;
+		public String getErrorMsg(){
+			return _errorMsg;
+		}
 
 		@Override
 		protected TaskResult _doInBackground(TaskParams... params) {
@@ -483,11 +497,11 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 				statusList = getMessageSinceId(maxId);
 			} catch (HttpException e) {
 				Log.e(TAG, e.getMessage(), e);
+				_errorMsg = e.getMessage();
 				return TaskResult.IO_ERROR;
 			}
 
 			ArrayList<Tweet> tweets = new ArrayList<Tweet>();
-			HashSet<String> imageUrls = new HashSet<String>();
 			
 			for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
 				if (isCancelled()) {
@@ -528,6 +542,11 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 	// GET MORE TASK
 	
 	private class GetMoreTask extends GenericTask {
+		private String _errorMsg;
+		public String getErrorMsg(){
+			return _errorMsg;
+		}
+		
 	    @Override
         protected TaskResult _doInBackground(TaskParams... params) {
 			List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
@@ -542,6 +561,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 				statusList = getMoreMessageFromId(minId);
 			} catch (HttpException e) {
 				Log.e(TAG, e.getMessage(), e);
+				_errorMsg = e.getMessage();
 				return TaskResult.IO_ERROR;
 			}
 
@@ -550,7 +570,6 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 			}
 
 			ArrayList<Tweet> tweets = new ArrayList<Tweet>();
-			HashSet<String> imageUrls = new HashSet<String>();
 			
 			for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
 				if (isCancelled()) {
@@ -571,34 +590,14 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity{
 	    }
 	}
 	
-	private TaskListener getMoreListener = new TaskAdapter() {
-        
-        @Override
-        public String getName() {
-            return "getMore";
-        }
-
-        @Override
-        public void onPostExecute(GenericTask task, TaskResult result) {
-            super.onPostExecute(task, result);
-            draw();
-             setRefreshAnimation(false);
-            loadMoreGIF.setVisibility(View.GONE);
-        }
-        
-    };
-    
     public void doGetMore() {
         Log.d(TAG, "Attempting getMore.");
-
-        // 旋转刷新按钮
-        animRotate(refreshButton);
 
         if (mGetMoreTask != null && mGetMoreTask.getStatus() == GenericTask.Status.RUNNING){
             return;
         }else{
             mGetMoreTask = new GetMoreTask();
-            mGetMoreTask.setListener(getMoreListener);
+            mGetMoreTask.setListener(mRetrieveTaskListener);
             mGetMoreTask.execute();
             
             // Add Task to manager

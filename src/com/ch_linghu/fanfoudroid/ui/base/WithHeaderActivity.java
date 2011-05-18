@@ -117,7 +117,7 @@ public class WithHeaderActivity extends BaseActivity {
 			
 		});
 	}
-	
+
 	/**
 	 * @param v
 	 * @deprecated use {@link WithHeaderActivity#setRefreshAnimation(boolean)}
@@ -131,7 +131,7 @@ public class WithHeaderActivity extends BaseActivity {
      * 
      * @param animate start or stop
      */
-	protected void setRefreshAnimation(boolean animate) {
+	public void setRefreshAnimation(boolean animate) {
 	    if (mRefreshAnimation != null) {
 	        if (animate) {
 	            mRefreshAnimation.start();

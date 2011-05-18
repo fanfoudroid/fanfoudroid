@@ -41,6 +41,7 @@ import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.HttpRefusedException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
+import com.ch_linghu.fanfoudroid.task.TaskFeedback;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
@@ -149,9 +150,8 @@ public class LoginActivity extends Activity {
 
         // dismiss dialog before destroy
         // to avoid android.view.WindowLeaked Exception
-        if (dialog != null) {
-            dialog.dismiss();
-        }
+        TaskFeedback.getInstance(TaskFeedback.DIALOG_MODE, 
+        		LoginActivity.this).cancel();
         super.onDestroy();
     }
 
@@ -219,13 +219,14 @@ public class LoginActivity extends Activity {
 
     private void onLoginBegin() {
         disableLogin();
-        dialog = ProgressDialog.show(LoginActivity.this, "",
-                getString(R.string.login_status_logging_in), true);
-        dialog.setCancelable(true);
+        TaskFeedback.getInstance(TaskFeedback.DIALOG_MODE,
+        		LoginActivity.this).start(
+        				getString(R.string.login_status_logging_in));
     }
 
     private void onLoginSuccess() {
-        dialog.dismiss();
+        TaskFeedback.getInstance(TaskFeedback.DIALOG_MODE,
+        		LoginActivity.this).success("");
         updateProgress("");
         mUsernameEdit.setText("");
         mPasswordEdit.setText("");
@@ -257,10 +258,8 @@ public class LoginActivity extends Activity {
     }
 
     private void onLoginFailure(String reason) {
-        Toast.makeText(this, reason, Toast.LENGTH_SHORT).show();
-        if (dialog != null){
-        	dialog.dismiss();
-        }
+        TaskFeedback.getInstance(TaskFeedback.DIALOG_MODE,
+        		LoginActivity.this).failed(reason);
         enableLogin();
     }
 
