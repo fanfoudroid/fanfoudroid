@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical"
-	
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
-  android:background="@color/body_background"
-  >
+    android:background="@color/body_background"
+>
  
- <!-- Header -->
- <include layout="@layout/header"/>
+<!-- Header -->
+<include layout="@layout/header"/>
  
 <ScrollView
 		android:background="#FFEFF0F4"
@@ -17,8 +15,6 @@
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
 		>
-		
-		
 		
 		<LinearLayout
 			android:orientation="vertical"
@@ -119,7 +115,7 @@
 				android:layout_centerInParent="true"
 				android:layout_marginRight="10.0dip"
 				android:visibility="gone"
-					style="@style/blue_button"
+			    style="@style/blue_button"
 			></Button>
 			</RelativeLayout>
 			

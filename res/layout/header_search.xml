@@ -29,7 +29,7 @@
            android:paddingLeft="10dip"
            /> 
            
-        <!-- 搜索框 -->
+        <!-- 搜索框 
         <EditText android:id="@+id/search_edit"
            android:hint="搜索饭否"
            android:layout_width="fill_parent"
@@ -41,6 +41,18 @@
            android:layout_marginLeft="10dip" 
            android:layout_marginRight="10dip"
            android:paddingLeft="2dip"/>   
+        -->
+           
+            <!-- 搜索框 -->
+        <EditText android:id="@+id/search_edit"
+           android:layout_width="fill_parent"
+           android:layout_height="wrap_content"
+           android:layout_centerVertical="true"
+           android:layout_toLeftOf="@id/search"
+           android:layout_toRightOf="@id/top_back"
+           android:layout_marginLeft="12dip"
+           android:background="@drawable/textfield_search_empty" 
+           />   
          
     </RelativeLayout>
     
