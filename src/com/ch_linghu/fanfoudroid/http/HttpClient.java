@@ -202,7 +202,7 @@ public class HttpClient {
         // Create an HttpClient with the ThreadSafeClientConnManager.
         ThreadSafeClientConnManager cm = new ThreadSafeClientConnManager(params,
                 schemeRegistry);
-        mClient = new DefaultHttpClient();
+        mClient = new DefaultHttpClient(cm, params);
 
         // TODO: need to release this connection in httpRequest()
         // cm.releaseConnection(conn, validDuration, timeUnit);
