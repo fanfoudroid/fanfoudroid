@@ -1,117 +1,35 @@
 package com.ch_linghu.fanfoudroid.data.json;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Type;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import com.ch_linghu.fanfoudroid.data2.Photo;
-import com.ch_linghu.fanfoudroid.data2.Status;
-import com.ch_linghu.fanfoudroid.data2.User;
-import com.ch_linghu.fanfoudroid.data2.Utils;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.InstanceCreator;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.google.gson.stream.JsonReader;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class JsonParser {
-    private static final String TAG = "JsonParser";
-    private GsonBuilder mBuilder; // static ?
 
-    public JsonParser() {
-        mBuilder = new GsonBuilder();
-        // for status
-        mBuilder.registerTypeAdapter(Date.class, new DateDeserializer());
-        mBuilder.registerTypeAdapter(User.class, new UserInstanceCreator());
-        mBuilder.registerTypeAdapter(Photo.class, new PhotoInstanceCreator());
-    }
-
-    public List<Status> parseToStatuses(InputStream is) throws JsonParserException {
-        List<Status> statuses = new ArrayList<Status>();
-        JsonReader reader = null;
+    public static <T> T parseToObject(String jsonString, JsonMapper<T> jsonMap)
+            throws JsonParserException {
         try {
-            reader = getReader(is);
-            Gson gson = mBuilder.create();
-            reader.beginArray();
-            while (reader.hasNext()) {
-                statuses.add((Status) gson.fromJson(reader, Status.class));
-            }
-            reader.endArray();
-        } catch (IOException ioe) {
-            throw new JsonParserException(ioe.getMessage(), ioe);
-        } finally {
-            try {
-                is.close();
-                reader.close();
-            } catch (IOException ioe) {
-                throw new JsonParserException(ioe.getMessage(), ioe);
-            }
-        }
-        return statuses;
-    }
-
-    private JsonReader getReader(InputStream is)
-            throws UnsupportedEncodingException {
-        return new JsonReader(new InputStreamReader(is, "UTF-8"));
-    }
-    
-    class DateDeserializer implements JsonDeserializer<Date> {
-        public Date deserialize(JsonElement json, Type type,
-                JsonDeserializationContext context) throws JsonParseException {
-            try {
-                return Utils.parseDate(json.getAsJsonPrimitive().getAsString(),
-                        "EEE MMM dd HH:mm:ss z yyyy");
-            } catch (ParseException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            return null;
-        }
-    }
-    
-    class UserInstanceCreator implements InstanceCreator<User> {
-        public User createInstance(Type type) {
-            return new User();
+            return jsonMap.mapRow(new JSONObject(jsonString));
+        } catch (JSONException e) {
+            throw new JsonParserException(e.getMessage(), e);
         }
     }
 
-    class StatusInstanceCreator implements InstanceCreator<Status> {
-        public Status createInstance(Type type) {
-            return new Status();
-        }
-    }
-    
-    class PhotoInstanceCreator implements InstanceCreator<Photo> {
-        public Photo createInstance(Type type) {
-            return new Photo();
-        }
-    }
-    
-    ///////////////////// TEST ////////////////////////////////////////
-    public static void main(String[] args) throws FileNotFoundException {
-        FileInputStream fis = new FileInputStream(new File("status.json"));
-
-        JsonParser jsonParser = new JsonParser();
+    public static <T> List<T> parseToList(String jsonString, JsonMapper<T> jsonMap)
+            throws JsonParserException {
         try {
-            List<Status> statuses = jsonParser.parseToStatuses(fis);
-            for (Status s : statuses) {
-                System.out.println(s);
+            JSONArray json = new JSONArray(jsonString);
+            int size = json.length();
+            List<T> list = new ArrayList<T>(size);
+            for (int i = 0; i < size; i++) {
+                list.add(jsonMap.mapRow(json.getJSONObject(i)));
             }
-        } catch (JsonParserException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            return list;
+        } catch (JSONException e) {
+            throw new JsonParserException(e.getMessage(), e);
         }
     }
 }

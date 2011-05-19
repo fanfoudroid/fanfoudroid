@@ -18,7 +18,7 @@ import org.w3c.dom.Document;
 
 import android.util.Log;
 
-import com.ch_linghu.fanfoudroid.data.json.JsonParser;
+import com.ch_linghu.fanfoudroid.data.json.JsonParser2;
 import com.ch_linghu.fanfoudroid.data.json.JsonParserException;
 import com.ch_linghu.fanfoudroid.data2.Status;
 import com.ch_linghu.fanfoudroid.debug.DebugTimer;
@@ -144,7 +144,7 @@ public class Response {
             is = new GZIPInputStream(is);
         }
 
-        JsonParser jsonParser = new JsonParser();
+        JsonParser2 jsonParser = new JsonParser2();
         List<Status> statuses = jsonParser.parseToStatuses(is);
         DebugTimer.betweenEnd("GSON");
         Log.v("DEBUG", "Parser statuses :" + statuses.size());

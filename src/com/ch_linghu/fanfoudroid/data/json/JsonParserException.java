@@ -8,19 +8,20 @@ public class JsonParserException extends Exception {
         // TODO Auto-generated constructor stub
     }
 
-    public JsonParserException(String message, Throwable cause) {
-        super(message, cause);
+    public JsonParserException(String detailMessage, Throwable throwable) {
+        super(detailMessage, throwable);
         // TODO Auto-generated constructor stub
     }
 
-    public JsonParserException(String message) {
-        super(message);
+    public JsonParserException(String detailMessage) {
+        super(detailMessage);
         // TODO Auto-generated constructor stub
     }
 
-    public JsonParserException(Throwable cause) {
-        super(cause);
+    public JsonParserException(Throwable throwable) {
+        super(throwable);
         // TODO Auto-generated constructor stub
     }
+
 
 }
