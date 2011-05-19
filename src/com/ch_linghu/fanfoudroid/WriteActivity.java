@@ -94,11 +94,13 @@ public class WriteActivity extends WithHeaderActivity {
 	private Button mSendButton;
 	private Button chooseImagesButton;
 	private ProgressDialog dialog;
+	
 
 	// Picture
 	private boolean withPic = false;
 	private File mFile;
 	private ImageView mPreview;
+	private ImageView imageDelete;
 	private static final int MAX_BITMAP_SIZE = 400;
 
 	private File mImageFile;
@@ -240,6 +242,7 @@ public class WriteActivity extends WithHeaderActivity {
 //			new RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT)
 //		);
 		mPreview.setVisibility(View.VISIBLE);
+		imageDelete.setVisibility(View.VISIBLE);
 		mTweetEditText.setLayoutParams(
 				new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 2f)
 			);
@@ -325,6 +328,8 @@ public class WriteActivity extends WithHeaderActivity {
 			});
 	
 			// With picture
+			imageDelete=(ImageView) findViewById(R.id.image_delete);
+			imageDelete.setOnClickListener(deleteListener);
 			mPreview = (ImageView) findViewById(R.id.preview);
 			if (Intent.ACTION_SEND.equals(intent.getAction()) && uri != null) {
 				getPic(intent, uri);
@@ -356,7 +361,7 @@ public class WriteActivity extends WithHeaderActivity {
 			    Selection.setSelection(etext, position);
 			}
 			
-			
+			 
 			View.OnClickListener sendListenner = new View.OnClickListener() {
                 public void onClick(View v) {
                     Animation anim = AnimationUtils.loadAnimation(v.getContext(),
@@ -372,6 +377,7 @@ public class WriteActivity extends WithHeaderActivity {
 			ImageButton mTopSendButton = (ImageButton) findViewById(R.id.top_send_btn);
 			mTopSendButton.setOnClickListener(sendListenner);
 			
+			
 			return true;
 		}else{
 			return false;
@@ -379,6 +385,18 @@ public class WriteActivity extends WithHeaderActivity {
 		
 		
 	}
+	
+	
+	private View.OnClickListener deleteListener=new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			
+			withPic=false;
+			mPreview.setVisibility(View.INVISIBLE);
+			imageDelete.setVisibility(View.INVISIBLE);
+		}
+	};
 
 	@Override
 	protected void onPause() {

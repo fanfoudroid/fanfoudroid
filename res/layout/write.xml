@@ -23,6 +23,16 @@
 			android:layout_height="fill_parent"
 		    android:layout_alignParentLeft="true"
 			android:visibility="invisible" />
+			<ImageView android:id="@+id/image_delete"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_toRightOf="@id/preview"
+			android:layout_centerInParent="true"
+			android:src="@drawable/delete"
+			android:visibility="invisible"
+			android:clickable="true"
+			/>
+			
 
 		<!-- 提示框 -->
 		<TextView android:id="@+id/progress_text"
