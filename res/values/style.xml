@@ -102,4 +102,8 @@
         <item name="android:indeterminateDrawable">@anim/loading_blue_16</item>
     </style>
     
+     <style name="refreshProgressBar">
+        <item name="android:indeterminateDrawable">@anim/top_refresh</item>
+    </style>
+    
 </resources>
