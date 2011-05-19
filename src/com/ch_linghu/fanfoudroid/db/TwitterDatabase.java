@@ -38,7 +38,7 @@ public class TwitterDatabase {
 
     private static TwitterDatabase instance = null;
     private static DatabaseHelper mOpenHelper = null;
-    private Context mContext = null;
+    private static Context mContext = null;
 
     /**
      * SQLiteOpenHelper
@@ -107,10 +107,17 @@ public class TwitterDatabase {
             db.execSQL("DROP TABLE IF EXISTS "+UserInfoTable.TABLE_NAME);
         }
     }
-
+    
     private TwitterDatabase(Context context) {
         mContext = context;
         mOpenHelper = new DatabaseHelper(context);
+    }
+    
+    public static synchronized TwitterDatabase getInstance() {
+        if (mContext != null) {
+            return getInstance(mContext);
+        }
+        return null;
     }
 
     public static synchronized TwitterDatabase getInstance(Context context) {
@@ -1177,6 +1184,14 @@ public class TwitterDatabase {
             mDb.endTransaction();
         }
 
+    }
+
+    public static Context getContext() {
+        return mContext;
+    }
+
+    public static void setContext(Context context) {
+        TwitterDatabase.mContext = context;
     }
     
 

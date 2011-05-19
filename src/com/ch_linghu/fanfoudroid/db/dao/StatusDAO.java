@@ -17,17 +17,13 @@ import com.ch_linghu.fanfoudroid.helper.utils.TextHelper;
 
 public class StatusDAO {
     private static final String TAG = "StatusDAO";
-    
-    private static RowMapper<Status> mRowMapper = new StatusMapper();
-    private static String mTable = StatusTable.TABLE_NAME;
-    private static String mPrimaryKey = "_id";
 
-    private SqliteTemplate mSqlTemplate;
-    private SQLiteDatabase mDb;
+    private static String mTable = StatusTable.TABLE_NAME;
+    private SQLiteTemplate mSqlTemplate;
 
     public StatusDAO() {
-        mDb = TwitterDatabase.getDb(true);
-        mSqlTemplate = new SqliteTemplate(mDb, mPrimaryKey);
+        mSqlTemplate = new SQLiteTemplate(TwitterDatabase.getInstance()
+                .getSQLiteOpenHelper(), StatusTable._ID);
     }
 
     /**
@@ -41,23 +37,26 @@ public class StatusDAO {
      */
     public long insertStatus(Status status) {
         if (!isExists(status)) {
-            return mDb.insert(mTable, null, statusToContentValues(status));
+            return mSqlTemplate.getDb(true).insert(mTable, null,
+                    statusToContentValues(status));
         } else {
             Log.e(TAG, status.getId() + " is exists.");
             return -1;
         }
     }
 
-    // TODO:
     public int insertStatuses(List<Status> statuses) {
         int result = 0;
+        SQLiteDatabase db = mSqlTemplate.getDb(true);
+
         try {
-            mDb.beginTransaction();
+            db.beginTransaction();
             for (int i = statuses.size() - 1; i >= 0; i--) {
                 Status status = statuses.get(i);
 
-                long id = mDb.insert(StatusTable.TABLE_NAME, null,
-                        statusToContentValues(status));
+                long id = db.insertWithOnConflict(StatusTable.TABLE_NAME, null,
+                        statusToContentValues(status),
+                        SQLiteDatabase.CONFLICT_IGNORE);
 
                 if (-1 == id) {
                     Log.e(TAG, "cann't insert the tweet : " + status.toString());
@@ -68,10 +67,11 @@ public class StatusDAO {
                             status.toString()));
                 }
             }
-            mDb.setTransactionSuccessful();
+            db.setTransactionSuccessful();
         } finally {
-            mDb.endTransaction();
+            db.endTransaction();
         }
+
         return result;
     }
 
@@ -101,7 +101,7 @@ public class StatusDAO {
             where += " AND " + StatusTable.STATUS_TYPE + " = " + type;
         }
 
-        return mDb.delete(mTable, where.toString(), binds);
+        return mSqlTemplate.getDb(true).delete(mTable, where.toString(), binds);
     }
 
     /**
@@ -122,20 +122,22 @@ public class StatusDAO {
      * @param statusId
      * @return
      */
-    public Status findStatus(String statusId) {
+    public Status fetchStatus(String statusId) {
         return mSqlTemplate.queryForObject(mRowMapper, mTable, null,
-                mPrimaryKey + " = ?", new String[] { statusId }, null, null,
-                "created_at DESC", "1");
+                StatusTable._ID + " = ?", new String[] { statusId }, null,
+                null, "created_at DESC", "1");
     }
 
     /**
      * Find user's statuses
      * 
-     * @param userId user id
-     * @param statusType status type, see {@link StatusTable#TYPE_USER}...
+     * @param userId
+     *            user id
+     * @param statusType
+     *            status type, see {@link StatusTable#TYPE_USER}...
      * @return list of statuses
      */
-    public List<Status> findStatuses(String userId, int statusType) {
+    public List<Status> fetchStatuses(String userId, int statusType) {
         return mSqlTemplate.queryForList(mRowMapper, mTable, null,
                 StatusTable.OWNER_ID + " = ? AND " + StatusTable.STATUS_TYPE
                         + " = " + statusType, new String[] { userId }, null,
@@ -143,10 +145,10 @@ public class StatusDAO {
     }
 
     /**
-     * @see StatusDAO#findStatuses(String, int)
+     * @see StatusDAO#fetchStatuses(String, int)
      */
-    public List<Status> findStatuses(String userId, String statusType) {
-        return findStatuses(userId, Integer.parseInt(statusType));
+    public List<Status> fetchStatuses(String userId, String statusType) {
+        return fetchStatuses(userId, Integer.parseInt(statusType));
     }
 
     /**
@@ -173,24 +175,21 @@ public class StatusDAO {
     /**
      * Check if status exists
      * 
-     * TODO: 取消使用Query
+     * FIXME: 取消使用Query
+     * 
      * @param status
      * @return
      */
     public boolean isExists(Status status) {
-        boolean result = false;
-        if (null != status.getId()) {
-            Query query = new Query(TwitterDatabase.getDb(false));
-            query.from(StatusTable.TABLE_NAME, new String[] { "_id" })
-                    .where("_id = ?", status.getId())
-                    .where("owner = ?", status.getUser().getId())
-                    .where("status_type = " + status.getType());
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT COUNT(*) FROM ").append(mTable).append(" WHERE ")
+                .append(StatusTable._ID).append(" =? AND ")
+                .append(StatusTable.OWNER_ID).append(" =? AND ")
+                .append(StatusTable.STATUS_TYPE).append(" = ")
+                .append(status.getType());
 
-            Cursor cursor = query.select();
-            result = (cursor != null && cursor.getCount() > 0);
-            cursor.close();
-        }
-        return result;
+        return mSqlTemplate.isExistsBySQL(sql.toString(),
+                new String[] { status.getId(), status.getUser().getId() });
     }
 
     /**
@@ -201,21 +200,11 @@ public class StatusDAO {
      * @return
      */
     private ContentValues statusToContentValues(Status status) {
-        ContentValues v = new ContentValues();
+        final ContentValues v = new ContentValues();
         v.put(StatusTable._ID, status.getId());
         v.put(StatusTable.STATUS_TYPE, status.getType());
         v.put(StatusTable.TEXT, status.getText());
         v.put(StatusTable.OWNER_ID, status.getOwnerId());
-        v.put(StatusTable.USER_ID, status.getUser().getId());
-        v.put(StatusTable.USER_SCREEN_NAME, status.getUser().getScreenName());
-        v.put(StatusTable.PROFILE_IMAGE_URL, status.getUser()
-                .getProfileImageUrl());
-        Photo photo = status.getPhotoUrl();
-        if (photo != null) {
-            v.put(StatusTable.PIC_THUMB, photo.getThumburl());
-            v.put(StatusTable.PIC_MID, photo.getImageurl());
-            v.put(StatusTable.PIC_ORIG, photo.getLargeurl());
-        }
         v.put(StatusTable.FAVORITED, status.isFavorited() + "");
         v.put(StatusTable.TRUNCATED, status.isTruncated()); // TODO:
         v.put(StatusTable.IN_REPLY_TO_STATUS_ID, status.getInReplyToStatusId());
@@ -228,13 +217,23 @@ public class StatusDAO {
         v.put(StatusTable.SOURCE, status.getSource());
         v.put(StatusTable.IS_UNREAD, status.isUnRead());
 
+        final User user = status.getUser();
+        if (user != null) {
+            v.put(StatusTable.USER_ID, user.getId());
+            v.put(StatusTable.USER_SCREEN_NAME, user.getScreenName());
+            v.put(StatusTable.PROFILE_IMAGE_URL, user.getProfileImageUrl());
+        }
+        final Photo photo = status.getPhotoUrl();
+        if (photo != null) {
+            v.put(StatusTable.PIC_THUMB, photo.getThumburl());
+            v.put(StatusTable.PIC_MID, photo.getImageurl());
+            v.put(StatusTable.PIC_ORIG, photo.getLargeurl());
+        }
+
         return v;
     }
 
-    /**
-     * Cursor -> Status for SqliteTemplate
-     */
-    private static final class StatusMapper implements RowMapper<Status> {
+    private static final RowMapper<Status> mRowMapper = new RowMapper<Status>() {
 
         @Override
         public Status mapRow(Cursor cursor, int rowNum) {
@@ -286,6 +285,7 @@ public class StatusDAO {
                     .getColumnIndex(StatusTable.IS_UNREAD)) != 0);
             return status;
         }
-    }
+
+    };
 
 }
