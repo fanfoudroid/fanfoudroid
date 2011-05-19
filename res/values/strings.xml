@@ -62,6 +62,7 @@
     <string name="login_status_network_or_connection_error">网络错误，请稍后再试。</string>
     <string name="login_register_link">没有帐号？ <a href="http://fanfou.com/register">注册</a></string>
     <string name="login_status_failure">登录失败。</string>
+    <string name="login_username_hint">Email或手机号</string>
     <!-- User页面 -->
     <string name="user_label_follow">关注此人</string>
     <string name="user_label_unfollow">取消关注</string>
