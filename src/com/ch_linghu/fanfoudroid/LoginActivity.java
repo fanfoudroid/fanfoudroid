@@ -286,10 +286,8 @@ public class LoginActivity extends Activity {
                 //Throwable cause = e.getCause(); // Maybe null
                // if (cause instanceof HttpAuthException) {
                 if (e instanceof HttpAuthException) {
-                // Invalid userName/password
-//                    msg = ((HttpRefusedException) cause).getError().getMessage();
-                	//msg=((HttpAuthException) e).getMessage();
-                	msg=getString(R.string.login_status_invalid_username_or_password);
+                    // Invalid userName/password
+                	msg = getString(R.string.login_status_invalid_username_or_password);
                 } else {
                     msg = getString(R.string.login_status_network_or_connection_error);
                 }
@@ -299,11 +297,13 @@ public class LoginActivity extends Activity {
 
             SharedPreferences.Editor editor = mPreferences.edit();
             editor.putString(Preferences.USERNAME_KEY, mUsername);
-            editor.putString(Preferences.PASSWORD_KEY, mPassword);
-            //add 存储当前用户的id
+
+            editor.putString(Preferences.PASSWORD_KEY,
+                    EncryptUtils.encryptPassword(mPassword));
+            // add 存储当前用户的id
             editor.putString(Preferences.CURRENT_USER_ID, user.getId());
             editor.commit();
-            
+
             return TaskResult.OK;
         }
     }

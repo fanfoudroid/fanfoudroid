@@ -2,6 +2,9 @@ package com.ch_linghu.fanfoudroid;
 
 import java.util.HashSet;
 
+import org.acra.ReportingInteractionMode;
+import org.acra.annotation.ReportsCrashes;
+
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -15,12 +18,11 @@ import com.ch_linghu.fanfoudroid.db.StatusTable;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheManager;
+import com.ch_linghu.fanfoudroid.helper.utils.EncryptUtils;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.weibo.Configuration;
 import com.ch_linghu.fanfoudroid.weibo.User;
 import com.ch_linghu.fanfoudroid.weibo.Weibo;
-import org.acra.*;
-import org.acra.annotation.*;
 
 @ReportsCrashes(formKey="dHowMk5LMXQweVJkWGthb1E1T1NUUHc6MQ",
     mode = ReportingInteractionMode.NOTIFICATION,
@@ -114,6 +116,7 @@ public class TwitterApplication extends Application {
 		mPref = PreferenceManager.getDefaultSharedPreferences(this);
 		String username = mPref.getString(Preferences.USERNAME_KEY, "");
 		String password = mPref.getString(Preferences.PASSWORD_KEY, "");
+		password = EncryptUtils.decryptPassword(password);
 
 		if (Weibo.isValidCredentials(username, password)) {
 			mApi.setCredentials(username, password); // Setup API and HttpClient
