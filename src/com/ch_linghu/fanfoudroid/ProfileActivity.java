@@ -480,7 +480,7 @@ public class ProfileActivity extends WithHeaderActivity {
 		args.put(UserInfoTable.FIELD_DESCRIPTION, description);
 
 		args.put(UserInfoTable.FIELD_PROFILE_IMAGE_URL,
-				profileInfo.getProfileBackgroundImageUrl());
+				profileInfo.getProfileImageURL().toString());
 
 		if (profileInfo.getURL() != null) {
 			args.put(UserInfoTable.FIELD_URL, profileInfo.getURL().toString());
