@@ -155,6 +155,7 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
+	    Log.d("FLING", "onContextItemSelected");
 		super.onCreateContextMenu(menu, v, menuInfo);
 
 		if (useBasicMenu()){

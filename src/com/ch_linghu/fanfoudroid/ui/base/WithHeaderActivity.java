@@ -54,10 +54,7 @@ public class WithHeaderActivity extends BaseActivity {
 
 	// LOGO按钮
 	protected void addTitleButton() {
-		
-		// Find View
 		titleButton = (TextView) findViewById(R.id.title); 
-		
 		titleButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				

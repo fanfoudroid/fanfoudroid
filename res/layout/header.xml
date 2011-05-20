@@ -53,6 +53,7 @@
             android:layout_marginRight="10dip"
        /> 
        
+       <!--
        <ProgressBar 
         android:id="@+id/temp_id1"
         android:layout_width="wrap_content"
@@ -69,4 +70,5 @@
         android:layout_centerVertical="true"
         style="@style/refreshProgressBar"
         />
+         -->
     </RelativeLayout>
