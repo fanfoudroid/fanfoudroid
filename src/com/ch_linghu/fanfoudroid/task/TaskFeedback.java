@@ -44,7 +44,8 @@ public abstract class TaskFeedback {
     public void cancel() {};
     public void success(String prompt) {};
     public void success() { success(""); };
-    public void failed(String prompt) { };
+    public void failed(String prompt) {};
+    public void showProgress(int progress) {};
 }
 
 /**
@@ -183,5 +184,10 @@ class ProgressBarFeedback extends TaskFeedback {
     public void success(String prompt) {
         Log.d("LDS", "ON SUCCESS");
         _activity.setGlobalProgress(0);
+    }
+    
+    @Override
+    public void showProgress(int progress) {
+    	_activity.setGlobalProgress(progress);
     }
 }

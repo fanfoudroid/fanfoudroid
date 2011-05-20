@@ -138,7 +138,8 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
         @Override
         public void onProgressUpdate(GenericTask task, Object param) {
             Log.d(TAG, "onProgressUpdate");
-            setGlobalProgress((Integer) param);
+            TaskFeedback.getInstance(TaskFeedback.PROGRESS_MODE,
+                    TwitterCursorBaseActivity.this).showProgress((Integer)param);
             draw();
         }
     };
