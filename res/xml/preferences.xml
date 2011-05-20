@@ -1,5 +1,4 @@
-<PreferenceScreen
-        xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
   <!-- 后台提醒 -->
   <PreferenceCategory android:title="@string/pref_title_notifications">

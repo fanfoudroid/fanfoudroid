@@ -70,9 +70,10 @@
 					android:layout_width="fill_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginRight="10.0dip"
+					android:layout_marginBottom="5dip"
 					android:text="@string/profile_send_mention"
 					android:visibility="gone"
-					style="@style/blue_button"
+					style="@style/Button"
 					/>
 					
 					<!-- 发送私信 -->
@@ -83,7 +84,7 @@
 					android:layout_marginRight="10.0dip"
 					android:text="@string/profile_send_dm"
 					android:visibility="gone"
-					style="@style/blue_button"
+					style="@style/Button"
 					/>
 				</LinearLayout>
 			</RelativeLayout>
@@ -115,7 +116,7 @@
 				android:layout_centerInParent="true"
 				android:layout_marginRight="10.0dip"
 				android:visibility="gone"
-			    style="@style/blue_button"
+			    style="@style/Button"
 			></Button>
 			</RelativeLayout>
 			
@@ -136,7 +137,7 @@
 					android:id="@+id/user_location_title"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:layout_marginLeft="5.0dip"
+					android:layout_marginLeft="10dip"
 					android:layout_marginTop="10.0dip"
 					android:text="@string/profile_user_location_title"
 					android:layout_alignParentLeft="true"

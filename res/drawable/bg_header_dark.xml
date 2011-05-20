@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="utf-8"?>
+<bitmap android:gravity="fill_horizontal|top|center" android:src="@drawable/bg_header_dark_orig" android:tileMode="repeat"
+  xmlns:android="http://schemas.android.com/apk/res/android" />

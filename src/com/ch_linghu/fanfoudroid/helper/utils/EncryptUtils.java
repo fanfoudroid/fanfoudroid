@@ -11,8 +11,8 @@ public class EncryptUtils {
     }
 
     public static String decryptPassword(String password) {
-        password = password.replaceFirst(SECRET_CODE, "");
-        return new String(Base64.decode(password, Base64.DEFAULT));
+        return new String(Base64.decode(password, Base64.DEFAULT))
+                .replaceFirst(SECRET_CODE, "");
     }
 
 }

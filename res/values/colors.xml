@@ -14,8 +14,11 @@
   <color name="status_text">#000</color>
   
   <color name="simiple_button_color">#FFF</color>
-  
+  <color name="simple_text_color">#FF52991F</color>
   <color name="body_background">#FFF</color>
   
-  <color name="simple_text_color">#FF52991F</color>
+  <color name="clear">#00000000</color>
+  <color name="button_text">#444</color>
+  <color name="action_bar">#fff</color>
+  <color name="action_bar_pressed">#ffd0d0d0</color>
 </resources>

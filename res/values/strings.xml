@@ -72,6 +72,7 @@
     <string name="user_query_status_success">查询成功！</string>
     <!-- Write页面 -->
     <string name="write_label_send">发送</string>
+    <string name="write_label_send_hint">你在做什么？</string>
     <string name="write_label_choose_images">插入图片</string>
     <string name="write_label_send_in_background">后台发送</string>
     <string name="write_label_take_a_picture">相机拍摄</string>
@@ -117,7 +118,7 @@
     <string name="pref_check_updates_interval_title">检查频率</string>
     <string name="pref_check_updates_interval_summary">两次检查的间隔分钟数</string>
     <string name="pref_check_updates_interval_dialog_title">间隔分钟数:</string>
-    <string name="pref_check_updates_interval_default">3</string>
+    <string name="pref_check_updates_interval_default">10</string>
     <string name="pref_check_updates_vibrate_title">振动</string>
     <string name="pref_check_updates_vibrate_summary">有新消息提示时手机振动</string>
     <string name="pref_check_updates_ringtone_title">选择提示铃音</string>

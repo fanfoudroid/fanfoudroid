@@ -26,6 +26,7 @@ public class Response {
 
     public InputStream asStream() throws ResponseException {
         HttpEntity entity = mResponse.getEntity();
+        //FIXME: entity 可能为空
 
         InputStream is = null;
         try {

@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
@@ -95,6 +96,10 @@ public class WriteDmActivity extends WithHeaderActivity {
 				enableEntry();
 				// 发送成功就直接关闭界面
 				finish();
+				
+				 // 关闭软键盘
+		        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		        imm.hideSoftInputFromWindow(mTweetEdit.getEditText().getWindowToken(), 0);
 			} else if (result == TaskResult.NOT_FOLLOWED_ERROR) {
 				updateProgress(getString(R.string.direct_meesage_status_the_person_not_following_you));
 				enableEntry();
@@ -201,9 +206,6 @@ public class WriteDmActivity extends WithHeaderActivity {
 		    
 		    View.OnClickListener sendListenner = new View.OnClickListener() {
                 public void onClick(View v) {
-                    Animation anim = AnimationUtils.loadAnimation(v.getContext(),
-                            R.anim.scale_lite);
-                    v.startAnimation(anim);
                     doSend();
                 }
             };
@@ -211,7 +213,7 @@ public class WriteDmActivity extends WithHeaderActivity {
 			mSendButton = (Button) findViewById(R.id.send_button);
 			mSendButton.setOnClickListener(sendListenner);
             
-            ImageButton mTopSendButton = (ImageButton) findViewById(R.id.top_send_btn);
+            Button mTopSendButton = (Button) findViewById(R.id.top_send_btn);
             mTopSendButton.setOnClickListener(sendListenner);
 			
 			return true;
