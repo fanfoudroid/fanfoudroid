@@ -41,7 +41,18 @@
            android:paddingLeft="10dip"
            />
            
-        <!-- 刷新按钮 -->
+         <!-- 刷新按钮 -->
+        <ImageButton android:id="@+id/top_refresh"
+           android:background="@null"
+           android:src="@drawable/top_refresh_selector"
+           android:layout_width="wrap_content"
+           android:layout_height="fill_parent"
+           android:layout_toLeftOf="@id/writeMessage"
+           android:paddingRight="10dip"
+           android:paddingLeft="10dip"
+           />
+           
+        <!-- 刷新按钮, 旋转效果
         <ImageView   
             android:id="@+id/top_refresh"    
             android:layout_width="wrap_content"   
@@ -52,8 +63,9 @@
             android:layout_marginLeft="10dip"
             android:layout_marginRight="10dip"
        /> 
+        -->
        
-       <!--
+       <!-- 刷新效果测试代码
        <ProgressBar 
         android:id="@+id/temp_id1"
         android:layout_width="wrap_content"

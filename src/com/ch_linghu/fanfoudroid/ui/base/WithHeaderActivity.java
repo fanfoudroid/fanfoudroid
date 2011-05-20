@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
@@ -41,7 +42,9 @@ public class WithHeaderActivity extends BaseActivity {
 	protected MenuDialog dialog;
 	protected EditText searchEdit;
 	
+	// FIXME: 刷新动画二选一
 	protected AnimationDrawable mRefreshAnimation;
+	protected ProgressBar mProgress = null;
 	
 	//搜索硬按键行为
 	@Override
@@ -98,8 +101,12 @@ public class WithHeaderActivity extends BaseActivity {
 	protected void addRefreshButton() {
 		final Activity that = this;
 		refreshButton = (ImageView) findViewById(R.id.top_refresh);
-		refreshButton.setBackgroundResource(R.drawable.top_refresh);
-        mRefreshAnimation = (AnimationDrawable) refreshButton.getBackground();
+		
+		// FIXME: 暂时取消旋转效果, 测试ProgressBar
+		//refreshButton.setBackgroundResource(R.drawable.top_refresh);
+        //mRefreshAnimation = (AnimationDrawable) refreshButton.getBackground();
+		
+        mProgress = (ProgressBar) findViewById(R.id.progress_bar);
 		
 		refreshButton.setOnClickListener(new View.OnClickListener() {
 		    
@@ -120,6 +127,15 @@ public class WithHeaderActivity extends BaseActivity {
 	 */
 	protected void animRotate(View v) {
 	    setRefreshAnimation(true);
+	}
+	
+	/**
+	 * @param progress 0~100
+	 */
+	public void setGlobalProgress(int progress) {
+	    if ( null != mProgress) {
+	        mProgress.setProgress(progress);
+	    }
 	}
 	
     /**
