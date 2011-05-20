@@ -277,6 +277,10 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 		// updateProgress(getString(R.string.refreshing));
 	}
 	
+	protected void specialItemClicked(int position){
+		
+	}
+	
 	protected void registerOnClickListener(ListView listView) {
 
 		listView.setOnItemClickListener(new OnItemClickListener(){
@@ -287,6 +291,7 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 		
 				if (tweet == null) {
 					Log.w(TAG, "Selected item not available.");
+					specialItemClicked(position);
 				}else{
 					launchActivity(StatusActivity.createIntent(tweet));
 				}

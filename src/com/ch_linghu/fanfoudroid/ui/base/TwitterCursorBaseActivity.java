@@ -109,6 +109,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
                 }
                 feedback.success();
             } else if (result == TaskResult.IO_ERROR) {
+            	//FIXME: bad smell
                 if (task == mRetrieveTask) {
                     feedback.failed(((RetrieveTask) task).getErrorMsg());
                 } else if (task == mGetMoreTask) {
@@ -225,25 +226,11 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 
         // Add Header to ListView
         mListHeader = View.inflate(this, R.layout.listview_header, null);
-        mTweetList.addHeaderView(mListHeader, null, false);
-        mListHeader.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loadMoreGIFTop.setVisibility(View.VISIBLE);
-                doRetrieve();
-            }
-        });
+        mTweetList.addHeaderView(mListHeader, null, true);
 
-        // 完成listView顶部和底部的事件绑定
+        // Add Footer to ListView
         mListFooter = View.inflate(this, R.layout.listview_footer, null);
-        mTweetList.addFooterView(mListFooter, null, false);
-        mListFooter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loadMoreGIF.setVisibility(View.VISIBLE);
-                doGetMore();
-            }
-        });
+        mTweetList.addFooterView(mListFooter, null, true);
 
         // Find View
         loadMoreBtn = (TextView) findViewById(R.id.ask_for_more);
@@ -251,8 +238,22 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
         loadMoreBtnTop = (TextView) findViewById(R.id.ask_for_more_header);
         loadMoreGIFTop = (ProgressBar) findViewById(R.id.rectangleProgressBar_header);
 
-        // loadMoreAnimation = (AnimationDrawable)
-        // loadMoreGIF.getIndeterminateDrawable();
+    }
+    
+    @Override
+    protected void specialItemClicked(int position){
+    	//注意 mTweetAdapter.getCount 和 mTweetList.getCount的区别
+    	//前者仅包含数据的数量（不包括foot和head），后者包含foot和head
+    	//因此在同时存在foot和head的情况下，list.count = adapter.count + 2 
+    	if (position == 0){
+    		//第一个Item(header)
+            loadMoreGIFTop.setVisibility(View.VISIBLE);
+            doRetrieve();
+    	}else if (position == mTweetList.getCount()-1){
+    		//最后一个Item(footer)
+			loadMoreGIF.setVisibility(View.VISIBLE);
+			doGetMore();
+    	}
     }
 
     @Override

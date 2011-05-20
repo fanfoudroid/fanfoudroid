@@ -235,23 +235,22 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 	 */
 	protected void setupListHeader(boolean addFooter) {
 
-		// TODO: 完成listView底部的事件绑定
+        //Add footer to Listview
 		View footer = View.inflate(this, R.layout.listview_footer, null);
-		// TextView footerText=(TextView)
-		// footer.findViewById(R.id.ask_for_more);
-
 		mUserList.addFooterView(footer, null, true);
-		footer.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				loadMoreGIF.setVisibility(View.VISIBLE);
-				doGetMore();
-			}
-		});
 
 		// Find View
 		loadMoreBtn = (TextView) findViewById(R.id.ask_for_more);
 		loadMoreGIF = (ProgressBar) findViewById(R.id.rectangleProgressBar);
+	}
+	
+	@Override
+	protected void specialItemClicked(int position){
+		if (position == mUserList.getCount() - 1){
+			//footer
+			loadMoreGIF.setVisibility(View.VISIBLE);
+			doGetMore();
+		}
 	}
 
 	public void doGetMore() {

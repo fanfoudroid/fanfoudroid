@@ -444,6 +444,10 @@ implements Refreshable {
 	}
 	
 	
+	protected void specialItemClicked(int position){
+		
+	}
+	
 	/*
 	 * TODO：单击列表项
 	 * 
@@ -458,6 +462,7 @@ implements Refreshable {
 				User user=getContextItemUser(position);
 				if(user==null){
 					Log.w(TAG, "selected item not available");
+					specialItemClicked(position);
 				}else{
 					launchActivity(ProfileActivity.createIntent(user.id));
 				}
