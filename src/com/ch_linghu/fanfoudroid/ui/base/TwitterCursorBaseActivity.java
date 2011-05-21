@@ -49,6 +49,8 @@ import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 import com.ch_linghu.fanfoudroid.ui.module.TweetCursorAdapter;
 import com.ch_linghu.fanfoudroid.weibo.IDs;
 import com.ch_linghu.fanfoudroid.weibo.Status;
+import com.ch_linghu.fanfoudroid.widget.Feedback;
+import com.ch_linghu.fanfoudroid.widget.FeedbackFactory;
 
 /**
  * TwitterCursorBaseLine用于带有静态数据来源（对应数据库的，与twitter表同构的特定表）的展现
@@ -87,10 +89,8 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 
         @Override
         public void onPostExecute(GenericTask task, TaskResult result) {
-            TaskFeedback feedback = TaskFeedback.getInstance(
-                    TaskFeedback.PROGRESS_MODE, TwitterCursorBaseActivity.this);
             if (result == TaskResult.AUTH_ERROR) {
-                feedback.failed("登录信息出错");
+                mFeedback.failed("登录信息出错");
                 logout();
             } else if (result == TaskResult.OK) {
                 // TODO: XML处理, GC压力
@@ -107,40 +107,38 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
                 if (task == mRetrieveTask) {
                     goTop();
                 }
-                feedback.success();
+                mFeedback.success("");
             } else if (result == TaskResult.IO_ERROR) {
             	//FIXME: bad smell
                 if (task == mRetrieveTask) {
-                    feedback.failed(((RetrieveTask) task).getErrorMsg());
+                    mFeedback.failed(((RetrieveTask) task).getErrorMsg());
                 } else if (task == mGetMoreTask) {
-                    feedback.failed(((GetMoreTask) task).getErrorMsg());
+                    mFeedback.failed(((GetMoreTask) task).getErrorMsg());
                 }
             } else {
-                feedback.success();
+                mFeedback.success("");
             }
 
             // 刷新按钮停止旋转
             loadMoreGIFTop.setVisibility(View.GONE);
             loadMoreGIF.setVisibility(View.GONE);
 
+            // DEBUG
             DebugTimer.stop();
-
             Log.v("DEBUG", DebugTimer.getProfileAsString());
         }
 
         @Override
         public void onPreExecute(GenericTask task) {
             mRetrieveCount = 0;
-            TaskFeedback.getInstance(TaskFeedback.PROGRESS_MODE,
-                    TwitterCursorBaseActivity.this).start("正在获取信息，请稍候");
+            mFeedback.start("正在获取信息，请稍候");
             DebugTimer.start();
         }
 
         @Override
         public void onProgressUpdate(GenericTask task, Object param) {
             Log.d(TAG, "onProgressUpdate");
-            TaskFeedback.getInstance(TaskFeedback.PROGRESS_MODE,
-                    TwitterCursorBaseActivity.this).showProgress((Integer)param);
+            mFeedback.update((Integer)param);
             draw();
         }
     };
@@ -217,13 +215,14 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
         mTweetAdapter = new TweetCursorAdapter(this, cursor);
         mTweetList.setAdapter(mTweetAdapter);
         // ? registerOnClickListener(mTweetList);
+        
+       
     }
 
     /**
      * 绑定listView底部 - 载入更多 NOTE: 必须在listView#setAdapter之前调用
      */
     protected void setupListHeader(boolean addFooter) {
-
         // Add Header to ListView
         mListHeader = View.inflate(this, R.layout.listview_header, null);
         mTweetList.addHeaderView(mListHeader, null, true);
@@ -354,6 +353,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
                 Log.d(TAG, "Refresh followers.");
                 doRetrieveFollowers();
             }
+
 
             return true;
         } else {

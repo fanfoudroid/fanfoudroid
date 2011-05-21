@@ -36,17 +36,16 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.helper.ImageCache;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
-import com.ch_linghu.fanfoudroid.helper.utils.*;
-import com.ch_linghu.fanfoudroid.http.HttpAuthException;
+import com.ch_linghu.fanfoudroid.helper.utils.DateTimeHelper;
+import com.ch_linghu.fanfoudroid.helper.utils.PhotoHelper;
+import com.ch_linghu.fanfoudroid.helper.utils.TextHelper;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
 import com.ch_linghu.fanfoudroid.http.HttpException;
-import com.ch_linghu.fanfoudroid.http.HttpRefusedException;
 import com.ch_linghu.fanfoudroid.http.Response;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -55,6 +54,7 @@ import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.task.TweetCommonTask;
 import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
+import com.ch_linghu.fanfoudroid.widget.Feedback;
 
 public class StatusActivity extends WithHeaderActivity {
 
@@ -75,12 +75,12 @@ public class StatusActivity extends WithHeaderActivity {
 	private GenericTask mPhotoTask; // TODO: 压缩图片，提供获取图片的过程中可取消获取
 	private GenericTask mFavTask;
 	private GenericTask mDeleteTask;
-
+	
 	private TaskListener mReplyTaskListener = new TaskAdapter() {
 		@Override
 		public void onPostExecute(GenericTask task, TaskResult result) {
 			showReplyStatus(replyTweet);
-			StatusActivity.this.setRefreshAnimation(false);
+			StatusActivity.this.mFeedback.success("");
 		}
 
 		@Override
@@ -99,7 +99,7 @@ public class StatusActivity extends WithHeaderActivity {
 
 		@Override
 		public void onPostExecute(GenericTask task, TaskResult result) {
-			StatusActivity.this.setRefreshAnimation(false);
+			StatusActivity.this.mFeedback.success("");
 			draw();
 		}
 
@@ -118,7 +118,7 @@ public class StatusActivity extends WithHeaderActivity {
 			} else {
 				status_photo.setVisibility(View.GONE);
 			}
-			StatusActivity.this.setRefreshAnimation(false);
+			StatusActivity.this.mFeedback.success("");
 		}
 
 		@Override
@@ -514,9 +514,7 @@ public class StatusActivity extends WithHeaderActivity {
 
 	private void doGetReply(String status_id) {
 		Log.d(TAG, "Attempting get status task.");
-
-		// 旋转刷新按钮
-		animRotate(refreshButton);
+		mFeedback.start("");
 
 		if (mReplyTask != null
 				&& mReplyTask.getStatus() == GenericTask.Status.RUNNING) {
@@ -559,9 +557,7 @@ public class StatusActivity extends WithHeaderActivity {
 
 	private void doGetStatus(String status_id) {
 		Log.d(TAG, "Attempting get status task.");
-
-		// 旋转刷新按钮
-		animRotate(refreshButton);
+		mFeedback.start("");
 
 		if (mStatusTask != null
 				&& mStatusTask.getStatus() == GenericTask.Status.RUNNING) {
@@ -587,6 +583,7 @@ public class StatusActivity extends WithHeaderActivity {
 
 				if (!TextHelper.isEmpty(id)) {
 					status = getApi().showStatus(id);
+					mFeedback.update(80);
 					tweet = Tweet.create(status);
 				}
 			} catch (HttpException e) {
@@ -594,14 +591,14 @@ public class StatusActivity extends WithHeaderActivity {
 				return TaskResult.IO_ERROR;
 			}
 
+			mFeedback.update(99);
 			return TaskResult.OK;
 		}
 	}
 
 	private void doGetPhoto(String photoPageURL, boolean isPageLink) {
-		// 旋转刷新按钮
-		animRotate(refreshButton);
-
+	    mFeedback.start("");
+	    
 		if (mPhotoTask != null
 				&& mPhotoTask.getStatus() == GenericTask.Status.RUNNING) {
 			return;

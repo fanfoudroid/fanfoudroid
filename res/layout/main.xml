@@ -9,14 +9,6 @@
     <!-- Header -->
     <include layout="@layout/header"/>
     
-    <!-- Global Progress Bar -->
-    <ProgressBar 
-        android:id="@+id/progress_bar"
-        android:layout_width="fill_parent"
-        android:layout_height="2dip"
-        style="@style/gProgressBar.Horizontal"
-    />
-    
     <!-- Main content area. -->
     <com.ch_linghu.fanfoudroid.ui.module.MyListView
     android:id="@+id/tweet_list"
@@ -29,8 +21,6 @@
     android:dividerHeight="1dip"
     android:fastScrollEnabled="true"
     />          
-     
-    
       
      <!-- 提示栏 : 已废弃 -->
      <TextView

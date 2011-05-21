@@ -44,13 +44,25 @@
          <!-- 刷新按钮 -->
         <ImageButton android:id="@+id/top_refresh"
            android:background="@null"
-           android:src="@drawable/top_refresh_selector"
+           android:src="@drawable/top_refresh"
            android:layout_width="wrap_content"
            android:layout_height="fill_parent"
            android:layout_toLeftOf="@id/writeMessage"
            android:paddingRight="10dip"
            android:paddingLeft="10dip"
            />
+           
+        <!-- 旋转 -->
+        <ProgressBar 
+            android:id="@+id/top_refresh_progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/top_refresh"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            style="?android:progressBarStyleSmall"
+            android:visibility="gone"
+        />
            
         <!-- 刷新按钮, 旋转效果
         <ImageView   
@@ -83,4 +95,15 @@
         style="@style/refreshProgressBar"
         />
          -->
+         
+	    <!-- Global Progress Bar -->
+	    <ProgressBar 
+	        android:id="@+id/progress_bar"
+	        android:layout_width="fill_parent"
+	        android:layout_height="2dip"
+	        android:layout_alignParentBottom="true"
+	        style="@style/gProgressBar.Horizontal"
+	    />
     </RelativeLayout>
+    
+      

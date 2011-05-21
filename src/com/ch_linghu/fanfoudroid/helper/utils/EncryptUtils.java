@@ -6,13 +6,11 @@ public class EncryptUtils {
     private static final String SECRET_CODE = "::SECRET::";
 
     public static String encryptPassword(String password) {
-        password += SECRET_CODE;
         return Base64.encodeToString(password.getBytes(), Base64.DEFAULT);
     }
 
     public static String decryptPassword(String password) {
-        return new String(Base64.decode(password, Base64.DEFAULT))
-                .replaceFirst(SECRET_CODE, "");
+        return new String(Base64.decode(password, Base64.DEFAULT));
     }
 
 }

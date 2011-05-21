@@ -69,8 +69,8 @@ public class ProfileActivity extends WithHeaderActivity {
 	private TextView statusCount;// 消息
 	private TextView favouritesCount;// 收藏
 
-	private TextView isFollowingText;// 是否收听
-	private Button followingBtn;// 收听/取消收听按钮
+	private TextView isFollowingText;// 是否关注
+	private Button followingBtn;// 收听/取消关注按钮
 
 	private Button sendMentionBtn;// 发送留言按钮
 	private Button sendDmBtn;// 发送私信按钮
@@ -320,8 +320,7 @@ public class ProfileActivity extends WithHeaderActivity {
 	}
 
 	private void doGetProfileInfo() {
-		// 旋转刷新按钮
-		animRotate(refreshButton);
+		mFeedback.start("");
 
 		if (profileInfoTask != null
 				&& profileInfoTask.getStatus() == GenericTask.Status.RUNNING) {
@@ -386,12 +385,13 @@ public class ProfileActivity extends WithHeaderActivity {
 			followingBtn.setVisibility(View.VISIBLE);
 			followingBtn.setText(R.string.user_label_unfollow);
 			followingBtn.setOnClickListener(cancelFollowingListener);
+			followingBtn.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.ic_unfollow), null, null, null);
 		} else {
-
 			isFollowingText.setText(R.string.profile_notfollowing);
 			followingBtn.setVisibility(View.VISIBLE);
 			followingBtn.setText(R.string.user_label_follow);
 			followingBtn.setOnClickListener(setfollowingListener);
+			followingBtn.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.drawable.ic_follow), null, null, null);
 		}
 
 		String location = profileInfo.getLocation();
@@ -427,35 +427,23 @@ public class ProfileActivity extends WithHeaderActivity {
 	private TaskListener profileInfoTaskListener = new TaskAdapter() {
 		@Override
 		public void onPostExecute(GenericTask task, TaskResult result) {
-			setRefreshAnimation(false);
 
 			// 加载成功
 			if (result == TaskResult.OK) {
-				if (null != db && !db.existsUser(userId)) {
-
-					com.ch_linghu.fanfoudroid.data.User userinfodb = profileInfo
-							.parseUser();
-					db.createUserInfo(userinfodb);
-
-				} else {
-					// 更新用户
-					updateUser();
-				}
+			    ProfileActivity.this.mFeedback.success("");
+				
 				// 绑定控件
 				bindControl();
 				if(dialog!=null){
 					dialog.dismiss();
 				}
-
 			}
-		
 		}
 
 		@Override
 		public String getName() {
 			return "GetProfileInfo";
 		}
-
 	};
 
 	/**
@@ -517,15 +505,30 @@ public class ProfileActivity extends WithHeaderActivity {
 
 		@Override
 		protected TaskResult _doInBackground(TaskParams... params) {
+		    Log.v(TAG, "get profile task");
 
 			try {
 				profileInfo = getApi().showUser(userId);
+				mFeedback.update(80);
+				
+				if (profileInfo != null) {
+				    if (null != db && !db.existsUser(userId)) {
 
+	                    com.ch_linghu.fanfoudroid.data.User userinfodb = profileInfo
+	                            .parseUser();
+	                    db.createUserInfo(userinfodb);
+
+	                } else {
+	                    // 更新用户
+	                    updateUser();
+	                }
+				}
 			} catch (HttpException e) {
 
 				Log.e(TAG, e.getMessage());
 				return TaskResult.FAILED;
 			}
+			mFeedback.update(99);
 			return TaskResult.OK;
 		}
 	}

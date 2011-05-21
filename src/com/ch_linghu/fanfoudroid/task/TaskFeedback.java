@@ -190,4 +190,6 @@ class ProgressBarFeedback extends TaskFeedback {
     public void showProgress(int progress) {
     	_activity.setGlobalProgress(progress);
     }
+    
+    // mProgress.setIndeterminate(true);
 }

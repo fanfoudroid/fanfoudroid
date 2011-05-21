@@ -40,6 +40,15 @@
            android:paddingLeft="10dip"
            android:visibility="gone"
            />   
+           
+        <!-- Global Progress Bar -->
+        <ProgressBar 
+            android:id="@+id/progress_bar"
+            android:layout_width="fill_parent"
+            android:layout_height="2dip"
+            android:layout_alignParentBottom="true"
+            style="@style/gProgressBar.Horizontal"
+        />
          
     </RelativeLayout>
     

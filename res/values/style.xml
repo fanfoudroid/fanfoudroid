@@ -100,10 +100,18 @@
     
     <style name="customProgressBar">
         <item name="android:indeterminateDrawable">@anim/loading_blue_16</item>
+        <item name="android:minWidth">16dip</item>
+        <item name="android:maxWidth">16dip</item>
+        <item name="android:minHeight">16dip</item>
+        <item name="android:maxHeight">16dip</item>
     </style>
     
      <style name="refreshProgressBar">
         <item name="android:indeterminateDrawable">@drawable/top_refresh</item>
+        <item name="android:minWidth">32dip</item>
+        <item name="android:maxWidth">32dip</item>
+        <item name="android:minHeight">32dip</item>
+        <item name="android:maxHeight">32dip</item>
     </style>
     
     <!-- FROM: android-sdk/platforms/android-10/data/res/values/style.xml -->

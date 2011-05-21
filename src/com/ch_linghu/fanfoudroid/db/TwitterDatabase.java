@@ -976,7 +976,7 @@ public class TwitterDatabase {
 		args.put(UserInfoTable.FIELD_DESCRIPTION, description);
 		
 		args.put(UserInfoTable.FIELD_PROFILE_IMAGE_URL,
-				user.getProfileBackgroundImageUrl());
+				user.getProfileImageURL().toString());
 
 		if (user.getURL() != null) {
 			args.put(UserInfoTable.FIELD_URL, user.getURL().toString());
@@ -1110,7 +1110,7 @@ public class TwitterDatabase {
 		args.put(UserInfoTable.FIELD_DESCRIPTION, description);
 		
 		args.put(UserInfoTable.FIELD_PROFILE_IMAGE_URL,
-				user.getProfileBackgroundImageUrl());
+				user.getProfileImageURL().toString());
 
 		if (user.getURL() != null) {
 			args.put(UserInfoTable.FIELD_URL, user.getURL().toString());

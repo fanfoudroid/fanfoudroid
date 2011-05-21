@@ -115,9 +115,10 @@
 				android:layout_alignParentRight="true"
 				android:layout_centerInParent="true"
 				android:layout_marginRight="10.0dip"
+				android:drawablePadding="5dip"
 				android:visibility="gone"
 			    style="@style/Button"
-			></Button>
+			/>
 			</RelativeLayout>
 			
 			

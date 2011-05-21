@@ -173,7 +173,7 @@ public class ImageManager implements ImageCache {
 
         HttpEntity entity = response.getEntity();
         BufferedInputStream bis = new BufferedInputStream(entity.getContent());
-        Bitmap bitmap = BitmapFactory.decodeStream(bis);
+        Bitmap bitmap = BitmapFactory.decodeStream(bis); // TODO: outOfMenoryError?
         bis.close();
 
         return bitmap;

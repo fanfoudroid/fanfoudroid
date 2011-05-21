@@ -4,4 +4,7 @@
     android:layout_width="fill_parent"  
     android:layout_height="wrap_content"    
     android:gravity="center"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    style="@style/normalText.Big"
     android:text="总共？条信息" />
