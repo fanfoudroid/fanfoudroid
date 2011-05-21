@@ -1,39 +1,26 @@
 package com.ch_linghu.fanfoudroid.ui.base;
 
-import java.io.File;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.PendingIntent;
-import android.app.SearchManager;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore;
-import android.provider.MediaStore.MediaColumns;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.Window;
 
 import com.ch_linghu.fanfoudroid.AboutDialog;
-import com.ch_linghu.fanfoudroid.FanfouWidget;
 import com.ch_linghu.fanfoudroid.LoginActivity;
 import com.ch_linghu.fanfoudroid.PreferencesActivity;
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.TwitterActivity;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
-import com.ch_linghu.fanfoudroid.WriteActivity;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
-import com.ch_linghu.fanfoudroid.helper.ImageManager;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.service.TwitterService;
 import com.ch_linghu.fanfoudroid.weibo.Weibo;
@@ -68,11 +55,7 @@ public class BaseActivity extends Activity {
             mPreferences = TwitterApplication.mPref; // PreferenceManager.getDefaultSharedPreferences(this);
 
             manageUpdateChecks();
-
-            // No Titlebar
-            requestWindowFeature(Window.FEATURE_NO_TITLE);
-            requestWindowFeature(Window.FEATURE_PROGRESS);
-
+            
             return true;
         }
     }

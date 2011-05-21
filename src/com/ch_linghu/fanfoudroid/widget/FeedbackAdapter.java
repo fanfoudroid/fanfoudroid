@@ -16,4 +16,6 @@ public class FeedbackAdapter implements Feedback {
     public void update(Object arg0) {}
     @Override
     public boolean isAvailable() { return true; }
+    @Override
+    public void setIndeterminate(boolean indeterminate) {}
 }

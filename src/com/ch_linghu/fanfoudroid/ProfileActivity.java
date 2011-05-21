@@ -36,6 +36,8 @@ import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.BaseActivity;
 import com.ch_linghu.fanfoudroid.weibo.User;
+import com.ch_linghu.fanfoudroid.widget.Feedback;
+import com.ch_linghu.fanfoudroid.widget.FeedbackFactory;
 import com.ch_linghu.fanfoudroid.widget.NavBar;
 
 /**
@@ -87,6 +89,7 @@ public class ProfileActivity extends BaseActivity {
 	private static final String USER_NAME = "userName";
 	
 	private NavBar mNavBar;
+	private Feedback mFeedback;
 
 	private TwitterDatabase db;
 
@@ -109,7 +112,6 @@ public class ProfileActivity extends BaseActivity {
 	protected boolean _onCreate(Bundle savedInstanceState) {
 		Log.d(TAG, "OnCreate start");
 		
-		
 		if (super._onCreate(savedInstanceState)) {
 			setContentView(R.layout.profile);
 
@@ -128,14 +130,6 @@ public class ProfileActivity extends BaseActivity {
 			if (data != null) {
 				userId = data.getLastPathSegment();
 			}
-
-			mNavBar = new NavBar(NavBar.HEADER_STYLE_HOME, this);
-			mNavBar.setHeaderTitle("");
-			
-			/*
-			initHeader(HEADER_STYLE_HOME);
-			setHeaderTitle("");
-			*/
 			
 			// 初始化控件
 			initControls();
@@ -151,6 +145,11 @@ public class ProfileActivity extends BaseActivity {
 	}
 
 	private void initControls() {
+	    mNavBar = new NavBar(NavBar.HEADER_STYLE_HOME, this);
+        mNavBar.setHeaderTitle("");
+        
+        mFeedback = FeedbackFactory.getFeedback(this, FeedbackFactory.PROGRESS_MODE);
+        
 		sendMentionBtn = (Button) findViewById(R.id.sendmetion_btn);
 		sendDmBtn = (Button) findViewById(R.id.senddm_btn);
 
@@ -330,7 +329,7 @@ public class ProfileActivity extends BaseActivity {
 	}
 
 	private void doGetProfileInfo() {
-		mNavBar.getmFeedback().start("");
+		mFeedback.start("");
 
 		if (profileInfoTask != null
 				&& profileInfoTask.getStatus() == GenericTask.Status.RUNNING) {
@@ -440,7 +439,7 @@ public class ProfileActivity extends BaseActivity {
 
 			// 加载成功
 			if (result == TaskResult.OK) {
-			    mNavBar.getmFeedback().success("");
+			    mFeedback.success("");
 				
 				// 绑定控件
 				bindControl();
@@ -519,7 +518,7 @@ public class ProfileActivity extends BaseActivity {
 
 			try {
 				profileInfo = getApi().showUser(userId);
-				mNavBar.getmFeedback().update(80);
+				mFeedback.update(80);
 				
 				if (profileInfo != null) {
 				    if (null != db && !db.existsUser(userId)) {
@@ -538,7 +537,7 @@ public class ProfileActivity extends BaseActivity {
 				Log.e(TAG, e.getMessage());
 				return TaskResult.FAILED;
 			}
-			mNavBar.getmFeedback().update(99);
+			mFeedback.update(99);
 			return TaskResult.OK;
 		}
 	}

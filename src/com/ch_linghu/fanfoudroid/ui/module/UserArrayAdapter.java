@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,7 +25,7 @@ import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.data.User;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
-import com.ch_linghu.fanfoudroid.helper.utils.*;
+import com.ch_linghu.fanfoudroid.helper.utils.TextHelper;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -71,7 +72,7 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter{
 		public TextView screenName;
 		public TextView userId;
 		public TextView lastStatus;
-		public TextView testBtn;
+		public Button testBtn;
 	}
 
 	@Override
@@ -89,7 +90,7 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter{
 			holder.screenName = (TextView) view.findViewById(R.id.screen_name);
 			holder.userId = (TextView) view.findViewById(R.id.user_id);
 			//holder.lastStatus = (TextView) view.findViewById(R.id.last_status);
-			holder.testBtn=(TextView)view.findViewById(R.id.test_btn);
+			holder.testBtn = (Button) view.findViewById(R.id.test_btn);
 		
 			view.setTag(holder);
 		} else {

@@ -48,17 +48,14 @@
 			  style="@drawable/tweet_meta_color"
 			/>
 		</LinearLayout>		
-			<TextView
+			<Button
 				android:id="@+id/test_btn"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:background="@drawable/blue_button_selector"
 				android:layout_alignParentRight="true"
 				android:clickable="true"
-				android:layout_centerInParent="true"
-				android:textColor="@color/simiple_button_color"
-				
-				></TextView>
+     			style="@style/Button"
+				/>
 	</RelativeLayout>
 
 </LinearLayout>

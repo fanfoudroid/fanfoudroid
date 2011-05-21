@@ -254,7 +254,7 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
                     return TaskResult.IO_ERROR;
                 }
             }
-            mFeedback.update(100 - (int)Math.floor(statusList.size()*2)); // ::TEMP:: 60~100
+            mFeedback.update(100 - (int)Math.floor(statusList.size()*2)); // 60~100
             for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
                 if (isCancelled()) {
                     return TaskResult.CANCELLED;

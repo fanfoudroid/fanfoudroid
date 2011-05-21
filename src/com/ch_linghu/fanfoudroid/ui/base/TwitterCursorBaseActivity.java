@@ -51,6 +51,7 @@ import com.ch_linghu.fanfoudroid.weibo.IDs;
 import com.ch_linghu.fanfoudroid.weibo.Status;
 import com.ch_linghu.fanfoudroid.widget.Feedback;
 import com.ch_linghu.fanfoudroid.widget.FeedbackFactory;
+import com.ch_linghu.fanfoudroid.widget.SimpleFeedback;
 
 /**
  * TwitterCursorBaseLine用于带有静态数据来源（对应数据库的，与twitter表同构的特定表）的展现
@@ -107,7 +108,6 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
                 if (task == mRetrieveTask) {
                     goTop();
                 }
-                mFeedback.success("");
             } else if (result == TaskResult.IO_ERROR) {
             	//FIXME: bad smell
                 if (task == mRetrieveTask) {
@@ -116,7 +116,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
                     mFeedback.failed(((GetMoreTask) task).getErrorMsg());
                 }
             } else {
-                mFeedback.success("");
+                // do nothing
             }
 
             // 刷新按钮停止旋转
@@ -131,14 +131,12 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
         @Override
         public void onPreExecute(GenericTask task) {
             mRetrieveCount = 0;
-            mFeedback.start("正在获取信息，请稍候");
             DebugTimer.start();
         }
 
         @Override
         public void onProgressUpdate(GenericTask task, Object param) {
             Log.d(TAG, "onProgressUpdate");
-            mFeedback.update((Integer)param);
             draw();
         }
     };
@@ -473,6 +471,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
             return;
         } else {
             mRetrieveTask = new RetrieveTask();
+            mRetrieveTask.setFeedback(mFeedback);
             mRetrieveTask.setListener(mRetrieveTaskListener);
             mRetrieveTask.execute();
 
@@ -496,7 +495,6 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
         @Override
         protected TaskResult _doInBackground(TaskParams... params) {
             List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
-            publishProgress(20); // ::TEMP::
 
             try {
                 String maxId = fetchMaxId(); // getDb().fetchMaxMentionId();
@@ -519,10 +517,9 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
                 }
             }
             
-            publishProgress(100 - (int)Math.floor(tweets.size()*2)); // ::TEMP:: 60~100
+            publishProgress(SimpleFeedback.calProgressBySize(40, 20, tweets));
             mRetrieveCount = addMessages(tweets, false);
             
-            publishProgress(100); // ::TEMP::
             return TaskResult.OK;
         }
 
@@ -577,7 +574,8 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
             }
 
             ArrayList<Tweet> tweets = new ArrayList<Tweet>();
-
+            publishProgress(SimpleFeedback.calProgressBySize(40, 20, tweets));
+            
             for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
                 if (isCancelled()) {
                     return TaskResult.CANCELLED;
@@ -604,6 +602,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
             return;
         } else {
             mGetMoreTask = new GetMoreTask();
+            mGetMoreTask.setFeedback(mFeedback);
             mGetMoreTask.setListener(mRetrieveTaskListener);
             mGetMoreTask.execute();
 

@@ -43,8 +43,6 @@ public class NavBar implements Widget {
     protected MenuDialog dialog;
     protected EditText searchEdit;
 
-    protected Feedback mFeedback;
-
     // FIXME: 刷新动画二选一, DELETE ME
     protected AnimationDrawable mRefreshAnimation;
     protected ProgressBar mProgress = null;
@@ -148,9 +146,6 @@ public class NavBar implements Widget {
         mProgress = (ProgressBar) activity.findViewById(R.id.progress_bar);
         mLoadingProgress = (ProgressBar) activity
                 .findViewById(R.id.top_refresh_progressBar);
-
-        mFeedback = FeedbackFactory.getFeedback(activity,
-                FeedbackFactory.PROGRESS_MODE);
 
         refreshButton.setOnClickListener(new View.OnClickListener() {
 
@@ -293,97 +288,46 @@ public class NavBar implements Widget {
         return refreshButton;
     }
 
-    public void setRefreshButton(ImageView refreshButton) {
-        this.refreshButton = refreshButton;
-    }
-
     public ImageButton getSearchButton() {
         return searchButton;
-    }
-
-    public void setSearchButton(ImageButton searchButton) {
-        this.searchButton = searchButton;
     }
 
     public ImageButton getWriteButton() {
         return writeButton;
     }
 
-    public void setWriteButton(ImageButton writeButton) {
-        this.writeButton = writeButton;
-    }
-
     public TextView getTitleButton() {
         return titleButton;
-    }
-
-    public void setTitleButton(TextView titleButton) {
-        this.titleButton = titleButton;
     }
 
     public Button getBackButton() {
         return backButton;
     }
 
-    public void setBackButton(Button backButton) {
-        this.backButton = backButton;
-    }
-
     public ImageButton getHomeButton() {
         return homeButton;
-    }
-
-    public void setHomeButton(ImageButton homeButton) {
-        this.homeButton = homeButton;
     }
 
     public MenuDialog getDialog() {
         return dialog;
     }
 
-    public void setDialog(MenuDialog dialog) {
-        this.dialog = dialog;
-    }
-
     public EditText getSearchEdit() {
         return searchEdit;
-    }
-
-    public void setSearchEdit(EditText searchEdit) {
-        this.searchEdit = searchEdit;
-    }
-
-    public Feedback getmFeedback() {
-        return mFeedback;
-    }
-
-    public void setmFeedback(Feedback mFeedback) {
-        this.mFeedback = mFeedback;
     }
 
     public AnimationDrawable getmRefreshAnimation() {
         return mRefreshAnimation;
     }
 
-    public void setmRefreshAnimation(AnimationDrawable mRefreshAnimation) {
-        this.mRefreshAnimation = mRefreshAnimation;
-    }
-
-    public ProgressBar getmProgress() {
+    public ProgressBar getProgress() {
         return mProgress;
     }
 
-    public void setmProgress(ProgressBar mProgress) {
-        this.mProgress = mProgress;
-    }
-
-    public ProgressBar getmLoadingProgress() {
+    public ProgressBar getLoadingProgress() {
         return mLoadingProgress;
     }
 
-    public void setmLoadingProgress(ProgressBar mLoadingProgress) {
-        this.mLoadingProgress = mLoadingProgress;
-    }
 
     @Override
     public Context getContext() {

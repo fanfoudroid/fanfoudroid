@@ -1,5 +1,6 @@
 package com.ch_linghu.fanfoudroid;
 
+import java.security.PublicKey;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -38,11 +39,13 @@ import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
+import com.ch_linghu.fanfoudroid.ui.base.Refreshable;
 import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
 import com.ch_linghu.fanfoudroid.weibo.DirectMessage;
 import com.ch_linghu.fanfoudroid.weibo.Paging;
+import com.ch_linghu.fanfoudroid.widget.SimpleFeedback;
 
-public class DmActivity extends WithHeaderActivity {
+public class DmActivity extends WithHeaderActivity implements Refreshable {
 
 	private static final String TAG = "DmActivity";
 
@@ -117,8 +120,6 @@ public class DmActivity extends WithHeaderActivity {
 				// Do nothing.
 			}
 
-			// 刷新按钮停止旋转
-			setRefreshAnimation(false);
 			updateProgress("");
 		}
 
@@ -328,6 +329,7 @@ public class DmActivity extends WithHeaderActivity {
 				Log.e(TAG, e.getMessage(), e);
 				return TaskResult.IO_ERROR;
 			}
+			publishProgress(SimpleFeedback.calProgressBySize(40, 20, dmList));
 
 			for (DirectMessage directMessage : dmList) {
 				if (isCancelled()) {
@@ -614,13 +616,11 @@ public class DmActivity extends WithHeaderActivity {
 	public void doRetrieve() {
 		Log.d(TAG, "Attempting retrieve.");
 
-		// 旋转刷新按钮
-		animRotate(refreshButton);
-
 		if (mRetrieveTask != null && mRetrieveTask.getStatus() == GenericTask.Status.RUNNING){
 			return;
 		}else{
 			mRetrieveTask = new DmRetrieveTask();
+			mRetrieveTask.setFeedback(mFeedback);
 			mRetrieveTask.setListener(mRetrieveTaskListener);
 			mRetrieveTask.execute();
 		}

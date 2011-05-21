@@ -40,9 +40,9 @@ import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.task.TweetCommonTask;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 
-public abstract class UserListBaseActivity extends WithHeaderActivity 
-implements Refreshable {
-	static final String TAG = "TwitterListBaseActivity";
+public abstract class UserListBaseActivity extends WithHeaderActivity implements
+        Refreshable {
+    static final String TAG = "TwitterListBaseActivity";
 
 	protected TextView mProgressText;
 
@@ -383,8 +383,6 @@ implements Refreshable {
 		}
 
 	};
-	
-	
 	
 	
 	@Override

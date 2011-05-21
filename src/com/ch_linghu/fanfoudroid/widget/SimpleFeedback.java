@@ -1,5 +1,7 @@
 package com.ch_linghu.fanfoudroid.widget;
 
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
@@ -11,6 +13,8 @@ import com.ch_linghu.fanfoudroid.R;
 
 public class SimpleFeedback implements Feedback, Widget {
     private static final String TAG = "SimpleFeedback";
+    
+    public static final int MAX = 100;
     
     private ProgressBar mProgress = null;
     private ProgressBar mLoadingProgress = null;
@@ -54,6 +58,12 @@ public class SimpleFeedback implements Feedback, Widget {
             showMessage((String) arg0);
         }
     }
+    
+    @Override
+    public void setIndeterminate(boolean indeterminate) {
+        mProgress.setIndeterminate(indeterminate);
+    }
+
 
     @Override
     public Context getContext() {
@@ -78,13 +88,31 @@ public class SimpleFeedback implements Feedback, Widget {
         }
         return true;
     }
+    
+    /**
+     * @param total 0~100
+     * @param maxSize max size of list
+     * @param list
+     * @return
+     */
+    public static int calProgressBySize(int total, int maxSize, List<?> list) {
+        if (null != list) {
+            return (MAX - (int)Math.floor(list.size() * (total/maxSize)));
+        }
+        return MAX;
+    }
 
     private void resetProgressBar() {
+        if (mProgress.isIndeterminate()) {
+            //TODO: 第二次不会出现
+            mProgress.setIndeterminate(false);
+        }
         mProgress.setProgress(0);
     }
 
     private void showMessage(CharSequence text) {
         Toast.makeText(getContext(), text, Toast.LENGTH_LONG).show();
     }
-
+    
+   
 }

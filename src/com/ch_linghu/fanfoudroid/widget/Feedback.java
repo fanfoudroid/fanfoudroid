@@ -7,4 +7,5 @@ public interface Feedback {
     public void success(CharSequence text);
     public void failed(CharSequence text);
     public void update(Object arg0);
+    public void setIndeterminate (boolean indeterminate);
 }

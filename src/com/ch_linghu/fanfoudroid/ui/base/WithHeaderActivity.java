@@ -26,7 +26,9 @@ import com.ch_linghu.fanfoudroid.ui.module.MenuDialog;
 import com.ch_linghu.fanfoudroid.widget.Feedback;
 import com.ch_linghu.fanfoudroid.widget.FeedbackFactory;
 
-//TODO: 考虑是否将其转此页面组件形式, 而不使用继承.
+/**
+ * @deprecated 使用 NavBar
+ */
 public class WithHeaderActivity extends BaseActivity {
 	
 	private static final String TAG = "WithHeaderActivity";
