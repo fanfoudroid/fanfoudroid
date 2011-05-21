@@ -3,9 +3,9 @@ package com.ch_linghu.fanfoudroid;
 import java.text.MessageFormat;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -27,21 +27,23 @@ import android.widget.Toast;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.db.UserInfoTable;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
-import com.ch_linghu.fanfoudroid.helper.utils.*;
+import com.ch_linghu.fanfoudroid.helper.utils.TextHelper;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
-import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
+import com.ch_linghu.fanfoudroid.ui.base.BaseActivity;
 import com.ch_linghu.fanfoudroid.weibo.User;
+import com.ch_linghu.fanfoudroid.widget.NavBar;
 
 /**
  * 
  * @author Dino 2011-02-26
  */
-public class ProfileActivity extends WithHeaderActivity {
+//public class ProfileActivity extends WithHeaderActivity {
+public class ProfileActivity extends BaseActivity {
 	private static final String TAG = "ProfileActivity";
 	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.PROFILE";
 	private static final String STATUS_COUNT = "status_count";
@@ -83,6 +85,8 @@ public class ProfileActivity extends WithHeaderActivity {
 	private static final String FANFOUROOT = "http://fanfou.com/";
 	private static final String USER_ID = "userid";
 	private static final String USER_NAME = "userName";
+	
+	private NavBar mNavBar;
 
 	private TwitterDatabase db;
 
@@ -103,8 +107,9 @@ public class ProfileActivity extends WithHeaderActivity {
 
 	@Override
 	protected boolean _onCreate(Bundle savedInstanceState) {
-
 		Log.d(TAG, "OnCreate start");
+		
+		
 		if (super._onCreate(savedInstanceState)) {
 			setContentView(R.layout.profile);
 
@@ -124,8 +129,13 @@ public class ProfileActivity extends WithHeaderActivity {
 				userId = data.getLastPathSegment();
 			}
 
+			mNavBar = new NavBar(NavBar.HEADER_STYLE_HOME, this);
+			mNavBar.setHeaderTitle("");
+			
+			/*
 			initHeader(HEADER_STYLE_HOME);
 			setHeaderTitle("");
+			*/
 			
 			// 初始化控件
 			initControls();
@@ -261,7 +271,7 @@ public class ProfileActivity extends WithHeaderActivity {
 			}
 		};
 
-		refreshButton.setOnClickListener(refreshListener);
+		mNavBar.getRefreshButton().setOnClickListener(refreshListener);
 	}
 
 	private void draw() {
@@ -320,7 +330,7 @@ public class ProfileActivity extends WithHeaderActivity {
 	}
 
 	private void doGetProfileInfo() {
-		mFeedback.start("");
+		mNavBar.getmFeedback().start("");
 
 		if (profileInfoTask != null
 				&& profileInfoTask.getStatus() == GenericTask.Status.RUNNING) {
@@ -364,9 +374,9 @@ public class ProfileActivity extends WithHeaderActivity {
 		}
 
 		if (userId.equals(myself)) {
-			setHeaderTitle("我" + getString(R.string.cmenu_user_profile_prefix));			
+			mNavBar.setHeaderTitle("我" + getString(R.string.cmenu_user_profile_prefix));			
 		}else{
-			setHeaderTitle(profileInfo.getScreenName() + getString(R.string.cmenu_user_profile_prefix));			
+			mNavBar.setHeaderTitle(profileInfo.getScreenName() + getString(R.string.cmenu_user_profile_prefix));			
 		}
 		profileImageView
 				.setImageBitmap(TwitterApplication.mProfileImageCacheManager
@@ -430,7 +440,7 @@ public class ProfileActivity extends WithHeaderActivity {
 
 			// 加载成功
 			if (result == TaskResult.OK) {
-			    ProfileActivity.this.mFeedback.success("");
+			    mNavBar.getmFeedback().success("");
 				
 				// 绑定控件
 				bindControl();
@@ -509,7 +519,7 @@ public class ProfileActivity extends WithHeaderActivity {
 
 			try {
 				profileInfo = getApi().showUser(userId);
-				mFeedback.update(80);
+				mNavBar.getmFeedback().update(80);
 				
 				if (profileInfo != null) {
 				    if (null != db && !db.existsUser(userId)) {
@@ -528,7 +538,7 @@ public class ProfileActivity extends WithHeaderActivity {
 				Log.e(TAG, e.getMessage());
 				return TaskResult.FAILED;
 			}
-			mFeedback.update(99);
+			mNavBar.getmFeedback().update(99);
 			return TaskResult.OK;
 		}
 	}
