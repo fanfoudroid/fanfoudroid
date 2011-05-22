@@ -125,7 +125,7 @@ public class NavBar implements Widget {
      */
     public void setHeaderTitle(String title) {
         if (null != mTitleButton) {
-            mTitleButton.setBackgroundDrawable(new BitmapDrawable());
+            //mTitleButton.setBackgroundDrawable(new BitmapDrawable());
             mTitleButton.setText(title);
             LayoutParams lp = new LayoutParams(
                     android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
