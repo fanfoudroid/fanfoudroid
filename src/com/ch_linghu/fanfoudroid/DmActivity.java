@@ -26,14 +26,13 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.ch_linghu.fanfoudroid.app.LazyImageLoader.ImageLoaderCallback;
+import com.ch_linghu.fanfoudroid.app.Preferences;
 import com.ch_linghu.fanfoudroid.data.Dm;
 import com.ch_linghu.fanfoudroid.db.MessageTable;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
-import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
-import com.ch_linghu.fanfoudroid.helper.utils.DateTimeHelper;
-import com.ch_linghu.fanfoudroid.helper.utils.MiscHelper;
-import com.ch_linghu.fanfoudroid.helper.utils.TextHelper;
+import com.ch_linghu.fanfoudroid.fanfou.DirectMessage;
+import com.ch_linghu.fanfoudroid.fanfou.Paging;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -42,12 +41,14 @@ import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.BaseActivity;
 import com.ch_linghu.fanfoudroid.ui.base.Refreshable;
-import com.ch_linghu.fanfoudroid.weibo.DirectMessage;
-import com.ch_linghu.fanfoudroid.weibo.Paging;
-import com.ch_linghu.fanfoudroid.widget.Feedback;
-import com.ch_linghu.fanfoudroid.widget.FeedbackFactory;
-import com.ch_linghu.fanfoudroid.widget.NavBar;
-import com.ch_linghu.fanfoudroid.widget.SimpleFeedback;
+import com.ch_linghu.fanfoudroid.ui.module.Feedback;
+import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory;
+import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory.FeedbackType;
+import com.ch_linghu.fanfoudroid.ui.module.NavBar;
+import com.ch_linghu.fanfoudroid.ui.module.SimpleFeedback;
+import com.ch_linghu.fanfoudroid.util.DateTimeHelper;
+import com.ch_linghu.fanfoudroid.util.MiscHelper;
+import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 public class DmActivity extends BaseActivity implements Refreshable {
 
@@ -164,7 +165,7 @@ public class DmActivity extends BaseActivity implements Refreshable {
 			mNavbar = new NavBar(NavBar.HEADER_STYLE_HOME, this);
 			mNavbar.setHeaderTitle("我的私信");
 			
-			mFeedback = FeedbackFactory.getFeedback(this, FeedbackFactory.PROGRESS_MODE);
+			mFeedback = FeedbackFactory.create(this, FeedbackType.PROGRESS);
 	
 			bindFooterButtonEvent();
 	
@@ -487,8 +488,8 @@ public class DmActivity extends BaseActivity implements Refreshable {
 
 			if (!TextHelper.isEmpty(profileImageUrl)) {
 				holder.profileImage
-						.setImageBitmap(TwitterApplication.mProfileImageCacheManager
-								.get(profileImageUrl, new ProfileImageCacheCallback(){
+						.setImageBitmap(TwitterApplication.mImageLoader
+								.get(profileImageUrl, new ImageLoaderCallback(){
 
 									@Override
 									public void refresh(String url,

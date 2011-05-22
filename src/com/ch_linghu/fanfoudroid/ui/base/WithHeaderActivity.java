@@ -22,12 +22,14 @@ import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.SearchActivity;
 import com.ch_linghu.fanfoudroid.TwitterActivity;
 import com.ch_linghu.fanfoudroid.WriteActivity;
+import com.ch_linghu.fanfoudroid.ui.module.Feedback;
+import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory;
+import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory.FeedbackType;
 import com.ch_linghu.fanfoudroid.ui.module.MenuDialog;
-import com.ch_linghu.fanfoudroid.widget.Feedback;
-import com.ch_linghu.fanfoudroid.widget.FeedbackFactory;
+import com.ch_linghu.fanfoudroid.ui.module.NavBar;
 
 /**
- * @deprecated 使用 NavBar 代替
+ * @deprecated 使用 {@link NavBar} 代替
  */
 public class WithHeaderActivity extends BaseActivity {
 	
@@ -118,8 +120,7 @@ public class WithHeaderActivity extends BaseActivity {
         mProgress = (ProgressBar) findViewById(R.id.progress_bar);
         mLoadingProgress = (ProgressBar) findViewById(R.id.top_refresh_progressBar);
         
-        mFeedback = FeedbackFactory.getFeedback(this,
-                FeedbackFactory.PROGRESS_MODE);
+        mFeedback = FeedbackFactory.create(this, FeedbackType.PROGRESS);
 		
 		refreshButton.setOnClickListener(new View.OnClickListener() {
 		    

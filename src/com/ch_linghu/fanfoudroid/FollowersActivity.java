@@ -6,10 +6,11 @@ import java.util.List;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ListView;
+
+import com.ch_linghu.fanfoudroid.fanfou.Paging;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.ui.base.UserArrayBaseActivity;
 import com.ch_linghu.fanfoudroid.ui.module.UserArrayAdapter;
-import com.ch_linghu.fanfoudroid.weibo.Paging;
 
 public class FollowersActivity extends UserArrayBaseActivity {
 	
@@ -87,7 +88,7 @@ public class FollowersActivity extends UserArrayBaseActivity {
 	}
 
 	@Override
-	protected List<com.ch_linghu.fanfoudroid.weibo.User> getUsers(
+	protected List<com.ch_linghu.fanfoudroid.fanfou.User> getUsers(
 			String userId, Paging page) throws HttpException {
 		return getApi().getFollowersList(userId, page);
 	}

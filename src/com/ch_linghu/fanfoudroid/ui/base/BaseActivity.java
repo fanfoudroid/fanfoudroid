@@ -20,10 +20,10 @@ import com.ch_linghu.fanfoudroid.PreferencesActivity;
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.TwitterActivity;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
+import com.ch_linghu.fanfoudroid.app.Preferences;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
-import com.ch_linghu.fanfoudroid.helper.Preferences;
+import com.ch_linghu.fanfoudroid.fanfou.Weibo;
 import com.ch_linghu.fanfoudroid.service.TwitterService;
-import com.ch_linghu.fanfoudroid.weibo.Weibo;
 
 /**
  * A BaseActivity has common routines and variables for an Activity that
@@ -111,7 +111,7 @@ public class BaseActivity extends Activity {
         editor.commit();
 
         // TODO: 提供用户手动情况所有缓存选项
-        TwitterApplication.mProfileImageCacheManager.getImageManager().clear();
+        TwitterApplication.mImageLoader.getImageManager().clear();
 
         // TODO: cancel notifications.
         TwitterService.unschedule(BaseActivity.this);

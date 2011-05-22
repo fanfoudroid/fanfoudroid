@@ -14,7 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
 
-import com.ch_linghu.fanfoudroid.debug.DebugTimer;
+import com.ch_linghu.fanfoudroid.util.DebugTimer;
 
 public class Response {
     private HttpResponse mResponse = null;

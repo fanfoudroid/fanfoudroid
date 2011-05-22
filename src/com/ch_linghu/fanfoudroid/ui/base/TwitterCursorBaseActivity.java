@@ -25,33 +25,29 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.R;
+import com.ch_linghu.fanfoudroid.app.Preferences;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
-import com.ch_linghu.fanfoudroid.debug.DebugTimer;
-import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.utils.DateTimeHelper;
-import com.ch_linghu.fanfoudroid.helper.utils.MiscHelper;
+import com.ch_linghu.fanfoudroid.fanfou.IDs;
+import com.ch_linghu.fanfoudroid.fanfou.Status;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
-import com.ch_linghu.fanfoudroid.task.TaskFeedback;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskManager;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
+import com.ch_linghu.fanfoudroid.ui.module.SimpleFeedback;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 import com.ch_linghu.fanfoudroid.ui.module.TweetCursorAdapter;
-import com.ch_linghu.fanfoudroid.weibo.IDs;
-import com.ch_linghu.fanfoudroid.weibo.Status;
-import com.ch_linghu.fanfoudroid.widget.Feedback;
-import com.ch_linghu.fanfoudroid.widget.FeedbackFactory;
-import com.ch_linghu.fanfoudroid.widget.SimpleFeedback;
+import com.ch_linghu.fanfoudroid.util.DateTimeHelper;
+import com.ch_linghu.fanfoudroid.util.DebugTimer;
+import com.ch_linghu.fanfoudroid.util.MiscHelper;
 
 /**
  * TwitterCursorBaseLine用于带有静态数据来源（对应数据库的，与twitter表同构的特定表）的展现
@@ -448,6 +444,8 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 
     private void doRetrieveFollowers() {
         Log.d(TAG, "Attempting followers retrieve.");
+        
+ 
 
         if (mFollowersRetrieveTask != null
                 && mFollowersRetrieveTask.getStatus() == GenericTask.Status.RUNNING) {
@@ -489,7 +487,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 
         @Override
         protected TaskResult _doInBackground(TaskParams... params) {
-            List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
+            List<com.ch_linghu.fanfoudroid.fanfou.Status> statusList;
 
             try {
                 String maxId = fetchMaxId(); // getDb().fetchMaxMentionId();
@@ -502,7 +500,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 
             
             ArrayList<Tweet> tweets = new ArrayList<Tweet>();
-            for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
+            for (com.ch_linghu.fanfoudroid.fanfou.Status status : statusList) {
                 if (isCancelled()) {
                     return TaskResult.CANCELLED;
                 }
@@ -548,7 +546,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 
         @Override
         protected TaskResult _doInBackground(TaskParams... params) {
-            List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
+            List<com.ch_linghu.fanfoudroid.fanfou.Status> statusList;
 
             String minId = fetchMinId(); // getDb().fetchMaxMentionId();
 
@@ -571,7 +569,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
             ArrayList<Tweet> tweets = new ArrayList<Tweet>();
             publishProgress(SimpleFeedback.calProgressBySize(40, 20, tweets));
             
-            for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
+            for (com.ch_linghu.fanfoudroid.fanfou.Status status : statusList) {
                 if (isCancelled()) {
                     return TaskResult.CANCELLED;
                 }

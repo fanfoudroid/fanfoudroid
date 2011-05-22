@@ -29,11 +29,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.R;
+import com.ch_linghu.fanfoudroid.app.Preferences;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.User;
 import com.ch_linghu.fanfoudroid.db.UserInfoTable;
-import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.utils.DateTimeHelper;
+import com.ch_linghu.fanfoudroid.fanfou.Paging;
+import com.ch_linghu.fanfoudroid.fanfou.Status;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -41,11 +42,10 @@ import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskManager;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
+import com.ch_linghu.fanfoudroid.ui.module.SimpleFeedback;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 import com.ch_linghu.fanfoudroid.ui.module.UserCursorAdapter;
-import com.ch_linghu.fanfoudroid.weibo.Paging;
-import com.ch_linghu.fanfoudroid.weibo.Status;
-import com.ch_linghu.fanfoudroid.widget.SimpleFeedback;
+import com.ch_linghu.fanfoudroid.util.DateTimeHelper;
 
 /**
  * TwitterCursorBaseLine用于带有静态数据来源（对应数据库的，与twitter表同构的特定表）的展现
@@ -156,14 +156,14 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity {
     public abstract int getDatabaseType();
     public abstract String fetchMaxId();
     public abstract String fetchMinId();
-    public abstract List<com.ch_linghu.fanfoudroid.weibo.User> getUsers()
+    public abstract List<com.ch_linghu.fanfoudroid.fanfou.User> getUsers()
             throws HttpException;
     public abstract void addUsers(
             ArrayList<com.ch_linghu.fanfoudroid.data.User> tusers);
 
     // public abstract List<Status> getMessageSinceId(String maxId)
     // throws WeiboException;
-    public abstract List<com.ch_linghu.fanfoudroid.weibo.User> getUserSinceId(
+    public abstract List<com.ch_linghu.fanfoudroid.fanfou.User> getUserSinceId(
             String maxId) throws HttpException;
 
     public abstract List<Status> getMoreMessageFromId(String minId)
@@ -465,7 +465,7 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity {
 
             Log.d(TAG, "load RetrieveTask");
 
-            List<com.ch_linghu.fanfoudroid.weibo.User> usersList = null;
+            List<com.ch_linghu.fanfoudroid.fanfou.User> usersList = null;
             try {
                 usersList = getApi().getFollowersList(getUserId(),
                         getCurrentPage());
@@ -476,7 +476,7 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity {
 
             ArrayList<User> users = new ArrayList<User>();
 
-            for (com.ch_linghu.fanfoudroid.weibo.User user : usersList) {
+            for (com.ch_linghu.fanfoudroid.fanfou.User user : usersList) {
                 if (isCancelled()) {
                     return TaskResult.CANCELLED;
                 }
@@ -500,7 +500,7 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity {
         protected TaskResult _doInBackground(TaskParams... params) {
             try {
                 Log.d(TAG, "load FollowersErtrieveTask");
-                List<com.ch_linghu.fanfoudroid.weibo.User> t_users = getUsers();
+                List<com.ch_linghu.fanfoudroid.fanfou.User> t_users = getUsers();
                 getDb().syncWeiboUsers(t_users);
 
             } catch (HttpException e) {
@@ -522,7 +522,7 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity {
         protected TaskResult _doInBackground(TaskParams... params) {
             Log.d(TAG, "load RetrieveTask");
 
-            List<com.ch_linghu.fanfoudroid.weibo.User> usersList = null;
+            List<com.ch_linghu.fanfoudroid.fanfou.User> usersList = null;
             try {
                 usersList = getApi().getFollowersList(getUserId(),
                         getNextPage());
@@ -534,7 +534,7 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity {
             publishProgress(SimpleFeedback.calProgressBySize(40, 20, usersList));
 
             ArrayList<User> users = new ArrayList<User>();
-            for (com.ch_linghu.fanfoudroid.weibo.User user : usersList) {
+            for (com.ch_linghu.fanfoudroid.fanfou.User user : usersList) {
                 if (isCancelled()) {
                     return TaskResult.CANCELLED;
                 }

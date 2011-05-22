@@ -53,10 +53,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ch_linghu.fanfoudroid.helper.ImageManager;
-import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.utils.FileHelper;
-import com.ch_linghu.fanfoudroid.helper.utils.TextHelper;
+import com.ch_linghu.fanfoudroid.app.ImageManager;
+import com.ch_linghu.fanfoudroid.app.Preferences;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
@@ -65,10 +63,10 @@ import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.BaseActivity;
+import com.ch_linghu.fanfoudroid.ui.module.NavBar;
 import com.ch_linghu.fanfoudroid.ui.module.TweetEdit;
-import com.ch_linghu.fanfoudroid.widget.Feedback;
-import com.ch_linghu.fanfoudroid.widget.FeedbackFactory;
-import com.ch_linghu.fanfoudroid.widget.NavBar;
+import com.ch_linghu.fanfoudroid.util.FileHelper;
+import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 public class WriteActivity extends BaseActivity {
 
@@ -678,8 +676,7 @@ public class WriteActivity extends BaseActivity {
         }
 
         private ImageManager getImageManager() {
-            return TwitterApplication.mProfileImageCacheManager
-                    .getImageManager();
+            return TwitterApplication.mImageLoader.getImageManager();
         }
     }
 

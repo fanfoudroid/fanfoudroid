@@ -37,13 +37,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ch_linghu.fanfoudroid.app.ImageCache;
+import com.ch_linghu.fanfoudroid.app.LazyImageLoader.ImageLoaderCallback;
+import com.ch_linghu.fanfoudroid.app.Preferences;
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.helper.ImageCache;
-import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
-import com.ch_linghu.fanfoudroid.helper.utils.DateTimeHelper;
-import com.ch_linghu.fanfoudroid.helper.utils.PhotoHelper;
-import com.ch_linghu.fanfoudroid.helper.utils.TextHelper;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.Response;
@@ -54,9 +51,13 @@ import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.task.TweetCommonTask;
 import com.ch_linghu.fanfoudroid.ui.base.BaseActivity;
-import com.ch_linghu.fanfoudroid.widget.Feedback;
-import com.ch_linghu.fanfoudroid.widget.FeedbackFactory;
-import com.ch_linghu.fanfoudroid.widget.NavBar;
+import com.ch_linghu.fanfoudroid.ui.module.Feedback;
+import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory;
+import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory.FeedbackType;
+import com.ch_linghu.fanfoudroid.ui.module.NavBar;
+import com.ch_linghu.fanfoudroid.util.DateTimeHelper;
+import com.ch_linghu.fanfoudroid.util.PhotoHelper;
+import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 public class StatusActivity extends BaseActivity {
 
@@ -214,7 +215,7 @@ public class StatusActivity extends BaseActivity {
 
 			setContentView(R.layout.status);
 			mNavbar = new NavBar(NavBar.HEADER_STYLE_BACK, this);
-			mFeedback = FeedbackFactory.getFeedback(this, FeedbackFactory.PROGRESS_MODE);
+			mFeedback = FeedbackFactory.create(this, FeedbackType.PROGRESS);
 
 			findView();
 			bindNavBarListener();
@@ -402,7 +403,7 @@ public class StatusActivity extends BaseActivity {
 		super.onDestroy();
 	}
 
-	private ProfileImageCacheCallback callback = new ProfileImageCacheCallback() {
+	private ImageLoaderCallback callback = new ImageLoaderCallback() {
 
 		@Override
 		public void refresh(String url, Bitmap bitmap) {
@@ -451,7 +452,7 @@ public class StatusActivity extends BaseActivity {
 		// Bitmap mProfileBitmap =
 		// TwitterApplication.mImageManager.get(tweet.profileImageUrl);
 		profile_image
-				.setImageBitmap(TwitterApplication.mProfileImageCacheManager
+				.setImageBitmap(TwitterApplication.mImageLoader
 						.get(tweet.profileImageUrl, callback));
 
 		// has photo
@@ -545,7 +546,7 @@ public class StatusActivity extends BaseActivity {
 		@Override
 		protected TaskResult _doInBackground(TaskParams... params) {
 			TaskParams param = params[0];
-			com.ch_linghu.fanfoudroid.weibo.Status status;
+			com.ch_linghu.fanfoudroid.fanfou.Status status;
 			try {
 				String reply_id = param.getString("reply_id");
 
@@ -588,7 +589,7 @@ public class StatusActivity extends BaseActivity {
 		@Override
 		protected TaskResult _doInBackground(TaskParams... params) {
 			TaskParams param = params[0];
-			com.ch_linghu.fanfoudroid.weibo.Status status;
+			com.ch_linghu.fanfoudroid.fanfou.Status status;
 			try {
 				String id = param.getString("id");
 

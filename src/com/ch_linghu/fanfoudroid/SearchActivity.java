@@ -15,12 +15,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ch_linghu.fanfoudroid.helper.utils.TextHelper;
+import com.ch_linghu.fanfoudroid.fanfou.SavedSearch;
+import com.ch_linghu.fanfoudroid.fanfou.Trend;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -28,11 +28,11 @@ import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.BaseActivity;
-import com.ch_linghu.fanfoudroid.weibo.SavedSearch;
-import com.ch_linghu.fanfoudroid.weibo.Trend;
-import com.ch_linghu.fanfoudroid.widget.Feedback;
-import com.ch_linghu.fanfoudroid.widget.FeedbackFactory;
-import com.ch_linghu.fanfoudroid.widget.NavBar;
+import com.ch_linghu.fanfoudroid.ui.module.Feedback;
+import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory;
+import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory.FeedbackType;
+import com.ch_linghu.fanfoudroid.ui.module.NavBar;
+import com.ch_linghu.fanfoudroid.util.TextHelper;
 import com.commonsware.cwac.merge.MergeAdapter;
 
 public class SearchActivity extends BaseActivity {
@@ -96,8 +96,7 @@ public class SearchActivity extends BaseActivity {
         if (super._onCreate(savedInstanceState)) {
             setContentView(R.layout.search);
             mNavbar = new NavBar(NavBar.HEADER_STYLE_SEARCH, this);
-            mFeedback = FeedbackFactory.getFeedback(this,
-                    FeedbackFactory.PROGRESS_MODE);
+            mFeedback = FeedbackFactory.create(this, FeedbackType.PROGRESS);
 
             initView();
             initSearchSectionList();

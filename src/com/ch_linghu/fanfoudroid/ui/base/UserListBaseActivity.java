@@ -26,10 +26,9 @@ import com.ch_linghu.fanfoudroid.TwitterActivity;
 import com.ch_linghu.fanfoudroid.UserTimelineActivity;
 import com.ch_linghu.fanfoudroid.WriteActivity;
 import com.ch_linghu.fanfoudroid.WriteDmActivity;
+import com.ch_linghu.fanfoudroid.app.Preferences;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.User;
-import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.utils.TextHelper;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -37,10 +36,12 @@ import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.task.TweetCommonTask;
+import com.ch_linghu.fanfoudroid.ui.module.Feedback;
+import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory;
+import com.ch_linghu.fanfoudroid.ui.module.NavBar;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
-import com.ch_linghu.fanfoudroid.widget.Feedback;
-import com.ch_linghu.fanfoudroid.widget.FeedbackFactory;
-import com.ch_linghu.fanfoudroid.widget.NavBar;
+import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory.FeedbackType;
+import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 public abstract class UserListBaseActivity extends BaseActivity implements
         Refreshable {
@@ -110,8 +111,7 @@ public abstract class UserListBaseActivity extends BaseActivity implements
         if (super._onCreate(savedInstanceState)) {
             setContentView(getLayoutId());
             mNavbar = new NavBar(NavBar.HEADER_STYLE_HOME, this);
-            mFeedback = FeedbackFactory.getFeedback(this,
-                    FeedbackFactory.PROGRESS_MODE);
+            mFeedback = FeedbackFactory.create(this, FeedbackType.PROGRESS);
 
             mPreferences.getInt(Preferences.TWITTER_ACTIVITY_STATE_KEY,
                     STATE_ALL);

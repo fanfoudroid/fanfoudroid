@@ -3,7 +3,7 @@ package com.ch_linghu.fanfoudroid.http;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.ch_linghu.fanfoudroid.weibo.RefuseError;
+import com.ch_linghu.fanfoudroid.fanfou.RefuseError;
 
 /**
  * NOT AUTHORIZED, HTTP CODE 401

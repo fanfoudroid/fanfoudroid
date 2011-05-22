@@ -13,10 +13,10 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 
 import com.ch_linghu.fanfoudroid.data.User;
+import com.ch_linghu.fanfoudroid.fanfou.Paging;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.ui.base.UserArrayBaseActivity;
 import com.ch_linghu.fanfoudroid.ui.module.UserArrayAdapter;
-import com.ch_linghu.fanfoudroid.weibo.Paging;
 
 public class FollowingActivity extends UserArrayBaseActivity {
 
@@ -103,7 +103,7 @@ public class FollowingActivity extends UserArrayBaseActivity {
 	}
 
 	@Override
-	protected List<com.ch_linghu.fanfoudroid.weibo.User> getUsers(
+	protected List<com.ch_linghu.fanfoudroid.fanfou.User> getUsers(
 			String userId, Paging page) throws HttpException {
 		return getApi().getFriendsStatuses(userId, page);
 	}

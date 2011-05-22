@@ -10,7 +10,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.helper.utils.MiscHelper;
+import com.ch_linghu.fanfoudroid.fanfou.Paging;
+import com.ch_linghu.fanfoudroid.fanfou.User;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.HttpRefusedException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
@@ -20,12 +21,12 @@ import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.Refreshable;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterListBaseActivity;
+import com.ch_linghu.fanfoudroid.ui.module.Feedback;
+import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory;
+import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory.FeedbackType;
 import com.ch_linghu.fanfoudroid.ui.module.MyListView;
 import com.ch_linghu.fanfoudroid.ui.module.TweetArrayAdapter;
-import com.ch_linghu.fanfoudroid.weibo.Paging;
-import com.ch_linghu.fanfoudroid.weibo.User;
-import com.ch_linghu.fanfoudroid.widget.Feedback;
-import com.ch_linghu.fanfoudroid.widget.FeedbackFactory;
+import com.ch_linghu.fanfoudroid.util.MiscHelper;
 
 public class UserTimelineActivity extends TwitterListBaseActivity implements
         MyListView.OnNeedMoreListener, Refreshable {
@@ -129,8 +130,7 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
     protected boolean _onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "_onCreate()...");
         if (super._onCreate(savedInstanceState)) {
-            mFeedback = FeedbackFactory.getFeedback(this,
-                    FeedbackFactory.PROGRESS_MODE);
+            mFeedback = FeedbackFactory.create(this, FeedbackType.PROGRESS);
             
             Intent intent = getIntent();
             // get user id
@@ -237,7 +237,7 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
 
         @Override
         protected TaskResult _doInBackground(TaskParams... params) {
-            List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
+            List<com.ch_linghu.fanfoudroid.fanfou.Status> statusList;
             try {
                 statusList = getApi().getUserTimeline(mUserID,
                         new Paging(mNextPage));
@@ -256,7 +256,7 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
                 }
             }
             mFeedback.update(100 - (int)Math.floor(statusList.size()*2)); // 60~100
-            for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
+            for (com.ch_linghu.fanfoudroid.fanfou.Status status : statusList) {
                 if (isCancelled()) {
                     return TaskResult.CANCELLED;
                 }
@@ -280,7 +280,7 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
 
         @Override
         protected TaskResult _doInBackground(TaskParams... params) {
-            List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
+            List<com.ch_linghu.fanfoudroid.fanfou.Status> statusList;
             try {
                 statusList = getApi().getUserTimeline(mUserID,
                         new Paging(mNextPage));
@@ -297,7 +297,7 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
                 }
             }
 
-            for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
+            for (com.ch_linghu.fanfoudroid.fanfou.Status status : statusList) {
                 if (isCancelled()) {
                     return TaskResult.CANCELLED;
                 }

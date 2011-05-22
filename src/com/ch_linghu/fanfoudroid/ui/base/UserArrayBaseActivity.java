@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.User;
+import com.ch_linghu.fanfoudroid.fanfou.Paging;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -21,10 +22,9 @@ import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskManager;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
+import com.ch_linghu.fanfoudroid.ui.module.SimpleFeedback;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 import com.ch_linghu.fanfoudroid.ui.module.UserArrayAdapter;
-import com.ch_linghu.fanfoudroid.weibo.Paging;
-import com.ch_linghu.fanfoudroid.widget.SimpleFeedback;
 
 public abstract class UserArrayBaseActivity extends UserListBaseActivity {
     static final String TAG = "UserArrayBaseActivity";
@@ -50,7 +50,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
     public abstract Paging getNextPage();// 加载
     // protected abstract String[] getIds();
 
-    protected abstract List<com.ch_linghu.fanfoudroid.weibo.User> getUsers(
+    protected abstract List<com.ch_linghu.fanfoudroid.fanfou.User> getUsers(
             String userId, Paging page) throws HttpException;
 
     private ArrayList<com.ch_linghu.fanfoudroid.data.User> allUserList;
@@ -137,7 +137,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
         protected TaskResult _doInBackground(TaskParams... params) {
             Log.d(TAG, "load RetrieveTask");
 
-            List<com.ch_linghu.fanfoudroid.weibo.User> usersList = null;
+            List<com.ch_linghu.fanfoudroid.fanfou.User> usersList = null;
             try {
                 usersList = getUsers(getUserId(), getCurrentPage());
             } catch (HttpException e) {
@@ -146,7 +146,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
             }
 			publishProgress(SimpleFeedback.calProgressBySize(40, 20, usersList));
 			
-            for (com.ch_linghu.fanfoudroid.weibo.User user : usersList) {
+            for (com.ch_linghu.fanfoudroid.fanfou.User user : usersList) {
                 if (isCancelled()) {
                     return TaskResult.CANCELLED;
                 }
@@ -297,7 +297,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
         protected TaskResult _doInBackground(TaskParams... params) {
             Log.d(TAG, "load RetrieveTask");
 
-            List<com.ch_linghu.fanfoudroid.weibo.User> usersList = null;
+            List<com.ch_linghu.fanfoudroid.fanfou.User> usersList = null;
             try {
                 usersList = getUsers(getUserId(), getNextPage());
                 mFeedback.update(60);
@@ -309,7 +309,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
             getDb().syncWeiboUsers(usersList);
 
             mFeedback.update(100 - (int) Math.floor(usersList.size() * 2));
-            for (com.ch_linghu.fanfoudroid.weibo.User user : usersList) {
+            for (com.ch_linghu.fanfoudroid.fanfou.User user : usersList) {
                 if (isCancelled()) {
                     return TaskResult.CANCELLED;
                 }

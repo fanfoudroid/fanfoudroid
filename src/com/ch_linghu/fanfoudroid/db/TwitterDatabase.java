@@ -16,13 +16,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.TwitterApplication;
+import com.ch_linghu.fanfoudroid.app.Preferences;
 import com.ch_linghu.fanfoudroid.data.Dm;
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.data2.Status;
+import com.ch_linghu.fanfoudroid.db.dao.Status;
 import com.ch_linghu.fanfoudroid.db.dao.StatusDAO;
-import com.ch_linghu.fanfoudroid.debug.DebugTimer;
-import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.utils.*;
+import com.ch_linghu.fanfoudroid.util.DebugTimer;
+import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 /**
  * A Database which contains all statuses and direct-messages, use
@@ -958,7 +958,7 @@ public class TwitterDatabase {
 		return rowId;
 	}
 
-	public long createWeiboUserInfo(com.ch_linghu.fanfoudroid.weibo.User user){
+	public long createWeiboUserInfo(com.ch_linghu.fanfoudroid.fanfou.User user){
         SQLiteDatabase mDb = mOpenHelper.getWritableDatabase();
     	ContentValues args = new ContentValues();
 
@@ -1091,7 +1091,7 @@ public class TwitterDatabase {
      * @param user
      * @return
      */
-    public boolean updateWeiboUser(com.ch_linghu.fanfoudroid.weibo.User user){
+    public boolean updateWeiboUser(com.ch_linghu.fanfoudroid.fanfou.User user){
     	
     	SQLiteDatabase Db=mOpenHelper.getWritableDatabase();
     	ContentValues args = new ContentValues();
@@ -1159,12 +1159,12 @@ public class TwitterDatabase {
     	
     }
     
-    public void syncWeiboUsers(List<com.ch_linghu.fanfoudroid.weibo.User> users) {
+    public void syncWeiboUsers(List<com.ch_linghu.fanfoudroid.fanfou.User> users) {
         SQLiteDatabase mDb = mOpenHelper.getWritableDatabase();
 
         try {
             mDb.beginTransaction();
-            for (com.ch_linghu.fanfoudroid.weibo.User u : users) {
+            for (com.ch_linghu.fanfoudroid.fanfou.User u : users) {
 //                if (existsUser(u.getId())) {
 //                    updateWeiboUser(u);
 //                } else {

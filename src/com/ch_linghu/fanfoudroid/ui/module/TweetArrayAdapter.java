@@ -2,27 +2,22 @@ package com.ch_linghu.fanfoudroid.ui.module;
 
 import java.util.ArrayList;
 
-import com.ch_linghu.fanfoudroid.R;
-import com.ch_linghu.fanfoudroid.TwitterApplication;
-import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.helper.ImageCache;
-import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
-import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheManager;
-import com.ch_linghu.fanfoudroid.helper.utils.*;
-
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.ch_linghu.fanfoudroid.R;
+import com.ch_linghu.fanfoudroid.TwitterApplication;
+import com.ch_linghu.fanfoudroid.app.LazyImageLoader.ImageLoaderCallback;
+import com.ch_linghu.fanfoudroid.app.Preferences;
+import com.ch_linghu.fanfoudroid.data.Tweet;
+import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 	private static final String TAG = "TweetArrayAdapter";
@@ -32,7 +27,7 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 	protected LayoutInflater mInflater;
 	protected StringBuilder mMetaBuilder;
 	
-	private ProfileImageCacheCallback callback = new ProfileImageCacheCallback(){
+	private ImageLoaderCallback callback = new ImageLoaderCallback(){
 
 		@Override
 		public void refresh(String url, Bitmap bitmap) {
@@ -109,7 +104,7 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 
 		if (useProfileImage){
 			if (!TextHelper.isEmpty(profileImageUrl)) {
-				holder.profileImage.setImageBitmap(TwitterApplication.mProfileImageCacheManager
+				holder.profileImage.setImageBitmap(TwitterApplication.mImageLoader
 						.get(profileImageUrl, callback));
 			}
 		}else{

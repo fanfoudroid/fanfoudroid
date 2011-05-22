@@ -56,9 +56,9 @@ import org.apache.http.protocol.HttpContext;
 
 import android.util.Log;
 
-import com.ch_linghu.fanfoudroid.debug.DebugTimer;
-import com.ch_linghu.fanfoudroid.weibo.Configuration;
-import com.ch_linghu.fanfoudroid.weibo.RefuseError;
+import com.ch_linghu.fanfoudroid.fanfou.Configuration;
+import com.ch_linghu.fanfoudroid.fanfou.RefuseError;
+import com.ch_linghu.fanfoudroid.util.DebugTimer;
 
 /**
  * Wrap of org.apache.http.impl.client.DefaultHttpClient

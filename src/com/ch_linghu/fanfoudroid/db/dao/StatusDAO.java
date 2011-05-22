@@ -7,10 +7,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.ch_linghu.fanfoudroid.data2.Status;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
-import com.ch_linghu.fanfoudroid.helper.utils.*;
+import com.ch_linghu.fanfoudroid.util.*;
 
 public class StatusDAO {
     private static final String TAG = "StatusDAO";

@@ -24,10 +24,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ch_linghu.fanfoudroid.app.LazyImageLoader.ImageLoaderCallback;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.db.UserInfoTable;
-import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
-import com.ch_linghu.fanfoudroid.helper.utils.TextHelper;
+import com.ch_linghu.fanfoudroid.fanfou.User;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -35,10 +35,11 @@ import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.BaseActivity;
-import com.ch_linghu.fanfoudroid.weibo.User;
-import com.ch_linghu.fanfoudroid.widget.Feedback;
-import com.ch_linghu.fanfoudroid.widget.FeedbackFactory;
-import com.ch_linghu.fanfoudroid.widget.NavBar;
+import com.ch_linghu.fanfoudroid.ui.module.Feedback;
+import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory;
+import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory.FeedbackType;
+import com.ch_linghu.fanfoudroid.ui.module.NavBar;
+import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 /**
  * 
@@ -95,7 +96,7 @@ public class ProfileActivity extends BaseActivity {
         return intent;
     }
 
-    private ProfileImageCacheCallback callback = new ProfileImageCacheCallback() {
+    private ImageLoaderCallback callback = new ImageLoaderCallback() {
 
         @Override
         public void refresh(String url, Bitmap bitmap) {
@@ -144,8 +145,7 @@ public class ProfileActivity extends BaseActivity {
         mNavBar = new NavBar(NavBar.HEADER_STYLE_HOME, this);
         mNavBar.setHeaderTitle("");
 
-        mFeedback = FeedbackFactory.getFeedback(this,
-                FeedbackFactory.PROGRESS_MODE);
+        mFeedback = FeedbackFactory.create(this, FeedbackType.PROGRESS);
 
         sendMentionBtn = (Button) findViewById(R.id.sendmetion_btn);
         sendDmBtn = (Button) findViewById(R.id.senddm_btn);
@@ -380,7 +380,7 @@ public class ProfileActivity extends BaseActivity {
                     + getString(R.string.cmenu_user_profile_prefix));
         }
         profileImageView
-                .setImageBitmap(TwitterApplication.mProfileImageCacheManager
+                .setImageBitmap(TwitterApplication.mImageLoader
                         .get(profileInfo.getProfileImageURL().toString(),
                                 callback));
 

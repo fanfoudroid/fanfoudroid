@@ -13,7 +13,8 @@ import android.view.Menu;
 import android.widget.ListView;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.helper.utils.TextHelper;
+import com.ch_linghu.fanfoudroid.fanfou.Query;
+import com.ch_linghu.fanfoudroid.fanfou.QueryResult;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -22,11 +23,10 @@ import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterListBaseActivity;
 import com.ch_linghu.fanfoudroid.ui.module.MyListView;
+import com.ch_linghu.fanfoudroid.ui.module.SimpleFeedback;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 import com.ch_linghu.fanfoudroid.ui.module.TweetArrayAdapter;
-import com.ch_linghu.fanfoudroid.weibo.Query;
-import com.ch_linghu.fanfoudroid.weibo.QueryResult;
-import com.ch_linghu.fanfoudroid.widget.SimpleFeedback;
+import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 public class SearchResultActivity extends TwitterListBaseActivity implements
 		MyListView.OnNeedMoreListener {
@@ -201,12 +201,12 @@ public class SearchResultActivity extends TwitterListBaseActivity implements
 				Log.e(TAG, e.getMessage(), e);
 				return TaskResult.IO_ERROR;
 			}
-			List<com.ch_linghu.fanfoudroid.weibo.Status> statuses = result.getStatus();
+			List<com.ch_linghu.fanfoudroid.fanfou.Status> statuses = result.getStatus();
 			HashSet<String> imageUrls = new HashSet<String>();
 			
 			publishProgress(SimpleFeedback.calProgressBySize(40, 20, statuses));
 
-			for (com.ch_linghu.fanfoudroid.weibo.Status status : statuses) {
+			for (com.ch_linghu.fanfoudroid.fanfou.Status status : statuses) {
 				if (isCancelled()) {
 					return TaskResult.CANCELLED;
 				}

@@ -14,15 +14,15 @@ import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
+import com.ch_linghu.fanfoudroid.app.LazyImageLoader;
+import com.ch_linghu.fanfoudroid.app.Preferences;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
-import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheManager;
-import com.ch_linghu.fanfoudroid.helper.utils.EncryptUtils;
+import com.ch_linghu.fanfoudroid.fanfou.Configuration;
+import com.ch_linghu.fanfoudroid.fanfou.User;
+import com.ch_linghu.fanfoudroid.fanfou.Weibo;
 import com.ch_linghu.fanfoudroid.http.HttpException;
-import com.ch_linghu.fanfoudroid.weibo.Configuration;
-import com.ch_linghu.fanfoudroid.weibo.User;
-import com.ch_linghu.fanfoudroid.weibo.Weibo;
+import com.ch_linghu.fanfoudroid.util.EncryptUtils;
 
 @ReportsCrashes(formKey="dHowMk5LMXQweVJkWGthb1E1T1NUUHc6MQ",
     mode = ReportingInteractionMode.NOTIFICATION,
@@ -41,7 +41,7 @@ public class TwitterApplication extends Application {
 	public static final String TAG = "TwitterApplication";
 
 	// public static ImageManager mImageManager;
-	public static ProfileImageCacheManager mProfileImageCacheManager;
+	public static LazyImageLoader mImageLoader;
 	public static TwitterDatabase mDb;
 	public static Weibo mApi; // new API
 	public static Context mContext;
@@ -109,7 +109,7 @@ public class TwitterApplication extends Application {
 
 		mContext = this.getApplicationContext();
 		// mImageManager = new ImageManager(this);
-		mProfileImageCacheManager = new ProfileImageCacheManager();
+		mImageLoader = new LazyImageLoader();
 		mApi = new Weibo();
 		mDb = TwitterDatabase.getInstance(this);
 
@@ -177,6 +177,6 @@ public class TwitterApplication extends Application {
 
 		cursor.close();
 
-		mProfileImageCacheManager.getImageManager().cleanup(keepers);
+		mImageLoader.getImageManager().cleanup(keepers);
 	}
 }

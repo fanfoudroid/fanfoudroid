@@ -5,7 +5,7 @@ import java.util.Observer;
 
 import android.util.Log;
 
-public class TaskManager  extends Observable {
+public class TaskManager extends Observable {
     private static final String TAG = "TaskManager";
     
     public static final Integer CANCEL_ALL = 1;

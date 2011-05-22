@@ -1,6 +1,6 @@
 package com.ch_linghu.fanfoudroid.http;
 
-import com.ch_linghu.fanfoudroid.weibo.RefuseError;
+import com.ch_linghu.fanfoudroid.fanfou.RefuseError;
 
 
 /**

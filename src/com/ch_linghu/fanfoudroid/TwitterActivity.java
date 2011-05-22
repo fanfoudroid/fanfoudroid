@@ -38,6 +38,8 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
+import com.ch_linghu.fanfoudroid.fanfou.Paging;
+import com.ch_linghu.fanfoudroid.fanfou.Status;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -46,8 +48,6 @@ import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.task.TweetCommonTask;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterCursorBaseActivity;
-import com.ch_linghu.fanfoudroid.weibo.Paging;
-import com.ch_linghu.fanfoudroid.weibo.Status;
 
 public class TwitterActivity extends TwitterCursorBaseActivity {
     private static final String TAG = "TwitterActivity";
@@ -258,51 +258,58 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
     }
 
     // ////////////////// Gesture test /////////////////////////////////////
-    protected MyGestureListener myGestureListener;
-
-    private void registerGestureListener() {
-
-        myGestureListener = new MyGestureListener(this);
-        // or if you have already created a Gesture Detector.
-        // myGestureListener = new MyGestureListener(this,
-        // getExistingGestureDetector());
-
-        // Example of setting listener. The onTouchEvent will now be called on
-        // your listener
-        getTweetList().setOnTouchListener(myGestureListener);
-    }
-
+    private static boolean USE_GESTRUE = true;
+    protected MyGestureListener myGestureListener = null;
+    
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         // or implement in activity or component. When your not assigning to a
         // child component.
-        return myGestureListener.getDetector().onTouchEvent(event);
+        if (myGestureListener != null) {
+            return myGestureListener.getDetector().onTouchEvent(event);
+        }
+        return super.onTouchEvent(event);
     }
 
-    class MyGestureListener extends SimpleOnGestureListener implements
+    // use it in _onCreate
+    private void registerGestureListener() {
+        if (USE_GESTRUE) {
+            myGestureListener = new MyGestureListener(this);
+            // or if you have already created a Gesture Detector.
+            // myGestureListener = new MyGestureListener(this,
+            // getExistingGestureDetector());
+
+            // Example of setting listener. The onTouchEvent will now be called on
+            // your listener
+            getTweetList().setOnTouchListener(myGestureListener);
+        }
+    }
+
+    private class MyGestureListener extends SimpleOnGestureListener implements
             OnTouchListener {
         private static final int SWIPE_MIN_DISTANCE = 120;
         private static final int SWIPE_MAX_OFF_PATH = 250;
         private static final int SWIPE_THRESHOLD_VELOCITY = 200;
 
-        Context context;
         GestureDetector gDetector;
-
-        public MyGestureListener() {
-            super();
-        }
-
+        
         public MyGestureListener(Context context) {
             this(context, null);
         }
 
         public MyGestureListener(Context context, GestureDetector gDetector) {
-
-            if (gDetector == null)
+            if (gDetector == null) {
                 gDetector = new GestureDetector(context, this);
-
-            this.context = context;
+            }
             this.gDetector = gDetector;
+        }
+        
+        private void gotoActivity(Class<?> cls) {
+            Intent intent = new Intent();
+            intent.setClass(TwitterActivity.this, cls);
+            TwitterActivity.this.startActivity(intent);
+            
+            TwitterActivity.this.finish(); // For DEBUG
         }
 
         @Override
@@ -317,12 +324,13 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
                 }
                 if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE
                         && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                    // right to left swipe
                     Log.d("FLING", "<------");
+                    gotoActivity(DmActivity.class);
                     return true;
                 } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
                         && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
                     Log.d("FLING", "------>");
+                    gotoActivity(MentionActivity.class);
                     return true;
                 }
             } catch (Exception e) {
@@ -343,6 +351,7 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
          * 
          * return super.onSingleTapConfirmed(e); }
          */
+        
         public boolean onTouch(View v, MotionEvent event) {
             // Log.d("FLING", "On Touch");
 

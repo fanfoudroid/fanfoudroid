@@ -8,7 +8,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.ch_linghu.fanfoudroid.TwitterApplication;
-import com.ch_linghu.fanfoudroid.widget.Feedback;
+import com.ch_linghu.fanfoudroid.ui.module.Feedback;
 
 public abstract class GenericTask extends
         AsyncTask<TaskParams, Object, TaskResult> implements Observer {

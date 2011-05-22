@@ -27,10 +27,10 @@ import android.view.Menu;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
+import com.ch_linghu.fanfoudroid.fanfou.Paging;
+import com.ch_linghu.fanfoudroid.fanfou.Status;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterCursorBaseActivity;
-import com.ch_linghu.fanfoudroid.weibo.Paging;
-import com.ch_linghu.fanfoudroid.weibo.Status;
 
 //TODO: 数据来源换成 getFavorites()
 public class FavoritesActivity extends TwitterCursorBaseActivity {
