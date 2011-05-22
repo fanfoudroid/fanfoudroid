@@ -74,7 +74,7 @@ public class LazyImageLoader {
 
     private class GetImageTask extends Thread {
         private volatile boolean mTaskTerminated = false;
-        private static final int TIMEOUT = 3; 
+        private static final int TIMEOUT = 3*60; 
         private boolean isPermanent = true;
         
         public void run() {
@@ -84,7 +84,7 @@ public class LazyImageLoader {
                     if (isPermanent) {
                         url = mUrlList.take();
                     } else {
-                        url = mUrlList.poll(TIMEOUT, TimeUnit.MINUTES); // waiting
+                        url = mUrlList.poll(TIMEOUT, TimeUnit.SECONDS); // waiting
                         if (null == url) { break; } // no more, shutdown
                     }
                     
