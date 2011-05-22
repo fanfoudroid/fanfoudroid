@@ -24,12 +24,14 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.R;
+import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.app.Preferences;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
@@ -42,6 +44,8 @@ import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskManager;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
+import com.ch_linghu.fanfoudroid.ui.module.FlipperGestureListener;
+import com.ch_linghu.fanfoudroid.ui.module.MyActivityFlipper;
 import com.ch_linghu.fanfoudroid.ui.module.SimpleFeedback;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 import com.ch_linghu.fanfoudroid.ui.module.TweetCursorAdapter;
@@ -347,7 +351,9 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
                 Log.d(TAG, "Refresh followers.");
                 doRetrieveFollowers();
             }
-
+            
+            // 手势识别
+            registerGestureListener();
 
             return true;
         } else {
@@ -601,6 +607,37 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 
             // Add Task to manager
             taskManager.addTask(mGetMoreTask);
+        }
+    }
+    
+    
+    //////////////////// Gesture test /////////////////////////////////////
+    private static boolean useGestrue;
+    {
+        useGestrue = TwitterApplication.mPref.getBoolean(Preferences.USE_GESTRUE, false);
+        if (useGestrue) {
+            Log.v(TAG, "Using Gestrue!");
+        } else {
+            Log.v(TAG, "Not Using Gestrue!");
+        }
+    }
+    
+    protected FlipperGestureListener myGestureListener = null;
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (useGestrue && myGestureListener != null) {
+            return myGestureListener.getDetector().onTouchEvent(event);
+        }
+        return super.onTouchEvent(event);
+    }
+
+    // use it in _onCreate
+    private void registerGestureListener() {
+        if (useGestrue) {
+            myGestureListener = new FlipperGestureListener(this,
+                    MyActivityFlipper.create(this));
+            getTweetList().setOnTouchListener(myGestureListener);
         }
     }
 

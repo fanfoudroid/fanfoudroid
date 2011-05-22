@@ -46,7 +46,7 @@ public class TwitterApplication extends Application {
 	public static Weibo mApi; // new API
 	public static Context mContext;
 	public static SharedPreferences mPref;
-
+	
 	public static int networkType = 0;
 
 	private final static boolean DEBUG = Configuration.getDebug();

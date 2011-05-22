@@ -1,6 +1,5 @@
 package com.ch_linghu.fanfoudroid.ui.module;
 
-
 public interface Feedback {
     public boolean isAvailable();
     public void start(CharSequence text);

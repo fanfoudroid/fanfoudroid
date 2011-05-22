@@ -26,13 +26,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.GestureDetector;
-import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
@@ -94,7 +90,6 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
     protected boolean _onCreate(Bundle savedInstanceState) {
         if (super._onCreate(savedInstanceState)) {
             mNavbar.setHeaderTitle("饭否fanfou.com");
-            registerGestureListener();
             return true;
         } else {
             return false;
@@ -255,117 +250,5 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
     @Override
     public String getUserId() {
         return TwitterApplication.getMyselfId();
-    }
-
-    // ////////////////// Gesture test /////////////////////////////////////
-    private static boolean USE_GESTRUE = true;
-    protected MyGestureListener myGestureListener = null;
-    
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        // or implement in activity or component. When your not assigning to a
-        // child component.
-        if (myGestureListener != null) {
-            return myGestureListener.getDetector().onTouchEvent(event);
-        }
-        return super.onTouchEvent(event);
-    }
-
-    // use it in _onCreate
-    private void registerGestureListener() {
-        if (USE_GESTRUE) {
-            myGestureListener = new MyGestureListener(this);
-            // or if you have already created a Gesture Detector.
-            // myGestureListener = new MyGestureListener(this,
-            // getExistingGestureDetector());
-
-            // Example of setting listener. The onTouchEvent will now be called on
-            // your listener
-            getTweetList().setOnTouchListener(myGestureListener);
-        }
-    }
-
-    private class MyGestureListener extends SimpleOnGestureListener implements
-            OnTouchListener {
-        private static final int SWIPE_MIN_DISTANCE = 120;
-        private static final int SWIPE_MAX_OFF_PATH = 250;
-        private static final int SWIPE_THRESHOLD_VELOCITY = 200;
-
-        GestureDetector gDetector;
-        
-        public MyGestureListener(Context context) {
-            this(context, null);
-        }
-
-        public MyGestureListener(Context context, GestureDetector gDetector) {
-            if (gDetector == null) {
-                gDetector = new GestureDetector(context, this);
-            }
-            this.gDetector = gDetector;
-        }
-        
-        private void gotoActivity(Class<?> cls) {
-            Intent intent = new Intent();
-            intent.setClass(TwitterActivity.this, cls);
-            TwitterActivity.this.startActivity(intent);
-            
-            TwitterActivity.this.finish(); // For DEBUG
-        }
-
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-                float velocityY) {
-            Log.d("FLING", "On fling");
-            boolean orig = super.onFling(e1, e2, velocityX, velocityY);
-
-            try {
-                if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH) {
-                    return orig;
-                }
-                if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE
-                        && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                    Log.d("FLING", "<------");
-                    gotoActivity(DmActivity.class);
-                    return true;
-                } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
-                        && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                    Log.d("FLING", "------>");
-                    gotoActivity(MentionActivity.class);
-                    return true;
-                }
-            } catch (Exception e) {
-                Log.e(TAG, e.getMessage());
-            }
-
-            return orig;
-        }
-
-        @Override
-        public void onLongPress(MotionEvent e) {
-            // TODO Auto-generated method stub
-            super.onLongPress(e);
-        }
-
-        /*
-         * @Override public boolean onSingleTapConfirmed(MotionEvent e) {
-         * 
-         * return super.onSingleTapConfirmed(e); }
-         */
-        
-        public boolean onTouch(View v, MotionEvent event) {
-            // Log.d("FLING", "On Touch");
-
-            // Within the MyGestureListener class you can now manage the
-            // event.getAction() codes.
-
-            // Note that we are now calling the gesture Detectors onTouchEvent.
-            // And given we've set this class as the GestureDetectors listener
-            // the onFling, onSingleTap etc methods will be executed.
-            return gDetector.onTouchEvent(event);
-        }
-
-        public GestureDetector getDetector() {
-            return gDetector;
-        }
     }
 }

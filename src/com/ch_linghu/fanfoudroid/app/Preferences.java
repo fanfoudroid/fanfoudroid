@@ -57,4 +57,6 @@ public class Preferences {
   
   public static final String UI_FONT_SIZE = "ui_font_size";
   
+  public static final String USE_GESTRUE = "use_gestrue";
+  
 }

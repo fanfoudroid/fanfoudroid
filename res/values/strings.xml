@@ -147,6 +147,9 @@
     <string name="pref_network_type_cmwap">cmwap</string>
     <string name="pref_network_type_3g">3G/wifi</string>
     <string name="pref_network_type_summary">选择当前网络的接入点或类型</string>
+    <string name="pref_title_labs">实验室</string>
+    <string name="pref_use_gestrue_title">手势识别</string>
+    <string name="pref_use_gestrue_summary">使用手势左右滑动切换页面</string>
     <!-- Service -->
     <string name="service_new_twitter_updates">新消息</string>
     <string name="service_x_new_tweets">{0} 条新消息</string>
