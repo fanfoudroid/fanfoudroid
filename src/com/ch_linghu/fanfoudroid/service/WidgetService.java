@@ -30,9 +30,6 @@ import android.util.Log;
 import android.widget.RemoteViews;
 
 public class WidgetService extends Service {
-
-
-
 	protected static final String TAG = "WidgetService";
 
 	private int position = 0;
