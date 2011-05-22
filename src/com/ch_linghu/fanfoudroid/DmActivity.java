@@ -1,6 +1,5 @@
 package com.ch_linghu.fanfoudroid;
 
-import java.security.PublicKey;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -32,20 +31,25 @@ import com.ch_linghu.fanfoudroid.db.MessageTable;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.helper.Preferences;
 import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
-import com.ch_linghu.fanfoudroid.helper.utils.*;
+import com.ch_linghu.fanfoudroid.helper.utils.DateTimeHelper;
+import com.ch_linghu.fanfoudroid.helper.utils.MiscHelper;
+import com.ch_linghu.fanfoudroid.helper.utils.TextHelper;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
+import com.ch_linghu.fanfoudroid.ui.base.BaseActivity;
 import com.ch_linghu.fanfoudroid.ui.base.Refreshable;
-import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
 import com.ch_linghu.fanfoudroid.weibo.DirectMessage;
 import com.ch_linghu.fanfoudroid.weibo.Paging;
+import com.ch_linghu.fanfoudroid.widget.Feedback;
+import com.ch_linghu.fanfoudroid.widget.FeedbackFactory;
+import com.ch_linghu.fanfoudroid.widget.NavBar;
 import com.ch_linghu.fanfoudroid.widget.SimpleFeedback;
 
-public class DmActivity extends WithHeaderActivity implements Refreshable {
+public class DmActivity extends BaseActivity implements Refreshable {
 
 	private static final String TAG = "DmActivity";
 
@@ -65,6 +69,9 @@ public class DmActivity extends WithHeaderActivity implements Refreshable {
 	private static final int DM_TYPE_SENDBOX = 2;
 
 	private TextView mProgressText;
+	
+	private NavBar mNavbar;
+	private Feedback mFeedback;
 
 	// Tasks.
 	private GenericTask mRetrieveTask;
@@ -131,9 +138,7 @@ public class DmActivity extends WithHeaderActivity implements Refreshable {
 
 	// Refresh data at startup if last refresh was this long ago or greater.
 	private static final long REFRESH_THRESHOLD = 5 * 60 * 1000;
-
 	private static final String EXTRA_USER = "user";
-
 	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.DMS";
 
 	public static Intent createIntent() {
@@ -156,14 +161,14 @@ public class DmActivity extends WithHeaderActivity implements Refreshable {
 		if (super._onCreate(savedInstanceState))
 		{
 			setContentView(R.layout.dm);
-			initHeader(HEADER_STYLE_HOME);
-			setHeaderTitle("我的私信");
+			mNavbar = new NavBar(NavBar.HEADER_STYLE_HOME, this);
+			mNavbar.setHeaderTitle("我的私信");
+			
+			mFeedback = FeedbackFactory.getFeedback(this, FeedbackFactory.PROGRESS_MODE);
 	
-			// 绑定底部栏按钮onClick监听器
 			bindFooterButtonEvent();
 	
 			mTweetList = (ListView) findViewById(R.id.tweet_list);
-	
 			mProgressText = (TextView) findViewById(R.id.progress_text);
 	
 			TwitterDatabase db = getDb();

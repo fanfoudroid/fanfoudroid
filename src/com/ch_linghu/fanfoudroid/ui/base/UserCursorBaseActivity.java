@@ -24,7 +24,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -154,16 +153,11 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity {
     private static final long FOLLOWERS_REFRESH_THRESHOLD = 12 * 60 * 60 * 1000;
 
     abstract protected Cursor fetchUsers();
-
     public abstract int getDatabaseType();
-
     public abstract String fetchMaxId();
-
     public abstract String fetchMinId();
-
     public abstract List<com.ch_linghu.fanfoudroid.weibo.User> getUsers()
             throws HttpException;
-
     public abstract void addUsers(
             ArrayList<com.ch_linghu.fanfoudroid.data.User> tusers);
 
@@ -176,7 +170,6 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity {
             throws HttpException;
 
     public abstract Paging getNextPage();// 下一页数
-
     public abstract Paging getCurrentPage();// 当前页数
 
     protected abstract String[] getIds();
@@ -457,11 +450,6 @@ public abstract class UserCursorBaseActivity extends UserListBaseActivity {
             // Add Task to manager
             taskManager.addTask(mRetrieveTask);
         }
-    }
-
-    // for Retrievable interface
-    public ImageView getRefreshButton() {
-        return refreshButton;
     }
 
     /**

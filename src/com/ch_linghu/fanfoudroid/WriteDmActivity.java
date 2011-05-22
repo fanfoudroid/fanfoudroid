@@ -27,28 +27,26 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.data.Dm;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
-import com.ch_linghu.fanfoudroid.helper.utils.*;
+import com.ch_linghu.fanfoudroid.helper.utils.TextHelper;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
-import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
+import com.ch_linghu.fanfoudroid.ui.base.BaseActivity;
 import com.ch_linghu.fanfoudroid.ui.module.TweetEdit;
 import com.ch_linghu.fanfoudroid.weibo.DirectMessage;
+import com.ch_linghu.fanfoudroid.widget.NavBar;
 
 //FIXME: 将WriteDmActivity和WriteActivity进行整合。
 /**
@@ -56,7 +54,7 @@ import com.ch_linghu.fanfoudroid.weibo.DirectMessage;
  * @author lds
  *
  */
-public class WriteDmActivity extends WithHeaderActivity {
+public class WriteDmActivity extends BaseActivity {
 
 	public static final String NEW_TWEET_ACTION = "com.ch_linghu.fanfoudroid.NEW";
 	public static final String EXTRA_TEXT = "text";
@@ -73,6 +71,8 @@ public class WriteDmActivity extends WithHeaderActivity {
 	private Button mSendButton;
 	//private AutoCompleteTextView mToEdit;
 	private TextView mToEdit;
+	
+	private NavBar mNavbar;
 	
 	// Task
 	private GenericTask mSendTask;
@@ -166,7 +166,7 @@ public class WriteDmActivity extends WithHeaderActivity {
 		if (super._onCreate(savedInstanceState)){
 			// init View
 			setContentView(R.layout.write_dm);
-			initHeader(HEADER_STYLE_WRITE);
+			mNavbar = new NavBar(NavBar.HEADER_STYLE_WRITE, this);
 	
 			// Intent & Action & Extras
 			Intent intent = getIntent();

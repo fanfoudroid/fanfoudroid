@@ -44,8 +44,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -66,10 +64,13 @@ import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
-import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
+import com.ch_linghu.fanfoudroid.ui.base.BaseActivity;
 import com.ch_linghu.fanfoudroid.ui.module.TweetEdit;
+import com.ch_linghu.fanfoudroid.widget.Feedback;
+import com.ch_linghu.fanfoudroid.widget.FeedbackFactory;
+import com.ch_linghu.fanfoudroid.widget.NavBar;
 
-public class WriteActivity extends WithHeaderActivity {
+public class WriteActivity extends BaseActivity {
 
     // FIXME: for debug, delete me
     private long startTime = -1;
@@ -96,6 +97,8 @@ public class WriteActivity extends WithHeaderActivity {
     private ImageButton chooseImagesButton;
     private ImageButton mCameraButton;
     private ProgressDialog dialog;
+    
+    private NavBar mNavbar;
 
     // Picture
     private boolean withPic = false;
@@ -303,7 +306,7 @@ public class WriteActivity extends WithHeaderActivity {
         if (super._onCreate(savedInstanceState)) {
             // init View
             setContentView(R.layout.write);
-            initHeader(HEADER_STYLE_WRITE);
+            mNavbar = new NavBar(NavBar.HEADER_STYLE_WRITE, this);
 
             // Intent & Action & Extras
             Intent intent = getIntent();

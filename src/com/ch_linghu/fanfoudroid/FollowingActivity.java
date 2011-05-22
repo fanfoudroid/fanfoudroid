@@ -46,10 +46,10 @@ public class FollowingActivity extends UserArrayBaseActivity {
 				
 				myself = TwitterApplication.getMyselfId();
 				if(getUserId()==myself){
-					setHeaderTitle(MessageFormat.format(
+					mNavbar.setHeaderTitle(MessageFormat.format(
 							getString(R.string.profile_friends_count_title), "我"));
 				} else {
-					setHeaderTitle(MessageFormat.format(
+					mNavbar.setHeaderTitle(MessageFormat.format(
 							getString(R.string.profile_friends_count_title), userName));
 				}
 				return true;
