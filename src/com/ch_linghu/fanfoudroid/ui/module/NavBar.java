@@ -125,16 +125,9 @@ public class NavBar implements Widget {
      */
     public void setHeaderTitle(String title) {
         if (null != mTitleButton) {
-            //mTitleButton.setBackgroundDrawable(new BitmapDrawable());
             mTitleButton.setText(title);
-            LayoutParams lp = new LayoutParams(
-                    android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
-                    android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
-            lp.setMargins(3, 12, 0, 0);
-            mTitleButton.setLayoutParams(lp);
-            // 中文粗体
             TextPaint tp = mTitleButton.getPaint();
-            tp.setFakeBoldText(true);
+            tp.setFakeBoldText(true); // 中文粗体
         }
     }
     
