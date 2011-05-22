@@ -480,11 +480,6 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
         }
     }
 
-    // for Retrievable interface
-    public ImageView getRefreshButton() {
-        return refreshButton;
-    }
-
     private class RetrieveTask extends GenericTask {
         private String _errorMsg;
 

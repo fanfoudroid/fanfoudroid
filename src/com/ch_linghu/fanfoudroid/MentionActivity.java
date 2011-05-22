@@ -56,7 +56,7 @@ public class MentionActivity extends TwitterCursorBaseActivity {
 	@Override
 	protected boolean _onCreate(Bundle savedInstanceState) {
 		if (super._onCreate(savedInstanceState)){
-			setHeaderTitle("@提到我的");
+			mNavbar.setHeaderTitle("@提到我的");
 			return true;
 		}else{
 			return false;

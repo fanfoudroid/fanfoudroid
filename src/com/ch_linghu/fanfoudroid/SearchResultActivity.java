@@ -102,7 +102,7 @@ public class SearchResultActivity extends TwitterListBaseActivity implements
 				mSearchQuery = intent.getData().getLastPathSegment();
 			}
 	
-			setHeaderTitle(mSearchQuery);
+			mNavbar.setHeaderTitle(mSearchQuery);
 			setTitle(mSearchQuery);
 	
 	
@@ -165,7 +165,8 @@ public class SearchResultActivity extends TwitterListBaseActivity implements
 		mProgressText.setText(progress);
 	}
 
-	private void draw() {
+	@Override
+	protected void draw() {
 		mAdapter.refresh(mTweets);
 	}
 

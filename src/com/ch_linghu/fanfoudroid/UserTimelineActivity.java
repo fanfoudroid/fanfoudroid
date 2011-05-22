@@ -139,7 +139,7 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
             mShowName = intent.getStringExtra(EXTRA_NAME_SHOW);
 
             // Set header title
-            setHeaderTitle("@" + mShowName);
+            mNavbar.setHeaderTitle("@" + mShowName);
 
             boolean wasRunning = MiscHelper.isTrue(savedInstanceState,
                     SIS_RUNNING_KEY);
@@ -186,7 +186,8 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
         super.onDestroy();
     }
 
-    private void draw() {
+    @Override
+    protected void draw() {
         mAdapter.refresh(mTweets);
     }
 

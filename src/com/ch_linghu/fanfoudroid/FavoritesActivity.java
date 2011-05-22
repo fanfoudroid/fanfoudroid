@@ -39,8 +39,7 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.FAVORITES";
 	private static final String USER_ID = "userid";
 	private static final String USER_NAME = "userName";
-
-	static final int DIALOG_WRITE_ID = 0;
+	private static final int DIALOG_WRITE_ID = 0;
 	
 	private String userId = null;
 	private String userName = null;
@@ -57,7 +56,7 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 	@Override
 	protected boolean _onCreate(Bundle savedInstanceState) {
 		if (super._onCreate(savedInstanceState)){
-			setHeaderTitle(getActivityTitle());
+			mNavbar.setHeaderTitle(getActivityTitle());
 			
 			return true;
 		}else{

@@ -93,7 +93,7 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
     @Override
     protected boolean _onCreate(Bundle savedInstanceState) {
         if (super._onCreate(savedInstanceState)) {
-            setHeaderTitle("饭否fanfou.com");
+            mNavbar.setHeaderTitle("饭否fanfou.com");
             registerGestureListener();
             return true;
         } else {

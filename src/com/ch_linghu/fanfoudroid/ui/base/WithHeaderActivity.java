@@ -27,7 +27,7 @@ import com.ch_linghu.fanfoudroid.widget.Feedback;
 import com.ch_linghu.fanfoudroid.widget.FeedbackFactory;
 
 /**
- * @deprecated 使用 NavBar
+ * @deprecated 使用 NavBar 代替
  */
 public class WithHeaderActivity extends BaseActivity {
 	

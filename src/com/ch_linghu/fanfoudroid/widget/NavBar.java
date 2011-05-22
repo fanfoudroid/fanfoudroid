@@ -8,7 +8,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.text.TextPaint;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -34,25 +33,26 @@ public class NavBar implements Widget {
     public static final int HEADER_STYLE_BACK = 3;
     public static final int HEADER_STYLE_SEARCH = 4;
 
-    protected ImageView refreshButton;
-    protected ImageButton searchButton;
-    protected ImageButton writeButton;
-    protected TextView titleButton;
-    protected Button backButton;
-    protected ImageButton homeButton;
-    protected MenuDialog dialog;
-    protected EditText searchEdit;
+    private ImageView mRefreshButton;
+    private ImageButton mSearchButton;
+    private ImageButton mWriteButton;
+    private TextView mTitleButton;
+    private Button mBackButton;
+    private ImageButton mHomeButton;
+    private MenuDialog mDialog;
+    private EditText mSearchEdit;
 
-    // FIXME: 刷新动画二选一, DELETE ME
+    /** @deprecated 已废弃 */
     protected AnimationDrawable mRefreshAnimation;
-    protected ProgressBar mProgress = null;
-    protected ProgressBar mLoadingProgress = null;
+
+    private ProgressBar mProgressBar = null; // 进度条(横)
+    private ProgressBar mLoadingProgress = null; // 旋转图标
 
     public NavBar(int style, Context context) {
         initHeader(style, (Activity) context);
     }
 
-    protected void initHeader(int style, final Activity activity) {
+    private void initHeader(int style, final Activity activity) {
         switch (style) {
         case HEADER_STYLE_HOME:
             addTitleButtonTo(activity);
@@ -77,77 +77,95 @@ public class NavBar implements Widget {
         }
     }
 
-    /*
-     * //搜索硬按键行为, 这个不晓得还有没有用, 已经是已经被新的搜索替代的吧 ?
-     * 
-     * @Override public boolean onSearchRequested() { Intent intent = new
-     * Intent(); intent.setClass(this, SearchActivity.class);
-     * startActivity(intent); return true; }
+    /**
+     * 搜索硬按键行为
+     * @deprecated 这个不晓得还有没有用, 已经是已经被新的搜索替代的吧 ?
      */
+    public boolean onSearchRequested() {
+        /*
+        Intent intent = new Intent();
+        intent.setClass(this, SearchActivity.class);
+        startActivity(intent);
+        */
+        return true;
+    }
 
-    // LOGO按钮
-    protected void addTitleButtonTo(final Activity acticity) {
-        titleButton = (TextView) acticity.findViewById(R.id.title);
-        titleButton.setOnClickListener(new View.OnClickListener() {
+    /**
+     * 添加[LOGO/标题]按钮
+     * @param acticity
+     */
+    private void addTitleButtonTo(final Activity acticity) {
+        mTitleButton = (TextView) acticity.findViewById(R.id.title);
+        mTitleButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                int top = titleButton.getTop();
-                int height = titleButton.getHeight();
+                int top = mTitleButton.getTop();
+                int height = mTitleButton.getHeight();
                 int x = top + height;
 
-                if (null == dialog) {
+                if (null == mDialog) {
                     Log.d(TAG, "Create menu dialog.");
-                    dialog = new MenuDialog(acticity);
-                    dialog.bindEvent(acticity);
-                    dialog.setPosition(-1, x);
+                    mDialog = new MenuDialog(acticity);
+                    mDialog.bindEvent(acticity);
+                    mDialog.setPosition(-1, x);
                 }
 
                 // toggle dialog
-                if (dialog.isShowing()) {
-                    dialog.dismiss(); // 没机会触发
+                if (mDialog.isShowing()) {
+                    mDialog.dismiss(); // 没机会触发
                 } else {
-                    dialog.show();
+                    mDialog.show();
                 }
             }
         });
     }
 
+    /**
+     * 设置标题
+     * @param title
+     */
     public void setHeaderTitle(String title) {
-        if (null != titleButton) {
-            titleButton.setBackgroundDrawable(new BitmapDrawable());
-            titleButton.setText(title);
+        if (null != mTitleButton) {
+            mTitleButton.setBackgroundDrawable(new BitmapDrawable());
+            mTitleButton.setText(title);
             LayoutParams lp = new LayoutParams(
                     android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
                     android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
             lp.setMargins(3, 12, 0, 0);
-            titleButton.setLayoutParams(lp);
+            mTitleButton.setLayoutParams(lp);
             // 中文粗体
-            TextPaint tp = titleButton.getPaint();
+            TextPaint tp = mTitleButton.getPaint();
             tp.setFakeBoldText(true);
         }
     }
-
-    protected void setHeaderTitle(int resource) {
-        if (null != titleButton) {
-            titleButton.setBackgroundResource(resource);
+    
+    /**
+     * 设置标题
+     * @param resource R.string.xxx
+     */
+    public void setHeaderTitle(int resource) {
+        if (null != mTitleButton) {
+            mTitleButton.setBackgroundResource(resource);
         }
     }
 
-    // 刷新
-    protected void addRefreshButtonTo(final Activity activity) {
-        refreshButton = (ImageView) activity.findViewById(R.id.top_refresh);
+    /**
+     * 添加[刷新]按钮
+     * @param activity
+     */
+    private void addRefreshButtonTo(final Activity activity) {
+        mRefreshButton = (ImageView) activity.findViewById(R.id.top_refresh);
 
-        // FIXME: 暂时取消旋转效果, 测试ProgressBar
+        // FIXME: DELETE ME 暂时取消旋转效果, 测试ProgressBar
         // refreshButton.setBackgroundResource(R.drawable.top_refresh);
         // mRefreshAnimation = (AnimationDrawable)
         // refreshButton.getBackground();
 
-        // FIXME: DELETE ME
-        mProgress = (ProgressBar) activity.findViewById(R.id.progress_bar);
+        mProgressBar = (ProgressBar) activity.findViewById(R.id.progress_bar);
         mLoadingProgress = (ProgressBar) activity
                 .findViewById(R.id.top_refresh_progressBar);
 
-        refreshButton.setOnClickListener(new View.OnClickListener() {
+        mRefreshButton.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
                 if (activity instanceof Refreshable) {
@@ -183,10 +201,13 @@ public class NavBar implements Widget {
         }
     }
 
-    // 搜索
-    protected void addSearchButtonTo(final Activity activity) {
-        searchButton = (ImageButton) activity.findViewById(R.id.search);
-        searchButton.setOnClickListener(new View.OnClickListener() {
+    /**
+     * 添加[搜索]按钮
+     * @param activity
+     */
+    private void addSearchButtonTo(final Activity activity) {
+        mSearchButton = (ImageButton) activity.findViewById(R.id.search);
+        mSearchButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 startSearch(activity);
             }
@@ -201,16 +222,22 @@ public class NavBar implements Widget {
         return true;
     }
 
-    // 搜索框
-    protected void addSearchBoxTo(final Activity activity) {
-        searchEdit = (EditText) activity.findViewById(R.id.search_edit);
+    /**
+     * 添加[搜索框]
+     * @param activity
+     */
+    private void addSearchBoxTo(final Activity activity) {
+        mSearchEdit = (EditText) activity.findViewById(R.id.search_edit);
     }
 
-    // 撰写
-    protected void addWriteButtonTo(final Activity activity) {
-        writeButton = (ImageButton) activity.findViewById(R.id.writeMessage);
+    /**
+     * 添加[撰写]按钮
+     * @param activity
+     */
+    private void addWriteButtonTo(final Activity activity) {
+        mWriteButton = (ImageButton) activity.findViewById(R.id.writeMessage);
 
-        writeButton.setOnClickListener(new View.OnClickListener() {
+        mWriteButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // 动画
                 Animation anim = AnimationUtils.loadAnimation(v.getContext(),
@@ -225,11 +252,15 @@ public class NavBar implements Widget {
         });
     }
 
-    // 回首页
-    protected void addHomeButton(final Activity activity) {
-        homeButton = (ImageButton) activity.findViewById(R.id.home);
+    /**
+     * 添加[回首页]按钮
+     * @param activity
+     */
+    @SuppressWarnings("unused")
+    private void addHomeButton(final Activity activity) {
+        mHomeButton = (ImageButton) activity.findViewById(R.id.home);
 
-        homeButton.setOnClickListener(new View.OnClickListener() {
+        mHomeButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // 动画
                 Animation anim = AnimationUtils.loadAnimation(v.getContext(),
@@ -245,14 +276,17 @@ public class NavBar implements Widget {
         });
     }
 
-    // 返回
-    protected void addBackButtonTo(final Activity activity) {
-        backButton = (Button) activity.findViewById(R.id.top_back);
+    /**
+     * 添加[返回]按钮
+     * @param activity
+     */
+    private void addBackButtonTo(final Activity activity) {
+        mBackButton = (Button) activity.findViewById(R.id.top_back);
         // 中文粗体
         // TextPaint tp = backButton.getPaint();
         // tp.setFakeBoldText(true);
 
-        backButton.setOnClickListener(new View.OnClickListener() {
+        mBackButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Go back to previous activity
                 activity.finish();
@@ -260,82 +294,77 @@ public class NavBar implements Widget {
         });
     }
 
-    /**
-     * @deprecated 已废弃
-     * @param resource
-     * @param activity
-     */
-    private void addHeaderView(int resource, final Activity activity) {
-        // find content root view
-        ViewGroup root = (ViewGroup) activity.getWindow().getDecorView();
-        ViewGroup content = (ViewGroup) root.getChildAt(0);
-        View header = View.inflate(activity, resource, null);
-        // LayoutParams params = new
-        // LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT);
-
-        content.addView(header, 0);
-    }
-
-    protected void onDestroy() {
+    public void destroy() {
         // dismiss dialog before destroy
         // to avoid android.view.WindowLeaked Exception
-        if (dialog != null) {
-            dialog.dismiss();
+        if (mDialog != null) {
+            mDialog.dismiss();
+            mDialog = null;
         }
+        mRefreshButton = null;
+        mSearchButton = null;
+        mWriteButton = null;
+        mTitleButton = null;
+        mBackButton = null;
+        mHomeButton = null;
+        mSearchButton = null;
+        mSearchEdit = null;
+        mProgressBar = null;
+        mLoadingProgress = null;
     }
 
     public ImageView getRefreshButton() {
-        return refreshButton;
+        return mRefreshButton;
     }
 
     public ImageButton getSearchButton() {
-        return searchButton;
+        return mSearchButton;
     }
 
     public ImageButton getWriteButton() {
-        return writeButton;
+        return mWriteButton;
     }
 
     public TextView getTitleButton() {
-        return titleButton;
+        return mTitleButton;
     }
 
     public Button getBackButton() {
-        return backButton;
+        return mBackButton;
     }
 
     public ImageButton getHomeButton() {
-        return homeButton;
+        return mHomeButton;
     }
 
     public MenuDialog getDialog() {
-        return dialog;
+        return mDialog;
     }
 
     public EditText getSearchEdit() {
-        return searchEdit;
+        return mSearchEdit;
     }
 
-    public AnimationDrawable getmRefreshAnimation() {
+    /** @deprecated 已废弃 */
+    public AnimationDrawable getRefreshAnimation() {
         return mRefreshAnimation;
     }
 
-    public ProgressBar getProgress() {
-        return mProgress;
+    public ProgressBar getProgressBar() {
+        return mProgressBar;
     }
 
     public ProgressBar getLoadingProgress() {
         return mLoadingProgress;
     }
 
-
     @Override
     public Context getContext() {
-        if (null != dialog) {
-            return dialog.getContext();
+        if (null != mDialog) {
+            return mDialog.getContext();
         }
-        if (null != titleButton) {
-            return titleButton.getContext();
+        if (null != mTitleButton) {
+            return mTitleButton.getContext();
         }
         return null;
     }

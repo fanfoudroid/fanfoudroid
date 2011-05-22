@@ -31,7 +31,7 @@ public class BrowseActivity extends TwitterCursorBaseActivity {
     @Override
     protected boolean _onCreate(Bundle savedInstanceState) {
         if (super._onCreate(savedInstanceState)) {
-            setHeaderTitle(getActivityTitle());
+            mNavbar.setHeaderTitle(getActivityTitle());
             return true;
         } else {
             return false;
