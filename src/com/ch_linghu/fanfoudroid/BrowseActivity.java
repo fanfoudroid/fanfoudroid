@@ -32,6 +32,7 @@ public class BrowseActivity extends TwitterCursorBaseActivity {
     protected boolean _onCreate(Bundle savedInstanceState) {
         if (super._onCreate(savedInstanceState)) {
             mNavbar.setHeaderTitle(getActivityTitle());
+            getTweetList().removeFooterView(mListFooter); // 随便看看没有获取更多功能
             return true;
         } else {
             return false;

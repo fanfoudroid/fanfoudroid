@@ -8,23 +8,23 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 
-public class FlipperGestureListener extends SimpleOnGestureListener implements
+public class FlingGestureListener extends SimpleOnGestureListener implements
         OnTouchListener {
     private static final String TAG = "FlipperGestureListener";
 
     private static final int SWIPE_MIN_DISTANCE = 120;
-    private static final int SWIPE_MAX_OFF_PATH = 250;
+    private static final int SWIPE_MAX_DISTANCE = 350;
     private static final int SWIPE_THRESHOLD_VELOCITY = 200;
 
     private Widget.OnGestureListener mListener;
     private GestureDetector gDetector;
 
-    public FlipperGestureListener(Context context,
+    public FlingGestureListener(Context context,
             Widget.OnGestureListener listener) {
         this(context, listener, null);
     }
 
-    public FlipperGestureListener(Context context,
+    public FlingGestureListener(Context context,
             Widget.OnGestureListener listener, GestureDetector gDetector) {
         if (gDetector == null) {
             gDetector = new GestureDetector(context, this);
@@ -37,29 +37,45 @@ public class FlipperGestureListener extends SimpleOnGestureListener implements
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
             float velocityY) {
         Log.d(TAG, "On fling");
-        boolean orig = super.onFling(e1, e2, velocityX, velocityY);
+        boolean result = super.onFling(e1, e2, velocityX, velocityY);
+
+        final float xDistance = Math.abs(e1.getX() - e2.getX());
+        final float yDistance = Math.abs(e1.getY() - e2.getY());
+        velocityX = Math.abs(velocityX);
+        velocityY = Math.abs(velocityY);
 
         try {
-            if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH) {
-                return orig;
+            if (xDistance > SWIPE_MAX_DISTANCE
+                    || yDistance > SWIPE_MAX_DISTANCE) {
+                Log.d(TAG, "OFF_PATH");
+                return result;
             }
-            if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE
-                    && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                Log.d(TAG, "<------");
-                mListener.onSwipeLeft();
-                return true;
-            } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
-                    && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-                Log.d(TAG, "------>");
-                mListener.onSwipeRight();
-                return true;
+
+            if (velocityX > SWIPE_THRESHOLD_VELOCITY
+                    && xDistance > SWIPE_MIN_DISTANCE) {
+                if (e1.getX() > e2.getX()) { 
+                    Log.d(TAG, "<------");
+                    result = mListener.onFlingLeft(e1, e1, velocityX, velocityY);
+                } else {
+                    Log.d(TAG, "------>");
+                    result = mListener.onFlingRight(e1, e1, velocityX, velocityY);
+                }
+            } else if (velocityY > SWIPE_THRESHOLD_VELOCITY
+                    && yDistance > SWIPE_MIN_DISTANCE) {
+                if (e1.getY() > e2.getY()) {
+                    Log.d(TAG, "up");
+                    result = mListener.onFlingUp(e1, e1, velocityX, velocityY);
+                } else {
+                    Log.d(TAG, "down");
+                    result = mListener.onFlingDown(e1, e1, velocityX, velocityY);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(TAG, "onFling error " + e.getMessage());
         }
 
-        return orig;
+        return result;
     }
 
     @Override

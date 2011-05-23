@@ -44,7 +44,7 @@ import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskManager;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
-import com.ch_linghu.fanfoudroid.ui.module.FlipperGestureListener;
+import com.ch_linghu.fanfoudroid.ui.module.FlingGestureListener;
 import com.ch_linghu.fanfoudroid.ui.module.MyActivityFlipper;
 import com.ch_linghu.fanfoudroid.ui.module.SimpleFeedback;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
@@ -626,7 +626,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
         }
     }
     
-    protected FlipperGestureListener myGestureListener = null;
+    protected FlingGestureListener myGestureListener = null;
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -639,7 +639,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
     // use it in _onCreate
     private void registerGestureListener() {
         if (useGestrue) {
-            myGestureListener = new FlipperGestureListener(this,
+            myGestureListener = new FlingGestureListener(this,
                     MyActivityFlipper.create(this));
             getTweetList().setOnTouchListener(myGestureListener);
         }
