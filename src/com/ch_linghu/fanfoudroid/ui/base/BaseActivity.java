@@ -53,8 +53,6 @@ public class BaseActivity extends Activity {
         } else {
             PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
             mPreferences = TwitterApplication.mPref; // PreferenceManager.getDefaultSharedPreferences(this);
-
-            manageUpdateChecks();
             
             return true;
         }
@@ -154,7 +152,6 @@ public class BaseActivity extends Activity {
                 Preferences.CHECK_UPDATES_KEY, false);
 
         if (isEnabled) {
-            // TODO: 为什么要每次切换页面都重新schedule一遍?
             TwitterService.schedule(this);
         } else if (!TwitterService.isWidgetEnabled()) {
             TwitterService.unschedule(this);

@@ -90,6 +90,9 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
     protected boolean _onCreate(Bundle savedInstanceState) {
         if (super._onCreate(savedInstanceState)) {
             mNavbar.setHeaderTitle("饭否fanfou.com");
+            //仅在这个页面进行schedule的处理
+            manageUpdateChecks();
+
             return true;
         } else {
             return false;
