@@ -21,7 +21,7 @@
         <!-- 搜索按钮 -->
         <ImageButton android:id="@+id/search"
            android:background="@null"
-           android:src="@drawable/search"
+           android:src="@drawable/top_search_selector"
            android:layout_width="wrap_content"
            android:layout_height="fill_parent"
            android:layout_alignParentRight="true"

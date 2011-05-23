@@ -23,7 +23,7 @@
         <!-- 搜索按钮 -->
         <ImageButton android:id="@+id/search"
            android:background="@null"
-           android:src="@drawable/search"
+           android:src="@drawable/top_search_selector"
            android:layout_width="wrap_content"
            android:layout_height="fill_parent"
            android:layout_alignParentRight="true"
@@ -34,7 +34,7 @@
         <!-- 发布消息按钮 -->
         <ImageButton android:id="@+id/writeMessage"
            android:background="@null"
-           android:src="@drawable/messagebox"
+           android:src="@drawable/top_msg_selector"
            android:layout_width="wrap_content"
            android:layout_height="fill_parent"
            android:layout_toLeftOf="@id/search"
@@ -45,7 +45,7 @@
          <!-- 刷新按钮 -->
         <ImageButton android:id="@+id/top_refresh"
            android:background="@null"
-           android:src="@drawable/top_refresh"
+           android:src="@drawable/top_refresh_selector"
            android:layout_width="wrap_content"
            android:layout_height="fill_parent"
            android:layout_toLeftOf="@id/writeMessage"

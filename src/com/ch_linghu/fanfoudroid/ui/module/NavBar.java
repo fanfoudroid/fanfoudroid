@@ -231,11 +231,6 @@ public class NavBar implements Widget {
 
         mWriteButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                // 动画
-                Animation anim = AnimationUtils.loadAnimation(v.getContext(),
-                        R.anim.scale_lite);
-                v.startAnimation(anim);
-
                 // forward to write activity
                 Intent intent = new Intent();
                 intent.setClass(v.getContext(), WriteActivity.class);
