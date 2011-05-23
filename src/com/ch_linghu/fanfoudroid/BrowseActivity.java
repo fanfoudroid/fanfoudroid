@@ -3,15 +3,8 @@ package com.ch_linghu.fanfoudroid;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.GestureDetector;
-import android.view.GestureDetector.SimpleOnGestureListener;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.View.OnTouchListener;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
