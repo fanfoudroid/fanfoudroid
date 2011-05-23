@@ -367,22 +367,36 @@ public class WriteActivity extends BaseActivity {
                     WriteActivity.this));
 
             mTweetEdit.setText(text);
+
+            if (!TextHelper.isEmpty(text)){
+                //始终将光标置于最末尾，以方便回复消息时保持@用户在最前面
+            	EditText inputField = mTweetEdit.getEditText();
+	            inputField.setTextKeepState(text);
+	
+	            Editable etext = inputField.getText();
+	            int position = etext.length();
+	            Selection.setSelection(etext, position);
+            }
+            
             if (NEW_TWEET_ACTION.equals(action)) {
                 _reply_id = intent.getStringExtra(EXTRA_REPLY_ID);
+
             }
 
             if (REPOST_TWEET_ACTION.equals(action)) {
-                // 根据用户习惯，将光标放置在转发消息的头部或尾部
-                SharedPreferences prefereces = getPreferences();
-                boolean isAppendToTheBeginning = prefereces.getBoolean(
-                        Preferences.RT_INSERT_APPEND, true);
-
-                EditText inputField = mTweetEdit.getEditText();
-                inputField.setTextKeepState(text);
-
-                Editable etext = inputField.getText();
-                int position = (isAppendToTheBeginning) ? 1 : etext.length();
-                Selection.setSelection(etext, position);
+                if (!TextHelper.isEmpty(text)){
+                    // 如果是转发消息，则根据用户习惯，将光标放置在转发消息的头部或尾部
+                    SharedPreferences prefereces = getPreferences();
+	                boolean isAppendToTheBeginning = prefereces.getBoolean(
+	                        Preferences.RT_INSERT_APPEND, true);
+	
+	                EditText inputField = mTweetEdit.getEditText();
+		            inputField.setTextKeepState(text);
+	
+	                Editable etext = inputField.getText();
+	                int position = (isAppendToTheBeginning) ? 0 : etext.length();
+	                Selection.setSelection(etext, position);
+                }
             }
 
             View.OnClickListener sendListenner = new View.OnClickListener() {

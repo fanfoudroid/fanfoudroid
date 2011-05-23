@@ -345,12 +345,16 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
             diff = nowTime - lastFollowersRefreshTime;
             Log.d(TAG, "Last followers refresh was " + diff + " ms ago.");
 
+            //FIXME: 目前还没有对Followers列表做逻辑处理，因此暂时去除对Followers的获取。
+            //       未来需要实现@用户提示时，对Follower操作需要做一次review和refactoring
+            //       现在频繁会出现主键冲突的问题。
+            //
             // Should Refresh Followers
-            if (diff > FOLLOWERS_REFRESH_THRESHOLD
-                    && (mRetrieveTask == null || mRetrieveTask.getStatus() != GenericTask.Status.RUNNING)) {
-                Log.d(TAG, "Refresh followers.");
-                doRetrieveFollowers();
-            }
+//            if (diff > FOLLOWERS_REFRESH_THRESHOLD
+//                    && (mRetrieveTask == null || mRetrieveTask.getStatus() != GenericTask.Status.RUNNING)) {
+//                Log.d(TAG, "Refresh followers.");
+//                doRetrieveFollowers();
+//            }
             
             // 手势识别
             registerGestureListener();
