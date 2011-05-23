@@ -252,8 +252,6 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 
     public void doGetMore() {
         Log.d(TAG, "Attempting getMore.");
-
-        // 旋转刷新按钮
         mFeedback.start("");
 
         if (mGetMoreTask != null

@@ -462,8 +462,9 @@ public abstract class UserListBaseActivity extends BaseActivity implements
      * TODO：单击列表项
      */
     protected void registerOnClickListener(ListView listView) {
-
+        
         listView.setOnItemClickListener(new OnItemClickListener() {
+            
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                     int position, long id) {
