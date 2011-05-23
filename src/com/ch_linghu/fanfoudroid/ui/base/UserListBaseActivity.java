@@ -468,6 +468,7 @@ public abstract class UserListBaseActivity extends BaseActivity implements
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                     int position, long id) {
+                 //Toast.makeText(getBaseContext(), "选择第"+position+"个列表",Toast.LENGTH_SHORT).show();
                 User user = getContextItemUser(position);
                 if (user == null) {
                     Log.w(TAG, "selected item not available");

@@ -116,7 +116,9 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter{
 		//holder.lastStatus.setText(user.lastStatus);
 		
 		
-		holder.followBtn.setText(user.isFollowing?mContext.getString(R.string.general_del_friend):mContext.getString(R.string.general_add_friend));
+        holder.followBtn.setText(user.isFollowing ? mContext
+                .getString(R.string.general_del_friend) : mContext
+                .getString(R.string.general_add_friend));
 		
 		holder.followBtn.setOnClickListener(user.isFollowing?new OnClickListener(){
 
