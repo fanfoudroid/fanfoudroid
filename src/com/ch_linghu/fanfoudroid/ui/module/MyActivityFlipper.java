@@ -7,6 +7,14 @@ import com.ch_linghu.fanfoudroid.BrowseActivity;
 import com.ch_linghu.fanfoudroid.MentionActivity;
 import com.ch_linghu.fanfoudroid.TwitterActivity;
 
+/**
+ * MyActivityFlipper
+ * 利用左右滑动手势切换Activity
+ * 
+ * 1. 切换Activity, 继承与 {@link ActivityFlipper}
+ * 2. 手势识别, 实现接口 {@link Widget.OnGestureListener}
+ * 
+ */
 public class MyActivityFlipper extends ActivityFlipper implements
         Widget.OnGestureListener {
 

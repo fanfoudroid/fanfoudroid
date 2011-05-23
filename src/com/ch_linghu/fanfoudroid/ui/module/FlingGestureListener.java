@@ -8,6 +8,23 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 
+/**
+ * FlingGestureLIstener, 封装 {@link SimpleOnGestureListener} .
+ * 主要用于识别类似向上下或向左右滑动等基本手势.
+ * 
+ * 该类主要解决了与ListView自带的上下滑动冲突问题. 
+ * 解决方法为将listView的onTouchListener进行覆盖:<code>
+ * FlingGestureListener gListener = new FlingGestureListener(this,
+ *                   MyActivityFlipper.create(this));
+ * myListView.setOnTouchListener(gListener);
+ * </code>
+ * 
+ * 该类一般和实现了 {@link Widget.OnGestureListener} 接口的类共同协作. 
+ * 在识别到手势后会自动调用其相关的回调方法, 以实现手势触发事件效果.
+ * 
+ * @see Widget.OnGestureListener
+ *
+ */
 public class FlingGestureListener extends SimpleOnGestureListener implements
         OnTouchListener {
     private static final String TAG = "FlipperGestureListener";

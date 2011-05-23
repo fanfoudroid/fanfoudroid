@@ -9,14 +9,17 @@ import android.util.Log;
 import android.widget.ViewSwitcher.ViewFactory;
 
 /**
- * ActivityFlipper, just like {@link ViewFactory} but use it to switch activity.
+ * ActivityFlipper, 和 {@link ViewFactory} 类似, 只是设计用于切换activity.
+ * 
+ * 切换的前后顺序取决与注册时的先后顺序
  * 
  * USAGE: <code>
  *  ActivityFlipper mFlipper = new ActivityFlipper(this);
  *  mFlipper.addActivity(TwitterActivity.class);
  *  mFlipper.addActivity(MentionActivity.class);
+ *  mFlipper.addActivity(DmActivity.class);
  *       
- *  // switch activity when onFling
+ *  // switch activity 
  *  mFlipper.setCurrentActivity(TwitterActivity.class);
  *  mFlipper.showNext();
  *  mFlipper.showPrevious();
@@ -29,8 +32,6 @@ import android.widget.ViewSwitcher.ViewFactory;
  *  mFlipper.autoShowNext();
  *  mFlipper.autoShowPrevious();
  * </code>
- * 
- * @author lds
  * 
  */
 public class ActivityFlipper implements Widget, IFlipper {
