@@ -45,7 +45,7 @@
 			  android:layout_width="wrap_content"
 			  android:layout_height="wrap_content"
 			  android:layout_marginLeft="2dp"
-			  style="@drawable/tweet_meta_color"
+			  android:textColor="@drawable/tweet_meta_color"
 			/>
 		</LinearLayout>		
 			<Button
