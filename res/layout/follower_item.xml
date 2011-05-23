@@ -48,8 +48,9 @@
 			  android:textColor="@drawable/tweet_meta_color"
 			/>
 		</LinearLayout>		
-			<Button
-				android:id="@+id/test_btn"
+		<!-- FIXME：加上button后整个item便无法点击,现在改成TextView，但起button的作用 -->
+			<TextView
+				android:id="@+id/follow_btn"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_alignParentRight="true"

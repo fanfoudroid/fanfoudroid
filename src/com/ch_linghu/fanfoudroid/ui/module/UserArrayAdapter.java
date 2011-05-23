@@ -72,7 +72,7 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter{
 		public TextView screenName;
 		public TextView userId;
 		public TextView lastStatus;
-		public Button testBtn;
+		public TextView followBtn;
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter{
 			holder.screenName = (TextView) view.findViewById(R.id.screen_name);
 			holder.userId = (TextView) view.findViewById(R.id.user_id);
 			//holder.lastStatus = (TextView) view.findViewById(R.id.last_status);
-			holder.testBtn = (Button) view.findViewById(R.id.test_btn);
+			holder.followBtn = (TextView) view.findViewById(R.id.follow_btn);
 		
 			view.setTag(holder);
 		} else {
@@ -116,9 +116,9 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter{
 		//holder.lastStatus.setText(user.lastStatus);
 		
 		
-		holder.testBtn.setText(user.isFollowing?mContext.getString(R.string.general_del_friend):mContext.getString(R.string.general_add_friend));
+		holder.followBtn.setText(user.isFollowing?mContext.getString(R.string.general_del_friend):mContext.getString(R.string.general_add_friend));
 		
-		holder.testBtn.setOnClickListener(user.isFollowing?new OnClickListener(){
+		holder.followBtn.setOnClickListener(user.isFollowing?new OnClickListener(){
 
 			@Override
 			public void onClick(View v) {
