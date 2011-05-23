@@ -64,27 +64,21 @@ public class ActivityFlipper implements Widget, IFlipper {
         Intent intent = new Intent();
         intent.setClass(getContext(), cls);
         getContext().startActivity(intent);
-        
-        Toast myToast = new Toast(getContext());
-        ImageView myView = new ImageView(getContext());
-        int i = getIndexOf(cls);
-        switch (i) {
-        case 0:
-            myView.setImageResource(R.drawable.point_left);
-            break;
-        case 1:
-            myView.setImageResource(R.drawable.point_center);
-            break;
-        case 2:
-            myView.setImageResource(R.drawable.point_right);
-            break;
-        }
+
+    }
+
+    private static final int[] mResourceMap = new int[] {
+            R.drawable.point_left, R.drawable.point_center,
+            R.drawable.point_right };
+
+    private void showToast(int whichActicity) {
+        final Toast myToast = new Toast(getContext());
+        final ImageView myView = new ImageView(getContext());
+        myView.setImageResource(mResourceMap[whichActicity]);
         myToast.setView(myView);
         myToast.setDuration(Toast.LENGTH_SHORT);
         myToast.setGravity(Gravity.BOTTOM | Gravity.CENTER, 0, 0);
-        if (i >= 0 && i <= 2) {
-            myToast.show();
-        }
+        myToast.show();
     }
 
     /**
@@ -95,6 +89,7 @@ public class ActivityFlipper implements Widget, IFlipper {
      */
     private void launchActivity(int whichActivity) {
         launchActivity(mActivities.get(whichActivity));
+        showToast(whichActivity);
     }
 
     /**
