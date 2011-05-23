@@ -72,13 +72,15 @@ public class ActivityFlipper implements Widget, IFlipper {
             R.drawable.point_right };
 
     private void showToast(int whichActicity) {
-        final Toast myToast = new Toast(getContext());
-        final ImageView myView = new ImageView(getContext());
-        myView.setImageResource(mResourceMap[whichActicity]);
-        myToast.setView(myView);
-        myToast.setDuration(Toast.LENGTH_SHORT);
-        myToast.setGravity(Gravity.BOTTOM | Gravity.CENTER, 0, 0);
-        myToast.show();
+        if (whichActicity < mResourceMap.length) {
+            final Toast myToast = new Toast(getContext());
+            final ImageView myView = new ImageView(getContext());
+            myView.setImageResource(mResourceMap[whichActicity]);
+            myToast.setView(myView);
+            myToast.setDuration(Toast.LENGTH_SHORT);
+            myToast.setGravity(Gravity.BOTTOM | Gravity.CENTER, 0, 0);
+            myToast.show();
+        }
     }
 
     /**
