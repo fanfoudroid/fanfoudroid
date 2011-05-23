@@ -339,7 +339,7 @@ public class TwitterService extends Service {
         // interval = 1; //for debug
 
         Intent intent = new Intent(context, TwitterService.class);
-        PendingIntent pending = PendingIntent.getService(context, 0, intent, 0);
+        PendingIntent pending = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         Calendar c = new GregorianCalendar();
         c.add(Calendar.MINUTE, interval);
 
