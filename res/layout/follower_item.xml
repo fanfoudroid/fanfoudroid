@@ -48,11 +48,14 @@
 			  android:textColor="@drawable/tweet_meta_color"
 			/>
 		</LinearLayout>		
-			<Button
+		    <!-- NOTE: 不能使用Button, 否则ListView的点击事件会失效 -->
+			<TextView
 				android:id="@+id/test_btn"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_alignParentRight="true"
+				android:layout_centerVertical="true"
+				android:gravity="center"
 				android:clickable="true"
      			style="@style/Button"
 				/>

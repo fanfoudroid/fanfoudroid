@@ -72,7 +72,7 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter{
 		public TextView screenName;
 		public TextView userId;
 		public TextView lastStatus;
-		public Button testBtn;
+		public TextView testBtn;
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter{
 			holder.screenName = (TextView) view.findViewById(R.id.screen_name);
 			holder.userId = (TextView) view.findViewById(R.id.user_id);
 			//holder.lastStatus = (TextView) view.findViewById(R.id.last_status);
-			holder.testBtn = (Button) view.findViewById(R.id.test_btn);
+			holder.testBtn = (TextView) view.findViewById(R.id.test_btn);
 		
 			view.setTag(holder);
 		} else {
