@@ -99,7 +99,7 @@ public class WriteActivity extends BaseActivity {
     private NavBar mNavbar;
 
     // Picture
-    private boolean withPic = false;
+    private boolean withPic=false ;
     private File mFile;
     private ImageView mPreview;
     private ImageView imageDelete;
@@ -302,6 +302,7 @@ public class WriteActivity extends BaseActivity {
     protected boolean _onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate.");
         if (super._onCreate(savedInstanceState)) {
+            
             // init View
             setContentView(R.layout.write);
             mNavbar = new NavBar(NavBar.HEADER_STYLE_WRITE, this);
@@ -358,6 +359,7 @@ public class WriteActivity extends BaseActivity {
             imageDelete = (ImageView) findViewById(R.id.image_delete);
             imageDelete.setOnClickListener(deleteListener);
             mPreview = (ImageView) findViewById(R.id.preview);
+           
             if (Intent.ACTION_SEND.equals(intent.getAction()) && uri != null) {
                 getPic(intent, uri);
             }
@@ -429,7 +431,8 @@ public class WriteActivity extends BaseActivity {
 
         @Override
         public void onClick(View v) {
-
+            Intent intent = getIntent();
+            intent.setAction(null);
             withPic = false;
             mPreview.setVisibility(View.INVISIBLE);
             imageDelete.setVisibility(View.INVISIBLE);
@@ -592,6 +595,7 @@ public class WriteActivity extends BaseActivity {
     };
 
     private void doSend() {
+        Log.d(TAG, "dosend  "+withPic);
         startTime = System.currentTimeMillis();
         Log.d(TAG, String.format("doSend, reply_id=%s", _reply_id));
 
