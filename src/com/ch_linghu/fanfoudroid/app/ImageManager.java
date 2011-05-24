@@ -145,9 +145,8 @@ public class ImageManager implements ImageCache {
     
     public Bitmap downloadImage2(String url) throws HttpException {
         Log.d(TAG, "[NEW]Fetching image: " + url);
-        Response res = TwitterApplication.mApi.getHttpClient().get(url);
-        String filename = getMd5(url);
-        String file = writeToFile(res.asStream(), filename);
+        final Response res = TwitterApplication.mApi.getHttpClient().get(url);
+        String file = writeToFile(res.asStream(), getMd5(url));
         return BitmapFactory.decodeFile(file);
     }
     
