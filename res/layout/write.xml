@@ -93,9 +93,10 @@
         android:layout_height="50dp"
 	    android:layout_alignParentBottom="true"
 	    android:background="@drawable/send_message_block">
-		<!-- @某人 -->
+		<!-- @某人 （暂时屏蔽，等功能加上后再开放）-->
 		<ImageButton android:layout_gravity="center_vertical"
 			android:id="@+id/add_user" android:background="@null"
+			android:visibility="invisible"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:src="@drawable/toolbar_mention" android:layout_weight="0.2" />
 		<!-- 拍照按钮 -->
@@ -108,9 +109,10 @@
 			android:id="@+id/choose_images_button" android:background="@null"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:src="@drawable/toolbar_media" android:layout_weight="0.2" />
-		<!-- 发送按钮 -->
+		<!-- 发送按钮 （暂时屏蔽，以后考虑用作位置信息切换按钮） -->
 		<ImageButton android:layout_gravity="center_vertical"
 			android:id="@+id/send_button" android:background="@null"
+			android:visibility="invisible"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:src="@drawable/toolbar_geo_off" android:layout_weight="0.2" />
 </LinearLayout>
