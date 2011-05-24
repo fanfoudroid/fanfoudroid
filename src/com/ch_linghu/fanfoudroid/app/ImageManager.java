@@ -21,7 +21,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.security.MessageDigest;
@@ -30,14 +29,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpConnectionParams;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -45,6 +36,10 @@ import android.graphics.Canvas;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+
+import com.ch_linghu.fanfoudroid.TwitterApplication;
+import com.ch_linghu.fanfoudroid.http.HttpException;
+import com.ch_linghu.fanfoudroid.http.Response;
 
 /**
  * Manages retrieval and storage of icon images. Use the put method to download
@@ -62,15 +57,8 @@ public class ImageManager implements ImageCache {
     private Context mContext;
     // In memory cache.
     private Map<String, SoftReference<Bitmap>> mCache;
-    private HttpClient mClient;
     // MD5 hasher.
     private MessageDigest mDigest;
-
-    // We want the requests to timeout quickly.
-    // Tweets are processed in a batch and we don't want to stay on one too
-    // long.
-    private static final int CONNECTION_TIMEOUT_MS = 10 * 1000;
-    private static final int SOCKET_TIMEOUT_MS = 10 * 1000;
 
 	public static Bitmap drawableToBitmap(Drawable drawable) {
 		Bitmap bitmap = Bitmap
@@ -89,7 +77,6 @@ public class ImageManager implements ImageCache {
 	public ImageManager(Context context) {
         mContext = context;
         mCache = new HashMap<String, SoftReference<Bitmap>>();
-        mClient = new DefaultHttpClient();
 
         try {
             mDigest = MessageDigest.getInstance("MD5");
@@ -147,45 +134,21 @@ public class ImageManager implements ImageCache {
      * Downloads a file
      * @param url
      * @return
-     * @throws IOException
+     * @throws HttpException 
      */
-    public Bitmap fetchImage(String url) throws IOException {
+    public Bitmap downloadImage(String url) throws HttpException {
         Log.d(TAG, "Fetching image: " + url);
-
-        HttpGet get = new HttpGet(url);
-        HttpConnectionParams.setConnectionTimeout(get.getParams(),
-                CONNECTION_TIMEOUT_MS);
-        HttpConnectionParams.setSoTimeout(get.getParams(), SOCKET_TIMEOUT_MS);
-
-        HttpResponse response;
-
-        try {
-            response = mClient.execute(get);
-        } catch (ClientProtocolException e) {
-            Log.e(TAG, e.getMessage(), e);
-            throw new IOException("Invalid client protocol.");
-        }
-
-        if (response.getStatusLine().getStatusCode() != 200) {
-            throw new IOException("Non OK response: "
-                    + response.getStatusLine().getStatusCode());
-        }
-
-        HttpEntity entity = response.getEntity();
-        BufferedInputStream bis = new BufferedInputStream(entity.getContent());
-        Bitmap bitmap = BitmapFactory.decodeStream(bis); // TODO: outOfMenoryError?
-        bis.close();
-
-        return bitmap;
+        Response res = TwitterApplication.mApi.getHttpClient().get(url);
+        return BitmapFactory.decodeStream(new BufferedInputStream(res.asStream()));
     }
 
     /**
      * 下载远程图片 -> 转换为Bitmap -> 写入缓存器.
      * @param url
      * @param quality image quality 1～100
-     * @throws IOException
+     * @throws HttpException 
      */
-    public void put(String url, int quality, boolean forceOverride) throws IOException {
+    public void put(String url, int quality, boolean forceOverride) throws HttpException {
         if (!forceOverride && contains(url)) {
             // Image already exists.
             return;
@@ -193,7 +156,7 @@ public class ImageManager implements ImageCache {
             // TODO: write to file if not present.
         }
 
-        Bitmap bitmap = fetchImage(url);
+        Bitmap bitmap = downloadImage(url);
 
         if (bitmap == null) {
             Log.w(TAG, "Retrieved bitmap is null.");
@@ -205,9 +168,9 @@ public class ImageManager implements ImageCache {
     /**
      * 重载 put(String url, int quality)
      * @param url
-     * @throws IOException
+     * @throws HttpException 
      */
-    public void put(String url) throws IOException {
+    public void put(String url) throws HttpException {
         put(url, DEFAULT_COMPRESS_QUALITY, false);
     }
     
@@ -318,8 +281,9 @@ public class ImageManager implements ImageCache {
      * @param file file URL/file PATH
      * @param bitmap
      * @param quality
+     * @throws HttpException 
      */
-    public Bitmap safeGet(String file) throws IOException{
+    public Bitmap safeGet(String file) throws HttpException {
         Bitmap bitmap = lookupFile(file); // first try file.
         
         if (bitmap != null) {
@@ -329,7 +293,7 @@ public class ImageManager implements ImageCache {
             return bitmap;
         } else { //get from web
         	String url = file;
-            bitmap = fetchImage(url);
+            bitmap = downloadImage(url);
             
             put(file, bitmap); // file Cache
             return bitmap;

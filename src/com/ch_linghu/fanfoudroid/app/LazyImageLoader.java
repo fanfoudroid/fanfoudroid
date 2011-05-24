@@ -1,6 +1,5 @@
 package com.ch_linghu.fanfoudroid.app;
 
-import java.io.IOException;
 import java.lang.Thread.State;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +15,7 @@ import android.os.Message;
 import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.TwitterApplication;
+import com.ch_linghu.fanfoudroid.http.HttpException;
 
 public class LazyImageLoader {
     private static final String TAG = "ProfileImageCacheManager";
@@ -26,7 +26,6 @@ public class LazyImageLoader {
     private ImageManager mImageManager = new ImageManager(
             TwitterApplication.mContext);
     private BlockingQueue<String> mUrlList = new ArrayBlockingQueue<String>(50);
-    private BlockingQueue<String> mToShowList = new ArrayBlockingQueue<String>(1);
     private CallbackManager mCallbackManager = new CallbackManager();
 
     private GetImageTask mTask = new GetImageTask();
@@ -110,7 +109,7 @@ public class LazyImageLoader {
                     bundle.putParcelable(EXTRA_BITMAP, bitmap);
                     handler.sendMessage(m);
                 }
-            } catch (IOException ioe) {
+            } catch (HttpException ioe) {
                 Log.e(TAG, "Get Image failed, " + ioe.getMessage());
             } catch (InterruptedException e) {
                 Log.w(TAG, e.getMessage());
@@ -139,14 +138,6 @@ public class LazyImageLoader {
     Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            
-            try {
-                Thread.currentThread().sleep(1000);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            
             switch (msg.what) {
             case HANDLER_MESSAGE_ID:
                 final Bundle bundle = msg.getData();
