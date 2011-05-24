@@ -14,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
 
+import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.util.DebugTimer;
 
 public class Response {
@@ -47,7 +48,9 @@ public class Response {
     }
 
     public String asString() throws ResponseException {
-        DebugTimer.betweenStart("AS STRING");
+    	if (TwitterApplication.DEBUG){
+    		DebugTimer.betweenStart("AS STRING");
+    	}
 
         String str = null;
         InputStream is = asStream();
@@ -79,7 +82,9 @@ public class Response {
                 }
             }
         }
-        DebugTimer.betweenEnd("AS STRING");
+        if(TwitterApplication.DEBUG){
+        	DebugTimer.betweenEnd("AS STRING");
+        }
         return str;
     }
 

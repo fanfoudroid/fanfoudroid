@@ -49,7 +49,7 @@ public class TwitterApplication extends Application {
 	
 	public static int networkType = 0;
 
-	private final static boolean DEBUG = Configuration.getDebug();
+	public final static boolean DEBUG = Configuration.getDebug();
 
 	// FIXME:获取登录用户id, 据肉眼观察，刚注册的用户系统分配id都是~开头的，因为不知道
 	// 用户何时去修改这个ID，目前只有把所有以~开头的ID在每次需要UserId时都去服务器

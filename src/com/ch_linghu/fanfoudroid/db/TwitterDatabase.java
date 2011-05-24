@@ -395,7 +395,9 @@ public class TwitterDatabase {
      * 		写入的记录条数
      */
     public int putTweets(List<Tweet> tweets, String owner, int type, boolean isUnread) {
-        DebugTimer.betweenStart("Status DB");
+    	if (TwitterApplication.DEBUG){
+    		DebugTimer.betweenStart("Status DB");
+    	}
         if (null == tweets || 0 == tweets.size())
         {
             return 0;
@@ -427,7 +429,9 @@ public class TwitterDatabase {
         } finally {
             db.endTransaction();
         }
-        DebugTimer.betweenEnd("Status DB");
+        if (TwitterApplication.DEBUG){
+        	DebugTimer.betweenEnd("Status DB");
+        }
         return result;
     }
 

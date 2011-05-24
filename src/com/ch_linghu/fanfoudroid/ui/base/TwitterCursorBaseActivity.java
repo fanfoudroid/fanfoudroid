@@ -124,14 +124,19 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
             loadMoreGIF.setVisibility(View.GONE);
 
             // DEBUG
-            DebugTimer.stop();
-            Log.v("DEBUG", DebugTimer.getProfileAsString());
+            if (TwitterApplication.DEBUG){
+            	DebugTimer.stop();
+            	Log.v("DEBUG", DebugTimer.getProfileAsString());
+            }
         }
 
         @Override
         public void onPreExecute(GenericTask task) {
             mRetrieveCount = 0;
-            DebugTimer.start();
+            
+            if(TwitterApplication.DEBUG){
+            	DebugTimer.start();
+            }
         }
 
         @Override
