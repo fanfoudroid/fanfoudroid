@@ -29,6 +29,13 @@ public class LazyImageLoader {
 
     private GetImageTask mTask = new GetImageTask();
 
+    /**
+     * 取图片, 可能直接从cache中返回, 或下载图片后返回
+     * 
+     * @param url
+     * @param callback
+     * @return
+     */
     public Bitmap get(String url, ImageLoaderCallback callback) {
         Bitmap bitmap = ImageCache.mDefaultBitmap;
         if (mImageManager.isContains(url)) {
@@ -36,42 +43,40 @@ public class LazyImageLoader {
         } else {
             // bitmap不存在，启动Task进行下载
             mCallbackManager.put(url, callback);
-            doGetImage(url);
+            startDownloadThread(url);
         }
         return bitmap;
     }
 
-    // Low-level interface to get ImageManager
-    public ImageManager getImageManager() {
-        return mImageManager;
-    }
+    private void startDownloadThread(String url) {
+        if (url != null) {
+            addUrlToDownloadQueue(url);
+        }
 
-    private void putUrl(String url) throws InterruptedException {
-        if (!mUrlList.contains(url)) {
-            mUrlList.put(url);
+        // Start Thread
+        State state = mTask.getState();
+        if (Thread.State.NEW == state) {
+            mTask.start(); // first start
+        } else if (Thread.State.TERMINATED == state) {
+            mTask = new GetImageTask(); // restart
+            mTask.start();
         }
     }
-
-    private void doGetImage(String url) {
-        if (url != null) {
+    
+    private void addUrlToDownloadQueue(String url) {
+        if (!mUrlList.contains(url)) {
             try {
-                putUrl(url);
+                mUrlList.put(url);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
-
-        // start thread if it's not started yet
-        Log.i("LDS", mTask.getState() + "");
-
-        State state = mTask.getState();
-        if (Thread.State.NEW == state) {
-            mTask.start();
-        } else if (Thread.State.TERMINATED == state) {
-            mTask = new GetImageTask(); // restart thread
-            mTask.start();
-        }
+    }
+    
+    // Low-level interface to get ImageManager
+    public ImageManager getImageManager() {
+        return mImageManager;
     }
 
     private class GetImageTask extends Thread {
