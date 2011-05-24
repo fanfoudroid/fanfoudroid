@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.ref.SoftReference;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -141,7 +142,15 @@ public class ImageManager implements ImageCache {
         Response res = TwitterApplication.mApi.getHttpClient().get(url);
         return BitmapFactory.decodeStream(new BufferedInputStream(res.asStream()));
     }
-
+    
+    public Bitmap downloadImage2(String url) throws HttpException {
+        Log.d(TAG, "[NEW]Fetching image: " + url);
+        Response res = TwitterApplication.mApi.getHttpClient().get(url);
+        String filename = getMd5(url);
+        String file = writeToFile(res.asStream(), filename);
+        return BitmapFactory.decodeFile(file);
+    }
+    
     /**
      * 下载远程图片 -> 转换为Bitmap -> 写入缓存器.
      * @param url
@@ -157,11 +166,10 @@ public class ImageManager implements ImageCache {
         }
 
         Bitmap bitmap = downloadImage(url);
-
-        if (bitmap == null) {
-            Log.w(TAG, "Retrieved bitmap is null.");
+        if (bitmap != null) {
+            put(url, bitmap, quality); // file cache
         } else {
-            put(url, bitmap, quality);
+            Log.w(TAG, "Retrieved bitmap is null.");
         }
     }
     
@@ -262,7 +270,36 @@ public class ImageManager implements ImageCache {
                 Log.e(TAG, "Could not close file.");
             }
         }
-       
+    }
+    
+    private String writeToFile(InputStream is, String filename) {
+        Log.d("LDS", "new write to file");
+        BufferedInputStream in = null;
+        BufferedOutputStream out = null;
+        try {
+            in  = new BufferedInputStream(is);
+            out = new BufferedOutputStream(
+                    mContext.openFileOutput(filename, Context.MODE_PRIVATE));
+            byte[] buffer = new byte[1024];
+            int l;
+            while ((l = in.read(buffer)) != -1) {
+                out.write(buffer, 0, l);
+            }
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        } finally {
+            try {
+                if (in  != null) in.close();
+                if (out != null) {
+                    Log.d("LDS", "new write to file to -> " + filename);
+                    out.flush();
+                    out.close();
+                }
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+        }
+        return mContext.getFilesDir() + "/" + filename;
     }
     
     public Bitmap get(File file) {
@@ -293,9 +330,10 @@ public class ImageManager implements ImageCache {
             return bitmap;
         } else { //get from web
         	String url = file;
-            bitmap = downloadImage(url);
+            bitmap = downloadImage2(url);
             
-            put(file, bitmap); // file Cache
+            // 注释掉以测试新的写入文件方法
+            //put(file, bitmap); // file Cache
             return bitmap;
         }
     }
