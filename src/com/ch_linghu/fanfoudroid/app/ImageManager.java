@@ -320,29 +320,20 @@ public class ImageManager implements ImageCache {
      * @param quality
      */
     public Bitmap safeGet(String file) throws IOException{
-        SoftReference<Bitmap> ref;
-        Bitmap bitmap;
-
-        // first try file.
-        bitmap = lookupFile(file);
-
+        Bitmap bitmap = lookupFile(file); // first try file.
+        
         if (bitmap != null) {
-            synchronized (this) {
+            synchronized (this) { // memory cache
                 mCache.put(file, new SoftReference<Bitmap>(bitmap));
             }
-
             return bitmap;
-        } else {
-        	//get from web
+        } else { //get from web
         	String url = file;
             bitmap = fetchImage(url);
+            
+            put(file, bitmap); // file Cache
+            return bitmap;
         }
-        
-        //写入Cache
-        put(file, bitmap);
-        
-        return bitmap;
-    	
     }
     
     /**

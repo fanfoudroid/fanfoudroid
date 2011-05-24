@@ -26,6 +26,7 @@ public class LazyImageLoader {
     private ImageManager mImageManager = new ImageManager(
             TwitterApplication.mContext);
     private BlockingQueue<String> mUrlList = new ArrayBlockingQueue<String>(50);
+    private BlockingQueue<String> mToShowList = new ArrayBlockingQueue<String>(1);
     private CallbackManager mCallbackManager = new CallbackManager();
 
     private GetImageTask mTask = new GetImageTask();
@@ -138,6 +139,14 @@ public class LazyImageLoader {
     Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
+            
+            try {
+                Thread.currentThread().sleep(1000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            
             switch (msg.what) {
             case HANDLER_MESSAGE_ID:
                 final Bundle bundle = msg.getData();
