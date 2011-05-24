@@ -39,24 +39,18 @@ class CallbackManager{
 		Log.d(TAG, "call url=" + url);
 		ArrayList<LazyImageLoader.ImageLoaderCallback> callbackList = mCallbackMap.get(url);
 		if (callbackList == null){
+			//FIXME: 有时会到达这里，原因我还没想明白
 			Log.d(TAG, "callbackList=null");				
 			return;
 		}
 		for (LazyImageLoader.ImageLoaderCallback callback : callbackList){
-			Log.d(TAG, "list count="+mCallbackMap.get(url).size());
 			if(callback != null){
 				callback.refresh(url, bitmap);
-				Log.d(TAG, "remove from list");
-				callbackList.remove(callback);
-			}else{
-				Log.d(TAG, "callback=null");				
 			}
 		}
 
-		if (mCallbackMap.get(url).size() == 0){
-			Log.d(TAG, "url:" + url + " no more callback, remove from map");				
-			mCallbackMap.remove(url);
-		}
+		callbackList.clear();
+		mCallbackMap.remove(url);
 	}
 	
 	
