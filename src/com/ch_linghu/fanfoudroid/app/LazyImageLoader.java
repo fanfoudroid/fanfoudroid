@@ -3,6 +3,7 @@ package com.ch_linghu.fanfoudroid.app;
 import java.io.IOException;
 import java.lang.Thread.State;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -158,10 +159,10 @@ public class LazyImageLoader {
 
     public static class CallbackManager {
         private static final String TAG = "CallbackManager";
-        private ConcurrentHashMap<String, ArrayList<ImageLoaderCallback>> mCallbackMap;
+        private ConcurrentHashMap<String, List<ImageLoaderCallback>> mCallbackMap;
 
         public CallbackManager() {
-            mCallbackMap = new ConcurrentHashMap<String, ArrayList<ImageLoaderCallback>>();
+            mCallbackMap = new ConcurrentHashMap<String, List<ImageLoaderCallback>>();
         }
 
         public void put(String url, ImageLoaderCallback callback) {
@@ -169,6 +170,7 @@ public class LazyImageLoader {
             if (!mCallbackMap.containsKey(url)) {
                 Log.v(TAG, "url does not exist, add list to map");
                 mCallbackMap.put(url, new ArrayList<ImageLoaderCallback>());
+                //mCallbackMap.put(url, Collections.synchronizedList(new ArrayList<ImageLoaderCallback>()));
             }
 
             mCallbackMap.get(url).add(callback);
@@ -177,7 +179,7 @@ public class LazyImageLoader {
 
         public void call(String url, Bitmap bitmap) {
             Log.v(TAG, "call url=" + url);
-            ArrayList<ImageLoaderCallback> callbackList = mCallbackMap.get(url);
+            List<ImageLoaderCallback> callbackList = mCallbackMap.get(url);
             if (callbackList == null) {
                 // FIXME: 有时会到达这里，原因我还没想明白
                 Log.e(TAG, "callbackList=null");
