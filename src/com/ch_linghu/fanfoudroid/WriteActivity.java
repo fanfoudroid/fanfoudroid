@@ -91,7 +91,7 @@ public class WriteActivity extends BaseActivity {
     private TweetEdit mTweetEdit;
     private EditText mTweetEditText;
     private TextView mProgressText;
-    private ImageButton mSendButton;
+    private ImageButton mLocationButton;
     private ImageButton chooseImagesButton;
     private ImageButton mCameraButton;
     private ProgressDialog dialog;
@@ -328,8 +328,11 @@ public class WriteActivity extends BaseActivity {
             ImageButton mAddUserButton = (ImageButton) findViewById(R.id.add_user);
             mAddUserButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    Toast.makeText(WriteActivity.this, "该功能开发中, 敬请期待",
-                            Toast.LENGTH_SHORT).show();
+                    
+                    int start = mTweetEditText.getSelectionStart();
+                    int end = mTweetEditText.getSelectionEnd();
+                    mTweetEditText.getText().replace(Math.min(start, end),
+                            Math.max(start, end), "@");
                 }
             });
 
@@ -398,18 +401,22 @@ public class WriteActivity extends BaseActivity {
 	                Selection.setSelection(etext, position);
                 }
             }
+            
 
-            View.OnClickListener sendListenner = new View.OnClickListener() {
+            mLocationButton = (ImageButton) findViewById(R.id.location_button);
+            mLocationButton.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    Toast.makeText(WriteActivity.this, "LBS地理定位功能开发中, 敬请期待",
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            Button mTopSendButton = (Button) findViewById(R.id.top_send_btn);
+            mTopSendButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     doSend();
                 }
-            };
-
-            mSendButton = (ImageButton) findViewById(R.id.send_button);
-            mSendButton.setOnClickListener(sendListenner);
-
-            Button mTopSendButton = (Button) findViewById(R.id.top_send_btn);
-            mTopSendButton.setOnClickListener(sendListenner);
+            });
 
             return true;
         } else {
@@ -743,13 +750,13 @@ public class WriteActivity extends BaseActivity {
 
     private void enableEntry() {
         mTweetEdit.setEnabled(true);
-        mSendButton.setEnabled(true);
+        mLocationButton.setEnabled(true);
         chooseImagesButton.setEnabled(true);
     }
 
     private void disableEntry() {
         mTweetEdit.setEnabled(false);
-        mSendButton.setEnabled(false);
+        mLocationButton.setEnabled(false);
         chooseImagesButton.setEnabled(false);
     }
 
