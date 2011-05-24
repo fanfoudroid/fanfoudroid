@@ -2,6 +2,7 @@ package com.ch_linghu.fanfoudroid.app;
 
 import java.io.IOException;
 import java.lang.Thread.State;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -15,6 +16,51 @@ import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.TwitterApplication;
 
+class CallbackManager{
+	private static final String TAG = "CallbackManager";
+	private HashMap<String, ArrayList<LazyImageLoader.ImageLoaderCallback>> mCallbackMap;
+	
+	public CallbackManager(){
+		mCallbackMap = new HashMap<String, ArrayList<LazyImageLoader.ImageLoaderCallback>>();
+	}
+	
+	public void put(String url, LazyImageLoader.ImageLoaderCallback callback){
+		Log.d(TAG, "url="+url);
+		if (!mCallbackMap.containsKey(url)){
+			Log.d(TAG, "url does not exist, add list to map");
+			mCallbackMap.put(url, new ArrayList<LazyImageLoader.ImageLoaderCallback>());
+		}
+		
+		mCallbackMap.get(url).add(callback);
+		Log.d(TAG, "Add callback to list, count(url)=" + mCallbackMap.get(url).size());
+	}
+	
+	public void call(String url, Bitmap bitmap){
+		Log.d(TAG, "call url=" + url);
+		ArrayList<LazyImageLoader.ImageLoaderCallback> callbackList = mCallbackMap.get(url);
+		if (callbackList == null){
+			Log.d(TAG, "callbackList=null");				
+			return;
+		}
+		for (LazyImageLoader.ImageLoaderCallback callback : callbackList){
+			Log.d(TAG, "list count="+mCallbackMap.get(url).size());
+			if(callback != null){
+				callback.refresh(url, bitmap);
+				Log.d(TAG, "remove from list");
+				callbackList.remove(callback);
+			}else{
+				Log.d(TAG, "callback=null");				
+			}
+		}
+
+		if (mCallbackMap.get(url).size() == 0){
+			Log.d(TAG, "url:" + url + " no more callback, remove from map");				
+			mCallbackMap.remove(url);
+		}
+	}
+	
+	
+}
 public class LazyImageLoader {
     private static final String TAG = "ProfileImageCacheManager";
     public static final int HANDLER_MESSAGE_ID = 1;
@@ -23,17 +69,17 @@ public class LazyImageLoader {
 
     private ImageManager mImageManager = new ImageManager(TwitterApplication.mContext);
     private BlockingQueue<String> mUrlList = new ArrayBlockingQueue<String>(50);
-    private HashMap<String, ImageLoaderCallback> mCallbackMap = new HashMap<String, ImageLoaderCallback>();
+    private CallbackManager mCallbackManager = new CallbackManager();
 
     private GetImageTask mTask = new GetImageTask();
 
     public Bitmap get(String url, ImageLoaderCallback callback) {
-        Bitmap bitmap = ImageManager.mDefaultBitmap;
+        Bitmap bitmap = ImageCache.mDefaultBitmap;
         if(mImageManager.isContains(url)){
             bitmap = mImageManager.get(url);
         } else {
             // bitmap不存在，启动Task进行下载
-            mCallbackMap.put(url, callback);
+            mCallbackManager.put(url, callback);
             doGetImage(url);
         }
         return bitmap;
@@ -77,7 +123,8 @@ public class LazyImageLoader {
         private static final int TIMEOUT = 3*60; 
         private boolean isPermanent = true;
         
-        public void run() {
+        @Override
+		public void run() {
             try {
                 while ( !mTaskTerminated ) {
                     String url;
@@ -88,7 +135,7 @@ public class LazyImageLoader {
                         if (null == url) { break; } // no more, shutdown
                     }
                     
-                    Bitmap bitmap = ImageManager.mDefaultBitmap;
+                    Bitmap bitmap = ImageCache.mDefaultBitmap;
                     bitmap = mImageManager.safeGet(url);
 
                     // use handler to process callback
@@ -122,7 +169,8 @@ public class LazyImageLoader {
     }
 
     Handler handler = new Handler() {
-        public void handleMessage(Message msg) {
+        @Override
+		public void handleMessage(Message msg) {
             switch (msg.what) {
                 case HANDLER_MESSAGE_ID:
                     Bundle bundle = msg.getData();
@@ -130,11 +178,7 @@ public class LazyImageLoader {
                     Bitmap bitmap = (Bitmap) (bundle.get(EXTRA_BITMAP));
 
                     // callback
-                    ImageLoaderCallback callback = mCallbackMap.get(url);
-                    mCallbackMap.remove(url);
-                    if (callback != null) {
-                        callback.refresh(url, bitmap); // FIXME: 刷新list adapter 会造成UI不流畅, 测试直接使用 imageView.setImageDrawable() 效果比较好
-                    }
+                    mCallbackManager.call(url, bitmap);
                     break;
                 default:
                     // do nothing.
