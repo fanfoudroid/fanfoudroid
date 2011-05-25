@@ -65,10 +65,11 @@
             <!-- More -->
             <ImageButton android:id="@+id/person_more"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="fill_parent"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="8dp"
+                android:paddingLeft="40dp"
                 android:src="@drawable/status_arr_selector" 
                 android:background="@null"
                 />
