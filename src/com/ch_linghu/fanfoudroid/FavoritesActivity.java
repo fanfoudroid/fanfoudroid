@@ -27,10 +27,10 @@ import android.view.Menu;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
+import com.ch_linghu.fanfoudroid.fanfou.Paging;
+import com.ch_linghu.fanfoudroid.fanfou.Status;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterCursorBaseActivity;
-import com.ch_linghu.fanfoudroid.weibo.Paging;
-import com.ch_linghu.fanfoudroid.weibo.Status;
 
 //TODO: 数据来源换成 getFavorites()
 public class FavoritesActivity extends TwitterCursorBaseActivity {
@@ -39,8 +39,7 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.FAVORITES";
 	private static final String USER_ID = "userid";
 	private static final String USER_NAME = "userName";
-
-	static final int DIALOG_WRITE_ID = 0;
+	private static final int DIALOG_WRITE_ID = 0;
 	
 	private String userId = null;
 	private String userName = null;
@@ -57,7 +56,7 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 	@Override
 	protected boolean _onCreate(Bundle savedInstanceState) {
 		if (super._onCreate(savedInstanceState)){
-			setHeaderTitle(getActivityTitle());
+			mNavbar.setHeaderTitle(getActivityTitle());
 			
 			return true;
 		}else{

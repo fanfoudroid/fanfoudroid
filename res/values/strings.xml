@@ -53,8 +53,8 @@
     <string name="cmenu_user_senddm_suffix">发私信</string>
     <string name="cmenu_user_sendmention_suffix">留言</string>
     <!-- Login页面 -->
-    <string name="login_label_username">帐号</string>
-    <string name="login_label_password">密码</string>
+    <string name="login_label_username">Email或手机号:</string>
+    <string name="login_label_password">饭否密码:</string>
     <string name="login_label_signin">登 录</string>
     <string name="login_status_logging_in">登录中...</string>
     <string name="login_status_null_username_or_password">帐号和密码不能为空。</string>
@@ -71,6 +71,7 @@
     <string name="user_query_status_success">查询成功！</string>
     <!-- Write页面 -->
     <string name="write_label_send">发送</string>
+    <string name="write_label_send_hint">你在做什么？</string>
     <string name="write_label_choose_images">插入图片</string>
     <string name="write_label_send_in_background">后台发送</string>
     <string name="write_label_take_a_picture">相机拍摄</string>
@@ -116,7 +117,7 @@
     <string name="pref_check_updates_interval_title">检查频率</string>
     <string name="pref_check_updates_interval_summary">两次检查的间隔分钟数</string>
     <string name="pref_check_updates_interval_dialog_title">间隔分钟数:</string>
-    <string name="pref_check_updates_interval_default">3</string>
+    <string name="pref_check_updates_interval_default">10</string>
     <string name="pref_check_updates_vibrate_title">振动</string>
     <string name="pref_check_updates_vibrate_summary">有新消息提示时手机振动</string>
     <string name="pref_check_updates_ringtone_title">选择提示铃音</string>
@@ -145,6 +146,9 @@
     <string name="pref_network_type_cmwap">cmwap</string>
     <string name="pref_network_type_3g">3G/wifi</string>
     <string name="pref_network_type_summary">选择当前网络的接入点或类型</string>
+    <string name="pref_title_labs">实验室</string>
+    <string name="pref_use_gestrue_title">手势识别</string>
+    <string name="pref_use_gestrue_summary">使用手势左右滑动切换页面</string>
     <!-- Service -->
     <string name="service_new_twitter_updates">新消息</string>
     <string name="service_x_new_tweets">{0} 条新消息</string>
@@ -189,6 +193,7 @@
     <string name="general_lable_cancel">取消</string>
     <string name="general_del_friend">取消关注</string>
     <string name="general_add_friend">添加关注</string>
+    <string name="general_add_friend_short">关注</string>
     <!-- PAGES -->
     <string name="pages_mine">我的消息</string>
     <string name="pages_profile">个人资料</string>

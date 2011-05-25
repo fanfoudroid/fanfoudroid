@@ -22,8 +22,15 @@ import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.SearchActivity;
 import com.ch_linghu.fanfoudroid.TwitterActivity;
 import com.ch_linghu.fanfoudroid.WriteActivity;
+import com.ch_linghu.fanfoudroid.ui.module.Feedback;
+import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory;
+import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory.FeedbackType;
 import com.ch_linghu.fanfoudroid.ui.module.MenuDialog;
+import com.ch_linghu.fanfoudroid.ui.module.NavBar;
 
+/**
+ * @deprecated 使用 {@link NavBar} 代替
+ */
 public class WithHeaderActivity extends BaseActivity {
 	
 	private static final String TAG = "WithHeaderActivity";
@@ -42,7 +49,12 @@ public class WithHeaderActivity extends BaseActivity {
 	protected MenuDialog dialog;
 	protected EditText searchEdit;
 	
+	protected Feedback mFeedback;
+	
+	// FIXME: 刷新动画二选一, DELETE ME
 	protected AnimationDrawable mRefreshAnimation;
+	protected ProgressBar mProgress = null;
+	protected ProgressBar mLoadingProgress = null;
 	
 	//搜索硬按键行为
 	@Override
@@ -55,10 +67,7 @@ public class WithHeaderActivity extends BaseActivity {
 
 	// LOGO按钮
 	protected void addTitleButton() {
-		
-		// Find View
 		titleButton = (TextView) findViewById(R.id.title); 
-		
 		titleButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				
@@ -102,8 +111,16 @@ public class WithHeaderActivity extends BaseActivity {
 	protected void addRefreshButton() {
 		final Activity that = this;
 		refreshButton = (ImageView) findViewById(R.id.top_refresh);
-		refreshButton.setBackgroundResource(R.drawable.top_refresh);
-        mRefreshAnimation = (AnimationDrawable) refreshButton.getBackground();
+		
+		// FIXME: 暂时取消旋转效果, 测试ProgressBar
+		//refreshButton.setBackgroundResource(R.drawable.top_refresh);
+        //mRefreshAnimation = (AnimationDrawable) refreshButton.getBackground();
+		
+		// FIXME: DELETE ME
+        mProgress = (ProgressBar) findViewById(R.id.progress_bar);
+        mLoadingProgress = (ProgressBar) findViewById(R.id.top_refresh_progressBar);
+        
+        mFeedback = FeedbackFactory.create(this, FeedbackType.PROGRESS);
 		
 		refreshButton.setOnClickListener(new View.OnClickListener() {
 		    
@@ -126,10 +143,21 @@ public class WithHeaderActivity extends BaseActivity {
 	    setRefreshAnimation(true);
 	}
 	
+	/**
+	 * @param progress 0~100
+	 * @deprecated use feedback
+	 */
+	public void setGlobalProgress(int progress) {
+	    if ( null != mProgress) {
+	        mProgress.setProgress(progress);
+	    }
+	}
+	
     /**
      * Start/Stop Top Refresh Button's Animation
      * 
      * @param animate start or stop
+     * @deprecated use feedback
      */
 	public void setRefreshAnimation(boolean animate) {
 	    if (mRefreshAnimation != null) {

@@ -1,7 +1,5 @@
 package com.ch_linghu.fanfoudroid.db;
 
-import java.text.ParseException;
-
 import android.database.Cursor;
 import android.provider.BaseColumns;
 import android.util.Log;

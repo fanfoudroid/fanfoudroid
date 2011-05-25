@@ -21,17 +21,17 @@ import android.widget.Toast;
 
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
+import com.ch_linghu.fanfoudroid.app.LazyImageLoader.ImageLoaderCallback;
+import com.ch_linghu.fanfoudroid.app.Preferences;
 import com.ch_linghu.fanfoudroid.data.User;
-import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
-import com.ch_linghu.fanfoudroid.helper.utils.*;
+import com.ch_linghu.fanfoudroid.fanfou.Weibo;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
-import com.ch_linghu.fanfoudroid.weibo.Weibo;
+import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 //TODO：
 /*
@@ -71,7 +71,7 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter{
 		public TextView screenName;
 		public TextView userId;
 		public TextView lastStatus;
-		public TextView testBtn;
+		public TextView followBtn;
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter{
 			holder.screenName = (TextView) view.findViewById(R.id.screen_name);
 			holder.userId = (TextView) view.findViewById(R.id.user_id);
 			//holder.lastStatus = (TextView) view.findViewById(R.id.last_status);
-			holder.testBtn=(TextView)view.findViewById(R.id.test_btn);
+			holder.followBtn = (TextView) view.findViewById(R.id.follow_btn);
 		
 			view.setTag(holder);
 		} else {
@@ -103,7 +103,7 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter{
 		String profileImageUrl = user.profileImageUrl;
 		if (useProfileImage){
 			if (!TextHelper.isEmpty(profileImageUrl)) {
-				holder.profileImage.setImageBitmap(TwitterApplication.mProfileImageCacheManager
+				holder.profileImage.setImageBitmap(TwitterApplication.mImageLoader
 						.get(profileImageUrl, callback));
 			}
 			}else{
@@ -115,9 +115,11 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter{
 		//holder.lastStatus.setText(user.lastStatus);
 		
 		
-		holder.testBtn.setText(user.isFollowing?mContext.getString(R.string.general_del_friend):mContext.getString(R.string.general_add_friend));
+        holder.followBtn.setText(user.isFollowing ? mContext
+                .getString(R.string.general_del_friend) : mContext
+                .getString(R.string.general_add_friend));
 		
-		holder.testBtn.setOnClickListener(user.isFollowing?new OnClickListener(){
+		holder.followBtn.setOnClickListener(user.isFollowing?new OnClickListener(){
 
 			@Override
 			public void onClick(View v) {
@@ -144,7 +146,7 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter{
 		notifyDataSetChanged();
 	}
 	
-	private ProfileImageCacheCallback callback = new ProfileImageCacheCallback(){
+	private ImageLoaderCallback callback = new ImageLoaderCallback(){
 
 		@Override
 		public void refresh(String url, Bitmap bitmap) {

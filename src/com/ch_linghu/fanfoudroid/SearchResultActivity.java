@@ -2,6 +2,7 @@ package com.ch_linghu.fanfoudroid;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import android.app.SearchManager;
 import android.content.Intent;
@@ -12,7 +13,8 @@ import android.view.Menu;
 import android.widget.ListView;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.helper.utils.*;
+import com.ch_linghu.fanfoudroid.fanfou.Query;
+import com.ch_linghu.fanfoudroid.fanfou.QueryResult;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
@@ -21,10 +23,10 @@ import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterListBaseActivity;
 import com.ch_linghu.fanfoudroid.ui.module.MyListView;
+import com.ch_linghu.fanfoudroid.ui.module.SimpleFeedback;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 import com.ch_linghu.fanfoudroid.ui.module.TweetArrayAdapter;
-import com.ch_linghu.fanfoudroid.weibo.Query;
-import com.ch_linghu.fanfoudroid.weibo.QueryResult;
+import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 public class SearchResultActivity extends TwitterListBaseActivity implements
 		MyListView.OnNeedMoreListener {
@@ -56,7 +58,6 @@ public class SearchResultActivity extends TwitterListBaseActivity implements
 	private TaskListener mSearchTaskListener = new TaskAdapter(){
 		@Override
 		public void onPreExecute(GenericTask task) {
-			animRotate(refreshButton);   
 			if (mNextPage == 1) {
 				updateProgress(getString(R.string.page_status_refreshing));
 			} else {
@@ -71,7 +72,6 @@ public class SearchResultActivity extends TwitterListBaseActivity implements
 
 		@Override
 		public void onPostExecute(GenericTask task, TaskResult result) {
-			setRefreshAnimation(false);   
 			if (result == TaskResult.AUTH_ERROR) {
 				logout();
 			} else if (result == TaskResult.OK) {
@@ -102,7 +102,7 @@ public class SearchResultActivity extends TwitterListBaseActivity implements
 				mSearchQuery = intent.getData().getLastPathSegment();
 			}
 	
-			setHeaderTitle(mSearchQuery);
+			mNavbar.setHeaderTitle(mSearchQuery);
 			setTitle(mSearchQuery);
 	
 	
@@ -165,7 +165,8 @@ public class SearchResultActivity extends TwitterListBaseActivity implements
 		mProgressText.setText(progress);
 	}
 
-	private void draw() {
+	@Override
+	protected void draw() {
 		mAdapter.refresh(mTweets);
 	}
 
@@ -176,6 +177,7 @@ public class SearchResultActivity extends TwitterListBaseActivity implements
 			return;
 		}else{
 			mSearchTask = new SearchTask();
+			mSearchTask.setFeedback(mFeedback);
 			mSearchTask.setListener(mSearchTaskListener);
 			mSearchTask.execute();
 		}
@@ -199,10 +201,12 @@ public class SearchResultActivity extends TwitterListBaseActivity implements
 				Log.e(TAG, e.getMessage(), e);
 				return TaskResult.IO_ERROR;
 			}
-
+			List<com.ch_linghu.fanfoudroid.fanfou.Status> statuses = result.getStatus();
 			HashSet<String> imageUrls = new HashSet<String>();
+			
+			publishProgress(SimpleFeedback.calProgressBySize(40, 20, statuses));
 
-			for (com.ch_linghu.fanfoudroid.weibo.Status status : result.getStatus()) {
+			for (com.ch_linghu.fanfoudroid.fanfou.Status status : statuses) {
 				if (isCancelled()) {
 					return TaskResult.CANCELLED;
 				}

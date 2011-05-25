@@ -23,7 +23,7 @@ public class TweetCommonTask {
 			TaskParams param = params[0];
 			try {
 				String id = param.getString("id");
-				com.ch_linghu.fanfoudroid.weibo.Status status = null;
+				com.ch_linghu.fanfoudroid.fanfou.Status status = null;
 
 				status = activity.getApi().destroyStatus(id);
 
@@ -65,7 +65,7 @@ public class TweetCommonTask {
 				String action = param.getString("action");
 				String id = param.getString("id");
 				
-				com.ch_linghu.fanfoudroid.weibo.Status status = null;
+				com.ch_linghu.fanfoudroid.fanfou.Status status = null;
 				if (action.equals(TYPE_ADD)) {
 					status = activity.getApi().createFavorite(id);
 					activity.getDb().setFavorited(id, "true");

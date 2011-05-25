@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:left="46.0dip">
+        <bitmap android:gravity="fill_horizontal|bottom|center" android:src="@drawable/tweet_details_background_overlay" />
+    </item>
+    <item>
+        <bitmap android:gravity="bottom|left|center" android:src="@drawable/tweet_details_notch" />
+    </item>
+</layer-list>

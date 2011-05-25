@@ -12,8 +12,8 @@ import com.ch_linghu.fanfoudroid.data2.Status;
 import com.ch_linghu.fanfoudroid.data2.User;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
-import com.ch_linghu.fanfoudroid.helper.utils.DateTimeHelper;
-import com.ch_linghu.fanfoudroid.helper.utils.TextHelper;
+import com.ch_linghu.fanfoudroid.util.DateTimeHelper;
+import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 public class StatusDAO {
     private static final String TAG = "StatusDAO";

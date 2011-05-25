@@ -22,20 +22,36 @@
         <RelativeLayout 
             android:layout_width="fill_parent"
             android:layout_height="68dp"
-            android:padding="10dp"
+            android:paddingTop="15dp"
+            android:paddingRight="15dp"
+            android:paddingLeft="10dp"
             >
-            <!-- 用户头像 -->
-            <ImageView android:id="@+id/profile_image"
-                android:src="@drawable/user_default_photo"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_alignParentLeft="true"
-                android:layout_marginRight="10dp" />
+            <!-- profile image -->
+		    <FrameLayout android:id="@+id/profile_image_wrapper"
+		     android:layout_width="48dp"
+		     android:layout_height="48dp"
+		     android:layout_marginRight="10dp"
+             android:layout_alignParentLeft="true"
+		    >
+		       <ImageView
+		           android:id="@+id/profile_image"
+                   android:src="@drawable/user_default_photo"
+		           android:layout_width="fill_parent"
+		           android:layout_height="fill_parent"
+		       />
+		       <!-- image corner -->
+		       <ImageView
+		           android:background="@drawable/images_border_radius"
+		           android:layout_width="fill_parent"
+		           android:layout_height="fill_parent"
+		       />
+		     </FrameLayout>
+	     
             <!-- 用户名 -->
             <TextView android:id="@+id/tweet_screen_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/profile_image"
+                android:layout_toRightOf="@id/profile_image_wrapper"
                 style="@style/LinkText.Bold.Huge"
                  />
             <!-- 用户资料 -->
@@ -49,20 +65,20 @@
             <!-- More -->
             <ImageButton android:id="@+id/person_more"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="fill_parent"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="8dp"
-                android:src="@drawable/arrow_1" 
+                android:paddingLeft="40dp"
+                android:src="@drawable/status_arr_selector" 
                 android:background="@null"
                 />
         </RelativeLayout>
         <!-- 分割线 -->
-        <LinearLayout
-           android:background="#CCC"
-           android:layout_width="fill_parent"
-           android:layout_height="1dp"
-           />
+	    <View android:id="@+id/spacer" android:background="@drawable/tweet_details_divider"
+		  android:clickable="true" android:layout_width="fill_parent"
+		  android:layout_height="wrap_content" android:minHeight="20dip" />
+        
         <!-- 消息主体 -->
         <TextView android:id="@+id/tweet_text"
             android:layout_width="fill_parent"
@@ -140,7 +156,7 @@
      </LinearLayout>
    </ScrollView>
    
-   <!-- footer -->
+   <!-- footer TODO: 更换背景色 -->
    <include android:id="@+id/footer" layout="@layout/footer" />
     
 </LinearLayout>

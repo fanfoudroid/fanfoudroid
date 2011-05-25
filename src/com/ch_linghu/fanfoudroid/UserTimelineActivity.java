@@ -10,7 +10,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.helper.utils.*;
+import com.ch_linghu.fanfoudroid.fanfou.Paging;
+import com.ch_linghu.fanfoudroid.fanfou.User;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.HttpRefusedException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
@@ -20,398 +21,407 @@ import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.Refreshable;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterListBaseActivity;
+import com.ch_linghu.fanfoudroid.ui.module.Feedback;
+import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory;
+import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory.FeedbackType;
 import com.ch_linghu.fanfoudroid.ui.module.MyListView;
 import com.ch_linghu.fanfoudroid.ui.module.TweetArrayAdapter;
-import com.ch_linghu.fanfoudroid.weibo.Paging;
-import com.ch_linghu.fanfoudroid.weibo.User;
+import com.ch_linghu.fanfoudroid.util.MiscHelper;
 
 public class UserTimelineActivity extends TwitterListBaseActivity implements
-		MyListView.OnNeedMoreListener, Refreshable {
+        MyListView.OnNeedMoreListener, Refreshable {
 
-	private static final String TAG = UserTimelineActivity.class
-			.getSimpleName();
+    private static final String TAG = UserTimelineActivity.class
+            .getSimpleName();
 
-	private static final String EXTRA_USERID = "userID";
-	private static final String EXTRA_NAME_SHOW = "showName";
-	private static final String SIS_RUNNING_KEY = "running";
+    private Feedback mFeedback;
 
-	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.USERTIMELINE";
+    private static final String EXTRA_USERID = "userID";
+    private static final String EXTRA_NAME_SHOW = "showName";
+    private static final String SIS_RUNNING_KEY = "running";
 
-	public static Intent createIntent(String userID, String showName) {
-		Intent intent = new Intent(LAUNCH_ACTION);
-		intent.putExtra(EXTRA_USERID, userID);
-		intent.putExtra(EXTRA_NAME_SHOW, showName);
-		return intent;
-	}
+    private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.USERTIMELINE";
 
-	// State.
-	private User mUser;
-	private String mUserID;
-	private String mShowName;
-	private ArrayList<Tweet> mTweets;
-	private int mNextPage = 1;
+    public static Intent createIntent(String userID, String showName) {
+        Intent intent = new Intent(LAUNCH_ACTION);
+        intent.putExtra(EXTRA_USERID, userID);
+        intent.putExtra(EXTRA_NAME_SHOW, showName);
+        return intent;
+    }
 
-	// Views.
-	private TextView headerView;
-	private TextView footerView;
-	private MyListView mTweetList;
-	// 记录服务器拒绝访问的信息
-	private String msg;
-	private static final int LOADINGFLAG = 1;
-	private static final int SUCCESSFLAG = 2;
-	private static final int NETWORKERRORFLAG = 3;
-	private static final int AUTHERRORFLAG = 4;
-	private TweetArrayAdapter mAdapter;
+    // State.
+    private User mUser;
+    private String mUserID;
+    private String mShowName;
+    private ArrayList<Tweet> mTweets;
+    private int mNextPage = 1;
 
-	// Tasks.
-	private GenericTask mRetrieveTask;
-	private GenericTask mLoadMoreTask;
+    // Views.
+    private TextView headerView;
+    private TextView footerView;
+    private MyListView mTweetList;
+    // 记录服务器拒绝访问的信息
+    private String msg;
+    private static final int LOADINGFLAG = 1;
+    private static final int SUCCESSFLAG = 2;
+    private static final int NETWORKERRORFLAG = 3;
+    private static final int AUTHERRORFLAG = 4;
+    private TweetArrayAdapter mAdapter;
 
-	private TaskListener mRetrieveTaskListener = new TaskAdapter() {
-		@Override
-		public void onPreExecute(GenericTask task) {
-			onRetrieveBegin();
-		}
+    // Tasks.
+    private GenericTask mRetrieveTask;
+    private GenericTask mLoadMoreTask;
 
-		@Override
-		public void onPostExecute(GenericTask task, TaskResult result) {
-			setRefreshAnimation(false);
-			if (result == TaskResult.AUTH_ERROR) {
-				updateHeader(AUTHERRORFLAG);
-				return;
-			} else if (result == TaskResult.OK) {
-				updateHeader(SUCCESSFLAG);
-				updateFooter(SUCCESSFLAG);
-				draw();
-				goTop();
-			} else if (result == TaskResult.IO_ERROR) {
-				updateHeader(NETWORKERRORFLAG);
-			}
-		}
+    private TaskListener mRetrieveTaskListener = new TaskAdapter() {
+        @Override
+        public void onPreExecute(GenericTask task) {
+            onRetrieveBegin();
+        }
 
-		@Override
-		public String getName() {
-			return "UserTimelineRetrieve";
-		}
-	};
+        @Override
+        public void onPostExecute(GenericTask task, TaskResult result) {
+            if (result == TaskResult.AUTH_ERROR) {
+                mFeedback.failed("登录失败, 请重新登录.");
+                updateHeader(AUTHERRORFLAG);
+                return;
+            } else if (result == TaskResult.OK) {
+                updateHeader(SUCCESSFLAG);
+                updateFooter(SUCCESSFLAG);
+                draw();
+                goTop();
+            } else if (result == TaskResult.IO_ERROR) {
+                mFeedback.failed("更新失败.");
+                updateHeader(NETWORKERRORFLAG);
+            }
+            mFeedback.success("");
+        }
 
-	private TaskListener mLoadMoreTaskListener = new TaskAdapter() {
+        @Override
+        public String getName() {
+            return "UserTimelineRetrieve";
+        }
+    };
 
-		@Override
-		public void onPreExecute(GenericTask task) {
-			onLoadMoreBegin();
-		}
+    private TaskListener mLoadMoreTaskListener = new TaskAdapter() {
 
-		@Override
-		public void onPostExecute(GenericTask task, TaskResult result) {
-			if (result == TaskResult.AUTH_ERROR) {
-				logout();
-			} else if (result == TaskResult.OK) {
-				setRefreshAnimation(false);
-				updateFooter(SUCCESSFLAG);
-				draw();
-			}
-		}
+        @Override
+        public void onPreExecute(GenericTask task) {
+            onLoadMoreBegin();
+        }
 
-		@Override
-		public String getName() {
-			return "UserTimelineLoadMoreTask";
-		}
-	};
+        @Override
+        public void onPostExecute(GenericTask task, TaskResult result) {
+            if (result == TaskResult.AUTH_ERROR) {
+                logout();
+            } else if (result == TaskResult.OK) {
+                mFeedback.success("");
+                updateFooter(SUCCESSFLAG);
+                draw();
+            }
+        }
 
-	@Override
-	protected boolean _onCreate(Bundle savedInstanceState) {
-		Log.d(TAG, "_onCreate()...");
-		if (super._onCreate(savedInstanceState)) {
-			Intent intent = getIntent();
-			// get user id
-			mUserID = intent.getStringExtra(EXTRA_USERID);
-			// show username in title
-			mShowName = intent.getStringExtra(EXTRA_NAME_SHOW);
+        @Override
+        public String getName() {
+            return "UserTimelineLoadMoreTask";
+        }
+    };
 
-			// Set header title
-			setHeaderTitle("@" + mShowName);
+    @Override
+    protected boolean _onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "_onCreate()...");
+        if (super._onCreate(savedInstanceState)) {
+            mFeedback = FeedbackFactory.create(this, FeedbackType.PROGRESS);
+            
+            Intent intent = getIntent();
+            // get user id
+            mUserID = intent.getStringExtra(EXTRA_USERID);
+            // show username in title
+            mShowName = intent.getStringExtra(EXTRA_NAME_SHOW);
 
-			boolean wasRunning = MiscHelper.isTrue(savedInstanceState,
-					SIS_RUNNING_KEY);
+            // Set header title
+            mNavbar.setHeaderTitle("@" + mShowName);
 
-			// 此处要求mTweets不为空，最好确保profile页面消息为0时不能进入这个页面
-			if (!mTweets.isEmpty() && !wasRunning) {
-				updateHeader(SUCCESSFLAG);
-				draw();
-			} else {
-				doRetrieve();
-			}
-			return true;
-		} else {
-			return false;
-		}
-	}
+            boolean wasRunning = MiscHelper.isTrue(savedInstanceState,
+                    SIS_RUNNING_KEY);
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		checkIsLogedIn();
-	}
+            // 此处要求mTweets不为空，最好确保profile页面消息为0时不能进入这个页面
+            if (!mTweets.isEmpty() && !wasRunning) {
+                updateHeader(SUCCESSFLAG);
+                draw();
+            } else {
+                doRetrieve();
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		if (mRetrieveTask != null
-				&& mRetrieveTask.getStatus() == GenericTask.Status.RUNNING) {
-			outState.putBoolean(SIS_RUNNING_KEY, true);
-		}
-	}
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkIsLogedIn();
+    }
 
-	@Override
-	protected void onDestroy() {
-		Log.d(TAG, "onDestroy.");
-		if (mRetrieveTask != null
-				&& mRetrieveTask.getStatus() == GenericTask.Status.RUNNING) {
-			mRetrieveTask.cancel(true);
-		}
-		if (mLoadMoreTask != null
-				&& mLoadMoreTask.getStatus() == GenericTask.Status.RUNNING) {
-			mLoadMoreTask.cancel(true);
-		}
-		super.onDestroy();
-	}
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mRetrieveTask != null
+                && mRetrieveTask.getStatus() == GenericTask.Status.RUNNING) {
+            outState.putBoolean(SIS_RUNNING_KEY, true);
+        }
+    }
 
-	private void draw() {
-		mAdapter.refresh(mTweets);
-	}
+    @Override
+    protected void onDestroy() {
+        Log.d(TAG, "onDestroy.");
+        if (mRetrieveTask != null
+                && mRetrieveTask.getStatus() == GenericTask.Status.RUNNING) {
+            mRetrieveTask.cancel(true);
+        }
+        if (mLoadMoreTask != null
+                && mLoadMoreTask.getStatus() == GenericTask.Status.RUNNING) {
+            mLoadMoreTask.cancel(true);
+        }
+        super.onDestroy();
+    }
 
-	public void goTop() {
+    @Override
+    protected void draw() {
+        mAdapter.refresh(mTweets);
+    }
+
+    public void goTop() {
         Log.d(TAG, "goTop.");
-		mTweetList.setSelection(1);
-	}
-	
-	public void doRetrieve() {
-		Log.d(TAG, "Attempting retrieve.");
-		if (mRetrieveTask != null
-				&& mRetrieveTask.getStatus() == GenericTask.Status.RUNNING) {
-			return;
-		} else {
-			mRetrieveTask = new UserTimelineRetrieveTask();
-			mRetrieveTask.setListener(mRetrieveTaskListener);
-			mRetrieveTask.execute();
-		}
-	}
+        mTweetList.setSelection(1);
+    }
 
-	private void doLoadMore() {
-		Log.d(TAG, "Attempting load more.");
+    public void doRetrieve() {
+        Log.d(TAG, "Attempting retrieve.");
+        if (mRetrieveTask != null
+                && mRetrieveTask.getStatus() == GenericTask.Status.RUNNING) {
+            return;
+        } else {
+            mRetrieveTask = new UserTimelineRetrieveTask();
+            mRetrieveTask.setListener(mRetrieveTaskListener);
+            mRetrieveTask.execute();
+        }
+    }
 
-		if (mLoadMoreTask != null
-				&& mLoadMoreTask.getStatus() == GenericTask.Status.RUNNING) {
-			return;
-		} else {
-			mLoadMoreTask = new UserTimelineLoadMoreTask();
-			mLoadMoreTask.setListener(mLoadMoreTaskListener);
-			mLoadMoreTask.execute();
-		}
-	}
+    private void doLoadMore() {
+        Log.d(TAG, "Attempting load more.");
 
-	private void onRetrieveBegin() {
-		// 旋转刷新按钮
-		animRotate(refreshButton);
-		// 更新查询状态显示
-		updateHeader(LOADINGFLAG);
-		updateFooter(LOADINGFLAG);
-	}
+        if (mLoadMoreTask != null
+                && mLoadMoreTask.getStatus() == GenericTask.Status.RUNNING) {
+            return;
+        } else {
+            mLoadMoreTask = new UserTimelineLoadMoreTask();
+            mLoadMoreTask.setListener(mLoadMoreTaskListener);
+            mLoadMoreTask.execute();
+        }
+    }
 
-	private void onLoadMoreBegin() {
-		// 旋转刷新按钮
-		animRotate(refreshButton);
-	}
+    private void onRetrieveBegin() {
+        mFeedback.start("");
+        // 更新查询状态显示
+        updateHeader(LOADINGFLAG);
+        updateFooter(LOADINGFLAG);
+    }
 
-	private class UserTimelineRetrieveTask extends GenericTask {
-		ArrayList<Tweet> mTweets = new ArrayList<Tweet>();
+    private void onLoadMoreBegin() {
+        mFeedback.start("");
+    }
 
-		@Override
-		protected TaskResult _doInBackground(TaskParams... params) {
-			List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
-			try {
-				statusList = getApi().getUserTimeline(mUserID,
-						new Paging(mNextPage));
-				mUser = getApi().showUser(mUserID);
-			} catch (HttpException e) {
-				Log.e(TAG, e.getMessage(), e);
-				Throwable cause = e.getCause();
-				if (cause instanceof HttpRefusedException) {
-					// AUTH ERROR
-					msg = ((HttpRefusedException) cause).getError()
-							.getMessage();
-					return TaskResult.AUTH_ERROR;
-				} else {
-					return TaskResult.IO_ERROR;
-				}
-			}
-			for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
-				if (isCancelled()) {
-					return TaskResult.CANCELLED;
-				}
-				Tweet tweet;
-				tweet = Tweet.create(status);
-				mTweets.add(tweet);
-				if (isCancelled()) {
-					return TaskResult.CANCELLED;
-				}
-			}
-			addTweets(mTweets);
-			if (isCancelled()) {
-				return TaskResult.CANCELLED;
-			}
-			return TaskResult.OK;
-		}
-	}
+    private class UserTimelineRetrieveTask extends GenericTask {
+        ArrayList<Tweet> mTweets = new ArrayList<Tweet>();
 
-	private class UserTimelineLoadMoreTask extends GenericTask {
-		ArrayList<Tweet> mTweets = new ArrayList<Tweet>();
+        @Override
+        protected TaskResult _doInBackground(TaskParams... params) {
+            List<com.ch_linghu.fanfoudroid.fanfou.Status> statusList;
+            try {
+                statusList = getApi().getUserTimeline(mUserID,
+                        new Paging(mNextPage));
+                mUser = getApi().showUser(mUserID);
+                mFeedback.update(60);
+            } catch (HttpException e) {
+                Log.e(TAG, e.getMessage(), e);
+                Throwable cause = e.getCause();
+                if (cause instanceof HttpRefusedException) {
+                    // AUTH ERROR
+                    msg = ((HttpRefusedException) cause).getError()
+                            .getMessage();
+                    return TaskResult.AUTH_ERROR;
+                } else {
+                    return TaskResult.IO_ERROR;
+                }
+            }
+            mFeedback.update(100 - (int)Math.floor(statusList.size()*2)); // 60~100
+            for (com.ch_linghu.fanfoudroid.fanfou.Status status : statusList) {
+                if (isCancelled()) {
+                    return TaskResult.CANCELLED;
+                }
+                Tweet tweet;
+                tweet = Tweet.create(status);
+                mTweets.add(tweet);
+                if (isCancelled()) {
+                    return TaskResult.CANCELLED;
+                }
+            }
+            addTweets(mTweets);
+            if (isCancelled()) {
+                return TaskResult.CANCELLED;
+            }
+            return TaskResult.OK;
+        }
+    }
 
-		@Override
-		protected TaskResult _doInBackground(TaskParams... params) {
-			List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
-			try {
-				statusList = getApi().getUserTimeline(mUserID,
-						new Paging(mNextPage));
-			} catch (HttpException e) {
-				Log.e(TAG, e.getMessage(), e);
-				Throwable cause = e.getCause();
-				if (cause instanceof HttpRefusedException) {
-					// AUTH ERROR
-					msg = ((HttpRefusedException) cause).getError()
-							.getMessage();
-					return TaskResult.AUTH_ERROR;
-				} else {
-					return TaskResult.IO_ERROR;
-				}
-			}
+    private class UserTimelineLoadMoreTask extends GenericTask {
+        ArrayList<Tweet> mTweets = new ArrayList<Tweet>();
 
-			for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
-				if (isCancelled()) {
-					return TaskResult.CANCELLED;
-				}
-				Tweet tweet;
-				tweet = Tweet.create(status);
-				mTweets.add(tweet);
-			}
-			if (isCancelled()) {
-				return TaskResult.CANCELLED;
-			}
-			addTweets(mTweets);
-			if (isCancelled()) {
-				return TaskResult.CANCELLED;
-			}
-			return TaskResult.OK;
-		}
-	}
+        @Override
+        protected TaskResult _doInBackground(TaskParams... params) {
+            List<com.ch_linghu.fanfoudroid.fanfou.Status> statusList;
+            try {
+                statusList = getApi().getUserTimeline(mUserID,
+                        new Paging(mNextPage));
+            } catch (HttpException e) {
+                Log.e(TAG, e.getMessage(), e);
+                Throwable cause = e.getCause();
+                if (cause instanceof HttpRefusedException) {
+                    // AUTH ERROR
+                    msg = ((HttpRefusedException) cause).getError()
+                            .getMessage();
+                    return TaskResult.AUTH_ERROR;
+                } else {
+                    return TaskResult.IO_ERROR;
+                }
+            }
 
-	@Override
-	public void needMore() {
-		if (!isLastPage()) {
-			doLoadMore();
-		}
-	}
+            for (com.ch_linghu.fanfoudroid.fanfou.Status status : statusList) {
+                if (isCancelled()) {
+                    return TaskResult.CANCELLED;
+                }
+                Tweet tweet;
+                tweet = Tweet.create(status);
+                mTweets.add(tweet);
+            }
+            if (isCancelled()) {
+                return TaskResult.CANCELLED;
+            }
+            addTweets(mTweets);
+            if (isCancelled()) {
+                return TaskResult.CANCELLED;
+            }
+            return TaskResult.OK;
+        }
+    }
 
-	public boolean isLastPage() {
-		return mNextPage == -1;
-	}
+    @Override
+    public void needMore() {
+        if (!isLastPage()) {
+            doLoadMore();
+        }
+    }
 
-	private synchronized void addTweets(ArrayList<Tweet> tweets) {
-		// do more时没有更多时
-		if (tweets.size() == 0) {
-			mNextPage = -1;
-			return;
-		}
-		mTweets.addAll(tweets);
-		++mNextPage;
-	}
+    public boolean isLastPage() {
+        return mNextPage == -1;
+    }
 
-	@Override
-	protected String getActivityTitle() {
-		return "@" + mShowName;
-	}
+    private synchronized void addTweets(ArrayList<Tweet> tweets) {
+        // do more时没有更多时
+        if (tweets.size() == 0) {
+            mNextPage = -1;
+            return;
+        }
+        mTweets.addAll(tweets);
+        ++mNextPage;
+    }
 
-	@Override
-	protected Tweet getContextItemTweet(int position) {
-		if (position >= 1) {
-			return (Tweet) mAdapter.getItem(position - 1);
-		} else {
-			return null;
-		}
-	}
+    @Override
+    protected String getActivityTitle() {
+        return "@" + mShowName;
+    }
 
-	@Override
-	protected int getLayoutId() {
-		return R.layout.user_timeline;
-	}
+    @Override
+    protected Tweet getContextItemTweet(int position) {
+        if (position >= 1) {
+            return (Tweet) mAdapter.getItem(position - 1);
+        } else {
+            return null;
+        }
+    }
 
-	@Override
-	protected com.ch_linghu.fanfoudroid.ui.module.TweetAdapter getTweetAdapter() {
-		return mAdapter;
-	}
+    @Override
+    protected int getLayoutId() {
+        return R.layout.user_timeline;
+    }
 
-	@Override
-	protected ListView getTweetList() {
-		return mTweetList;
-	}
+    @Override
+    protected com.ch_linghu.fanfoudroid.ui.module.TweetAdapter getTweetAdapter() {
+        return mAdapter;
+    }
 
-	@Override
-	protected void setupState() {
-		mTweets = new ArrayList<Tweet>();
-		mAdapter = new TweetArrayAdapter(this);
-		mTweetList = (MyListView) findViewById(R.id.tweet_list);
-		// Add Header to ListView
-		headerView = (TextView) TextView.inflate(this,
-				R.layout.user_timeline_header, null);
-		mTweetList.addHeaderView(headerView);
-		// Add Footer to ListView
-		footerView = (TextView) TextView.inflate(this,
-				R.layout.user_timeline_footer, null);
-		mTweetList.addFooterView(footerView);
-		mTweetList.setAdapter(mAdapter);
-		mTweetList.setOnNeedMoreListener(this);
-	}
+    @Override
+    protected ListView getTweetList() {
+        return mTweetList;
+    }
 
-	@Override
-	protected void updateTweet(Tweet tweet) {
-		//该方法作用？
-	}
+    @Override
+    protected void setupState() {
+        mTweets = new ArrayList<Tweet>();
+        mAdapter = new TweetArrayAdapter(this);
+        mTweetList = (MyListView) findViewById(R.id.tweet_list);
+        // Add Header to ListView
+        headerView = (TextView) TextView.inflate(this,
+                R.layout.user_timeline_header, null);
+        mTweetList.addHeaderView(headerView);
+        // Add Footer to ListView
+        footerView = (TextView) TextView.inflate(this,
+                R.layout.user_timeline_footer, null);
+        mTweetList.addFooterView(footerView);
+        mTweetList.setAdapter(mAdapter);
+        mTweetList.setOnNeedMoreListener(this);
+    }
 
-	@Override
-	protected boolean useBasicMenu() {
-		return true;
-	}
+    @Override
+    protected void updateTweet(Tweet tweet) {
+        // 该方法作用？
+    }
 
-	private void updateHeader(int flag) {
-		if (flag == LOADINGFLAG) {
-			// 重新刷新页面时从第一页开始获取数据 --- phoenix
-			mNextPage = 1;
-			mTweets.clear();
-			mAdapter.refresh(mTweets);
-			headerView.setText(getResources()
-					.getString(R.string.search_loading));
-		}
-		if (flag == SUCCESSFLAG) {
-			headerView.setText(getResources().getString(
-					R.string.user_query_status_success));
-		}
-		if (flag == NETWORKERRORFLAG) {
-			headerView.setText(getResources().getString(
-					R.string.login_status_network_or_connection_error));
-		}
-		if (flag == AUTHERRORFLAG) {
-			headerView.setText(msg);
-		}
-	}
+    @Override
+    protected boolean useBasicMenu() {
+        return true;
+    }
 
-	private void updateFooter(int flag) {
-		if (flag == LOADINGFLAG) {
-			footerView.setText("该用户总共？条消息");
-		}
-		if (flag == SUCCESSFLAG) {
-			footerView.setText("该用户总共" + mUser.getStatusesCount() + "条消息，当前显示"
-					+ mTweets.size() + "条。");
-		}
-	}
+    private void updateHeader(int flag) {
+        if (flag == LOADINGFLAG) {
+            // 重新刷新页面时从第一页开始获取数据 --- phoenix
+            mNextPage = 1;
+            mTweets.clear();
+            mAdapter.refresh(mTweets);
+            headerView.setText(getResources()
+                    .getString(R.string.search_loading));
+        }
+        if (flag == SUCCESSFLAG) {
+            headerView.setText(getResources().getString(
+                    R.string.user_query_status_success));
+        }
+        if (flag == NETWORKERRORFLAG) {
+            headerView.setText(getResources().getString(
+                    R.string.login_status_network_or_connection_error));
+        }
+        if (flag == AUTHERRORFLAG) {
+            headerView.setText(msg);
+        }
+    }
+
+    private void updateFooter(int flag) {
+        if (flag == LOADINGFLAG) {
+            footerView.setText("该用户总共？条消息");
+        }
+        if (flag == SUCCESSFLAG) {
+            footerView.setText("该用户总共" + mUser.getStatusesCount() + "条消息，当前显示"
+                    + mTweets.size() + "条。");
+        }
+    }
 }

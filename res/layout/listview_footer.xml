@@ -9,13 +9,6 @@
     android:padding="0dp"
     android:background="@android:drawable/list_selector_background"
  >
-    <!-- top border -->
-    <View android:background="@drawable/dashed_line"
-     android:id="@+id/main_shape"
-     android:layout_alignParentTop="true"
-     android:layout_width="fill_parent"
-     android:layout_height="1dip"/>
- 
      <TextView android:id="@+id/ask_for_more"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"

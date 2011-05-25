@@ -1,5 +1,4 @@
-<PreferenceScreen
-        xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
   <!-- 后台提醒 -->
   <PreferenceCategory android:title="@string/pref_title_notifications">
@@ -119,6 +118,15 @@
     android:title="@string/pref_rt_cursor_position_title"
     android:summary="@string/pref_rt_cursor_position_summary"
     android:defaultValue="true" />
+  </PreferenceCategory>
+  
+  <!-- 实验功能 -->
+  <PreferenceCategory android:title="@string/pref_title_labs">
+   <CheckBoxPreference
+    android:key="use_gestrue"
+    android:title="@string/pref_use_gestrue_title"
+    android:summary="@string/pref_use_gestrue_summary"
+    android:defaultValue="false" />
   </PreferenceCategory>
   
 

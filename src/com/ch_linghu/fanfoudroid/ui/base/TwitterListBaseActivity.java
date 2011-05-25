@@ -43,22 +43,28 @@ import com.ch_linghu.fanfoudroid.StatusActivity;
 import com.ch_linghu.fanfoudroid.TwitterActivity;
 import com.ch_linghu.fanfoudroid.WriteActivity;
 import com.ch_linghu.fanfoudroid.WriteDmActivity;
+import com.ch_linghu.fanfoudroid.app.Preferences;
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.utils.*;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.task.TweetCommonTask;
+import com.ch_linghu.fanfoudroid.ui.module.Feedback;
+import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory;
+import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory.FeedbackType;
+import com.ch_linghu.fanfoudroid.ui.module.NavBar;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
+import com.ch_linghu.fanfoudroid.util.TextHelper;
 
-public abstract class TwitterListBaseActivity extends WithHeaderActivity 
+public abstract class TwitterListBaseActivity extends BaseActivity 
 	implements Refreshable {
 	static final String TAG = "TwitterListBaseActivity";
 
 	protected TextView mProgressText;
+	protected Feedback mFeedback;
+	protected NavBar mNavbar;
 
 	protected static final int STATE_ALL = 0;
 	protected static final String SIS_RUNNING_KEY = "running";
@@ -119,7 +125,8 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 	protected boolean _onCreate(Bundle savedInstanceState){
 		if (super._onCreate(savedInstanceState)){
 			setContentView(getLayoutId());
-			initHeader(HEADER_STYLE_HOME);
+			mNavbar = new NavBar(NavBar.HEADER_STYLE_HOME, this);
+            mFeedback = FeedbackFactory.create(this, FeedbackType.PROGRESS);
 
 			mPreferences.getInt(Preferences.TWITTER_ACTIVITY_STATE_KEY, STATE_ALL);
 
@@ -155,6 +162,7 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
+	    Log.d("FLING", "onContextItemSelected");
 		super.onCreateContextMenu(menu, v, menuInfo);
 
 		if (useBasicMenu()){
@@ -237,11 +245,11 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 		return super.onOptionsItemSelected(item);
 	}
 
-	private void draw() {
+	protected void draw() {
 		getTweetAdapter().refresh();
 	}
 
-	private void goTop() {
+	protected void goTop() {
 		getTweetList().setSelection(1);
 	}
 	
@@ -276,6 +284,10 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 		// updateProgress(getString(R.string.refreshing));
 	}
 	
+	protected void specialItemClicked(int position){
+		
+	}
+	
 	protected void registerOnClickListener(ListView listView) {
 
 		listView.setOnItemClickListener(new OnItemClickListener(){
@@ -286,6 +298,7 @@ public abstract class TwitterListBaseActivity extends WithHeaderActivity
 		
 				if (tweet == null) {
 					Log.w(TAG, "Selected item not available.");
+					specialItemClicked(position);
 				}else{
 					launchActivity(StatusActivity.createIntent(tweet));
 				}

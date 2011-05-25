@@ -26,23 +26,31 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.ch_linghu.fanfoudroid.app.LazyImageLoader.ImageLoaderCallback;
+import com.ch_linghu.fanfoudroid.app.Preferences;
 import com.ch_linghu.fanfoudroid.data.Dm;
 import com.ch_linghu.fanfoudroid.db.MessageTable;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
-import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
-import com.ch_linghu.fanfoudroid.helper.utils.*;
+import com.ch_linghu.fanfoudroid.fanfou.DirectMessage;
+import com.ch_linghu.fanfoudroid.fanfou.Paging;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
-import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
-import com.ch_linghu.fanfoudroid.weibo.DirectMessage;
-import com.ch_linghu.fanfoudroid.weibo.Paging;
+import com.ch_linghu.fanfoudroid.ui.base.BaseActivity;
+import com.ch_linghu.fanfoudroid.ui.base.Refreshable;
+import com.ch_linghu.fanfoudroid.ui.module.Feedback;
+import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory;
+import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory.FeedbackType;
+import com.ch_linghu.fanfoudroid.ui.module.NavBar;
+import com.ch_linghu.fanfoudroid.ui.module.SimpleFeedback;
+import com.ch_linghu.fanfoudroid.util.DateTimeHelper;
+import com.ch_linghu.fanfoudroid.util.MiscHelper;
+import com.ch_linghu.fanfoudroid.util.TextHelper;
 
-public class DmActivity extends WithHeaderActivity {
+public class DmActivity extends BaseActivity implements Refreshable {
 
 	private static final String TAG = "DmActivity";
 
@@ -62,6 +70,9 @@ public class DmActivity extends WithHeaderActivity {
 	private static final int DM_TYPE_SENDBOX = 2;
 
 	private TextView mProgressText;
+	
+	private NavBar mNavbar;
+	private Feedback mFeedback;
 
 	// Tasks.
 	private GenericTask mRetrieveTask;
@@ -117,8 +128,6 @@ public class DmActivity extends WithHeaderActivity {
 				// Do nothing.
 			}
 
-			// 刷新按钮停止旋转
-			setRefreshAnimation(false);
 			updateProgress("");
 		}
 
@@ -130,9 +139,7 @@ public class DmActivity extends WithHeaderActivity {
 
 	// Refresh data at startup if last refresh was this long ago or greater.
 	private static final long REFRESH_THRESHOLD = 5 * 60 * 1000;
-
 	private static final String EXTRA_USER = "user";
-
 	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.DMS";
 
 	public static Intent createIntent() {
@@ -155,14 +162,14 @@ public class DmActivity extends WithHeaderActivity {
 		if (super._onCreate(savedInstanceState))
 		{
 			setContentView(R.layout.dm);
-			initHeader(HEADER_STYLE_HOME);
-			setHeaderTitle("我的私信");
+			mNavbar = new NavBar(NavBar.HEADER_STYLE_HOME, this);
+			mNavbar.setHeaderTitle("我的私信");
+			
+			mFeedback = FeedbackFactory.create(this, FeedbackType.PROGRESS);
 	
-			// 绑定底部栏按钮onClick监听器
 			bindFooterButtonEvent();
 	
 			mTweetList = (ListView) findViewById(R.id.tweet_list);
-	
 			mProgressText = (TextView) findViewById(R.id.progress_text);
 	
 			TwitterDatabase db = getDb();
@@ -328,6 +335,7 @@ public class DmActivity extends WithHeaderActivity {
 				Log.e(TAG, e.getMessage(), e);
 				return TaskResult.IO_ERROR;
 			}
+			publishProgress(SimpleFeedback.calProgressBySize(40, 20, dmList));
 
 			for (DirectMessage directMessage : dmList) {
 				if (isCancelled()) {
@@ -480,8 +488,8 @@ public class DmActivity extends WithHeaderActivity {
 
 			if (!TextHelper.isEmpty(profileImageUrl)) {
 				holder.profileImage
-						.setImageBitmap(TwitterApplication.mProfileImageCacheManager
-								.get(profileImageUrl, new ProfileImageCacheCallback(){
+						.setImageBitmap(TwitterApplication.mImageLoader
+								.get(profileImageUrl, new ImageLoaderCallback(){
 
 									@Override
 									public void refresh(String url,
@@ -614,13 +622,11 @@ public class DmActivity extends WithHeaderActivity {
 	public void doRetrieve() {
 		Log.d(TAG, "Attempting retrieve.");
 
-		// 旋转刷新按钮
-		animRotate(refreshButton);
-
 		if (mRetrieveTask != null && mRetrieveTask.getStatus() == GenericTask.Status.RUNNING){
 			return;
 		}else{
 			mRetrieveTask = new DmRetrieveTask();
+			mRetrieveTask.setFeedback(mFeedback);
 			mRetrieveTask.setListener(mRetrieveTaskListener);
 			mRetrieveTask.execute();
 		}

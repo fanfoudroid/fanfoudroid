@@ -32,20 +32,19 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.utils.*;
+import com.ch_linghu.fanfoudroid.app.Preferences;
+import com.ch_linghu.fanfoudroid.fanfou.User;
 import com.ch_linghu.fanfoudroid.http.HttpAuthException;
 import com.ch_linghu.fanfoudroid.http.HttpException;
-import com.ch_linghu.fanfoudroid.http.HttpRefusedException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskFeedback;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
-import com.ch_linghu.fanfoudroid.weibo.User;
+import com.ch_linghu.fanfoudroid.util.EncryptUtils;
+import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 //登录页面需要个性化的菜单绑定, 不直接继承 BaseActivity
 public class LoginActivity extends Activity { 
@@ -286,10 +285,8 @@ public class LoginActivity extends Activity {
                 //Throwable cause = e.getCause(); // Maybe null
                // if (cause instanceof HttpAuthException) {
                 if (e instanceof HttpAuthException) {
-                // Invalid userName/password
-//                    msg = ((HttpRefusedException) cause).getError().getMessage();
-                	//msg=((HttpAuthException) e).getMessage();
-                	msg=getString(R.string.login_status_invalid_username_or_password);
+                    // Invalid userName/password
+                	msg = getString(R.string.login_status_invalid_username_or_password);
                 } else {
                     msg = getString(R.string.login_status_network_or_connection_error);
                 }
@@ -299,11 +296,13 @@ public class LoginActivity extends Activity {
 
             SharedPreferences.Editor editor = mPreferences.edit();
             editor.putString(Preferences.USERNAME_KEY, mUsername);
-            editor.putString(Preferences.PASSWORD_KEY, mPassword);
-            //add 存储当前用户的id
+
+            editor.putString(Preferences.PASSWORD_KEY,
+                    EncryptUtils.encryptPassword(mPassword));
+            // add 存储当前用户的id
             editor.putString(Preferences.CURRENT_USER_ID, user.getId());
             editor.commit();
-            
+
             return TaskResult.OK;
         }
     }

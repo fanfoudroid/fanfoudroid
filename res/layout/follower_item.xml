@@ -45,20 +45,23 @@
 			  android:layout_width="wrap_content"
 			  android:layout_height="wrap_content"
 			  android:layout_marginLeft="2dp"
-			  style="@drawable/tweet_meta_color"
+			  android:textColor="@drawable/tweet_meta_color"
 			/>
 		</LinearLayout>		
+		    <!-- NOTE: 不能使用Button, 否则ListView的点击事件会失效 -->
 			<TextView
-				android:id="@+id/test_btn"
+				android:id="@+id/follow_btn"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:background="@drawable/blue_button_selector"
 				android:layout_alignParentRight="true"
+				android:layout_centerVertical="true"
+				android:gravity="center"
 				android:clickable="true"
-				android:layout_centerInParent="true"
-				android:textColor="@color/simiple_button_color"
-				
-				></TextView>
+     			style="@style/Button"
+     			android:textSize="14sp"
+     			android:layout_marginTop="5dip"
+     			android:layout_marginRight="5dip"
+				/>
 	</RelativeLayout>
 
 </LinearLayout>

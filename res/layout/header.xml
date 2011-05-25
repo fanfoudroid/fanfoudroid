@@ -13,16 +13,17 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_alignParentLeft="true"
-          android:layout_marginTop="10dp"
-          android:layout_marginLeft="8dp"
-          android:background="@drawable/fanfou_an"
+          android:layout_marginTop="12dp"
+          android:layout_marginLeft="3dp"
+          android:background="@null"
+          android:clickable="true"
           style="@style/logo_button"
           />
             
         <!-- 搜索按钮 -->
         <ImageButton android:id="@+id/search"
            android:background="@null"
-           android:src="@drawable/search"
+           android:src="@drawable/top_search_selector"
            android:layout_width="wrap_content"
            android:layout_height="fill_parent"
            android:layout_alignParentRight="true"
@@ -33,7 +34,7 @@
         <!-- 发布消息按钮 -->
         <ImageButton android:id="@+id/writeMessage"
            android:background="@null"
-           android:src="@drawable/messagebox"
+           android:src="@drawable/top_msg_selector"
            android:layout_width="wrap_content"
            android:layout_height="fill_parent"
            android:layout_toLeftOf="@id/search"
@@ -41,15 +42,69 @@
            android:paddingLeft="10dip"
            />
            
-        <!-- 刷新按钮 -->
+         <!-- 刷新按钮 -->
+        <ImageButton android:id="@+id/top_refresh"
+           android:background="@null"
+           android:src="@drawable/top_refresh_selector"
+           android:layout_width="wrap_content"
+           android:layout_height="fill_parent"
+           android:layout_toLeftOf="@id/writeMessage"
+           android:paddingRight="10dip"
+           android:paddingLeft="10dip"
+           />
+           
+        <!-- 旋转 -->
+        <ProgressBar 
+            android:id="@+id/top_refresh_progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/top_refresh"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            style="?android:progressBarStyleSmall"
+            android:visibility="gone"
+        />
+           
+        <!-- 刷新按钮, 旋转效果
         <ImageView   
             android:id="@+id/top_refresh"    
-            android:layout_width="32px"   
-            android:layout_height="32px"
+            android:layout_width="wrap_content"   
+            android:layout_height="wrap_content"
             android:layout_toLeftOf="@id/writeMessage"
             android:layout_centerVertical="true"
             android:background="#000"
             android:layout_marginLeft="10dip"
             android:layout_marginRight="10dip"
        /> 
+        -->
+       
+       <!-- 刷新效果测试代码
+       <ProgressBar 
+        android:id="@+id/temp_id1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/top_refresh"
+        android:layout_centerVertical="true"
+        style="?android:progressBarStyleSmall"
+        />
+        
+         <ProgressBar 
+        android:layout_width="32dip"
+        android:layout_height="32dip"
+        android:layout_toLeftOf="@id/temp_id1"
+        android:layout_centerVertical="true"
+        style="@style/refreshProgressBar"
+        />
+         -->
+         
+	    <!-- Global Progress Bar -->
+	    <ProgressBar 
+	        android:id="@+id/progress_bar"
+	        android:layout_width="fill_parent"
+	        android:layout_height="2dip"
+	        android:layout_alignParentBottom="true"
+	        style="@style/gProgressBar.Horizontal"
+	    />
     </RelativeLayout>
+    
+      

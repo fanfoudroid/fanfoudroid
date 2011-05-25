@@ -9,6 +9,7 @@
 
 	<!-- main text input -->
 	<EditText android:id="@+id/tweet_edit" android:layout_width="fill_parent"
+	    android:hint="@string/write_label_send_hint"
 		android:layout_height="fill_parent" android:layout_weight="1"
 		android:textSize="15dp" android:imeOptions="actionSend|flagNoEnterAction"
 		android:gravity="top" />
@@ -19,10 +20,19 @@
 		>
 		<!-- 图片预览 -->
 		<ImageView android:id="@+id/preview" 
-		android:layout_width="50dp"
+		    android:layout_width="50dp"
 			android:layout_height="fill_parent"
 		    android:layout_alignParentLeft="true"
 			android:visibility="invisible" />
+		<ImageView android:id="@+id/image_delete"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_toRightOf="@id/preview"
+			android:layout_centerInParent="true"
+			android:src="@drawable/delete"
+			android:visibility="invisible"
+			android:clickable="true"
+			/>
 
 		<!-- 提示框 -->
 		<TextView android:id="@+id/progress_text"
@@ -42,42 +52,44 @@
 			<TextView android:id="@+id/chars_text" android:layout_width="wrap_content"
 				android:layout_height="wrap_content" 
 				android:textSize="13dp" android:textColor="#FF000000"
-				android:layout_marginRight="3dp" android:text="140" />
-				
+				android:layout_marginRight="3dp" android:text="140" /><!-- 140 -->
 			<TextView android:id="@+id/chars_word" android:layout_width="wrap_content"
 				android:layout_height="wrap_content" android:layout_alignParentTop="true"
 				android:layout_alignParentRight="true" android:layout_marginRight="2dp"
-				android:text="@string/write_label_you_can_type_suffix" />
+				android:text="@string/write_label_you_can_type_suffix" /><!-- 字 -->
 			<!--  <TextView android:id="@+id/char_you_can"
 				android:layout_width="wrap_content" android:layout_height="wrap_content"
 				 android:text="@string/write_label_you_can_type_prefix" />-->
 		</LinearLayout>
 	</RelativeLayout>
 
-	<!-- 工具栏 -->
-	<RelativeLayout android:gravity="center_vertical"
-		android:layout_width="fill_parent" 
-		android:layout_height="50dp"
-		android:background="@drawable/send_message_block"
-		>
-
-		<!-- 发送按钮 -->
-		<Button android:id="@+id/send_button" android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:layout_alignParentLeft="true"
-			android:layout_marginLeft="3dp" style="@style/blue_button"
-			android:text="@string/write_label_send" />
+	<LinearLayout android:id="@+id/post_button_bar"
+	    android:layout_width="fill_parent" 
+        android:layout_height="50dp"
+	    android:layout_alignParentBottom="true"
+	    android:background="@drawable/send_message_block">
+		<!-- @某人 -->
+		<ImageButton android:layout_gravity="center_vertical"
+			android:id="@+id/add_user" android:background="@null"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:src="@drawable/toolbar_mention" android:layout_weight="0.2" />
+		<!-- 拍照按钮 -->
+		<ImageButton android:layout_gravity="center_vertical"
+			android:id="@+id/camera_button" android:background="@null"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:src="@drawable/toolbar_camera" android:layout_weight="0.2" />
 		<!-- 选择图片 -->
-		<Button android:id="@+id/choose_images_button"
+		<ImageButton android:layout_gravity="center_vertical"
+			android:id="@+id/choose_images_button" android:background="@null"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:layout_toRightOf="@id/send_button" android:layout_marginLeft="3dp"
-			style="@style/blue_button" android:text="@string/write_label_choose_images" />
-		<!-- 后台发送 -->
-		<Button android:id="@+id/send_in_backgroud_button"
+			android:src="@drawable/toolbar_media" android:layout_weight="0.2" />
+		<!-- LBS按钮 -->
+		<ImageButton android:layout_gravity="center_vertical"
+		    android:visibility="gone"
+			android:id="@+id/location_button" android:background="@null"
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:layout_alignParentRight="true" android:layout_marginRight="3dp"
-			android:text="@string/write_label_send_in_background" style="@style/blue_button"
-			android:visibility="gone" />
-	</RelativeLayout>
+			android:src="@drawable/toolbar_geo_off" android:layout_weight="0.2" />
+</LinearLayout>
 
 
 

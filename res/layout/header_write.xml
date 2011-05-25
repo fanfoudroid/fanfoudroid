@@ -19,15 +19,14 @@
           />
            
         <!-- 发送按钮 -->
-        <ImageButton
-         android:id="@+id/top_send_btn"
-           android:background="@null"
-           android:src="@drawable/top_send"
+        <Button
+           android:id="@+id/top_send_btn"
            android:layout_width="wrap_content"
            android:layout_height="fill_parent"
            android:layout_alignParentRight="true"
-           android:paddingRight="15dip"
-           android:paddingLeft="10dip"
+           android:layout_marginRight="10dp"
+           style="@style/simple_button"
+           android:text="@string/write_label_send"
            /> 
            
         <!-- HOME按钮 -->
@@ -41,6 +40,15 @@
            android:paddingLeft="10dip"
            android:visibility="gone"
            />   
+           
+        <!-- Global Progress Bar -->
+        <ProgressBar 
+            android:id="@+id/progress_bar"
+            android:layout_width="fill_parent"
+            android:layout_height="2dip"
+            android:layout_alignParentBottom="true"
+            style="@style/gProgressBar.Horizontal"
+        />
          
     </RelativeLayout>
     

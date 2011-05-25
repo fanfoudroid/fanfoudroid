@@ -26,13 +26,14 @@ import android.os.Parcelable;
 
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
-import com.ch_linghu.fanfoudroid.helper.utils.*;
-import com.ch_linghu.fanfoudroid.weibo.Status;
+import com.ch_linghu.fanfoudroid.fanfou.Status;
+import com.ch_linghu.fanfoudroid.util.DateTimeHelper;
+import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 public class Tweet extends Message implements Parcelable {
   private static final String TAG = "Tweet";
 
-  public com.ch_linghu.fanfoudroid.weibo.User user;
+  public com.ch_linghu.fanfoudroid.fanfou.User user;
   public String source;
   public String prevId;
   private int statusType = -1;  // @see StatusTable#TYPE_*

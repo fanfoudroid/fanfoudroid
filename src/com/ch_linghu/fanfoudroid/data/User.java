@@ -29,7 +29,7 @@ public class User implements Parcelable {
 	
 	public User() {}
 	
-	public static User create(com.ch_linghu.fanfoudroid.weibo.User u) {
+	public static User create(com.ch_linghu.fanfoudroid.fanfou.User u) {
 		User user = new User();
 
 		user.id = u.getId();

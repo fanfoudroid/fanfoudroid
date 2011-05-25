@@ -15,5 +15,9 @@
         fromDegrees 属性为动画起始时物件的角度      
         toDegrees   属性为动画结束时物件旋转的角度,+代表顺时针  
         duration  属性为动画持续时间,以毫秒为单位  
+        
+        备忘: 去掉repeatCount并降低duration后会减少GC压力, 估计是因为动画时会产生某种buffer, 运行的持续时间(或次数)过长后, 则系统自动调用GC去进行清理. 
+        android:duration="200"
+        android:repeatCount="1"  
 -->  
 </set>

@@ -27,27 +27,26 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.data.Dm;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
-import com.ch_linghu.fanfoudroid.helper.utils.*;
+import com.ch_linghu.fanfoudroid.fanfou.DirectMessage;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
-import com.ch_linghu.fanfoudroid.ui.base.WithHeaderActivity;
+import com.ch_linghu.fanfoudroid.ui.base.BaseActivity;
+import com.ch_linghu.fanfoudroid.ui.module.NavBar;
 import com.ch_linghu.fanfoudroid.ui.module.TweetEdit;
-import com.ch_linghu.fanfoudroid.weibo.DirectMessage;
+import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 //FIXME: 将WriteDmActivity和WriteActivity进行整合。
 /**
@@ -55,7 +54,7 @@ import com.ch_linghu.fanfoudroid.weibo.DirectMessage;
  * @author lds
  *
  */
-public class WriteDmActivity extends WithHeaderActivity {
+public class WriteDmActivity extends BaseActivity {
 
 	public static final String NEW_TWEET_ACTION = "com.ch_linghu.fanfoudroid.NEW";
 	public static final String EXTRA_TEXT = "text";
@@ -72,6 +71,8 @@ public class WriteDmActivity extends WithHeaderActivity {
 	private Button mSendButton;
 	//private AutoCompleteTextView mToEdit;
 	private TextView mToEdit;
+	
+	private NavBar mNavbar;
 	
 	// Task
 	private GenericTask mSendTask;
@@ -95,6 +96,10 @@ public class WriteDmActivity extends WithHeaderActivity {
 				enableEntry();
 				// 发送成功就直接关闭界面
 				finish();
+				
+				 // 关闭软键盘
+		        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		        imm.hideSoftInputFromWindow(mTweetEdit.getEditText().getWindowToken(), 0);
 			} else if (result == TaskResult.NOT_FOLLOWED_ERROR) {
 				updateProgress(getString(R.string.direct_meesage_status_the_person_not_following_you));
 				enableEntry();
@@ -161,7 +166,7 @@ public class WriteDmActivity extends WithHeaderActivity {
 		if (super._onCreate(savedInstanceState)){
 			// init View
 			setContentView(R.layout.write_dm);
-			initHeader(HEADER_STYLE_WRITE);
+			mNavbar = new NavBar(NavBar.HEADER_STYLE_WRITE, this);
 	
 			// Intent & Action & Extras
 			Intent intent = getIntent();
@@ -201,9 +206,6 @@ public class WriteDmActivity extends WithHeaderActivity {
 		    
 		    View.OnClickListener sendListenner = new View.OnClickListener() {
                 public void onClick(View v) {
-                    Animation anim = AnimationUtils.loadAnimation(v.getContext(),
-                            R.anim.scale_lite);
-                    v.startAnimation(anim);
                     doSend();
                 }
             };
@@ -211,7 +213,7 @@ public class WriteDmActivity extends WithHeaderActivity {
 			mSendButton = (Button) findViewById(R.id.send_button);
 			mSendButton.setOnClickListener(sendListenner);
             
-            ImageButton mTopSendButton = (ImageButton) findViewById(R.id.top_send_btn);
+            Button mTopSendButton = (Button) findViewById(R.id.top_send_btn);
             mTopSendButton.setOnClickListener(sendListenner);
 			
 			return true;

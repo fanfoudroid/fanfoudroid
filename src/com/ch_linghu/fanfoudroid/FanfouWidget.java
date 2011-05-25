@@ -17,12 +17,13 @@ import android.hardware.SensorManager;
 import android.util.Log;
 import android.widget.RemoteViews;
 
+import com.ch_linghu.fanfoudroid.app.LazyImageLoader.ImageLoaderCallback;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
-import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheCallback;
-import com.ch_linghu.fanfoudroid.helper.utils.*;
 import com.ch_linghu.fanfoudroid.service.TwitterService;
+import com.ch_linghu.fanfoudroid.util.DateTimeHelper;
+import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 public class FanfouWidget extends AppWidgetProvider {
 	public final String TAG = "FanfouWidget";
@@ -32,7 +33,7 @@ public class FanfouWidget extends AppWidgetProvider {
 	private SensorManager sensorManager;
 	private static int position = 0;
 
-	class CacheCallback implements ProfileImageCacheCallback {
+	class CacheCallback implements ImageLoaderCallback {
 		private RemoteViews updateViews;
 
 		CacheCallback(RemoteViews updateViews) {
@@ -158,7 +159,7 @@ public class FanfouWidget extends AppWidgetProvider {
 				DateTimeHelper.getRelativeDate(t.createdAt));
 
 		updateViews.setImageViewBitmap(R.id.status_image,
-				TwitterApplication.mProfileImageCacheManager.get(
+				TwitterApplication.mImageLoader.get(
 						t.profileImageUrl, new CacheCallback(updateViews)));
 
 		Intent inext = new Intent(context, FanfouWidget.class);

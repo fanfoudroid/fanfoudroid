@@ -2,6 +2,9 @@ package com.ch_linghu.fanfoudroid;
 
 import java.util.HashSet;
 
+import org.acra.ReportingInteractionMode;
+import org.acra.annotation.ReportsCrashes;
+
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -11,16 +14,15 @@ import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
+import com.ch_linghu.fanfoudroid.app.LazyImageLoader;
+import com.ch_linghu.fanfoudroid.app.Preferences;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
-import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.ProfileImageCacheManager;
+import com.ch_linghu.fanfoudroid.fanfou.Configuration;
+import com.ch_linghu.fanfoudroid.fanfou.User;
+import com.ch_linghu.fanfoudroid.fanfou.Weibo;
 import com.ch_linghu.fanfoudroid.http.HttpException;
-import com.ch_linghu.fanfoudroid.weibo.Configuration;
-import com.ch_linghu.fanfoudroid.weibo.User;
-import com.ch_linghu.fanfoudroid.weibo.Weibo;
-import org.acra.*;
-import org.acra.annotation.*;
+import com.ch_linghu.fanfoudroid.util.EncryptUtils;
 
 @ReportsCrashes(formKey="dHowMk5LMXQweVJkWGthb1E1T1NUUHc6MQ",
     mode = ReportingInteractionMode.NOTIFICATION,
@@ -39,15 +41,15 @@ public class TwitterApplication extends Application {
 	public static final String TAG = "TwitterApplication";
 
 	// public static ImageManager mImageManager;
-	public static ProfileImageCacheManager mProfileImageCacheManager;
+	public static LazyImageLoader mImageLoader;
 	public static TwitterDatabase mDb;
 	public static Weibo mApi; // new API
 	public static Context mContext;
 	public static SharedPreferences mPref;
-
+	
 	public static int networkType = 0;
 
-	private final static boolean DEBUG = Configuration.getDebug();
+	public final static boolean DEBUG = Configuration.getDebug();
 
 	// FIXME:获取登录用户id, 据肉眼观察，刚注册的用户系统分配id都是~开头的，因为不知道
 	// 用户何时去修改这个ID，目前只有把所有以~开头的ID在每次需要UserId时都去服务器
@@ -107,13 +109,14 @@ public class TwitterApplication extends Application {
 
 		mContext = this.getApplicationContext();
 		// mImageManager = new ImageManager(this);
-		mProfileImageCacheManager = new ProfileImageCacheManager();
+		mImageLoader = new LazyImageLoader();
 		mApi = new Weibo();
 		mDb = TwitterDatabase.getInstance(this);
 
 		mPref = PreferenceManager.getDefaultSharedPreferences(this);
 		String username = mPref.getString(Preferences.USERNAME_KEY, "");
 		String password = mPref.getString(Preferences.PASSWORD_KEY, "");
+		password = EncryptUtils.decryptPassword(password);
 
 		if (Weibo.isValidCredentials(username, password)) {
 			mApi.setCredentials(username, password); // Setup API and HttpClient
@@ -174,6 +177,6 @@ public class TwitterApplication extends Application {
 
 		cursor.close();
 
-		mProfileImageCacheManager.getImageManager().cleanup(keepers);
+		mImageLoader.getImageManager().cleanup(keepers);
 	}
 }

@@ -19,19 +19,13 @@
        />
       <ProgressBar   
         android:id="@+id/rectangleProgressBar_header"    
-        style="@style/customProgressBar" 
         android:layout_width="16px"   
         android:layout_height="16px"
         android:layout_toRightOf="@id/ask_for_more_header"
         android:layout_centerVertical="true"
         android:layout_marginLeft="5dp"
         android:visibility="gone"  
+        style="@style/customProgressBar"
        /> 
        
-    <!-- bottom border -->
-    <View android:background="@drawable/dashed_line"
-     android:id="@+id/main_shape"
-     android:layout_alignParentBottom="true"
-     android:layout_width="fill_parent"
-     android:layout_height="1dip"/>
 </RelativeLayout>

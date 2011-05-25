@@ -56,9 +56,10 @@ import org.apache.http.protocol.HttpContext;
 
 import android.util.Log;
 
-import com.ch_linghu.fanfoudroid.debug.DebugTimer;
-import com.ch_linghu.fanfoudroid.weibo.Configuration;
-import com.ch_linghu.fanfoudroid.weibo.RefuseError;
+import com.ch_linghu.fanfoudroid.TwitterApplication;
+import com.ch_linghu.fanfoudroid.fanfou.Configuration;
+import com.ch_linghu.fanfoudroid.fanfou.RefuseError;
+import com.ch_linghu.fanfoudroid.util.DebugTimer;
 
 /**
  * Wrap of org.apache.http.impl.client.DefaultHttpClient
@@ -361,7 +362,9 @@ public class HttpClient {
     public Response httpRequest(String url, ArrayList<BasicNameValuePair> postParams,
             File file, boolean authenticated, String httpMethod) throws HttpException {
         Log.d(TAG, "Sending " + httpMethod + " request to " + url);
-        DebugTimer.betweenStart("HTTP");
+        if (TwitterApplication.DEBUG){
+        	DebugTimer.betweenStart("HTTP");
+        }
 
         URI uri = createURI(url);
 
@@ -393,7 +396,9 @@ public class HttpClient {
             Log.e(TAG, "response is null");
         }
 
-        DebugTimer.betweenEnd("HTTP");
+        if (TwitterApplication.DEBUG){
+        	DebugTimer.betweenEnd("HTTP");
+        }
         return res;
     }
 

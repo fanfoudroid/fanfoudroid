@@ -16,19 +16,20 @@
     android:layout_height="fill_parent"
     android:layout_weight="1"
     android:cacheColorHint="#00000000"
-    android:fadeScrollbars="false"
+    android:fadeScrollbars="true"
     android:divider="@drawable/dashed_line"
     android:dividerHeight="1dip"
     android:fastScrollEnabled="true"
     />          
-    
-	 <!-- 提示栏-->
+      
+     <!-- 提示栏 : 已废弃 -->
      <TextView
-     android:id="@+id/progress_text"
-     android:layout_alignParentBottom="true"
-     android:layout_alignParentRight="true"
-     style="@style/statusbar"
-     android:visibility="gone"
+        android:id="@+id/progress_text"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        style="@style/statusbar"
+        android:visibility="gone"
      /> 
      
 </LinearLayout>
+

@@ -9,7 +9,7 @@
       android:layout_alignParentTop="true"
       >
       
-       <!-- BACK Button -->
+        <!-- BACK Button -->
         <Button android:id="@+id/top_back"
           android:layout_width="wrap_content"
           android:layout_height="fill_parent"
@@ -21,7 +21,7 @@
         <!-- 搜索按钮 -->
         <ImageButton android:id="@+id/search"
            android:background="@null"
-           android:src="@drawable/search"
+           android:src="@drawable/top_search_selector"
            android:layout_width="wrap_content"
            android:layout_height="fill_parent"
            android:layout_alignParentRight="true"
@@ -29,21 +29,7 @@
            android:paddingLeft="10dip"
            /> 
            
-        <!-- 搜索框 
-        <EditText android:id="@+id/search_edit"
-           android:hint="搜索饭否"
-           android:layout_width="fill_parent"
-           android:layout_height="35dp"
-           android:layout_toLeftOf="@id/search"
-           android:layout_toRightOf="@id/top_back"
-           android:background="@color/body_background" 
-           android:layout_centerVertical="true"
-           android:layout_marginLeft="10dip" 
-           android:layout_marginRight="10dip"
-           android:paddingLeft="2dip"/>   
-        -->
-           
-            <!-- 搜索框 -->
+        <!-- 搜索框 -->
         <EditText android:id="@+id/search_edit"
            android:hint="搜索饭否"
            android:layout_width="fill_parent"
@@ -54,6 +40,27 @@
            android:layout_marginLeft="12dip"
            android:background="@drawable/textfield_search_empty" 
            />   
+       
+        <!-- 旋转 -->
+        <ProgressBar 
+            android:id="@+id/top_refresh_progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@id/search_edit"
+            android:layout_marginRight="15dip"
+            android:layout_centerVertical="true"
+            style="?android:progressBarStyleSmall"
+            android:visibility="gone"
+        />
+           
+        <!-- Global Progress Bar -->
+        <ProgressBar 
+            android:id="@+id/progress_bar"
+            android:layout_width="fill_parent"
+            android:layout_height="2dip"
+            android:layout_alignParentBottom="true"
+            style="@style/gProgressBar.Horizontal"
+        />
          
     </RelativeLayout>
     

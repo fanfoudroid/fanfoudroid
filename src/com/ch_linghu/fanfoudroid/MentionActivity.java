@@ -27,10 +27,10 @@ import android.view.Menu;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
+import com.ch_linghu.fanfoudroid.fanfou.Paging;
+import com.ch_linghu.fanfoudroid.fanfou.Status;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterCursorBaseActivity;
-import com.ch_linghu.fanfoudroid.weibo.Paging;
-import com.ch_linghu.fanfoudroid.weibo.Status;
 
 public class MentionActivity extends TwitterCursorBaseActivity {
 	private static final String TAG = "MentionActivity";
@@ -56,7 +56,7 @@ public class MentionActivity extends TwitterCursorBaseActivity {
 	@Override
 	protected boolean _onCreate(Bundle savedInstanceState) {
 		if (super._onCreate(savedInstanceState)){
-			setHeaderTitle("@提到我的");
+			mNavbar.setHeaderTitle("@提到我的");
 			return true;
 		}else{
 			return false;

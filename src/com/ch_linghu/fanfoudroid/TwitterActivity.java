@@ -30,13 +30,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
+import com.ch_linghu.fanfoudroid.fanfou.Paging;
+import com.ch_linghu.fanfoudroid.fanfou.Status;
 import com.ch_linghu.fanfoudroid.http.HttpException;
-import com.ch_linghu.fanfoudroid.http.HttpRefusedException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
@@ -44,212 +44,214 @@ import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.task.TweetCommonTask;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterCursorBaseActivity;
-import com.ch_linghu.fanfoudroid.weibo.Paging;
-import com.ch_linghu.fanfoudroid.weibo.Status;
 
 public class TwitterActivity extends TwitterCursorBaseActivity {
-	private static final String TAG = "TwitterActivity";
+    private static final String TAG = "TwitterActivity";
 
-	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.TWEETS";
-	protected GenericTask mDeleteTask;
+    private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.TWEETS";
+    protected GenericTask mDeleteTask;
 
-	private TaskListener mDeleteTaskListener = new TaskAdapter() {
+    private TaskListener mDeleteTaskListener = new TaskAdapter() {
 
-		@Override
-		public String getName() {
-			return "DeleteTask";
-		}
+        @Override
+        public String getName() {
+            return "DeleteTask";
+        }
 
-		@Override
-		public void onPostExecute(GenericTask task, TaskResult result) {
-			if (result == TaskResult.AUTH_ERROR) {
-				logout();
-			} else if (result == TaskResult.OK) {
-				onDeleteSuccess();
-			} else if (result == TaskResult.IO_ERROR) {
-				onDeleteFailure();
-			}
-		}
-	};
+        @Override
+        public void onPostExecute(GenericTask task, TaskResult result) {
+            if (result == TaskResult.AUTH_ERROR) {
+                logout();
+            } else if (result == TaskResult.OK) {
+                onDeleteSuccess();
+            } else if (result == TaskResult.IO_ERROR) {
+                onDeleteFailure();
+            }
+        }
+    };
 
-	static final int DIALOG_WRITE_ID = 0;
+    static final int DIALOG_WRITE_ID = 0;
 
-	public static Intent createIntent(Context context) {
-		Intent intent = new Intent(LAUNCH_ACTION);
-		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    public static Intent createIntent(Context context) {
+        Intent intent = new Intent(LAUNCH_ACTION);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-		return intent;
-	}
+        return intent;
+    }
 
-	public static Intent createNewTaskIntent(Context context) {
-		Intent intent = createIntent(context);
-		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    public static Intent createNewTaskIntent(Context context) {
+        Intent intent = createIntent(context);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-		return intent;
-	}
+        return intent;
+    }
 
-	@Override
-	protected boolean _onCreate(Bundle savedInstanceState) {
-		if (super._onCreate(savedInstanceState)) {
-			setHeaderTitle("饭否fanfou.com");
-			return true;
-		} else {
-			return false;
-		}
-	}
+    @Override
+    protected boolean _onCreate(Bundle savedInstanceState) {
+        if (super._onCreate(savedInstanceState)) {
+            mNavbar.setHeaderTitle("饭否fanfou.com");
+            //仅在这个页面进行schedule的处理
+            manageUpdateChecks();
 
-	@Override
-	protected void onDestroy() {
-		// TODO Auto-generated method stub
-		super.onDestroy();
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-		if (mDeleteTask != null
-				&& mDeleteTask.getStatus() == GenericTask.Status.RUNNING) {
-			mDeleteTask.cancel(true);
-		}
-	}
+    @Override
+    protected void onDestroy() {
+        // TODO Auto-generated method stub
+        super.onDestroy();
 
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		if (mDeleteTask != null
-				&& mDeleteTask.getStatus() == GenericTask.Status.RUNNING) {
-			outState.putBoolean(SIS_RUNNING_KEY, true);
-		}
-	}
+        if (mDeleteTask != null
+                && mDeleteTask.getStatus() == GenericTask.Status.RUNNING) {
+            mDeleteTask.cancel(true);
+        }
+    }
 
-	// Menu.
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		return super.onCreateOptionsMenu(menu);
-	}
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mDeleteTask != null
+                && mDeleteTask.getStatus() == GenericTask.Status.RUNNING) {
+            outState.putBoolean(SIS_RUNNING_KEY, true);
+        }
+    }
 
-	private int CONTEXT_DELETE_ID = getLastContextMenuId() + 1;
+    // Menu.
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return super.onCreateOptionsMenu(menu);
+    }
 
-	@Override
-	protected int getLastContextMenuId() {
-		return CONTEXT_DELETE_ID;
-	}
+    private int CONTEXT_DELETE_ID = getLastContextMenuId() + 1;
 
-	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,
-			ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, v, menuInfo);
+    @Override
+    protected int getLastContextMenuId() {
+        return CONTEXT_DELETE_ID;
+    }
 
-		AdapterView.AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-		Tweet tweet = getContextItemTweet(info.position);
-		if (null != tweet) {// 当按钮为 刷新/更多的时候为空
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+            ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
 
-			if (tweet.userId.equals(TwitterApplication.getMyselfId())) {
-				menu.add(0, CONTEXT_DELETE_ID, 0, R.string.cmenu_delete);
-			}
+        AdapterView.AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+        Tweet tweet = getContextItemTweet(info.position);
+        if (null != tweet) {// 当按钮为 刷新/更多的时候为空
 
-		}
-	}
+            if (tweet.userId.equals(TwitterApplication.getMyselfId())) {
+                menu.add(0, CONTEXT_DELETE_ID, 0, R.string.cmenu_delete);
+            }
 
-	@Override
-	public boolean onContextItemSelected(MenuItem item) {
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
-				.getMenuInfo();
-		Tweet tweet = getContextItemTweet(info.position);
+        }
+    }
 
-		if (tweet == null) {
-			Log.w(TAG, "Selected item not available.");
-			return super.onContextItemSelected(item);
-		}
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
+                .getMenuInfo();
+        Tweet tweet = getContextItemTweet(info.position);
 
-		if (item.getItemId() == CONTEXT_DELETE_ID) {
-			doDelete(tweet.id);
-			return true;
-		} else {
-			return super.onContextItemSelected(item);
-		}
-	}
+        if (tweet == null) {
+            Log.w(TAG, "Selected item not available.");
+            return super.onContextItemSelected(item);
+        }
 
-	@Override
-	protected Cursor fetchMessages() {
-		return getDb().fetchAllTweets(getUserId(), StatusTable.TYPE_HOME);
-	}
+        if (item.getItemId() == CONTEXT_DELETE_ID) {
+            doDelete(tweet.id);
+            return true;
+        } else {
+            return super.onContextItemSelected(item);
+        }
+    }
 
-	@Override
-	protected String getActivityTitle() {
-		return getResources().getString(R.string.page_title_home);
-	}
+    @SuppressWarnings("deprecation")
+    @Override
+    protected Cursor fetchMessages() {
+        return getDb().fetchAllTweets(getUserId(), StatusTable.TYPE_HOME);
+    }
 
-	@Override
-	protected void markAllRead() {
-		getDb().markAllTweetsRead(getUserId(), StatusTable.TYPE_HOME);
-	}
+    @Override
+    protected String getActivityTitle() {
+        return getResources().getString(R.string.page_title_home);
+    }
 
-	// hasRetrieveListTask interface
-	@Override
-	public int addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
-		// 获取消息的时候，将status里获取的user也存储到数据库
-		
-		// ::MARK::
-		for (Tweet t : tweets) {
-			getDb().createWeiboUserInfo(t.user);
-		}
-		return getDb().putTweets(tweets, getUserId(), StatusTable.TYPE_HOME,
-				isUnread);
-	}
+    @Override
+    protected void markAllRead() {
+        getDb().markAllTweetsRead(getUserId(), StatusTable.TYPE_HOME);
+    }
 
-	@Override
-	public String fetchMaxId() {
-		return getDb().fetchMaxTweetId(getUserId(), StatusTable.TYPE_HOME);
-	}
+    // hasRetrieveListTask interface
+    @Override
+    public int addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
+        // 获取消息的时候，将status里获取的user也存储到数据库
 
-	@Override
-	public List<Status> getMessageSinceId(String maxId) throws HttpException {
-		if (maxId != null) {
-			return getApi().getFriendsTimeline(new Paging(maxId));
-		} else {
-			return getApi().getFriendsTimeline();
-		}
-	}
+        // ::MARK::
+        for (Tweet t : tweets) {
+            getDb().createWeiboUserInfo(t.user);
+        }
+        return getDb().putTweets(tweets, getUserId(), StatusTable.TYPE_HOME,
+                isUnread);
+    }
 
-	public void onDeleteFailure() {
-		Log.e(TAG, "Delete failed");
-	}
+    @Override
+    public String fetchMaxId() {
+        return getDb().fetchMaxTweetId(getUserId(), StatusTable.TYPE_HOME);
+    }
 
-	public void onDeleteSuccess() {
-		mTweetAdapter.refresh();
-	}
+    @Override
+    public List<Status> getMessageSinceId(String maxId) throws HttpException {
+        if (maxId != null) {
+            return getApi().getFriendsTimeline(new Paging(maxId));
+        } else {
+            return getApi().getFriendsTimeline();
+        }
+    }
 
-	private void doDelete(String id) {
+    public void onDeleteFailure() {
+        Log.e(TAG, "Delete failed");
+    }
 
-		if (mDeleteTask != null
-				&& mDeleteTask.getStatus() == GenericTask.Status.RUNNING) {
-			return;
-		} else {
-			mDeleteTask = new TweetCommonTask.DeleteTask(this);
-			mDeleteTask.setListener(mDeleteTaskListener);
+    public void onDeleteSuccess() {
+        mTweetAdapter.refresh();
+    }
 
-			TaskParams params = new TaskParams();
-			params.put("id", id);
-			mDeleteTask.execute(params);
-		}
-	}
+    private void doDelete(String id) {
 
-	@Override
-	public String fetchMinId() {
-		return getDb().fetchMinTweetId(getUserId(), StatusTable.TYPE_HOME);
-	}
+        if (mDeleteTask != null
+                && mDeleteTask.getStatus() == GenericTask.Status.RUNNING) {
+            return;
+        } else {
+            mDeleteTask = new TweetCommonTask.DeleteTask(this);
+            mDeleteTask.setListener(mDeleteTaskListener);
 
-	@Override
-	public List<Status> getMoreMessageFromId(String minId) throws HttpException {
-		Paging paging = new Paging(1, 20);
-		paging.setMaxId(minId);
-		return getApi().getFriendsTimeline(paging);
-	}
+            TaskParams params = new TaskParams();
+            params.put("id", id);
+            mDeleteTask.execute(params);
+        }
+    }
 
-	@Override
-	public int getDatabaseType() {
-		return StatusTable.TYPE_HOME;
-	}
+    @Override
+    public String fetchMinId() {
+        return getDb().fetchMinTweetId(getUserId(), StatusTable.TYPE_HOME);
+    }
 
-	@Override
-	public String getUserId() {
-		return TwitterApplication.getMyselfId();
-	}
+    @Override
+    public List<Status> getMoreMessageFromId(String minId) throws HttpException {
+        Paging paging = new Paging(1, 20);
+        paging.setMaxId(minId);
+        return getApi().getFriendsTimeline(paging);
+    }
+
+    @Override
+    public int getDatabaseType() {
+        return StatusTable.TYPE_HOME;
+    }
+
+    @Override
+    public String getUserId() {
+        return TwitterApplication.getMyselfId();
+    }
 }

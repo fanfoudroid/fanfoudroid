@@ -46,20 +46,20 @@ import com.ch_linghu.fanfoudroid.MentionActivity;
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.TwitterActivity;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
+import com.ch_linghu.fanfoudroid.app.Preferences;
 import com.ch_linghu.fanfoudroid.data.Dm;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
-import com.ch_linghu.fanfoudroid.helper.Preferences;
-import com.ch_linghu.fanfoudroid.helper.utils.TextHelper;
+import com.ch_linghu.fanfoudroid.fanfou.Paging;
+import com.ch_linghu.fanfoudroid.fanfou.Weibo;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
-import com.ch_linghu.fanfoudroid.weibo.Paging;
-import com.ch_linghu.fanfoudroid.weibo.Weibo;
+import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 public class TwitterService extends Service {
     private static final String TAG = "TwitterService";
@@ -339,7 +339,7 @@ public class TwitterService extends Service {
         // interval = 1; //for debug
 
         Intent intent = new Intent(context, TwitterService.class);
-        PendingIntent pending = PendingIntent.getService(context, 0, intent, 0);
+        PendingIntent pending = PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         Calendar c = new GregorianCalendar();
         c.add(Calendar.MINUTE, interval);
 
@@ -396,7 +396,7 @@ public class TwitterService extends Service {
                                 StatusTable.TYPE_HOME);
                 Log.d(TAG, "Max id is:" + maxId);
 
-                List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
+                List<com.ch_linghu.fanfoudroid.fanfou.Status> statusList;
 
                 try {
                     if (maxId != null) {
@@ -410,7 +410,7 @@ public class TwitterService extends Service {
                     return TaskResult.IO_ERROR;
                 }
 
-                for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
+                for (com.ch_linghu.fanfoudroid.fanfou.Status status : statusList) {
                     if (isCancelled()) {
                         return TaskResult.CANCELLED;
                     }
@@ -443,7 +443,7 @@ public class TwitterService extends Service {
                         StatusTable.TYPE_MENTION);
                 Log.d(TAG, "Max mention id is:" + maxMentionId);
 
-                List<com.ch_linghu.fanfoudroid.weibo.Status> statusList;
+                List<com.ch_linghu.fanfoudroid.fanfou.Status> statusList;
 
                 try {
                     if (maxMentionId != null) {
@@ -458,7 +458,7 @@ public class TwitterService extends Service {
                 }
 
                 int unReadMentionsCount = 0;
-                for (com.ch_linghu.fanfoudroid.weibo.Status status : statusList) {
+                for (com.ch_linghu.fanfoudroid.fanfou.Status status : statusList) {
                     if (isCancelled()) {
                         return TaskResult.CANCELLED;
                     }
@@ -486,7 +486,7 @@ public class TwitterService extends Service {
                 String maxId = getDb().fetchMaxDmId(false);
                 Log.d(TAG, "Max DM id is:" + maxId);
 
-                List<com.ch_linghu.fanfoudroid.weibo.DirectMessage> dmList;
+                List<com.ch_linghu.fanfoudroid.fanfou.DirectMessage> dmList;
 
                 try {
                     if (maxId != null) {
@@ -499,7 +499,7 @@ public class TwitterService extends Service {
                     return TaskResult.IO_ERROR;
                 }
 
-                for (com.ch_linghu.fanfoudroid.weibo.DirectMessage directMessage : dmList) {
+                for (com.ch_linghu.fanfoudroid.fanfou.DirectMessage directMessage : dmList) {
                     if (isCancelled()) {
                         return TaskResult.CANCELLED;
                     }
