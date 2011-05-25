@@ -1,13 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<manifest android:versionCode="20110524" android:versionName="0.7.3"
-    package="com.ch_linghu.fanfoudroid" xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.ch_linghu.fanfoudroid"
+    android:versionCode="20110524"
+    android:versionName="0.7.3">
     <uses-sdk android:minSdkVersion="4"/>
     <supports-screens android:anyDensity="true"/>
-    <application android:icon="@drawable/icon"
-        android:label="@string/app_name" android:name="TwitterApplication">
+    <original-package android:name="com.ch_linghu.fanfoudroid" />
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
+
+    <application android:icon="@drawable/icon" android:label="@string/app_name"
+        android:name="TwitterApplication">
         <meta-data android:name="android.app.default_searchable" android:value=".SearchResultActivity"/>
-        <activity android:name=".TwitterActivity" android:label="@string/app_name" android:theme="@style/Theme.Fanfoudroid" 
-             android:windowSoftInputMode="adjustResize|stateHidden">
+
+        <activity
+            android:name=".TwitterActivity"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Fanfoudroid" 
+            android:windowSoftInputMode="adjustResize|stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -17,10 +36,16 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity" android:label="@string/app_name" android:theme="@style/Theme.Fanfoudroid" 
-             android:windowSoftInputMode="adjustResize|stateHidden"/>
-        <activity android:name=".WriteActivity" android:label="@string/app_name" android:theme="@style/Theme.Fanfoudroid" 
-             android:windowSoftInputMode="adjustResize|stateHidden">
+        <activity 
+            android:name=".LoginActivity"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Fanfoudroid" 
+            android:windowSoftInputMode="adjustResize|stateHidden"/>
+        <activity 
+            android:name=".WriteActivity"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Fanfoudroid" 
+            android:windowSoftInputMode="adjustResize|stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.SEND"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -36,51 +61,69 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <activity android:name=".WriteDmActivity" android:label="@string/app_name" android:theme="@style/Theme.Fanfoudroid" 
-             android:windowSoftInputMode="adjustResize|stateHidden">
+        <activity 
+            android:name=".WriteDmActivity" 
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Fanfoudroid" 
+            android:windowSoftInputMode="adjustResize|stateHidden">
             <intent-filter>
                 <action android:name="com.ch_linghu.fanfoudroid.DMSW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <activity android:name=".StatusActivity" android:label="@string/app_name" android:theme="@style/Theme.Fanfoudroid" 
+        <activity
+            android:name=".StatusActivity"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Fanfoudroid" 
             android:windowSoftInputMode="adjustResize|stateHidden">
             <intent-filter>
                 <action android:name="com.ch_linghu.fanfoudroid.STATUS"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <activity android:label="@string/app_name" android:theme="@style/Theme.Fanfoudroid" 
-            android:name=".FavoritesActivity" android:windowSoftInputMode="adjustResize|stateHidden">
+        <activity
+            android:name=".FavoritesActivity"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Fanfoudroid" 
+            android:windowSoftInputMode="adjustResize|stateHidden">
             <intent-filter>
                 <action android:name="com.ch_linghu.fanfoudroid.FAVORITES"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <activity android:label="@string/app_name" android:theme="@style/Theme.Fanfoudroid" 
-            android:name=".BrowseActivity" android:windowSoftInputMode="adjustResize|stateHidden">
+        <activity 
+            android:name=".BrowseActivity"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Fanfoudroid" 
+            android:windowSoftInputMode="adjustResize|stateHidden">
             <intent-filter>
                 <action android:name="com.ch_linghu.fanfoudroid.BROWSES"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <!--  TODO: why need stateHidden on the magic? -->
-        <activity android:label="@string/page_title_mentions" android:theme="@style/Theme.Fanfoudroid" 
-            android:name=".MentionActivity" android:windowSoftInputMode="adjustResize|stateHidden">
+        <activity 
+            android:name=".MentionActivity"
+            android:label="@string/page_title_mentions"
+            android:theme="@style/Theme.Fanfoudroid" 
+            android:windowSoftInputMode="adjustResize|stateHidden">
             <intent-filter>
                 <action android:name="com.ch_linghu.fanfoudroid.REPLIES"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <!--  TODO: why need stateHidden on the magic? -->
-        <activity android:label="@string/page_title_direct_messages" android:theme="@style/Theme.Fanfoudroid" 
-            android:name=".DmActivity" android:windowSoftInputMode="adjustResize|stateHidden">
+        <activity 
+            android:name=".DmActivity"
+            android:label="@string/page_title_direct_messages"
+            android:theme="@style/Theme.Fanfoudroid" 
+            android:windowSoftInputMode="adjustResize|stateHidden">
             <intent-filter>
                 <action android:name="com.ch_linghu.fanfoudroid.DMS"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <activity android:name=".SearchResultActivity" android:theme="@style/Theme.Fanfoudroid" >
+        <activity 
+            android:name=".SearchResultActivity"
+            android:theme="@style/Theme.Fanfoudroid" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -94,7 +137,9 @@
                 <data android:host="search" android:scheme="twitta"/>
             </intent-filter>
         </activity>
-        <activity android:name=".UserTimelineActivity" android:theme="@style/Theme.Fanfoudroid" >
+        <activity 
+            android:name=".UserTimelineActivity"
+            android:theme="@style/Theme.Fanfoudroid" >
             <intent-filter>
                 <action android:name="com.ch_linghu.fanfoudroid.USERTIMELINE"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -105,7 +150,9 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
             </intent-filter>
         </activity>
-        <activity android:name=".ProfileActivity" android:theme="@style/Theme.Fanfoudroid" >
+        <activity
+            android:name=".ProfileActivity"
+            android:theme="@style/Theme.Fanfoudroid" >
             <intent-filter>
                 <action android:name="com.ch_linghu.fanfoudroid.PROFILE"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -118,7 +165,9 @@
                 <data android:host="users" android:scheme="twitta"/>
             </intent-filter>
         </activity>
-        <activity android:name=".FollowersActivity" android:theme="@style/Theme.Fanfoudroid" >
+        <activity
+            android:name=".FollowersActivity"
+            android:theme="@style/Theme.Fanfoudroid" >
             <intent-filter>
                 <action android:name="com.ch_linghu.fanfoudroid.FOLLOWERS"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -129,7 +178,9 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
             </intent-filter>
         </activity>
-        <activity android:name=".FollowingActivity" android:theme="@style/Theme.Fanfoudroid" >
+        <activity
+            android:name=".FollowingActivity"
+            android:theme="@style/Theme.Fanfoudroid" >
             <intent-filter>
                 <action android:name="com.ch_linghu.fanfoudroid.FOLLOWING"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -140,34 +191,33 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
             </intent-filter>
         </activity>
-        <activity android:name=".SearchActivity" android:theme="@style/Theme.Fanfoudroid" />
-        <activity android:name="PreferencesActivity" android:label="@string/app_name"
+        <activity 
+            android:name=".SearchActivity"
             android:theme="@style/Theme.Fanfoudroid" />
-        <service android:name="service.TwitterService" />
-        <receiver android:name=".service.BootReceiver">
+        <activity
+            android:name="PreferencesActivity"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Fanfoudroid" />
+        <service
+            android:name=".service.TwitterService" />
+        <receiver
+            android:name=".service.BootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
-        <receiver android:name="FanfouWidget">
+        <receiver
+            android:name="FanfouWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
                 <action android:name="com.ch_linghu.fanfoudroid.FanfouWidget.NEXT"/>
                 <action android:name="com.ch_linghu.fanfoudroid.FanfouWidget.PREV"/>
             </intent-filter>
             <meta-data android:name="android.appwidget.provider" 
-            android:resource="@xml/widget_info"/>
+                android:resource="@xml/widget_info"/>
         </receiver>
 
         <!-- <service android:name="com.ch_linghu.fanfoudroid.service.WidgetService"/> -->
     </application>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.VIBRATE"/>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <uses-permission android:name="android.permission.CAMERA"/>
-	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
-    <uses-feature android:name="android.hardware.camera" android:required="false"/>
-    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
+   
 </manifest>

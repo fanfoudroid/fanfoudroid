@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.http.Header;
@@ -15,10 +14,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
 
-import android.util.Log;
-
-import com.ch_linghu.fanfoudroid.debug.DebugTimer;
-import com.temp.afan.data.Status;
 import com.temp.afan.data.json.JsonParserException;
 
 public class Response {
