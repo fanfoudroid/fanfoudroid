@@ -1,16 +1,18 @@
-package com.ch_linghu.fanfoudroid.data.json;
+package com.temp.afan.data.json;
 
 import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.ch_linghu.fanfoudroid.data2.Photo;
-import com.ch_linghu.fanfoudroid.data2.Status;
-import com.ch_linghu.fanfoudroid.data2.User;
+import com.temp.afan.data.Photo;
+import com.temp.afan.data.Status;
+import com.temp.afan.data.User;
 
-public class StatusJSON {
+public class JsonData {
     
+    // STATUS
+
     public static Status parseToStatus(String jsonString)
             throws JsonParserException {
         return JsonParser.parseToObject(jsonString, mStatusJsonMap);
@@ -63,4 +65,5 @@ public class StatusJSON {
         }
 
     };
+
 }

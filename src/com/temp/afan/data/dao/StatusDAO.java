@@ -1,4 +1,4 @@
-package com.ch_linghu.fanfoudroid.db.dao;
+package com.temp.afan.data.dao;
 
 import java.util.List;
 
@@ -7,13 +7,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.ch_linghu.fanfoudroid.data2.Photo;
-import com.ch_linghu.fanfoudroid.data2.Status;
-import com.ch_linghu.fanfoudroid.data2.User;
 import com.ch_linghu.fanfoudroid.db.StatusTable;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.util.DateTimeHelper;
 import com.ch_linghu.fanfoudroid.util.TextHelper;
+import com.temp.afan.data.Photo;
+import com.temp.afan.data.Status;
+import com.temp.afan.data.User;
 
 public class StatusDAO {
     private static final String TAG = "StatusDAO";

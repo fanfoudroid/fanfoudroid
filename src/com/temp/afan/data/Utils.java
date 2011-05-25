@@ -1,4 +1,4 @@
-package com.ch_linghu.fanfoudroid.data2;
+package com.temp.afan.data;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

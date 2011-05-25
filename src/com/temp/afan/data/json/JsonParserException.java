@@ -1,4 +1,4 @@
-package com.ch_linghu.fanfoudroid.data.json;
+package com.temp.afan.data.json;
 
 public class JsonParserException extends Exception {
     private static final long serialVersionUID = -2130555981866849571L;

@@ -1,4 +1,4 @@
-package com.ch_linghu.fanfoudroid.data.json;
+package com.temp.afan.data.json;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -12,6 +12,7 @@ import java.util.TimeZone;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
 
 public class JsonUtils {
     

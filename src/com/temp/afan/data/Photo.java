@@ -1,4 +1,4 @@
-package com.ch_linghu.fanfoudroid.data2;
+package com.temp.afan.data;
 
 public class Photo implements java.io.Serializable {
     private static final long serialVersionUID = 8370731670836608535L;

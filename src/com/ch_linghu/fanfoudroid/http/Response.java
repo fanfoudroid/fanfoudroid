@@ -17,10 +17,9 @@ import org.w3c.dom.Document;
 
 import android.util.Log;
 
-import com.ch_linghu.fanfoudroid.data.json.JsonParser2;
-import com.ch_linghu.fanfoudroid.data.json.JsonParserException;
-import com.ch_linghu.fanfoudroid.data2.Status;
 import com.ch_linghu.fanfoudroid.debug.DebugTimer;
+import com.temp.afan.data.Status;
+import com.temp.afan.data.json.JsonParserException;
 
 public class Response {
     private static boolean DEBUG = true;
@@ -135,6 +134,7 @@ public class Response {
     }
     
     // ignore me, it's only for debug
+    @SuppressWarnings("unused")
     private void debugEntity(HttpEntity entity) throws IOException,
             JsonParserException {
         InputStream is = entity.getContent();
@@ -142,16 +142,6 @@ public class Response {
         if (ceheader != null && ceheader.getValue().equalsIgnoreCase("gzip")) {
             is = new GZIPInputStream(is);
         }
-
-        JsonParser2 jsonParser = new JsonParser2();
-        List<Status> statuses = jsonParser.parseToStatuses(is);
-        DebugTimer.betweenEnd("GSON");
-        Log.v("DEBUG", "Parser statuses :" + statuses.size());
-        /*
-        for (Status s : statuses) {
-            Log.v("DEBUG", s.toString());
-        }
-        */
     }
 
 }

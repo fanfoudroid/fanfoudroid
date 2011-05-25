@@ -1,4 +1,4 @@
-package com.ch_linghu.fanfoudroid.db.dao;
+package com.temp.afan.data.dao;
 
 public class DAOException extends Exception {
     private static final long serialVersionUID = -6901538163576215658L;
