@@ -2,6 +2,9 @@ package com.temp.afan;
 
 import android.os.AsyncTask;
 
+/**
+ * Utility
+ */
 public class Utility {
     /**
      * Cancel an {@link AsyncTask}.  If it's already running, it'll be interrupted.

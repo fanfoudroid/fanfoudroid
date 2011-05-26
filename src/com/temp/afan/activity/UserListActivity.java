@@ -1,11 +1,12 @@
 package com.temp.afan.activity;
 
-import android.app.ListActivity;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 
-public class UserList extends ListActivity implements OnItemClickListener {
+/**
+ * User List Page(followers, friends)
+ */
+public class UserListActivity extends BaseListActivity {
 
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
