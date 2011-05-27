@@ -1,19 +1,34 @@
 package com.temp.afan.activity;
 
-import com.ch_linghu.fanfoudroid.R;
-import com.ch_linghu.fanfoudroid.ui.module.NavBar;
+import java.text.ParseException;
+import java.util.Date;
 
+import android.app.LauncherActivity.ListItem;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
+import android.widget.TextView;
+
+import com.ch_linghu.fanfoudroid.R;
+import com.ch_linghu.fanfoudroid.TwitterApplication;
+import com.ch_linghu.fanfoudroid.app.Preferences;
+import com.ch_linghu.fanfoudroid.app.SimpleImageLoader;
+import com.ch_linghu.fanfoudroid.data.Tweet;
+import com.ch_linghu.fanfoudroid.ui.module.NavBar;
+import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 /**
  * TimeLine Type:
@@ -69,9 +84,7 @@ public class TimelineActivity extends BaseListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.statuses_list);
-        Intent intent = getIntent();
-        mTimelineType = intent.getIntExtra(EXTRA_TIMELINE_TYPE,
-                TYPE_FRIENDS_TIMELINE);
+        setTimelineType(getIntent());
 
         // View
         mNavbar = new NavBar(NavBar.HEADER_STYLE_HOME, this);
@@ -79,6 +92,25 @@ public class TimelineActivity extends BaseListActivity {
 
         mListAdapter = getMyListAdapter();
         setListAdapter(mListAdapter);
+
+        loadTimeline();
+        autoRefreshList();
+    }
+
+    private void loadTimeline() {
+        switch (mTimelineType) {
+        case TYPE_FRIENDS_TIMELINE:
+            Cursor cursor = null;
+            ((CursorAdapter) mListAdapter).changeCursor(cursor);
+            break;
+        case TYPE_PUBLIC_TIMELINE:
+            break;
+        default:
+        }
+    }
+
+    private void autoRefreshList() {
+        // TODO;
     }
 
     private void onRefresh() {
@@ -96,12 +128,16 @@ public class TimelineActivity extends BaseListActivity {
 
     }
 
+    private void setTimelineType(Intent intent) {
+        mTimelineType = intent.getIntExtra(EXTRA_TIMELINE_TYPE,
+                TYPE_FRIENDS_TIMELINE);
+    }
+
     protected TimelineAdapter getMyListAdapter() {
         switch (mTimelineType) {
         case TYPE_FRIENDS_TIMELINE:
         default:
-            Cursor cursor = null;
-            return new TimelineCusorAdapter(this, cursor);
+            return new TimelineCusorAdapter(this);
         }
     }
 
@@ -183,24 +219,51 @@ public class TimelineActivity extends BaseListActivity {
         }
     }
 
+    /**
+     * 
+     */
     /* package */interface TimelineAdapter extends ListAdapter {
         void doRefresh();
 
         void doGetMore();
     }
 
+    /**
+     * 
+     */
     /* package */class TimelineCusorAdapter extends CursorAdapter implements
             TimelineAdapter {
 
-        public TimelineCusorAdapter(Context context, Cursor c) {
-            super(context, c);
-            // TODO Auto-generated constructor stub
+        // TODO
+        public static final int COLUMN_ID = 0;
+        public static final int COLUMN_TEXT = 0;
+        public static final int COLUMN_PROFILE_IMAGE_URL = 0;
+        public static final int COLUMEN_FAVORITED = 0;
+        public static final int COLUMEN_PIC_THUMB = 0;
+        public static final int COLUMN_CREATED = 0;
+        public static final int COLUMEN_SOURCE = 0;
+        public static final int COLUMN_IN_REPLY_TO_SCREEN_NAME = 0;
+
+        Context mContext;
+        private LayoutInflater mInflater;
+        private StringBuilder mMetaBuilder;
+        // DRAWABLE
+
+        // auto refresh
+
+        private java.text.DateFormat mDateFormat;
+
+        public TimelineCusorAdapter(Context context) {
+            super(context, null, true);
+            mContext = context;
+            mInflater = (LayoutInflater) context
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            mDateFormat = android.text.format.DateFormat.getDateFormat(context);
         }
 
         @Override
         public void doRefresh() {
             // TODO Auto-generated method stub
-
         }
 
         @Override
@@ -213,12 +276,63 @@ public class TimelineActivity extends BaseListActivity {
         public void bindView(View view, Context context, Cursor cursor) {
             // TODO Auto-generated method stub
 
+            TextView tweetUserText = (TextView) view
+                    .findViewById(R.id.tweet_user_text);
+            TextView tweetText = (TextView) view.findViewById(R.id.tweet_text);
+            ImageView profileImage = (ImageView) view
+                    .findViewById(R.id.profile_image);
+            TextView metaText = (TextView) view
+                    .findViewById(R.id.tweet_meta_text);
+            ImageView fav = (ImageView) view.findViewById(R.id.tweet_fav);
+            ImageView has_image = (ImageView) view
+                    .findViewById(R.id.tweet_has_image);
+
+            SharedPreferences pref = TwitterApplication.mPref; // PreferenceManager.getDefaultSharedPreferences(mContext);;
+            boolean useProfileImage = pref.getBoolean(
+                    Preferences.USE_PROFILE_IMAGE, true);
+            tweetUserText.setText(cursor.getString(COLUMN_TEXT));
+            TextHelper.setSimpleTweetText(tweetText,
+                    cursor.getString(COLUMN_TEXT));
+
+            String profileImageUrl = cursor.getString(COLUMN_PROFILE_IMAGE_URL);
+            if (useProfileImage && !TextHelper.isEmpty(profileImageUrl)) {
+                SimpleImageLoader.display(profileImage, profileImageUrl);
+            } else {
+                profileImage.setVisibility(View.GONE);
+            }
+
+            if (cursor.getString(COLUMEN_FAVORITED).equals("true")) {
+                fav.setVisibility(View.VISIBLE);
+            } else {
+                fav.setVisibility(View.GONE);
+            }
+
+            if (!TextUtils.isEmpty(cursor.getString(COLUMEN_PIC_THUMB))) {
+                has_image.setVisibility(View.VISIBLE);
+            } else {
+                has_image.setVisibility(View.GONE);
+            }
+
+            try {
+                Date createdAt = mDateFormat.parse(cursor
+                        .getString(COLUMN_CREATED));
+                metaText.setText(Tweet.buildMetaText(mMetaBuilder, createdAt,
+                        cursor.getString(COLUMEN_SOURCE),
+                        cursor.getString(COLUMN_IN_REPLY_TO_SCREEN_NAME)));
+            } catch (ParseException e) {
+                Log.w(TAG, "Invalid created at data.");
+            }
+
         }
 
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup parent) {
+            return mInflater
+                    .inflate(R.layout.statuses_list_item, parent, false);
+        }
+
+        public void updateFavorite(ListItem itemView, boolean newFavorite) {
             // TODO Auto-generated method stub
-            return null;
         }
 
     }
