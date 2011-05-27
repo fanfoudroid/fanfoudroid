@@ -215,4 +215,6 @@
     <string name="crash_dialog_text">安能饭否出现了我们未曾捕获到的错误，你点击\'OK\'之后，错误报告会发送给开发者.</string>
     <string name="crash_dialog_comment_prompt">如果你能多花点时间填写一下错误发生时你做了什么，我们将不胜感激:</string>
     <string name="crash_dialog_ok_toast">感谢你的配合！</string>
+    
+    <string name="header_title_friends_timeline">饭否fanfou.com</string>
 </resources>

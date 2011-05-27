@@ -23,34 +23,15 @@ public class BaseListActivity extends ListActivity implements
         OnItemClickListener {
     public static final String TAG = "TimelineList";
 
-    private static final String EXTRA_TIMELINE_TYPE = "com.ch_linghu.fanfoudroid.activity.MAILBOX_TYPE";
-
     // Views
     protected ListView mListView;
-    protected NavBar mNavbar;
-
-    // Tasks
-
-    public static void actionTimeline(Context context, int timelineType) {
-        context.startActivity(createIntent(context, timelineType));
-    }
-
-    public static Intent createIntent(Context context, int timelineType) {
-        Intent intent = new Intent(context, BaseListActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        if (timelineType != -1)
-            intent.putExtra(EXTRA_TIMELINE_TYPE, timelineType);
-        return intent;
-    }
-
+  
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
 
         mListView = getListView();
-        mNavbar = new NavBar(NavBar.HEADER_STYLE_HOME, this);
-
+      
         mListView.setOnItemClickListener(this);
         registerForContextMenu(mListView);
 
