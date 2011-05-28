@@ -104,8 +104,10 @@ public class TimelineActivity extends BaseListActivity {
             ((CursorAdapter) mListAdapter).changeCursor(cursor);
             break;
         case TYPE_PUBLIC_TIMELINE:
+            //TODO; arrayAdapter
             break;
         default:
+            //TODO;
         }
     }
 
@@ -295,7 +297,7 @@ public class TimelineActivity extends BaseListActivity {
                     cursor.getString(COLUMN_TEXT));
 
             String profileImageUrl = cursor.getString(COLUMN_PROFILE_IMAGE_URL);
-            if (useProfileImage && !TextHelper.isEmpty(profileImageUrl)) {
+            if (useProfileImage && !TextUtils.isEmpty(profileImageUrl)) {
                 SimpleImageLoader.display(profileImage, profileImageUrl);
             } else {
                 profileImage.setVisibility(View.GONE);

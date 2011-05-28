@@ -1,9 +1,7 @@
 <resources>
-  <style name="Theme" parant="@android:style/Theme">
+  <style name="Theme" parent="@android:style/Theme.NoTitleBar">
   </style>
   <style name="Theme.Fanfoudroid">
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowContentOverlay">@null</item>
   </style>
   
   <style name="Theme.Fanfoudroid.Dark">

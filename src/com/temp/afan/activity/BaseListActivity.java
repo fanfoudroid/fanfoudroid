@@ -1,8 +1,6 @@
 package com.temp.afan.activity;
 
 import android.app.ListActivity;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -12,8 +10,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-import com.ch_linghu.fanfoudroid.R;
-import com.ch_linghu.fanfoudroid.ui.module.NavBar;
 import com.temp.afan.Account;
 
 /**
