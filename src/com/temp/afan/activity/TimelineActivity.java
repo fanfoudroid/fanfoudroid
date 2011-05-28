@@ -21,6 +21,7 @@ import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
@@ -29,6 +30,8 @@ import com.ch_linghu.fanfoudroid.app.SimpleImageLoader;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.ui.module.NavBar;
 import com.ch_linghu.fanfoudroid.util.TextHelper;
+import com.temp.afan.Controller;
+import com.temp.afan.MessagingListener;
 
 /**
  * TimeLine Type:
@@ -39,6 +42,8 @@ import com.ch_linghu.fanfoudroid.util.TextHelper;
  * <li>MENTIONS, 提到我的
  * <li>SEARCH, 搜索结果
  * <li>FAVORITES, 收藏
+ * 
+ * Controller -> ControllerCallback -> UI Handler -> UI
  */
 public class TimelineActivity extends BaseListActivity {
     public static final String TAG = "TimelineList";
@@ -64,6 +69,11 @@ public class TimelineActivity extends BaseListActivity {
 
     private TimelineHandler mHandler;
     private TimelineAdapter mListAdapter;
+    private Controller mController = Controller
+            .getInstance(getApplicationContext());
+    private ControllerCallback mControllerCallback;
+
+    private boolean mCanAutoRefresh = false;
 
     // Tasks
     private RefreshListTask mRefreshListTask;
@@ -86,6 +96,10 @@ public class TimelineActivity extends BaseListActivity {
         setContentView(R.layout.statuses_list);
         setTimelineType(getIntent());
 
+        mHandler = new TimelineHandler();
+        mControllerCallback = new ControllerCallback();
+        mCanAutoRefresh = true;
+
         // View
         mNavbar = new NavBar(NavBar.HEADER_STYLE_HOME, this);
         mNavbar.setHeaderTitle(getHeaderTitle());
@@ -104,10 +118,10 @@ public class TimelineActivity extends BaseListActivity {
             ((CursorAdapter) mListAdapter).changeCursor(cursor);
             break;
         case TYPE_PUBLIC_TIMELINE:
-            //TODO; arrayAdapter
+            // TODO; arrayAdapter
             break;
         default:
-            //TODO;
+            // TODO;
         }
     }
 
@@ -116,8 +130,10 @@ public class TimelineActivity extends BaseListActivity {
     }
 
     private void onRefresh() {
-        mRefreshListTask = new RefreshListTask();
-        mRefreshListTask.execute();
+        mController.syncStatuses(-1, mControllerCallback);
+        /*
+         * mRefreshListTask = new RefreshListTask(); mRefreshListTask.execute();
+         */
     }
 
     private void onGetMore() {
@@ -152,13 +168,23 @@ public class TimelineActivity extends BaseListActivity {
 
     /**
      * 刷新列表(获取最新消息)
+     * 
+     * @deprecated
      */
     private class RefreshListTask extends AsyncTask<Long, Void, Integer> {
 
         @Override
         protected Integer doInBackground(Long... params) {
             // TODO Auto-generated method stub
+            mController.syncStatuses(-1, mControllerCallback);
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            // TODO Auto-generated method stub
+            super.onPostExecute(result);
+            mHandler.refreshList();
         }
 
     }
@@ -208,6 +234,7 @@ public class TimelineActivity extends BaseListActivity {
     /* package */class TimelineHandler extends Handler {
 
         private static final int MSG_LOAD_ITEMS = 1;
+        private static final int MSG_ERROR = 2;
 
         @Override
         public void handleMessage(Message msg) {
@@ -215,10 +242,32 @@ public class TimelineActivity extends BaseListActivity {
             case MSG_LOAD_ITEMS:
                 mListAdapter.doRefresh();
                 break;
+            case MSG_ERROR:
+                String message = (String) msg.obj;
+                Toast.makeText(TimelineActivity.this, message,
+                        Toast.LENGTH_SHORT);
+                break;
             default:
                 super.handleMessage(msg);
             }
         }
+
+        public void refreshList() {
+            android.os.Message msg = android.os.Message.obtain();
+            msg.what = MSG_LOAD_ITEMS;
+            sendMessage(msg);
+        }
+    }
+
+    /**
+     * Callback for async Controller results.
+     */
+    private class ControllerCallback extends MessagingListener {
+
+        private void onRereshList() {
+            mHandler.refreshList();
+        }
+
     }
 
     /**
