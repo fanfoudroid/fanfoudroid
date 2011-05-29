@@ -33,6 +33,7 @@ public class Response {
     /**
      * Convert Response to inputStream
      * 
+     * @deprecated use entity.getContent();  
      * @return InputStream or null
      * @throws ResponseException
      */
@@ -40,6 +41,12 @@ public class Response {
         return asStream(mResponse.getEntity());
     }
     
+    /**
+     * @deprecated use entity.getContent();  
+     * @param entity
+     * @return
+     * @throws ResponseException
+     */
     private InputStream asStream(HttpEntity entity) throws ResponseException {
         if (null == entity) {
             return null;
@@ -70,22 +77,11 @@ public class Response {
      * @throws ResponseException
      */
     public String asString() throws ResponseException {
-  		DebugTimer.betweenStart("AS STRING");
-        String str = null;
-  		
-        final HttpEntity entity = mResponse.getEntity();
-        if (null != entity) {
-             try {
-                str = entityToString(entity);
-                //str = inputStreamToString(asStream(entity));
-            } catch (IOException e) {
-                throw new ResponseException(e.getMessage(), e);
-            }
+        try {
+            return entityToString(mResponse.getEntity());
+        } catch (IOException e) {
+            throw new ResponseException(e.getMessage(), e);
         }
-        
-        Log.v("LDS", str);
-        DebugTimer.betweenEnd("AS STRING");
-        return str;
     }
     
     /**
@@ -97,10 +93,12 @@ public class Response {
      * @throws ResponseException
      */
     private String entityToString(final HttpEntity entity) throws IOException, ResponseException {
+  		DebugTimer.betweenStart("AS STRING");
         if (null == entity) {
             throw new IllegalArgumentException("HTTP entity may not be null");
         }
-        InputStream instream = asStream(entity);  
+        InputStream instream = entity.getContent();  
+        //InputStream instream = asStream(entity);
         if (instream == null) {  
             return "";  
         }  
@@ -125,6 +123,8 @@ public class Response {
         } finally {
             reader.close();
         }
+        
+        DebugTimer.betweenEnd("AS STRING");
         return buffer.toString();
     }
     
