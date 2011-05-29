@@ -374,12 +374,12 @@ public class HttpClient {
 
         // Create POST, GET or DELETE METHOD
         method = createMethod(httpMethod, uri, file, postParams);
-        // Setup ConnectionParams
+        // Setup ConnectionParams, Request Headers
         SetupHTTPConnectionParams(method);
         
         // Execute Request
         try {
-            response = mClient.execute(method,localcontext);
+            response = mClient.execute(method, localcontext);
             res = new Response(response);
         } catch (ClientProtocolException e) {
             Log.e(TAG, e.getMessage(), e);
@@ -461,6 +461,7 @@ public class HttpClient {
                 .setSoTimeout(method.getParams(), SOCKET_TIMEOUT_MS);
         mClient.setHttpRequestRetryHandler(requestRetryHandler);
         method.addHeader("Accept-Encoding", "gzip, deflate");
+        method.addHeader("Accept-Charset", "UTF-8,*;q=0.5");
     }
 
     /**
@@ -510,7 +511,7 @@ public class HttpClient {
         } else {
             method = new HttpGet(uri);
         }
-
+        
         return method;
     }
 

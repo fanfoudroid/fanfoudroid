@@ -5,6 +5,8 @@ import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import com.ch_linghu.fanfoudroid.TwitterApplication;
+
 import android.util.Log;
 
 /**
@@ -56,7 +58,9 @@ public class DebugTimer {
      * @return
      */
     public static long between(String tag, int startOrEnd) {
-        Log.v("DEBUG", tag + " " + startOrEnd);
+        if(TwitterApplication.DEBUG){
+            Log.v("DEBUG", tag + " " + startOrEnd);
+        }
         switch (startOrEnd) {
             case START:
                 return mark(tag);
@@ -142,7 +146,11 @@ public class DebugTimer {
             i++;
         }
         
-        Arrays.sort(profile);
+        try {
+            Arrays.sort(profile);
+        } catch (NullPointerException e) {
+            // in case item is null, do nothing
+        }
         return profile;
     }
     
