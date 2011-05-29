@@ -69,6 +69,7 @@ public class TimelineActivity extends BaseListActivity {
 
     private TimelineHandler mHandler;
     private TimelineAdapter mListAdapter;
+    private boolean isCursorAdapter = true;
     private Controller mController = Controller
             .getInstance(getApplicationContext());
     private ControllerCallback mControllerCallback;
@@ -78,7 +79,8 @@ public class TimelineActivity extends BaseListActivity {
     // Tasks
     private RefreshListTask mRefreshListTask;
     private GetMoreTask mGetMoreTask;
-
+    private LoadStatusesTask mLoadStatusesTask;
+    
     public static void actionTimeline(Context context, int timelineType) {
         context.startActivity(createIntent(context, timelineType));
     }
@@ -112,21 +114,16 @@ public class TimelineActivity extends BaseListActivity {
     }
 
     private void loadTimeline() {
-        switch (mTimelineType) {
-        case TYPE_FRIENDS_TIMELINE:
-            Cursor cursor = null;
-            ((CursorAdapter) mListAdapter).changeCursor(cursor);
-            break;
-        case TYPE_PUBLIC_TIMELINE:
-            // TODO; arrayAdapter
-            break;
-        default:
-            // TODO;
-        }
+        onLoadStatuses(mTimelineType);
     }
 
     private void autoRefreshList() {
         // TODO;
+    }
+
+    private void onLoadStatuses(int timelineType) {
+        mLoadStatusesTask = new LoadStatusesTask();
+        mLoadStatusesTask.execute(timelineType);
     }
 
     private void onRefresh() {
@@ -165,6 +162,45 @@ public class TimelineActivity extends BaseListActivity {
     }
 
     // TASKS
+
+    /**
+     * 载入列表数据
+     */
+    private class LoadStatusesTask extends AsyncTask<Integer, Void, Object> {
+        private boolean isCursorAdapter = true;
+
+        @Override
+        protected Object doInBackground(Integer... params) {
+            int timelineType = params[0];
+            switch (timelineType) {
+            case TimelineActivity.TYPE_FRIENDS_TIMELINE:
+                isCursorAdapter = true;
+                Cursor cursor = null;
+                return cursor;
+            case TimelineActivity.TYPE_PUBLIC_TIMELINE:
+                isCursorAdapter = false;
+                return null;
+            default:
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Object param) {
+            if (param == null) {
+                return;
+            }
+            if (isCursorAdapter) {
+                if (! ((Cursor) param).isClosed()) {
+                    ((CursorAdapter) TimelineActivity.this.mListAdapter)
+                            .changeCursor((Cursor) param);
+                }
+            } else {
+                // TODO: handle ArrayAdapter
+            }
+        }
+
+    }
 
     /**
      * 刷新列表(获取最新消息)
