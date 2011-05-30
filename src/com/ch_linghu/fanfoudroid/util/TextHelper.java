@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.os.Bundle;
 import android.text.Html;
 import android.text.util.Linkify;
 import android.util.Log;

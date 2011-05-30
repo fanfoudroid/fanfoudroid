@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.BitmapDrawable;
 import android.text.TextPaint;
 import android.util.Log;
 import android.view.View;
@@ -15,7 +14,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.R;

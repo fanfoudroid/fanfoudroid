@@ -5,9 +5,9 @@ import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import com.ch_linghu.fanfoudroid.TwitterApplication;
-
 import android.util.Log;
+
+import com.ch_linghu.fanfoudroid.TwitterApplication;
 
 /**
  * Debug Timer

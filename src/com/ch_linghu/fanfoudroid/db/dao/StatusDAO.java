@@ -9,7 +9,8 @@ import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.db.StatusTable;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
-import com.ch_linghu.fanfoudroid.util.*;
+import com.ch_linghu.fanfoudroid.util.DateTimeHelper;
+import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 public class StatusDAO {
     private static final String TAG = "StatusDAO";

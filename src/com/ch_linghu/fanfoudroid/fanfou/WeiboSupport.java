@@ -26,8 +26,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package com.ch_linghu.fanfoudroid.fanfou;
 
-import java.io.IOException;
-
 import com.ch_linghu.fanfoudroid.http.HttpClient;
 
 /**

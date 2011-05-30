@@ -670,13 +670,12 @@ public class WriteActivity extends BaseActivity {
                     if (null != mFile) {
                         // Compress image
                         try {
-                            mFile = getImageManager().compressImage(mFile,
-                                    ImageManager.DEFAULT_COMPRESS_QUALITY);
+                            mFile = getImageManager().compressImage(mFile, 100); 
+                                    //ImageManager.DEFAULT_COMPRESS_QUALITY);
                         } catch (IOException ioe) {
                             Log.e(TAG, "Cann't compress images.");
                         }
                         getApi().updateStatus(status, mFile);
-
                     } else {
                         Log.e(TAG,
                                 "Cann't send status in PICTURE mode, photo is null");

@@ -1,13 +1,11 @@
 package com.ch_linghu.fanfoudroid.db;
 
-import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
 import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.util.*;
+import com.ch_linghu.fanfoudroid.util.DateTimeHelper;
 
 /**
  * Table - Statuses

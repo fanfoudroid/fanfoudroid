@@ -2,7 +2,6 @@ package com.ch_linghu.fanfoudroid.app;
 
 import java.util.HashMap;
 
-
 import android.graphics.Bitmap;
 
 public class MemoryImageCache implements ImageCache {

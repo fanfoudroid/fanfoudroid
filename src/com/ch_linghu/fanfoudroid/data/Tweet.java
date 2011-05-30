@@ -27,7 +27,8 @@ import android.os.Parcelable;
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.fanfou.Status;
-import com.ch_linghu.fanfoudroid.util.*;
+import com.ch_linghu.fanfoudroid.util.DateTimeHelper;
+import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 public class Tweet extends Message implements Parcelable {
   private static final String TAG = "Tweet";

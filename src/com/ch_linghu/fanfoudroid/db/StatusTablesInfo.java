@@ -1,6 +1,5 @@
 package com.ch_linghu.fanfoudroid.db;
 
-import java.util.Date;
 
 
 

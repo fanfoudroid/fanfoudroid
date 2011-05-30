@@ -12,7 +12,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
 
 import com.ch_linghu.fanfoudroid.AboutDialog;
 import com.ch_linghu.fanfoudroid.LoginActivity;

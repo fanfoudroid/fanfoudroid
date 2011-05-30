@@ -2,7 +2,7 @@ package com.ch_linghu.fanfoudroid.data;
 
 import com.ch_linghu.fanfoudroid.fanfou.DirectMessage;
 import com.ch_linghu.fanfoudroid.fanfou.User;
-import com.ch_linghu.fanfoudroid.util.*;
+import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 
 public class Dm extends Message {
