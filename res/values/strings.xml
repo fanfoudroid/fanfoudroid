@@ -149,6 +149,8 @@
     <string name="pref_title_labs">实验室</string>
     <string name="pref_use_gestrue_title">手势识别</string>
     <string name="pref_use_gestrue_summary">使用手势左右滑动切换页面</string>
+    <string name="pref_force_screen_orientation_portrait">禁止横屏</string>
+    <string name="pref_force_screen_orientation_portrait_summary">强制屏幕竖向显示</string>
     <!-- Service -->
     <string name="service_new_twitter_updates">新消息</string>
     <string name="service_x_new_tweets">{0} 条新消息</string>

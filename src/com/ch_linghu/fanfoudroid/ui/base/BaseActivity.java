@@ -7,12 +7,12 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
 
 import com.ch_linghu.fanfoudroid.AboutDialog;
 import com.ch_linghu.fanfoudroid.LoginActivity;
@@ -48,12 +48,16 @@ public class BaseActivity extends Activity {
     // 为了能对上层返回的信息进行判断处理，我们使用_onCreate代替真正的
     // onCreate进行工作。onCreate仅在顶层调用_onCreate。
     protected boolean _onCreate(Bundle savedInstanceState) {
+        if (TwitterApplication.mPref.getBoolean(
+                Preferences.FORCE_SCREEN_ORIENTATION_PORTRAIT, false)) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
         if (!checkIsLogedIn()) {
             return false;
         } else {
             PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
             mPreferences = TwitterApplication.mPref; // PreferenceManager.getDefaultSharedPreferences(this);
-            
+
             return true;
         }
     }
