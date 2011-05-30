@@ -64,6 +64,7 @@ public class ActivityFlipper implements Widget, IFlipper {
         Intent intent = new Intent();
         intent.setClass(getContext(), cls);
         getContext().startActivity(intent);
+        
 
     }
 
@@ -92,6 +93,7 @@ public class ActivityFlipper implements Widget, IFlipper {
     private void launchActivity(int whichActivity) {
         launchActivity(mActivities.get(whichActivity));
         showToast(whichActivity);
+        
     }
 
     /**
@@ -125,6 +127,7 @@ public class ActivityFlipper implements Widget, IFlipper {
     @Override
     public void showNext() {
         setDisplayedActivity(mWhichActivity + 1, true);
+        
     }
 
     /**
