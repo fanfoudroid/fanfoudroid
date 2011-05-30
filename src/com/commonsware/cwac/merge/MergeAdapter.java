@@ -15,14 +15,16 @@
 
 package com.commonsware.cwac.merge;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.database.DataSetObserver;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 import android.widget.SectionIndexer;
-import java.util.ArrayList;
-import java.util.List;
+
 import com.commonsware.cwac.sacklist.SackOfViewsAdapter;
 
 /**

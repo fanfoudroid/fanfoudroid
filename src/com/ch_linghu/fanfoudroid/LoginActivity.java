@@ -32,20 +32,19 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ch_linghu.fanfoudroid.app.Preferences;
 import com.ch_linghu.fanfoudroid.fanfou.User;
 import com.ch_linghu.fanfoudroid.http.HttpAuthException;
 import com.ch_linghu.fanfoudroid.http.HttpException;
-import com.ch_linghu.fanfoudroid.http.HttpRefusedException;
 import com.ch_linghu.fanfoudroid.task.GenericTask;
 import com.ch_linghu.fanfoudroid.task.TaskAdapter;
 import com.ch_linghu.fanfoudroid.task.TaskFeedback;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
-import com.ch_linghu.fanfoudroid.util.*;
+import com.ch_linghu.fanfoudroid.util.EncryptUtils;
+import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 //登录页面需要个性化的菜单绑定, 不直接继承 BaseActivity
 public class LoginActivity extends Activity { 

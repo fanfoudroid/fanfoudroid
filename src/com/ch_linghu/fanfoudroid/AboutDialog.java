@@ -16,7 +16,6 @@
 
 package com.ch_linghu.fanfoudroid;
 
-import com.ch_linghu.fanfoudroid.R;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;

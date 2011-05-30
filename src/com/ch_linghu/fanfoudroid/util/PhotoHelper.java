@@ -3,11 +3,6 @@ package com.ch_linghu.fanfoudroid.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.PixelFormat;
-import android.graphics.drawable.Drawable;
-
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
 

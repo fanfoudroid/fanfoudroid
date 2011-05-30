@@ -1,8 +1,8 @@
 package com.ch_linghu.fanfoudroid.ui.module;
 
 import android.content.Context;
-import android.view.MotionEvent;
 import android.view.GestureDetector.SimpleOnGestureListener;
+import android.view.MotionEvent;
 
 public interface Widget {
     Context getContext();

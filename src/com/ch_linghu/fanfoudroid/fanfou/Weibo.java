@@ -44,7 +44,7 @@ import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.Response;
-import com.ch_linghu.fanfoudroid.util.*;
+import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 public class Weibo extends WeiboSupport implements java.io.Serializable {
 	public static final String TAG = "Weibo_API";
