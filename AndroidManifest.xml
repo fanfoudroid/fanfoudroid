@@ -19,6 +19,8 @@
         </activity>
         <activity android:name=".LoginActivity" android:label="@string/app_name" android:theme="@style/Theme.Fanfoudroid" 
              android:windowSoftInputMode="adjustResize|stateHidden"/>
+        <activity android:name=".AboutActivity" android:label="@string/app_name" android:theme="@style/Theme.Fanfoudroid" 
+             android:windowSoftInputMode="adjustResize|stateHidden"/>
         <activity android:name=".WriteActivity" android:label="@string/app_name" android:theme="@style/Theme.Fanfoudroid" 
              android:windowSoftInputMode="adjustResize|stateHidden">
             <intent-filter>

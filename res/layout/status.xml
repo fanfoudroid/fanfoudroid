@@ -90,7 +90,7 @@
         <ImageView android:id="@+id/status_photo"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:scaleType="center"
+            android:scaleType="centerInside"
             android:src="@drawable/twitter_follow_me"
             android:layout_margin="10dp"
             android:maxWidth="460px"
