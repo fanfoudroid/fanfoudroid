@@ -19,13 +19,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -49,6 +53,7 @@ import com.ch_linghu.fanfoudroid.ui.module.MyActivityFlipper;
 import com.ch_linghu.fanfoudroid.ui.module.SimpleFeedback;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 import com.ch_linghu.fanfoudroid.ui.module.TweetCursorAdapter;
+import com.ch_linghu.fanfoudroid.ui.module.Widget;
 import com.ch_linghu.fanfoudroid.util.DateTimeHelper;
 import com.ch_linghu.fanfoudroid.util.DebugTimer;
 import com.ch_linghu.fanfoudroid.util.MiscHelper;
@@ -57,7 +62,7 @@ import com.ch_linghu.fanfoudroid.util.MiscHelper;
  * TwitterCursorBaseLine用于带有静态数据来源（对应数据库的，与twitter表同构的特定表）的展现
  */
 public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity {
-    static final String TAG = "TwitterCursorBaseActivity";
+      static final String TAG = "TwitterCursorBaseActivity";
 
     // Views.
     protected ListView mTweetList;
@@ -109,7 +114,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
                     goTop();
                 }
             } else if (result == TaskResult.IO_ERROR) {
-            	//FIXME: bad smell
+                // FIXME: bad smell
                 if (task == mRetrieveTask) {
                     mFeedback.failed(((RetrieveTask) task).getErrorMsg());
                 } else if (task == mGetMoreTask) {
@@ -124,18 +129,18 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
             loadMoreGIF.setVisibility(View.GONE);
 
             // DEBUG
-            if (TwitterApplication.DEBUG){
-            	DebugTimer.stop();
-            	Log.v("DEBUG", DebugTimer.getProfileAsString());
+            if (TwitterApplication.DEBUG) {
+                DebugTimer.stop();
+                Log.v("DEBUG", DebugTimer.getProfileAsString());
             }
         }
 
         @Override
         public void onPreExecute(GenericTask task) {
             mRetrieveCount = 0;
-            
-            if(TwitterApplication.DEBUG){
-            	DebugTimer.start();
+
+            if (TwitterApplication.DEBUG) {
+                DebugTimer.start();
             }
         }
 
@@ -218,8 +223,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
         mTweetAdapter = new TweetCursorAdapter(this, cursor);
         mTweetList.setAdapter(mTweetAdapter);
         // ? registerOnClickListener(mTweetList);
-        
-       
+
     }
 
     /**
@@ -241,21 +245,21 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
         loadMoreGIFTop = (ProgressBar) findViewById(R.id.rectangleProgressBar_header);
 
     }
-    
+
     @Override
-    protected void specialItemClicked(int position){
-    	//注意 mTweetAdapter.getCount 和 mTweetList.getCount的区别
-    	//前者仅包含数据的数量（不包括foot和head），后者包含foot和head
-    	//因此在同时存在foot和head的情况下，list.count = adapter.count + 2 
-    	if (position == 0){
-    		//第一个Item(header)
+    protected void specialItemClicked(int position) {
+        // 注意 mTweetAdapter.getCount 和 mTweetList.getCount的区别
+        // 前者仅包含数据的数量（不包括foot和head），后者包含foot和head
+        // 因此在同时存在foot和head的情况下，list.count = adapter.count + 2
+        if (position == 0) {
+            // 第一个Item(header)
             loadMoreGIFTop.setVisibility(View.VISIBLE);
             doRetrieve();
-    	}else if (position == mTweetList.getCount()-1){
-    		//最后一个Item(footer)
-			loadMoreGIF.setVisibility(View.VISIBLE);
-			doGetMore();
-    	}
+        } else if (position == mTweetList.getCount() - 1) {
+            // 最后一个Item(footer)
+            loadMoreGIF.setVisibility(View.VISIBLE);
+            doGetMore();
+        }
     }
 
     @Override
@@ -350,17 +354,18 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
             diff = nowTime - lastFollowersRefreshTime;
             Log.d(TAG, "Last followers refresh was " + diff + " ms ago.");
 
-            //FIXME: 目前还没有对Followers列表做逻辑处理，因此暂时去除对Followers的获取。
-            //       未来需要实现@用户提示时，对Follower操作需要做一次review和refactoring
-            //       现在频繁会出现主键冲突的问题。
+            // FIXME: 目前还没有对Followers列表做逻辑处理，因此暂时去除对Followers的获取。
+            // 未来需要实现@用户提示时，对Follower操作需要做一次review和refactoring
+            // 现在频繁会出现主键冲突的问题。
             //
             // Should Refresh Followers
-//            if (diff > FOLLOWERS_REFRESH_THRESHOLD
-//                    && (mRetrieveTask == null || mRetrieveTask.getStatus() != GenericTask.Status.RUNNING)) {
-//                Log.d(TAG, "Refresh followers.");
-//                doRetrieveFollowers();
-//            }
-            
+            // if (diff > FOLLOWERS_REFRESH_THRESHOLD
+            // && (mRetrieveTask == null || mRetrieveTask.getStatus() !=
+            // GenericTask.Status.RUNNING)) {
+            // Log.d(TAG, "Refresh followers.");
+            // doRetrieveFollowers();
+            // }
+
             // 手势识别
             registerGestureListener();
 
@@ -459,8 +464,6 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 
     private void doRetrieveFollowers() {
         Log.d(TAG, "Attempting followers retrieve.");
-        
- 
 
         if (mFollowersRetrieveTask != null
                 && mFollowersRetrieveTask.getStatus() == GenericTask.Status.RUNNING) {
@@ -513,7 +516,6 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
                 return TaskResult.IO_ERROR;
             }
 
-            
             ArrayList<Tweet> tweets = new ArrayList<Tweet>();
             for (com.ch_linghu.fanfoudroid.fanfou.Status status : statusList) {
                 if (isCancelled()) {
@@ -524,10 +526,10 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
                     return TaskResult.CANCELLED;
                 }
             }
-            
+
             publishProgress(SimpleFeedback.calProgressBySize(40, 20, tweets));
             mRetrieveCount = addMessages(tweets, false);
-            
+
             return TaskResult.OK;
         }
 
@@ -583,7 +585,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 
             ArrayList<Tweet> tweets = new ArrayList<Tweet>();
             publishProgress(SimpleFeedback.calProgressBySize(40, 20, tweets));
-            
+
             for (com.ch_linghu.fanfoudroid.fanfou.Status status : statusList) {
                 if (isCancelled()) {
                     return TaskResult.CANCELLED;
@@ -623,13 +625,15 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
     //////////////////// Gesture test /////////////////////////////////////
     private static boolean useGestrue;
     {
-        useGestrue = TwitterApplication.mPref.getBoolean(Preferences.USE_GESTRUE, false);
+        useGestrue = TwitterApplication.mPref.getBoolean(
+                Preferences.USE_GESTRUE, false);
         if (useGestrue) {
             Log.v(TAG, "Using Gestrue!");
         } else {
             Log.v(TAG, "Not Using Gestrue!");
         }
     }
+    
     
     protected FlingGestureListener myGestureListener = null;
 

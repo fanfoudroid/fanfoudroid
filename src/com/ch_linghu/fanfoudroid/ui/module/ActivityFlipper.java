@@ -3,7 +3,7 @@ package com.ch_linghu.fanfoudroid.ui.module;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 import android.view.Gravity;
@@ -36,21 +36,47 @@ import com.ch_linghu.fanfoudroid.R;
  *  // or auto mode, use the context as current activity
  *  mFlipper.autoShowNext();
  *  mFlipper.autoShowPrevious();
+ *  
+ *  // set toast
+ *  mFlipper.setToastResource(new int[] {
+ *       R.drawable.point_left,
+ *       R.drawable.point_center,
+ *       R.drawable.point_right
+ *  });
+ *
+ *  // set Animation
+ *  mFlipper.setInAnimation(R.anim.push_left_in);
+ *  mFlipper.setOutAnimation(R.anim.push_left_out);
+ *  mFlipper.setPreviousInAnimation(R.anim.push_right_in);
+ *  mFlipper.setPreviousOutAnimation(R.anim.push_right_out);
  * </code>
  * 
  */
-public class ActivityFlipper implements Widget, IFlipper {
+public class ActivityFlipper implements IFlipper {
     private static final String TAG = "ActivityFlipper";
 
-    private Context mContext;
+    private static final int SHOW_NEXT = 0;
+    private static final int SHOW_PROVIOUS = 1;
+    private int mDirection = SHOW_NEXT;
+
+    private boolean mToastEnabled = false;
+    private int[] mToastResourcesMap = new int[]{};
+    
+    private boolean mAnimationEnabled = false;
+    private int mNextInAnimation = -1;
+    private int mNextOutAnimation = -1;
+    private int mPreviousInAnimation = -1;
+    private int mPreviousOutAnimation = -1;
+
+    private Activity mActivity;
     private List<Class<?>> mActivities = new ArrayList<Class<?>>();;
-    private int mWhichActivity = 0;
+    private int mWhichActivity = 0; 
 
     public ActivityFlipper() {
     }
 
-    public ActivityFlipper(Context context) {
-        mContext = context;
+    public ActivityFlipper(Activity activity) {
+        mActivity = activity;
     }
 
     /**
@@ -62,25 +88,42 @@ public class ActivityFlipper implements Widget, IFlipper {
     public void launchActivity(Class<?> cls) {
         Log.v(TAG, "launch activity :" + cls.getName());
         Intent intent = new Intent();
-        intent.setClass(getContext(), cls);
-        getContext().startActivity(intent);
-        
+        intent.setClass(mActivity, cls);
+        mActivity.startActivity(intent);
 
     }
 
-    private static final int[] mResourceMap = new int[] {
-            R.drawable.point_right, R.drawable.point_center,
-            R.drawable.point_left };
+    public void setToastResource(int[] resourceIds) {
+        mToastEnabled = true;
+        mToastResourcesMap = resourceIds;
+    }
 
-    private void showToast(int whichActicity) {
-        if (whichActicity < mResourceMap.length) {
-            final Toast myToast = new Toast(getContext());
-            final ImageView myView = new ImageView(getContext());
-            myView.setImageResource(mResourceMap[whichActicity]);
+    private void maybeShowToast(int whichActicity) {
+        if (mToastEnabled && whichActicity < mToastResourcesMap.length) {
+            final Toast myToast = new Toast(mActivity);
+            final ImageView myView = new ImageView(mActivity);
+            myView.setImageResource(mToastResourcesMap[whichActicity]);
             myToast.setView(myView);
             myToast.setDuration(Toast.LENGTH_SHORT);
             myToast.setGravity(Gravity.BOTTOM | Gravity.CENTER, 0, 0);
             myToast.show();
+        }
+    }
+
+    private void maybeShowAnimation(int whichActivity) {
+        if (mAnimationEnabled) {
+            boolean showPrevious = (mDirection == SHOW_PROVIOUS);
+            if (showPrevious && mPreviousInAnimation != -1
+                    && mPreviousOutAnimation != -1) {
+                mActivity.overridePendingTransition(
+                        mPreviousInAnimation, mPreviousOutAnimation);
+                return; // use Previous Animation
+            }
+            
+            if (mNextInAnimation != -1 && mNextOutAnimation != -1) {
+                mActivity.overridePendingTransition(
+                        mNextInAnimation, mNextOutAnimation);
+            }
         }
     }
 
@@ -92,8 +135,8 @@ public class ActivityFlipper implements Widget, IFlipper {
      */
     private void launchActivity(int whichActivity) {
         launchActivity(mActivities.get(whichActivity));
-        showToast(whichActivity);
-        
+        maybeShowToast(whichActivity);
+        maybeShowAnimation(whichActivity);
     }
 
     /**
@@ -121,13 +164,21 @@ public class ActivityFlipper implements Widget, IFlipper {
         return index;
     }
 
+    @SuppressWarnings("unused")
+    private Class<?> getActivityAt(int index) {
+        if (index > 0 && index < mActivities.size()) {
+            return mActivities.get(index);
+        }
+        return null;
+    }
+
     /**
      * Show next activity(already setCurrentActivity)
      */
     @Override
     public void showNext() {
+        mDirection = SHOW_NEXT;
         setDisplayedActivity(mWhichActivity + 1, true);
-        
     }
 
     /**
@@ -145,7 +196,7 @@ public class ActivityFlipper implements Widget, IFlipper {
      * Show next activity(use current context as a activity)
      */
     public void autoShowNext() {
-        showNextOf(getContext().getClass());
+        showNextOf(mActivity.getClass());
     }
 
     /**
@@ -153,6 +204,7 @@ public class ActivityFlipper implements Widget, IFlipper {
      */
     @Override
     public void showPrevious() {
+        mDirection = SHOW_PROVIOUS;
         setDisplayedActivity(mWhichActivity - 1, true);
     }
 
@@ -171,7 +223,7 @@ public class ActivityFlipper implements Widget, IFlipper {
      * Show previous activity(use current context as a activity)
      */
     public void autoShowPrevious() {
-        showPreviousOf(getContext().getClass());
+        showPreviousOf(mActivity.getClass());
     }
 
     /**
@@ -204,6 +256,28 @@ public class ActivityFlipper implements Widget, IFlipper {
     public void setCurrentActivity(Class<?> cls) {
         setDisplayedActivity(getIndexOf(cls), false);
     }
+    
+    public void setInAnimation(int resourceId) {
+        setEnableAnimation(true);
+        mNextInAnimation = resourceId;
+    }
+
+    public void setOutAnimation(int resourceId) {
+        setEnableAnimation(true);
+        mNextOutAnimation = resourceId;
+    }
+
+    public void setPreviousInAnimation(int resourceId) {
+        mPreviousInAnimation = resourceId;
+    }
+
+    public void setPreviousOutAnimation(int resourceId) {
+        mPreviousOutAnimation = resourceId;
+    }
+    
+    public void setEnableAnimation(boolean enable) {
+        mAnimationEnabled = enable;
+    }
 
     /**
      * Count activities
@@ -213,10 +287,4 @@ public class ActivityFlipper implements Widget, IFlipper {
     public int getCount() {
         return mActivities.size();
     }
-
-    @Override
-    public Context getContext() {
-        return mContext;
-    }
-
 }
