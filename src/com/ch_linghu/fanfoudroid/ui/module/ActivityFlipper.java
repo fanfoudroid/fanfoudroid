@@ -69,8 +69,8 @@ public class ActivityFlipper implements Widget, IFlipper {
     }
 
     private static final int[] mResourceMap = new int[] {
-            R.drawable.point_left, R.drawable.point_center,
-            R.drawable.point_right };
+            R.drawable.point_right, R.drawable.point_center,
+            R.drawable.point_left };
 
     private void showToast(int whichActicity) {
         if (whichActicity < mResourceMap.length) {

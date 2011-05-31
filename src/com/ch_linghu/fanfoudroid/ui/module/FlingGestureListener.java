@@ -1,6 +1,8 @@
 package com.ch_linghu.fanfoudroid.ui.module;
 
-import android.content.Context;
+import com.ch_linghu.fanfoudroid.R;
+
+import android.app.Activity;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
@@ -35,19 +37,21 @@ public class FlingGestureListener extends SimpleOnGestureListener implements
 
     private Widget.OnGestureListener mListener;
     private GestureDetector gDetector;
+    private Activity activity;
 
-    public FlingGestureListener(Context context,
+    public FlingGestureListener(Activity activity,
             Widget.OnGestureListener listener) {
-        this(context, listener, null);
+        this(activity, listener, null);
     }
 
-    public FlingGestureListener(Context context,
+    public FlingGestureListener(Activity activity,
             Widget.OnGestureListener listener, GestureDetector gDetector) {
         if (gDetector == null) {
-            gDetector = new GestureDetector(context, this);
+            gDetector = new GestureDetector(activity, this);
         }
         this.gDetector = gDetector;
         mListener = listener;
+        this.activity = activity;
     }
 
     @Override
@@ -73,9 +77,11 @@ public class FlingGestureListener extends SimpleOnGestureListener implements
                 if (e1.getX() > e2.getX()) { 
                     Log.d(TAG, "<------");
                     result = mListener.onFlingLeft(e1, e1, velocityX, velocityY);
+                    activity.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
                 } else {
                     Log.d(TAG, "------>");
                     result = mListener.onFlingRight(e1, e1, velocityX, velocityY);
+                    activity.overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
                 }
             } else if (velocityY > SWIPE_THRESHOLD_VELOCITY
                     && yDistance > SWIPE_MIN_DISTANCE) {
