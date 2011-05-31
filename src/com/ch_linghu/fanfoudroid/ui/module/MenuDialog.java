@@ -124,10 +124,9 @@ public class MenuDialog extends Dialog {
 		getWindow().setAttributes(a);
 	}
 	
-	private void goTo(Class<?> cls) {
+	private void goTo(Class<?> cls, Intent intent) {
 		if (getOwnerActivity().getClass() != cls) {
 			dismiss();
-			Intent intent = new Intent();
 			intent.setClass(getContext(), cls);
 			getContext().startActivity(intent);
 		} else {
@@ -137,6 +136,11 @@ public class MenuDialog extends Dialog {
 		}
 	}
 
+	private void goTo(Class<?> cls){
+		Intent intent = new Intent();
+		goTo(cls, intent);
+	}
+	
 	private void initMenu() {
 		// 准备要添加的数据条目
 		List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
@@ -174,8 +178,7 @@ public class MenuDialog extends Dialog {
 					String user = TwitterApplication.getMyselfId();
 					String name = TwitterApplication.getMyselfName();
 					Intent intent = UserTimelineActivity.createIntent(user, name);
-					intent.setClass(getContext(), UserTimelineActivity.class);
-					getContext().startActivity(intent);
+					goTo(UserTimelineActivity.class, intent);
 					break;
 				case PAGE_PROFILE:
 					goTo(ProfileActivity.class);
