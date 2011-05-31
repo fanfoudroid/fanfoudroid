@@ -14,7 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.ch_linghu.fanfoudroid.AboutDialog;
+import com.ch_linghu.fanfoudroid.AboutActivity;
 import com.ch_linghu.fanfoudroid.LoginActivity;
 import com.ch_linghu.fanfoudroid.PreferencesActivity;
 import com.ch_linghu.fanfoudroid.R;
@@ -241,7 +241,9 @@ public class BaseActivity extends Activity {
                     REQUEST_CODE_PREFERENCES);
             return true;
         case OPTIONS_MENU_ID_ABOUT:
-            AboutDialog.show(this);
+            //AboutDialog.show(this);
+        	Intent intent = new Intent().setClass(this, AboutActivity.class);
+        	startActivity(intent);
             return true;
         case OPTIONS_MENU_ID_EXIT:
             exit();

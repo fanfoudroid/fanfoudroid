@@ -1,8 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:background="@drawable/background_login"
+  >
 
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="wrap_content"
-android:layout_height="wrap_content"
-android:text="@string/about_message"
-android:autoLink="web|email"
-/>
+	<RelativeLayout 
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      >
+	    <ImageView android:id="@+id/fanfoudroid_follow_me"
+	        android:src="@drawable/twitter_follow_me"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_centerHorizontal="true"
+	        android:layout_alignParentTop="true"
+	        android:layout_marginTop="25dp"
+	         />
+	    <ImageView android:id="@+id/fanfoudroid_logo" 
+	    	android:src="@drawable/fanfoudroid_logo"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_toRightOf="@id/fanfoudroid_follow_me"
+	        android:layout_alignBottom="@id/fanfoudroid_follow_me"
+	         />
+	    <TextView android:id="@+id/version"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_above="@id/fanfoudroid_logo"
+	        android:layout_alignRight="@id/fanfoudroid_logo"
+	        android:paddingBottom="8dp"
+	        android:text="placeholder,will be filled in code"
+		    style="@style/normalText"
+	         />
+	    </RelativeLayout>
+
+		<ScrollView 
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:layout_weight="1">
+		<LinearLayout android:orientation="vertical"
+		     android:layout_width="fill_parent"
+		     android:layout_height="fill_parent"
+		     android:gravity="center_horizontal"
+		     android:paddingTop="5dp"
+		     android:paddingLeft="15dp"
+		     android:paddingRight="15dp"
+		     android:paddingBottom="5dp"
+		     >
+		    <!-- 简介 -->
+			<TextView android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/about_introduce_title"
+			    style="@style/normalText.Big"
+			/>
+			<TextView android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/about_introduce"
+			    style="@style/normalText"
+			/>
+			<!-- 相关链接 -->
+			<TextView android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/about_links_title"
+			    style="@style/normalText.Big"
+			/>
+			<TextView android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/about_links"
+			    style="@style/normalText"
+			    android:autoLink="web|email"
+			/>
+			<!-- 开发者 -->
+			<TextView android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/about_developers_title"
+			    style="@style/normalText.Big"
+			/>
+			<TextView android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/about_developers"
+			    style="@style/normalText"
+			    android:autoLink="web|email"
+			/>
+			<!-- 致谢名单 -->
+			<TextView android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/about_thanks_title"
+			    style="@style/normalText.Big"
+			/>
+			<TextView android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/about_thanks"
+			    style="@style/normalText"
+			    android:autoLink="web|email"
+			/>
+			
+		</LinearLayout>
+		</ScrollView>
+		
+		<Button android:id="@+id/ok_btn"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/about_label_ok"
+		/>
+</LinearLayout>
+
+
