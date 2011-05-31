@@ -370,7 +370,8 @@ public class WriteActivity extends BaseActivity {
             // Update status
             mTweetEdit = new TweetEdit(mTweetEditText,
                     (TextView) findViewById(R.id.chars_text));
-            mTweetEdit.setOnKeyListener(tweetEnterHandler);
+            //去除回车发送消息功能，这个功能经常造成误操作
+            //mTweetEdit.setOnKeyListener(tweetEnterHandler);
             mTweetEdit.addTextChangedListener(new MyTextWatcher(
                     WriteActivity.this));
 
