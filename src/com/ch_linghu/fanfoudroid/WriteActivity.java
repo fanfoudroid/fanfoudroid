@@ -395,8 +395,9 @@ public class WriteActivity extends BaseActivity {
                 	String other_replies = "";
 
                 	for (String mention : TextHelper.getMentions(text)){
-                		//获取名字时不包括自己
-                		if (!mention.equals(TwitterApplication.getMyselfName())){
+                		//获取名字时不包括自己和回复对象
+                		if (!mention.equals(TwitterApplication.getMyselfName()) && 
+                				!mention.equals(_reply_to_name)){
                 			other_replies += "@"+mention+" ";
                 		}
                     }
