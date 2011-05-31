@@ -25,10 +25,10 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.View.OnTouchListener;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -636,14 +636,15 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
             Log.v(TAG, "Not Using Gestrue!");
         }
     }
-    private String dir="";
+    
+    /*  
     class FlingGestureListener2 extends SimpleOnGestureListener implements
             OnTouchListener {
         private static final String TAG = "FlipperGestureListener";
 
         private static final int SWIPE_MIN_DISTANCE = 120;
         private static final int SWIPE_MAX_DISTANCE = 350;
-        private static final int SWIPE_THRESHOLD_VELOCITY = 200;
+        private static final int SWIPE_THRESHOLD_VELOCITY = 150;
 
         private Widget.OnGestureListener mListener;
         private GestureDetector gDetector;
@@ -704,6 +705,8 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
                         result = mListener.onFlingDown(e1, e1, velocityX,
                                 velocityY);
                     }
+                } else {
+                    Log.d(TAG, "miss");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -722,7 +725,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            // Log.d("FLING", "On Touch");
+            Log.d("FLING", "On Touch");
 
             // Within the MyGestureListener class you can now manage the
             // event.getAction() codes.
@@ -738,16 +741,15 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
         }
     }
     
-    
     @Override
     public void finish() {
         
         super.finish();
-        
-       
     }
-
-    protected FlingGestureListener2 myGestureListener = null;
+    protected FlingGestureListener2 myGestureListener2 = null;
+    */ 
+    
+    protected FlingGestureListener myGestureListener = null;
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -760,10 +762,10 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
     // use it in _onCreate
     private void registerGestureListener() {
         if (useGestrue) {
-            myGestureListener = new FlingGestureListener2(this,
+            myGestureListener = new FlingGestureListener(this,
                     MyActivityFlipper.create(this));
-            getTweetList().setOnTouchListener(myGestureListener);
 
+            getTweetList().setOnTouchListener(myGestureListener);
         }
     }
 
