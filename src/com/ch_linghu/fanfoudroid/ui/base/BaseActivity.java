@@ -152,14 +152,25 @@ public class BaseActivity extends Activity {
     }
 
     protected void manageUpdateChecks() {
-        boolean isEnabled = mPreferences.getBoolean(
+    	//检查后台更新状态设置
+        boolean isUpdateEnabled = mPreferences.getBoolean(
                 Preferences.CHECK_UPDATES_KEY, false);
 
-        if (isEnabled) {
+        if (isUpdateEnabled) {
             TwitterService.schedule(this);
         } else if (!TwitterService.isWidgetEnabled()) {
             TwitterService.unschedule(this);
         }
+        
+        //检查强制竖屏设置
+        boolean isOrientationPortrait = mPreferences.getBoolean(
+                Preferences.FORCE_SCREEN_ORIENTATION_PORTRAIT, false);
+        if (isOrientationPortrait) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        } else {
+        	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED); 
+        }
+        
     }
 
     // Menus.
