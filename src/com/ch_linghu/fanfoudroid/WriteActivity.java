@@ -816,11 +816,12 @@ public class WriteActivity extends BaseActivity {
             mImageUri = data.getData();
 
             Intent intent = WriteActivity.createImageIntent(this, mImageUri);
-            intent.setClass(this, WriteActivity.class);
             
             //选图片后不重新起一个WriteActivity
             getPic(intent, mImageUri);
-            /*startActivity(intent);
+            /*intent.setClass(this, WriteActivity.class);
+
+            startActivity(intent);
 
             // 打开发送图片界面后将自身关闭
             finish();*/
