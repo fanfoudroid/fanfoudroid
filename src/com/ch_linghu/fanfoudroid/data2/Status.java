@@ -8,6 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -170,18 +171,18 @@ public class Status extends FanContent implements java.io.Serializable {
      * @param isUnread
      * @return
      */
-    public long insertStatus(Status status) {
-        if (!isExists(status)) {
-            return getDb(true).insert(TABLE_NAME, null, toContentValues());
+    public long insertStatus(Context context, Status status) {
+        if (!isExists(context, status)) {
+            return getDb(context, true).insert(TABLE_NAME, null, toContentValues());
         } else {
             Log.e(TAG, status.getId() + " is exists.");
             return -1;
         }
     }
 
-    public int insertStatuses(List<Status> statuses) {
+    public int insertStatuses(Context context, List<Status> statuses) {
         int result = 0;
-        SQLiteDatabase db = getDb(true);
+        SQLiteDatabase db = getDb(context, true);
 
         try {
             db.beginTransaction();
@@ -220,7 +221,7 @@ public class Status extends FanContent implements java.io.Serializable {
      * @return
      * @see StatusDAO#deleteStatus(Status)
      */
-    public int deleteStatus(String statusId, String owner, int type) {
+    public int deleteStatus(Context context, String statusId, String owner, int type) {
         String where = StatusTable._ID + " =? ";
         String[] binds;
 
@@ -235,7 +236,7 @@ public class Status extends FanContent implements java.io.Serializable {
             where += " AND " + StatusTable.STATUS_TYPE + " = " + type;
         }
 
-        return getDb(true).delete(TABLE_NAME, where.toString(), binds);
+        return getDb(context, true).delete(TABLE_NAME, where.toString(), binds);
     }
 
     /**
@@ -245,8 +246,8 @@ public class Status extends FanContent implements java.io.Serializable {
      * @return
      * @see StatusDAO#deleteStatus(String, String, int)
      */
-    public int deleteStatus(Status status) {
-        return deleteStatus(status.getId(), status.getOwnerId(),
+    public int deleteStatus(Context context, Status status) {
+        return deleteStatus(context, status.getId(), status.getOwnerId(),
                 status.getType());
     }
 
@@ -256,8 +257,8 @@ public class Status extends FanContent implements java.io.Serializable {
      * @param statusId
      * @return
      */
-    public Status fetchStatus(String statusId) {
-        return queryForObject(mRowMapper, TABLE_NAME, null,
+    public Status fetchStatus(Context context, String statusId) {
+        return queryForObject(context, mRowMapper, TABLE_NAME, null,
                 StatusTable._ID + " = ?", new String[] { statusId }, null,
                 null, "created_at DESC", "1");
     }
@@ -271,8 +272,8 @@ public class Status extends FanContent implements java.io.Serializable {
      *            status type, see {@link StatusTable#TYPE_USER}...
      * @return list of statuses
      */
-    public List<Status> fetchStatuses(String userId, int statusType) {
-        return queryForList(mRowMapper, TABLE_NAME, null,
+    public List<Status> fetchStatuses(Context context, String userId, int statusType) {
+        return queryForList(context, mRowMapper, TABLE_NAME, null,
                 StatusTable.OWNER_ID + " = ? AND " + StatusTable.STATUS_TYPE
                         + " = " + statusType, new String[] { userId }, null,
                 null, "created_at DESC", null);
@@ -281,8 +282,8 @@ public class Status extends FanContent implements java.io.Serializable {
     /**
      * @see StatusDAO#fetchStatuses(String, int)
      */
-    public List<Status> fetchStatuses(String userId, String statusType) {
-        return fetchStatuses(userId, Integer.parseInt(statusType));
+    public List<Status> fetchStatuses(Context context, String userId, String statusType) {
+        return fetchStatuses(context, userId, Integer.parseInt(statusType));
     }
 
     /**
@@ -292,8 +293,8 @@ public class Status extends FanContent implements java.io.Serializable {
      * @param newValues
      * @return
      */
-    public int updateStatus(String statusId, ContentValues values) {
-        return updateById(TABLE_NAME, statusId, values);
+    public int updateStatus(Context context, String statusId, ContentValues values) {
+        return updateById(context, TABLE_NAME, statusId, values);
     }
 
     /**
@@ -302,8 +303,8 @@ public class Status extends FanContent implements java.io.Serializable {
      * @param status
      * @return
      */
-    public int updateStatus(Status status) {
-        return updateStatus(status.getId(), toContentValues());
+    public int updateStatus(Context context, Status status) {
+        return updateStatus(context, status.getId(), toContentValues());
     }
 
     /**
@@ -314,7 +315,7 @@ public class Status extends FanContent implements java.io.Serializable {
      * @param status
      * @return
      */
-    public boolean isExists(Status status) {
+    public boolean isExists(Context context, Status status) {
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT COUNT(*) FROM ").append(TABLE_NAME).append(" WHERE ")
                 .append(StatusTable._ID).append(" =? AND ")
@@ -322,7 +323,7 @@ public class Status extends FanContent implements java.io.Serializable {
                 .append(StatusTable.STATUS_TYPE).append(" = ")
                 .append(status.getType());
 
-        return isExistsBySQL(sql.toString(),
+        return isExistsBySQL(context, sql.toString(),
                 new String[] { status.getId(), status.getUser().getId() });
     }
 

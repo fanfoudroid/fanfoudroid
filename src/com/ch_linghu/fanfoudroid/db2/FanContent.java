@@ -4,11 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.ch_linghu.fanfoudroid.data2.Status;
-import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
 import com.temp.afan.data.dao.RowMapper;
 
 public abstract class FanContent {
@@ -23,21 +22,21 @@ public abstract class FanContent {
         return mId != NOT_SAVED;
     }
     
-    public static int deleteByField(String table, String field, String value) {
-        return getDb(true).delete(table, field + "=?", new String[] { value });
+    public static int deleteByField(Context context, String table, String field, String value) {
+        return getDb(context, true).delete(table, field + "=?", new String[] { value });
     }
 
-    public static int deleteById(String table, String id) {
-        return deleteByField(table, RECORD_ID, id);
+    public static int deleteById(Context context, String table, String id) {
+        return deleteByField(context, table, RECORD_ID, id);
     }
 
-    public static int updateById(String table, String id, ContentValues values) {
-        return getDb(true).update(table, values, RECORD_ID + "=?",
+    public static int updateById(Context context, String table, String id, ContentValues values) {
+        return getDb(context, true).update(table, values, RECORD_ID + "=?",
                 new String[] { id });
     }
     
-    public static boolean isExistsById(String table, String id) {
-        return isExistsByField(table, RECORD_ID, id);
+    public static boolean isExistsById(Context context, String table, String id) {
+        return isExistsByField(context, table, RECORD_ID, id);
     }
 
     /**
@@ -46,18 +45,18 @@ public abstract class FanContent {
      * @param status
      * @return
      */
-    public static boolean isExistsByField(String table, String field, String value) {
+    public static boolean isExistsByField(Context context, String table, String field, String value) {
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT COUNT(*) FROM ").append(table).append(" WHERE ")
                 .append(field).append(" =?");
 
-        return isExistsBySQL(sql.toString(), new String[] { value });
+        return isExistsBySQL(context, sql.toString(), new String[] { value });
     }
     
-    public static boolean isExistsBySQL(String sql, String[] selectionArgs) {
+    public static boolean isExistsBySQL(Context context, String sql, String[] selectionArgs) {
         boolean result = false;
 
-        final Cursor c = getDb(false).rawQuery(sql, selectionArgs);
+        final Cursor c = getDb(context, false).rawQuery(sql, selectionArgs);
         try {
             if (c.moveToFirst()) {
                 result = (c.getInt(0) > 0);
@@ -82,12 +81,12 @@ public abstract class FanContent {
      * @see SQLiteDatabase#query(String, String[], String, String[], String,
      *      String, String, String)
      */
-    public static <T> T queryForObject(RowMapper<T> rowMapper, String table,
+    public static <T> T queryForObject(Context context, RowMapper<T> rowMapper, String table,
             String[] columns, String selection, String[] selectionArgs,
             String groupBy, String having, String orderBy, String limit) {
         T object = null;
 
-        final Cursor c = getDb(false).query(table, columns, selection, selectionArgs,
+        final Cursor c = getDb(context, false).query(table, columns, selection, selectionArgs,
                 groupBy, having, orderBy, limit);
         try {
             if (c.moveToFirst()) {
@@ -109,12 +108,12 @@ public abstract class FanContent {
      * @see SQLiteDatabase#query(String, String[], String, String[], String,
      *      String, String, String)
      */
-    public static <T> List<T> queryForList(RowMapper<T> rowMapper, String table,
+    public static <T> List<T> queryForList(Context context, RowMapper<T> rowMapper, String table,
             String[] columns, String selection, String[] selectionArgs,
             String groupBy, String having, String orderBy, String limit) {
         List<T> list = new ArrayList<T>();
 
-        final Cursor c = getDb(false).query(table, columns, selection, selectionArgs,
+        final Cursor c = getDb(context, false).query(table, columns, selection, selectionArgs,
                 groupBy, having, orderBy, limit);
         try {
             while (c.moveToNext()) {
@@ -126,8 +125,8 @@ public abstract class FanContent {
         return list;
     }
 
-    public static SQLiteDatabase getDb(boolean writeable) {
-        return TwitterDatabase.getDb(writeable);
+    public static SQLiteDatabase getDb(Context context, boolean writeable) {
+        return FanDatabase.getInstance(context).getDb(writeable);
     }
     
     // Columns
@@ -150,7 +149,7 @@ public abstract class FanContent {
         public static final String STATUS_TYPE = "status_type";
     }
     
-    public interface StatusGroups {
+    public interface StatusGroupsColumns {
         public static final String ID = "_id";
         public static final String TYPE = "TYPE";
         public static final String OWNER_ID = "owner_id";
@@ -184,21 +183,5 @@ public abstract class FanContent {
         public static final String IS_LAST = "is_last";
     }
     
-    // TODO:
-    public static final String CREATE_TABLE_STATUSES = "CREATE TABLE " 
-        + Status.TABLE_NAME + "( "
-        + StatusColumns.ID + " INTEGER PRIMARY KEY, "
-        + StatusColumns.STATUS_ID + " INT UNIQUE NOT NULL, "
-        + StatusColumns.AUTHOR_ID + " INT, "
-        + StatusColumns.TEXT + " TEXT, "
-        + StatusColumns.SOURCE + " TEXT, "
-        + StatusColumns.TRUNCATED + " INT, "
-        + StatusColumns.IN_REPLY_TO_STATUS_ID + " INT, "
-        + StatusColumns.IN_REPLY_TO_USER_ID + " INT, "
-        + StatusColumns.FAVORITED + " INT, "
-        + StatusColumns.CREATED_AT + " INT "
-        + StatusColumns.PIC_THUMB + " TEXT DEFAULT '', "
-        + StatusColumns.PIC_MID + " TEXT DEFAULT '', "
-        + StatusColumns.PIC_ORIG + " TEXT DEFAULT '' "
-        + " ) ";
+   
 }
