@@ -3,7 +3,6 @@
   </style>
   <style name="Theme.Fanfoudroid">
   </style>
-  
   <style name="Theme.Fanfoudroid.Dark">
         <item name="android:background">#FF323637</item>
         <item name="android:textColor">#FFFFFFFF</item>

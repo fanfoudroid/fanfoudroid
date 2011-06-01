@@ -7,6 +7,8 @@ import java.util.HashMap;
 
 import android.util.Log;
 
+import com.ch_linghu.fanfoudroid.TwitterApplication;
+
 /**
  * Debug Timer
  * 
@@ -56,7 +58,9 @@ public class DebugTimer {
      * @return
      */
     public static long between(String tag, int startOrEnd) {
-        Log.v("DEBUG", tag + " " + startOrEnd);
+        if(TwitterApplication.DEBUG){
+            Log.v("DEBUG", tag + " " + startOrEnd);
+        }
         switch (startOrEnd) {
             case START:
                 return mark(tag);
@@ -142,7 +146,11 @@ public class DebugTimer {
             i++;
         }
         
-        Arrays.sort(profile);
+        try {
+            Arrays.sort(profile);
+        } catch (NullPointerException e) {
+            // in case item is null, do nothing
+        }
         return profile;
     }
     

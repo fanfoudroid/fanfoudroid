@@ -297,7 +297,7 @@ public class StatusActivity extends BaseActivity {
 			@Override
 			public void onClick(View v) {
 				Intent intent = WriteActivity.createNewReplyIntent(
-						tweet.screenName, tweet.id);
+						tweet.text, tweet.screenName, tweet.id);
 				startActivity(intent);
 			}
 		});

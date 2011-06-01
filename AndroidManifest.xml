@@ -70,6 +70,10 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
             <intent-filter>
+                <action android:name="com.ch_linghu.fanfoudroid.REPLY"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+            <intent-filter>
                 <action android:name="com.ch_linghu.fanfoudroid.REPOST"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>

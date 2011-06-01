@@ -17,6 +17,7 @@
 package com.ch_linghu.fanfoudroid;
 
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -31,7 +32,12 @@ public class PreferencesActivity extends PreferenceActivity implements SharedPre
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        
+        //禁止横屏
+        if (TwitterApplication.mPref.getBoolean(
+                Preferences.FORCE_SCREEN_ORIENTATION_PORTRAIT, false)) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
         // TODO: is this a hack?
         setResult(RESULT_OK);
 

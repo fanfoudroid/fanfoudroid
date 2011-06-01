@@ -81,7 +81,11 @@
 	    android:title="@string/pref_force_show_all_image"
 	    android:summary="@string/pref_force_show_all_image_summary"
 	    android:defaultValue="false" />
-	    
+	    <CheckBoxPreference
+        android:key="force_screen_orientation_portrait"
+        android:title="@string/pref_force_screen_orientation_portrait"
+        android:summary="@string/pref_force_screen_orientation_portrait_summary"
+        android:defaultValue="false" />
 	    <ListPreference  
             android:key="ui_font_size"
             android:defaultValue="15"

@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -123,5 +125,28 @@ public class TextHelper {
         linkifyUsers(textView);
         linkifyTags(textView);
         _userLinkMapping.clear();
+    }
+    
+    /**
+     * 从消息中获取全部提到的人，将它们按先后顺序放入一个列表
+     * @param msg 消息文本
+     * @return 消息中@的人的列表，按顺序存放
+     */
+    public static List<String> getMentions(String msg){
+    	ArrayList<String> mentionList = new ArrayList<String>();
+    	
+    	final Pattern p = Pattern.compile("@(.*?)\\s");
+        final int MAX_NAME_LENGTH = 12; //简化判断，无论中英文最长12个字
+
+    	Matcher m = p.matcher(msg);
+        while(m.find()){
+            String mention = m.group(1);
+            
+            //过长的名字就忽略（不是合法名字） +1是为了补上“@”所占的长度
+            if (mention.length() <= MAX_NAME_LENGTH+1){
+                mentionList.add(m.group(1));
+            }
+        }
+        return mentionList;
     }
 }

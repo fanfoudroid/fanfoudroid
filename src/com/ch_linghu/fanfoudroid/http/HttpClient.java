@@ -2,20 +2,25 @@ package com.ch_linghu.fanfoudroid.http;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.SSLHandshakeException;
 
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.HttpVersion;
 import org.apache.http.NoHttpResponseException;
 import org.apache.http.auth.AuthScope;
@@ -37,6 +42,7 @@ import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.entity.HttpEntityWrapper;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
@@ -205,9 +211,6 @@ public class HttpClient {
                 schemeRegistry);
         mClient = new DefaultHttpClient(cm, params);
 
-        // TODO: need to release this connection in httpRequest()
-        // cm.releaseConnection(conn, validDuration, timeUnit);
-
         // Setup BasicAuth
         BasicScheme basicScheme = new BasicScheme();
         mAuthScope = new AuthScope(SERVER_HOST, AuthScope.ANY_PORT);
@@ -222,12 +225,18 @@ public class HttpClient {
 
         // first request interceptor
         mClient.addRequestInterceptor(preemptiveAuth, 0);
+        // Support GZIP
+        mClient.addResponseInterceptor(gzipResponseIntercepter);
+        
+        // TODO: need to release this connection in httpRequest()
+        // cm.releaseConnection(conn, validDuration, timeUnit);
+        //httpclient.getConnectionManager().shutdown();
     }
     
     /**
      * HttpRequestInterceptor for DefaultHttpClient
      */
-    private HttpRequestInterceptor preemptiveAuth = new HttpRequestInterceptor() {
+    private static HttpRequestInterceptor preemptiveAuth = new HttpRequestInterceptor() {
         @Override
         public void process(final HttpRequest request, final HttpContext context) {
             AuthState authState = (AuthState) context
@@ -248,6 +257,51 @@ public class HttpClient {
             }
         }
     };
+    
+    private static HttpResponseInterceptor gzipResponseIntercepter =
+        new HttpResponseInterceptor() {
+
+            @Override
+            public void process(HttpResponse response, HttpContext context)
+                    throws org.apache.http.HttpException, IOException {
+                HttpEntity entity = response.getEntity();
+                Header ceheader = entity.getContentEncoding();
+                if (ceheader != null) {
+                    HeaderElement[] codecs = ceheader.getElements();
+                    for (int i = 0; i < codecs.length; i++) {
+                        if (codecs[i].getName().equalsIgnoreCase("gzip")) {
+                            response.setEntity(
+                                    new GzipDecompressingEntity(response.getEntity()));
+                            return;
+                        }
+                    }
+                }
+                
+            }
+    };
+    
+    static class GzipDecompressingEntity extends HttpEntityWrapper {
+
+        public GzipDecompressingEntity(final HttpEntity entity) {
+            super(entity);
+        }
+
+        @Override
+        public InputStream getContent()
+            throws IOException, IllegalStateException {
+
+            // the wrapped entity's getContent() decides about repeatability
+            InputStream wrappedin = wrappedEntity.getContent();
+            return new GZIPInputStream(wrappedin);
+        }
+
+        @Override
+        public long getContentLength() {
+            // length of ungzipped content is not known
+            return -1;
+        }
+
+    }
 
 
     /**
@@ -374,12 +428,12 @@ public class HttpClient {
 
         // Create POST, GET or DELETE METHOD
         method = createMethod(httpMethod, uri, file, postParams);
-        // Setup ConnectionParams
+        // Setup ConnectionParams, Request Headers
         SetupHTTPConnectionParams(method);
         
         // Execute Request
         try {
-            response = mClient.execute(method,localcontext);
+            response = mClient.execute(method, localcontext);
             res = new Response(response);
         } catch (ClientProtocolException e) {
             Log.e(TAG, e.getMessage(), e);
@@ -461,6 +515,7 @@ public class HttpClient {
                 .setSoTimeout(method.getParams(), SOCKET_TIMEOUT_MS);
         mClient.setHttpRequestRetryHandler(requestRetryHandler);
         method.addHeader("Accept-Encoding", "gzip, deflate");
+        method.addHeader("Accept-Charset", "UTF-8,*;q=0.5");
     }
 
     /**
@@ -510,7 +565,7 @@ public class HttpClient {
         } else {
             method = new HttpGet(uri);
         }
-
+        
         return method;
     }
 

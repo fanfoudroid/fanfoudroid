@@ -49,11 +49,11 @@ import com.ch_linghu.fanfoudroid.http.Response;
 public class ImageManager implements ImageCache {
     private static final String TAG = "ImageManager";
     
-    // 饭否目前最大宽度支持496px, 超过则同比缩小
-    // 最大宽度为992px, 超过从中截取
+    // 饭否目前最大宽度支持596px, 超过则同比缩小
+    // 最大高度为1192px, 超过从中截取
     public static final int DEFAULT_COMPRESS_QUALITY = 90;
-    public static final int MAX_WIDTH  = 596;
-    public static final int MAX_HEIGHT = 1192;
+    public static final int IMAGE_MAX_WIDTH  = 596;
+    public static final int IMAGE_MAX_HEIGHT = 1192;
 
     private Context mContext;
     // In memory cache.
@@ -203,7 +203,7 @@ public class ImageManager implements ImageCache {
         }
 
         Bitmap bitmap = BitmapFactory.decodeFile(file.getPath());
-        bitmap = resizeBitmap(bitmap, MAX_WIDTH, MAX_HEIGHT);
+        //bitmap = resizeBitmap(bitmap, MAX_WIDTH, MAX_HEIGHT);
 
         if (bitmap == null) {
             Log.w(TAG, "Retrieved bitmap is null.");
@@ -254,13 +254,14 @@ public class ImageManager implements ImageCache {
             String hashedUrl = getMd5(file);
             bos = new BufferedOutputStream(
                     mContext.openFileOutput(hashedUrl, Context.MODE_PRIVATE));
-            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, bos);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, bos); // PNG
             Log.d(TAG, "Writing file: " + file);
         } catch (IOException ioe) {
             Log.e(TAG, ioe.getMessage());
         } finally {
             try {
                 if (bos != null) {
+                    bitmap.recycle();
                     bos.flush();
                     bos.close();
                 }
@@ -412,18 +413,47 @@ public class ImageManager implements ImageCache {
     
     /**
      * Compress and resize the Image
+     * 
+     * <br />
+     * 因为不论图片大小和尺寸如何, 饭否都会对图片进行一次有损压缩, 所以本地压缩应该
+     * 考虑图片将会被二次压缩所造成的图片质量损耗
+     * 
      * @param targetFile
-     * @param quality
+     * @param quality, 0~100, recommend 100
      * @return
      * @throws IOException
      */
     public File compressImage(File targetFile, int quality) throws IOException {
-        
-        put(targetFile, quality, true); // compress, resize, store 
-        
+        String filepath = targetFile.getAbsolutePath();
+
+        // 1. Calculate scale
+        int scale = 1;
+        BitmapFactory.Options o = new BitmapFactory.Options();
+        o.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(filepath, o);
+        if (o.outWidth > IMAGE_MAX_WIDTH || o.outHeight > IMAGE_MAX_HEIGHT) {
+            scale = (int) Math.pow( 2.0,
+                    (int) Math.round(Math.log(IMAGE_MAX_WIDTH
+                            / (double) Math.max(o.outHeight, o.outWidth))
+                            / Math.log(0.5)));
+            //scale = 2;
+        }
+        Log.d(TAG, scale + " scale");
+
+        // 2. File -> Bitmap (Returning a smaller image)
+        o.inJustDecodeBounds = false;
+        o.inSampleSize = scale;
+        Bitmap bitmap = BitmapFactory.decodeFile(filepath, o);
+
+        // 2.1. Resize Bitmap
+        //bitmap = resizeBitmap(bitmap, IMAGE_MAX_WIDTH, IMAGE_MAX_HEIGHT);
+
+        // 3. Bitmap -> File
+        writeFile(filepath, bitmap, quality);
+
+        // 4. Get resized Image File
         String filePath = getMd5(targetFile.getPath());
         File compressedImage = mContext.getFileStreamPath(filePath);
-        
         return compressedImage;
     }
     
@@ -446,29 +476,29 @@ public class ImageManager implements ImageCache {
             return bitmap;
         }
         
-        int width  = originWidth;
-        int height = originHeight;
+        int newWidth  = originWidth;
+        int newHeight = originHeight;
         
         // 若图片过宽, 则保持长宽比缩放图片
         if (originWidth > maxWidth) {
-            width = maxWidth;
+            newWidth = maxWidth;
             
             double i = originWidth * 1.0 / maxWidth;
-            height = (int) Math.floor(originHeight / i);
+            newHeight = (int) Math.floor(originHeight / i);
         
-            bitmap = Bitmap.createScaledBitmap(bitmap, width, height, false);
+            bitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true);
         }
         
         // 若图片过长, 则从中部截取
-        if (height > maxHeight) {
-            height = maxHeight;
+        if (newHeight > maxHeight) {
+            newHeight = maxHeight;
             
         	int half_diff = (int)((originHeight - maxHeight)  / 2.0);
-            bitmap = Bitmap.createBitmap(bitmap, 0, half_diff, width, height);
+            bitmap = Bitmap.createBitmap(bitmap, 0, half_diff, newWidth, newHeight);
         }
         
-//        Log.d(TAG, width + " width");
-//        Log.d(TAG, height + " height");
+        Log.d(TAG, newWidth + " width");
+        Log.d(TAG, newHeight + " height");
         
         return bitmap;
     }

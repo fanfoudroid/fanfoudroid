@@ -1,6 +1,8 @@
 package com.ch_linghu.fanfoudroid.ui.module;
 
-import android.content.Context;
+import com.ch_linghu.fanfoudroid.R;
+
+import android.app.Activity;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
@@ -30,24 +32,26 @@ public class FlingGestureListener extends SimpleOnGestureListener implements
     private static final String TAG = "FlipperGestureListener";
 
     private static final int SWIPE_MIN_DISTANCE = 120;
-    private static final int SWIPE_MAX_DISTANCE = 350;
+    private static final int SWIPE_MAX_DISTANCE = 400;
     private static final int SWIPE_THRESHOLD_VELOCITY = 200;
 
     private Widget.OnGestureListener mListener;
     private GestureDetector gDetector;
+    private Activity activity;
 
-    public FlingGestureListener(Context context,
+    public FlingGestureListener(Activity activity,
             Widget.OnGestureListener listener) {
-        this(context, listener, null);
+        this(activity, listener, null);
     }
 
-    public FlingGestureListener(Context context,
+    public FlingGestureListener(Activity activity,
             Widget.OnGestureListener listener, GestureDetector gDetector) {
         if (gDetector == null) {
-            gDetector = new GestureDetector(context, this);
+            gDetector = new GestureDetector(activity, this);
         }
         this.gDetector = gDetector;
         mListener = listener;
+        this.activity = activity;
     }
 
     @Override
@@ -56,8 +60,8 @@ public class FlingGestureListener extends SimpleOnGestureListener implements
         Log.d(TAG, "On fling");
         boolean result = super.onFling(e1, e2, velocityX, velocityY);
 
-        final float xDistance = Math.abs(e1.getX() - e2.getX());
-        final float yDistance = Math.abs(e1.getY() - e2.getY());
+        float xDistance = Math.abs(e1.getX() - e2.getX());
+        float yDistance = Math.abs(e1.getY() - e2.getY());
         velocityX = Math.abs(velocityX);
         velocityY = Math.abs(velocityY);
 
@@ -73,9 +77,11 @@ public class FlingGestureListener extends SimpleOnGestureListener implements
                 if (e1.getX() > e2.getX()) { 
                     Log.d(TAG, "<------");
                     result = mListener.onFlingLeft(e1, e1, velocityX, velocityY);
+                    activity.overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
                 } else {
                     Log.d(TAG, "------>");
                     result = mListener.onFlingRight(e1, e1, velocityX, velocityY);
+                    activity.overridePendingTransition(R.anim.push_right_in, R.anim.push_right_out);
                 }
             } else if (velocityY > SWIPE_THRESHOLD_VELOCITY
                     && yDistance > SWIPE_MIN_DISTANCE) {
@@ -86,6 +92,8 @@ public class FlingGestureListener extends SimpleOnGestureListener implements
                     Log.d(TAG, "down");
                     result = mListener.onFlingDown(e1, e1, velocityX, velocityY);
                 }
+            } else {
+                Log.d(TAG, "not hint");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -103,7 +111,7 @@ public class FlingGestureListener extends SimpleOnGestureListener implements
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        // Log.d("FLING", "On Touch");
+         Log.d(TAG, "On Touch");
 
         // Within the MyGestureListener class you can now manage the
         // event.getAction() codes.

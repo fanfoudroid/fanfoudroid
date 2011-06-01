@@ -75,8 +75,9 @@ public class WriteActivity extends BaseActivity {
     private long endTime = -1;
 
     public static final String NEW_TWEET_ACTION = "com.ch_linghu.fanfoudroid.NEW";
+    public static final String REPLY_TWEET_ACTION = "com.ch_linghu.fanfoudroid.REPLY";
     public static final String REPOST_TWEET_ACTION = "com.ch_linghu.fanfoudroid.REPOST";
-    public static final String EXTRA_TEXT = "text";
+    public static final String EXTRA_REPLY_TO_NAME = "reply_to_name";
     public static final String EXTRA_REPLY_ID = "reply_id";
     public static final String EXTRA_REPOST_ID = "repost_status_id";
 
@@ -140,6 +141,7 @@ public class WriteActivity extends BaseActivity {
 
     private String _reply_id;
     private String _repost_id;
+    private String _reply_to_name;
 
     // sub menu
     protected void openImageCaptureMenu() {
@@ -320,6 +322,7 @@ public class WriteActivity extends BaseActivity {
 
             _reply_id = null;
             _repost_id = null;
+            _reply_to_name = null;
 
             // View
             mProgressText = (TextView) findViewById(R.id.progress_text);
@@ -367,28 +370,48 @@ public class WriteActivity extends BaseActivity {
             // Update status
             mTweetEdit = new TweetEdit(mTweetEditText,
                     (TextView) findViewById(R.id.chars_text));
-            mTweetEdit.setOnKeyListener(tweetEnterHandler);
+            //去除回车发送消息功能，这个功能经常造成误操作
+            //mTweetEdit.setOnKeyListener(tweetEnterHandler);
             mTweetEdit.addTextChangedListener(new MyTextWatcher(
                     WriteActivity.this));
 
-            mTweetEdit.setText(text);
 
-            if (!TextHelper.isEmpty(text)){
-                //始终将光标置于最末尾，以方便回复消息时保持@用户在最前面
-            	EditText inputField = mTweetEdit.getEditText();
-	            inputField.setTextKeepState(text);
-	
-	            Editable etext = inputField.getText();
-	            int position = etext.length();
-	            Selection.setSelection(etext, position);
-            }
-            
-            if (NEW_TWEET_ACTION.equals(action)) {
+            if (NEW_TWEET_ACTION.equals(action)){
+                if (!TextHelper.isEmpty(text)){
+                    //始终将光标置于最末尾，以方便回复消息时保持@用户在最前面
+                	EditText inputField = mTweetEdit.getEditText();
+    	            inputField.setTextKeepState(text);
+    	
+    	            Editable etext = inputField.getText();
+    	            int position = etext.length();
+    	            Selection.setSelection(etext, position);
+                }
+            }else if (REPLY_TWEET_ACTION.equals(action)) {
                 _reply_id = intent.getStringExtra(EXTRA_REPLY_ID);
+                _reply_to_name = intent.getStringExtra(EXTRA_REPLY_TO_NAME);
 
-            }
+                if (!TextHelper.isEmpty(text)){
+                	String reply_to_name = "@"+_reply_to_name + " ";
+                	String other_replies = "";
 
-            if (REPOST_TWEET_ACTION.equals(action)) {
+                	for (String mention : TextHelper.getMentions(text)){
+                		//获取名字时不包括自己
+                		if (!mention.equals(TwitterApplication.getMyselfName())){
+                			other_replies += "@"+mention+" ";
+                		}
+                    }
+
+                	EditText inputField = mTweetEdit.getEditText();
+    	            inputField.setTextKeepState(reply_to_name + other_replies);
+    	
+                    //将除了reply_to_name的其他名字默认选中
+    	            Editable etext = inputField.getText();
+    	            int start = reply_to_name.length();
+    	            int stop = etext.length();
+    	            Selection.setSelection(etext, start, stop);
+                }
+                
+            }else if (REPOST_TWEET_ACTION.equals(action)) {
                 if (!TextHelper.isEmpty(text)){
                     // 如果是转发消息，则根据用户习惯，将光标放置在转发消息的头部或尾部
                     SharedPreferences prefereces = getPreferences();
@@ -505,10 +528,10 @@ public class WriteActivity extends BaseActivity {
         return intent;
     }
 
-    public static Intent createNewReplyIntent(String screenName, String replyId) {
-        String replyTo = "@" + screenName + " ";
-        Intent intent = new Intent(WriteActivity.NEW_TWEET_ACTION);
-        intent.putExtra(Intent.EXTRA_TEXT, replyTo);
+    public static Intent createNewReplyIntent(String tweetText, String screenName, String replyId) {
+        Intent intent = new Intent(WriteActivity.REPLY_TWEET_ACTION);
+        intent.putExtra(Intent.EXTRA_TEXT, TextHelper.getSimpleTweetText(tweetText));
+        intent.putExtra(WriteActivity.EXTRA_REPLY_TO_NAME, screenName);
         intent.putExtra(WriteActivity.EXTRA_REPLY_ID, replyId);
 
         return intent;
@@ -537,6 +560,8 @@ public class WriteActivity extends BaseActivity {
             WriteActivity writeActivity = (WriteActivity) activity;
             intent.putExtra(Intent.EXTRA_TEXT,
                     writeActivity.mTweetEdit.getText());
+            intent.putExtra(WriteActivity.EXTRA_REPLY_TO_NAME,
+                    writeActivity._reply_to_name);
             intent.putExtra(WriteActivity.EXTRA_REPLY_ID,
                     writeActivity._reply_id);
             intent.putExtra(WriteActivity.EXTRA_REPOST_ID,
@@ -560,6 +585,7 @@ public class WriteActivity extends BaseActivity {
         public void afterTextChanged(Editable s) {
             if (s.length() == 0) {
                 _activity._reply_id = null;
+                _activity._reply_to_name = null;
                 _activity._repost_id = null;
             }
         }
@@ -670,13 +696,12 @@ public class WriteActivity extends BaseActivity {
                     if (null != mFile) {
                         // Compress image
                         try {
-                            mFile = getImageManager().compressImage(mFile,
-                                    ImageManager.DEFAULT_COMPRESS_QUALITY);
+                            mFile = getImageManager().compressImage(mFile, 100); 
+                                    //ImageManager.DEFAULT_COMPRESS_QUALITY);
                         } catch (IOException ioe) {
                             Log.e(TAG, "Cann't compress images.");
                         }
                         getApi().updateStatus(status, mFile);
-
                     } else {
                         Log.e(TAG,
                                 "Cann't send status in PICTURE mode, photo is null");

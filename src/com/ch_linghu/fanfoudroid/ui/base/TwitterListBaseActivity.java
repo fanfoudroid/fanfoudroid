@@ -205,7 +205,7 @@ public abstract class TwitterListBaseActivity extends BaseActivity
 		case CONTEXT_REPLY_ID: {
 			// TODO: this isn't quite perfect. It leaves extra empty spaces if
 			// you perform the reply action again.
-		    Intent intent = WriteActivity.createNewReplyIntent(tweet.screenName, tweet.id);
+		    Intent intent = WriteActivity.createNewReplyIntent(tweet.text, tweet.screenName, tweet.id);
 			startActivity(intent);
 			return true;
 		}
