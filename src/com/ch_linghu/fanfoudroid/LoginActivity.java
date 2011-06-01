@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -33,6 +34,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.ch_linghu.fanfoudroid.activity.BaseListActivity;
 import com.ch_linghu.fanfoudroid.app.Preferences;
 import com.ch_linghu.fanfoudroid.fanfou.User;
 import com.ch_linghu.fanfoudroid.http.HttpAuthException;
@@ -96,7 +98,12 @@ public class LoginActivity extends Activity {
 			return "Login";
 		}
     };
-
+    
+    public static void actionStart(Context context) {
+        Intent intent = new Intent(context, BaseListActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        context.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

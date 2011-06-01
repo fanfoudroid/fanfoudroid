@@ -14,7 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Document;
 
-import com.temp.afan.data.json.JsonParserException;
+import com.ch_linghu.fanfoudroid.json.JsonParserException;
 
 public class Response {
     private static boolean DEBUG = true;

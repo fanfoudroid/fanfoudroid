@@ -212,7 +212,7 @@
             android:label="@string/app_name"
             android:theme="@style/Theme.Fanfoudroid" />
         <service
-            android:name=".service.TwitterService" />
+            android:name="service.TwitterService" />
         <receiver
             android:name=".service.BootReceiver">
             <intent-filter>
