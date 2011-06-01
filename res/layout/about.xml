@@ -60,18 +60,6 @@
 				android:text="@string/about_introduce"
 			    style="@style/normalText"
 			/>
-			<!-- 相关链接 -->
-			<TextView android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/about_links_title"
-			    style="@style/normalText.Big"
-			/>
-			<TextView android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/about_links"
-			    style="@style/normalText"
-			    android:autoLink="web|email"
-			/>
 			<!-- 开发者 -->
 			<TextView android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -96,7 +84,18 @@
 			    style="@style/normalText"
 			    android:autoLink="web|email"
 			/>
-			
+			<!-- 相关链接 -->
+			<TextView android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/about_links_title"
+			    style="@style/normalText.Big"
+			/>
+			<TextView android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/about_links"
+			    style="@style/normalText"
+			    android:autoLink="web|email"
+			/>			
 		</LinearLayout>
 		</ScrollView>
 		

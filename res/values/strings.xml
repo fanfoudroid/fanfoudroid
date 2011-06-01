@@ -182,7 +182,7 @@
 \n\ndodo la: dinophp@gmail.com
 \n\nPhoenix: phoenix.nir@gmail.com</string>
 	<string name="about_thanks_title">\n感谢名单\n</string>
-	<string name="about_thanks">这里列出所有对这个项目提供了切实帮助了人们。</string>
+	<string name="about_thanks">这里列出所有对这个项目提供了切实帮助的人们。</string>
     <string name="about_label_ok">了解</string>
     <!-- 搜索  -->
     <string name="search_label">安能饭否</string>
