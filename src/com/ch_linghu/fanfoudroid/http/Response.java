@@ -7,9 +7,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.GZIPInputStream;
 
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.CharArrayBuffer;
@@ -33,12 +31,21 @@ public class Response {
     /**
      * Convert Response to inputStream
      * 
-     * @deprecated use entity.getContent();  
      * @return InputStream or null
      * @throws ResponseException
      */
     public InputStream asStream() throws ResponseException {
-        return asStream(mResponse.getEntity());
+        try {
+            final HttpEntity entity = mResponse.getEntity();
+            if (entity != null) {
+                return entity.getContent();
+            }
+        } catch (IllegalStateException e) {
+            throw new ResponseException(e.getMessage(), e);
+        } catch (IOException e) {
+            throw new ResponseException(e.getMessage(), e);
+        }
+        return null;
     }
     
     /**
@@ -55,11 +62,6 @@ public class Response {
         InputStream is = null;
         try {
             is = entity.getContent();
-            Header ceheader = entity.getContentEncoding();
-            if (ceheader != null
-                    && ceheader.getValue().equalsIgnoreCase("gzip")) {
-                is = new GZIPInputStream(is);
-            }
         } catch (IllegalStateException e) {
             throw new ResponseException(e.getMessage(), e);
         } catch (IOException e) {
