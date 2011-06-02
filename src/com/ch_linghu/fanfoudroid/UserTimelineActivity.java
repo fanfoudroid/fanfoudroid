@@ -344,7 +344,8 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
 
     @Override
     protected Tweet getContextItemTweet(int position) {
-        if (position >= 1) {
+
+        if (position >= 1 && position <= mAdapter.getCount()) {
             return (Tweet) mAdapter.getItem(position - 1);
         } else {
             return null;

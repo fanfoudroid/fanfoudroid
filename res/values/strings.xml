@@ -169,19 +169,20 @@
     <string name="tweet_created_at_beautify_day">天</string>
     <string name="tweet_created_at_beautify_suffix">前</string>
     <!-- About -->
-    <string name="about_message">
-    \n作者：
-    \n  令狐虫(ch.linghu@gmail.com)
-    \n  三日坊主(lds2012@gmail.com)
-    \n  dodo la
-    \n  Phoenix(phoenix.nir@gmail.com)
-    \n
-    \n安能饭否修改自开源项目twitta。遵循Twitta项目的开源协议。
-    \n项目主页：http://code.google.com/p/fanfoudroid/
-    \n
-    \nTwitta is open sourced under the Apache 2.0 license. 
-    \nPlease visit the project page at http://code.google.com/p/twitta/ to contribute code or report issues.
-    </string>
+    <string name="about_introduce_title">\n项目介绍\n</string>
+    <string name="about_introduce">安能饭否是一个开源的饭否客户端，修改自开源项目twitta，采用Apache License 2.0协议发布。</string>
+    <string name="about_links_title">\n相关链接\n</string>
+    <string name="about_links">饭否主页: http://fanfou.com
+\n\n安能饭否项目主页: http://code.google.com/p/fanfoudroid
+\n\ntwitta项目主页: http://code.google.com/p/twitta
+\n\nApache License 2.0: http://www.apache.org/licenses/LICENSE-2.0</string>
+    <string name="about_developers_title">\n开发者\n</string>
+    <string name="about_developers">令狐虫: ch.linghu@gmail.com
+\n\n三日坊主：lds2012@gmail.com
+\n\ndodo la: dinophp@gmail.com
+\n\nPhoenix: phoenix.nir@gmail.com</string>
+	<string name="about_thanks_title">\n感谢名单\n</string>
+	<string name="about_thanks">这里列出所有对这个项目提供了切实帮助的人们。</string>
     <string name="about_label_ok">了解</string>
     <!-- 搜索  -->
     <string name="search_label">安能饭否</string>

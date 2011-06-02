@@ -14,7 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.ch_linghu.fanfoudroid.AboutDialog;
+import com.ch_linghu.fanfoudroid.AboutActivity;
 import com.ch_linghu.fanfoudroid.LoginActivity;
 import com.ch_linghu.fanfoudroid.PreferencesActivity;
 import com.ch_linghu.fanfoudroid.R;
@@ -152,14 +152,25 @@ public class BaseActivity extends Activity {
     }
 
     protected void manageUpdateChecks() {
-        boolean isEnabled = mPreferences.getBoolean(
+    	//检查后台更新状态设置
+        boolean isUpdateEnabled = mPreferences.getBoolean(
                 Preferences.CHECK_UPDATES_KEY, false);
 
-        if (isEnabled) {
+        if (isUpdateEnabled) {
             TwitterService.schedule(this);
         } else if (!TwitterService.isWidgetEnabled()) {
             TwitterService.unschedule(this);
         }
+        
+        //检查强制竖屏设置
+        boolean isOrientationPortrait = mPreferences.getBoolean(
+                Preferences.FORCE_SCREEN_ORIENTATION_PORTRAIT, false);
+        if (isOrientationPortrait) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        } else {
+        	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED); 
+        }
+        
     }
 
     // Menus.
@@ -241,7 +252,9 @@ public class BaseActivity extends Activity {
                     REQUEST_CODE_PREFERENCES);
             return true;
         case OPTIONS_MENU_ID_ABOUT:
-            AboutDialog.show(this);
+            //AboutDialog.show(this);
+        	Intent intent = new Intent().setClass(this, AboutActivity.class);
+        	startActivity(intent);
             return true;
         case OPTIONS_MENU_ID_EXIT:
             exit();

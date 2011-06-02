@@ -395,8 +395,9 @@ public class WriteActivity extends BaseActivity {
                 	String other_replies = "";
 
                 	for (String mention : TextHelper.getMentions(text)){
-                		//获取名字时不包括自己
-                		if (!mention.equals(TwitterApplication.getMyselfName())){
+                		//获取名字时不包括自己和回复对象
+                		if (!mention.equals(TwitterApplication.getMyselfName()) && 
+                				!mention.equals(_reply_to_name)){
                 			other_replies += "@"+mention+" ";
                 		}
                     }
@@ -801,23 +802,29 @@ public class WriteActivity extends BaseActivity {
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Intent intent = WriteActivity.createImageIntent(this, mImageUri);
-            intent.setClass(this, WriteActivity.class);
+            
+            //照相完后不重新起一个WriteActivity
+            getPic(intent, mImageUri);
+            /*intent.setClass(this, WriteActivity.class);
 
             startActivity(intent);
 
             // 打开发送图片界面后将自身关闭
-            finish();
+            finish();*/
         } else if (requestCode == REQUEST_PHOTO_LIBRARY
                 && resultCode == RESULT_OK) {
             mImageUri = data.getData();
 
             Intent intent = WriteActivity.createImageIntent(this, mImageUri);
-            intent.setClass(this, WriteActivity.class);
+            
+            //选图片后不重新起一个WriteActivity
+            getPic(intent, mImageUri);
+            /*intent.setClass(this, WriteActivity.class);
 
             startActivity(intent);
 
             // 打开发送图片界面后将自身关闭
-            finish();
+            finish();*/
         }
     }
 

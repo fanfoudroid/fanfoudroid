@@ -517,6 +517,7 @@ public class StatusActivity extends BaseActivity {
 		Log.d(TAG, "Fetching Photo: " + url);
 		Response res = mClient.get(url);
 
+		//FIXME:这里使用了一个作废的方法，如何修正？
 		InputStream is = res.asStream();
 		Bitmap bitmap = BitmapFactory.decodeStream(is);
 		is.close();

@@ -144,7 +144,10 @@ public class TextHelper {
             
             //过长的名字就忽略（不是合法名字） +1是为了补上“@”所占的长度
             if (mention.length() <= MAX_NAME_LENGTH+1){
-                mentionList.add(m.group(1));
+            	//避免重复名字
+            	if (!mentionList.contains(mention)){
+            		mentionList.add(m.group(1));
+            	}
             }
         }
         return mentionList;
