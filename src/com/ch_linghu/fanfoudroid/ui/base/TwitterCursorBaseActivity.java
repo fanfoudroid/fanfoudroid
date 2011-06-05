@@ -57,6 +57,7 @@ import com.ch_linghu.fanfoudroid.ui.module.Widget;
 import com.ch_linghu.fanfoudroid.util.DateTimeHelper;
 import com.ch_linghu.fanfoudroid.util.DebugTimer;
 import com.ch_linghu.fanfoudroid.util.MiscHelper;
+import com.hlidskialf.android.hardware.ShakeListener;
 
 /**
  * TwitterCursorBaseLine用于带有静态数据来源（对应数据库的，与twitter表同构的特定表）的展现
@@ -78,6 +79,8 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 
     protected static int lastPosition = 0;
 
+    protected ShakeListener mShaker = null;
+    
     // Tasks.
     protected TaskManager taskManager = new TaskManager();
     private GenericTask mRetrieveTask;
@@ -368,6 +371,9 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 
             // 手势识别
             registerGestureListener();
+            
+            //晃动刷新
+            registerShakeListener();
 
             return true;
         } else {
@@ -376,11 +382,14 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 
     }
 
-    @Override
+	@Override
     protected void onResume() {
         Log.d(TAG, "onResume.");
         if (lastPosition != 0) {
             mTweetList.setSelection(lastPosition);
+        }
+        if (mShaker != null){
+        	mShaker.resume();
         }
         super.onResume();
         checkIsLogedIn();
@@ -413,6 +422,9 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
     @Override
     protected void onPause() {
         Log.d(TAG, "onPause.");
+        if (mShaker != null){
+        	mShaker.pause();
+        }
         super.onPause();
         lastPosition = mTweetList.getFirstVisiblePosition();
     }
@@ -634,6 +646,18 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
         }
     }
     
+    //////////////////// Gesture test /////////////////////////////////////
+    private static boolean useShake;
+    {
+        useShake = TwitterApplication.mPref.getBoolean(
+                Preferences.USE_SHAKE, false);
+        if (useShake) {
+            Log.v(TAG, "Using Shake to refresh!");
+        } else {
+            Log.v(TAG, "Not Using Shake!");
+        }
+    }
+    
     
     protected FlingGestureListener myGestureListener = null;
 
@@ -653,5 +677,18 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
             getTweetList().setOnTouchListener(myGestureListener);
         }
     }
-
+    
+    // use it in _onCreate
+    private void registerShakeListener() {
+    	if (useShake){
+	    	mShaker = new ShakeListener(this);
+	    	mShaker.setOnShakeListener(new ShakeListener.OnShakeListener() {
+				
+				@Override
+				public void onShake() {
+					doRetrieve();
+				}
+			});
+    	}
+	}    
 }
