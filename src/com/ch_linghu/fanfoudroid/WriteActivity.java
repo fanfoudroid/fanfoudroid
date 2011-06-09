@@ -312,13 +312,23 @@ public class WriteActivity extends BaseActivity {
             // Intent & Action & Extras
             Intent intent = getIntent();
             String action = intent.getAction();
+            String type = intent.getType();
             Bundle extras = intent.getExtras();
             String text = null;
             Uri uri = null;
-            if (extras != null) {
-                text = extras.getString(Intent.EXTRA_TEXT);
-                uri = (Uri) (extras.get(Intent.EXTRA_STREAM));
-            }
+			if (extras != null) {
+				String subject = extras.getString(Intent.EXTRA_SUBJECT);
+				text = extras.getString(Intent.EXTRA_TEXT);
+				uri = (Uri) (extras.get(Intent.EXTRA_STREAM));
+
+				if (TextHelper.isEmpty(subject)) {
+					text = subject + " " + text;
+				}
+				if ((type != null && type.startsWith("text")) && uri != null) {
+					text = text + " " + uri.toString();
+					uri = null;
+				}
+			}
 
             _reply_id = null;
             _repost_id = null;
@@ -376,7 +386,7 @@ public class WriteActivity extends BaseActivity {
                     WriteActivity.this));
 
 
-            if (NEW_TWEET_ACTION.equals(action)){
+            if (NEW_TWEET_ACTION.equals(action) || Intent.ACTION_SEND.equals(action)){
                 if (!TextHelper.isEmpty(text)){
                     //始终将光标置于最末尾，以方便回复消息时保持@用户在最前面
                 	EditText inputField = mTweetEdit.getEditText();
