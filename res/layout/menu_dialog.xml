@@ -13,7 +13,6 @@
       android:verticalSpacing="20dp"
       android:horizontalSpacing="10dp"
       android:stretchMode="columnWidth"
-      android:layoutAnimation="@anim/layout_grid_fade"
     >
     </GridView> 
     <Button android:id="@+id/close_menu"
