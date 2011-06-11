@@ -312,13 +312,23 @@ public class WriteActivity extends BaseActivity {
             // Intent & Action & Extras
             Intent intent = getIntent();
             String action = intent.getAction();
+            String type = intent.getType();
             Bundle extras = intent.getExtras();
             String text = null;
             Uri uri = null;
-            if (extras != null) {
-                text = extras.getString(Intent.EXTRA_TEXT);
-                uri = (Uri) (extras.get(Intent.EXTRA_STREAM));
-            }
+			if (extras != null) {
+				String subject = extras.getString(Intent.EXTRA_SUBJECT);
+				text = extras.getString(Intent.EXTRA_TEXT);
+				uri = (Uri) (extras.get(Intent.EXTRA_STREAM));
+
+				if (TextHelper.isEmpty(subject)) {
+					text = subject + " " + text;
+				}
+				if ((type != null && type.startsWith("text")) && uri != null) {
+					text = text + " " + uri.toString();
+					uri = null;
+				}
+			}
 
             _reply_id = null;
             _repost_id = null;
@@ -376,7 +386,7 @@ public class WriteActivity extends BaseActivity {
                     WriteActivity.this));
 
 
-            if (NEW_TWEET_ACTION.equals(action)){
+            if (NEW_TWEET_ACTION.equals(action) || Intent.ACTION_SEND.equals(action)){
                 if (!TextHelper.isEmpty(text)){
                     //始终将光标置于最末尾，以方便回复消息时保持@用户在最前面
                 	EditText inputField = mTweetEdit.getEditText();
@@ -525,12 +535,14 @@ public class WriteActivity extends BaseActivity {
     public static Intent createNewTweetIntent(String text) {
         Intent intent = new Intent(NEW_TWEET_ACTION);
         intent.putExtra(Intent.EXTRA_TEXT, text);
+        intent.putExtra(Intent.EXTRA_SUBJECT, "");
 
         return intent;
     }
 
     public static Intent createNewReplyIntent(String tweetText, String screenName, String replyId) {
         Intent intent = new Intent(WriteActivity.REPLY_TWEET_ACTION);
+        intent.putExtra(Intent.EXTRA_SUBJECT, "");
         intent.putExtra(Intent.EXTRA_TEXT, TextHelper.getSimpleTweetText(tweetText));
         intent.putExtra(WriteActivity.EXTRA_REPLY_TO_NAME, screenName);
         intent.putExtra(WriteActivity.EXTRA_REPLY_ID, replyId);
@@ -548,6 +560,7 @@ public class WriteActivity extends BaseActivity {
         String retweet = " " + prefix + " @" + screenName + " "
                 + TextHelper.getSimpleTweetText(tweetText);
         Intent intent = new Intent(WriteActivity.REPOST_TWEET_ACTION);
+        intent.putExtra(Intent.EXTRA_SUBJECT, "");
         intent.putExtra(Intent.EXTRA_TEXT, retweet);
         intent.putExtra(WriteActivity.EXTRA_REPOST_ID, repostId);
 

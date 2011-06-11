@@ -81,11 +81,6 @@
 	    android:title="@string/pref_force_show_all_image"
 	    android:summary="@string/pref_force_show_all_image_summary"
 	    android:defaultValue="false" />
-	    <CheckBoxPreference
-        android:key="force_screen_orientation_portrait"
-        android:title="@string/pref_force_screen_orientation_portrait"
-        android:summary="@string/pref_force_screen_orientation_portrait_summary"
-        android:defaultValue="false" />
 	    <ListPreference  
             android:key="ui_font_size"
             android:defaultValue="15"
@@ -95,6 +90,25 @@
             android:entryValues="@array/ui_font_size"
             android:dialogTitle="@string/pref_ui_font_size_title"                        
             />
+  </PreferenceCategory>
+
+  <!-- 行为 -->
+  <PreferenceCategory android:title="@string/pref_title_action">
+		<CheckBoxPreference
+		  android:key="force_screen_orientation_portrait"
+		  android:title="@string/pref_force_screen_orientation_portrait"
+		  android:summary="@string/pref_force_screen_orientation_portrait_summary"
+		  android:defaultValue="false" />
+		<CheckBoxPreference
+		  android:key="use_gestrue"
+		  android:title="@string/pref_use_gestrue_title"
+		  android:summary="@string/pref_use_gestrue_summary"
+		  android:defaultValue="false" />
+		<CheckBoxPreference
+		  android:key="use_shake"
+		  android:title="@string/pref_use_shake_title"
+		  android:summary="@string/pref_use_shake_summary"
+		  android:defaultValue="false" />
   </PreferenceCategory>
 
   <!-- 网络 -->
@@ -124,15 +138,11 @@
     android:defaultValue="true" />
   </PreferenceCategory>
   
-  <!-- 实验功能 -->
+  <!-- 实验功能(目前暂无) -->
+ <!--
   <PreferenceCategory android:title="@string/pref_title_labs">
-   <CheckBoxPreference
-    android:key="use_gestrue"
-    android:title="@string/pref_use_gestrue_title"
-    android:summary="@string/pref_use_gestrue_summary"
-    android:defaultValue="false" />
   </PreferenceCategory>
-  
+-->
 
 
 </PreferenceScreen>
