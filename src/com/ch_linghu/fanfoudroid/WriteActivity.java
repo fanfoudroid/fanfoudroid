@@ -535,12 +535,14 @@ public class WriteActivity extends BaseActivity {
     public static Intent createNewTweetIntent(String text) {
         Intent intent = new Intent(NEW_TWEET_ACTION);
         intent.putExtra(Intent.EXTRA_TEXT, text);
+        intent.putExtra(Intent.EXTRA_SUBJECT, "");
 
         return intent;
     }
 
     public static Intent createNewReplyIntent(String tweetText, String screenName, String replyId) {
         Intent intent = new Intent(WriteActivity.REPLY_TWEET_ACTION);
+        intent.putExtra(Intent.EXTRA_SUBJECT, "");
         intent.putExtra(Intent.EXTRA_TEXT, TextHelper.getSimpleTweetText(tweetText));
         intent.putExtra(WriteActivity.EXTRA_REPLY_TO_NAME, screenName);
         intent.putExtra(WriteActivity.EXTRA_REPLY_ID, replyId);
@@ -558,6 +560,7 @@ public class WriteActivity extends BaseActivity {
         String retweet = " " + prefix + " @" + screenName + " "
                 + TextHelper.getSimpleTweetText(tweetText);
         Intent intent = new Intent(WriteActivity.REPOST_TWEET_ACTION);
+        intent.putExtra(Intent.EXTRA_SUBJECT, "");
         intent.putExtra(Intent.EXTRA_TEXT, retweet);
         intent.putExtra(WriteActivity.EXTRA_REPOST_ID, repostId);
 
