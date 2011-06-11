@@ -135,17 +135,21 @@ public class FanDatabase {
     // Table - Statuses
 
     static void createStatusTable(SQLiteDatabase db) {
-        String createString = StatusDAO.TABLE_NAME + "( " + StatusColumns.ID
-                + " INTEGER PRIMARY KEY, " + StatusColumns.STATUS_ID
-                + " INT UNIQUE NOT NULL, " + StatusColumns.AUTHOR_ID + " INT, "
-                + StatusColumns.TEXT + " TEXT, " + StatusColumns.SOURCE
-                + " TEXT, " + StatusColumns.TRUNCATED + " INT, "
+        String createString = StatusDAO.TABLE_NAME + "( " 
+                + StatusColumns.ID + " INTEGER PRIMARY KEY, " 
+                + StatusColumns.STATUS_ID + " INT UNIQUE NOT NULL, " 
+                + StatusColumns.AUTHOR_ID + " INT, "
+                + StatusColumns.TEXT + " TEXT, " 
+                + StatusColumns.SOURCE + " TEXT, " 
+                + StatusColumns.TRUNCATED + " INT, "
                 + StatusColumns.IN_REPLY_TO_STATUS_ID + " INT, "
                 + StatusColumns.IN_REPLY_TO_USER_ID + " INT, "
-                + StatusColumns.FAVORITED + " INT, " + StatusColumns.CREATED_AT
-                + " INT " + StatusColumns.PIC_THUMB + " TEXT, "
-                + StatusColumns.PIC_MID + " TEXT, " + StatusColumns.PIC_ORIG
-                + " TEXT " + ");";
+                + StatusColumns.FAVORITED + " INT, " 
+                + StatusColumns.CREATED_AT + " INT " 
+                + StatusColumns.PIC_THUMB + " TEXT, "
+                + StatusColumns.PIC_MID + " TEXT, " 
+                + StatusColumns.PIC_ORIG + " TEXT " 
+                + ");";
 
         String[] indexColumns = new String[] {};
 
