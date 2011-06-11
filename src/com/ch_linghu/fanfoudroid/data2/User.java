@@ -2,9 +2,7 @@ package com.ch_linghu.fanfoudroid.data2;
 
 import java.util.Date;
 
-public class User implements java.io.Serializable {
-    private static final long serialVersionUID = 5645870371274352395L;
-    
+public class User {
     private String id;
     private String name;
     private String screen_name;
@@ -182,7 +180,4 @@ public class User implements java.io.Serializable {
             return false;
         return true;
     }
-    
-    
-
 }

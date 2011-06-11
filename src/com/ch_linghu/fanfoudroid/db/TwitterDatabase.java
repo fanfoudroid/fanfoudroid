@@ -17,12 +17,12 @@ import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.app.Preferences;
+import com.ch_linghu.fanfoudroid.dao.StatusDAO;
 import com.ch_linghu.fanfoudroid.data.Dm;
 import com.ch_linghu.fanfoudroid.data.Tweet;
+import com.ch_linghu.fanfoudroid.fanfou.Status;
 import com.ch_linghu.fanfoudroid.util.DebugTimer;
 import com.ch_linghu.fanfoudroid.util.TextHelper;
-import com.temp.afan.data.dao.Status;
-import com.temp.afan.data.dao.StatusDAO;
 
 /**
  * A Database which contains all statuses and direct-messages, use

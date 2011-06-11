@@ -1,8 +1,6 @@
 package com.ch_linghu.fanfoudroid.data2;
 
-public class Photo implements java.io.Serializable {
-    private static final long serialVersionUID = 8370731670836608535L;
-    
+public class Photo {
     private String thumburl;
     private String imageurl;
     private String largeurl;

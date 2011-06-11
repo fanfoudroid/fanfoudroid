@@ -22,6 +22,9 @@ import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.util.DebugTimer;
 
+/**
+ * TODO: 该类在未来的版本中将会被去除掉, 不再对httpRepsonse进行包装, 而是转用静态的帮助方法
+ */
 public class Response {
     private final HttpResponse mResponse;
     private boolean mStreamConsumed = false;

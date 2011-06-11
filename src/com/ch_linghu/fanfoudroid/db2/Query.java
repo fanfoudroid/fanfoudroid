@@ -1,4 +1,4 @@
-package com.temp.afan.data.dao;
+package com.ch_linghu.fanfoudroid.db2;
 
 import java.util.ArrayList;
 import java.util.Arrays;

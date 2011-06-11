@@ -1,4 +1,4 @@
-package com.temp.afan.data.dao;
+package com.ch_linghu.fanfoudroid.dao;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,37 +14,85 @@ import android.database.sqlite.SQLiteOpenHelper;
  * @see SQLiteDatabase
  */
 public class SQLiteTemplate {
+    /**
+     * Default Primary key
+     */
     protected String mPrimaryKey = "_id";
-    protected final SQLiteOpenHelper mDatabaseOpenHelper;
+    
+    /**
+     * SQLiteDatabase Open Helper
+     */
+    protected SQLiteOpenHelper mDatabaseOpenHelper;
 
+    /**
+     * Construct
+     * 
+     * @param databaseOpenHelper
+     */
     public SQLiteTemplate(SQLiteOpenHelper databaseOpenHelper) {
         mDatabaseOpenHelper = databaseOpenHelper;
     }
 
+    /**
+     * Construct
+     * 
+     * @param databaseOpenHelper
+     * @param primaryKey
+     */
     public SQLiteTemplate(SQLiteOpenHelper databaseOpenHelper, String primaryKey) {
         this(databaseOpenHelper);
         setPrimaryKey(primaryKey);
     }
 
+    /**
+     * 根据某一个字段和值删除一行数据, 如 name="jack"
+     * 
+     * @param table
+     * @param field
+     * @param value
+     * @return
+     */
     public int deleteByField(String table, String field, String value) {
         return getDb(true).delete(table, field + "=?", new String[] { value });
     }
 
+    /**
+     * 根据主键删除一行数据
+     * 
+     * @param table
+     * @param id
+     * @return
+     */
     public int deleteById(String table, String id) {
         return deleteByField(table, mPrimaryKey, id);
     }
 
+    /**
+     * 根据主键更新一行数据
+     * 
+     * @param table
+     * @param id
+     * @param values
+     * @return
+     */
     public int updateById(String table, String id, ContentValues values) {
         return getDb(true).update(table, values, mPrimaryKey + "=?",
                 new String[] { id });
     }
     
+    /**
+     * 根据主键查看某条数据是否存在
+     * 
+     * @param table
+     * @param id
+     * @return
+     */
     public boolean isExistsById(String table, String id) {
         return isExistsByField(table, mPrimaryKey, id);
     }
 
     /**
-     * Check if exists
+     * 根据某字段/值查看某条数据是否存在
      * 
      * @param status
      * @return
@@ -57,6 +105,13 @@ public class SQLiteTemplate {
         return isExistsBySQL(sql.toString(), new String[] { value });
     }
     
+    /**
+     * 使用SQL语句查看某条数据是否存在
+     * 
+     * @param sql
+     * @param selectionArgs
+     * @return
+     */
     public boolean isExistsBySQL(String sql, String[] selectionArgs) {
         boolean result = false;
 
@@ -125,20 +180,50 @@ public class SQLiteTemplate {
         return list;
     }
 
+    /**
+     * Get Primary Key
+     * 
+     * @return
+     */
     public String getPrimaryKey() {
         return mPrimaryKey;
     }
 
+    /**
+     * Set Primary Key
+     * 
+     * @param primaryKey
+     */
     public void setPrimaryKey(String primaryKey) {
         this.mPrimaryKey = primaryKey;
     }
     
-    public  SQLiteDatabase getDb(boolean writeable) {
+    /**
+     * Get Database Connection
+     * 
+     * @param writeable
+     * @return
+     * @see SQLiteOpenHelper#getWritableDatabase();
+     * @see SQLiteOpenHelper#getReadableDatabase();
+     */
+    public SQLiteDatabase getDb(boolean writeable) {
         if (writeable) {
             return mDatabaseOpenHelper.getWritableDatabase();
         } else {
             return mDatabaseOpenHelper.getReadableDatabase();
         }
+    }
+    
+    
+    /**
+     * Some as Spring JDBC RowMapper
+     * 
+     * @see org.springframework.jdbc.core.RowMapper
+     * @see com.ch_linghu.fanfoudroid.db.dao.SqliteTemplate
+     * @param <T>
+     */
+    public interface RowMapper<T> {
+        public T mapRow(Cursor cursor, int rowNum);
     }
 
 }
