@@ -78,7 +78,7 @@ public class ProfileActivity extends BaseActivity {
     private Button followingBtn;// 收听/取消关注按钮
     private Button sendMentionBtn;// 发送留言按钮
     private Button sendDmBtn;// 发送私信按钮
-    private ProgressDialog dialog; // 请稍后
+    private ProgressDialog dialog; // 请稍候
 
     private RelativeLayout friendsLayout;
     private LinearLayout followersLayout;
@@ -306,7 +306,7 @@ public class ProfileActivity extends BaseActivity {
      * 从数据库获取,如果数据库不存在则创建
      */
     private void bindProfileInfo() {
-        dialog = ProgressDialog.show(ProfileActivity.this, "请稍后", "正在加载信息...");
+        dialog = ProgressDialog.show(ProfileActivity.this, "请稍候", "正在加载信息...");
 
         if (null != db && db.existsUser(userId)) {
 
