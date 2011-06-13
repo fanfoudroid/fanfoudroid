@@ -321,7 +321,7 @@ public class WriteActivity extends BaseActivity {
 				text = extras.getString(Intent.EXTRA_TEXT);
 				uri = (Uri) (extras.get(Intent.EXTRA_STREAM));
 
-				if (TextHelper.isEmpty(subject)) {
+				if (!TextHelper.isEmpty(subject)) {
 					text = subject + " " + text;
 				}
 				if ((type != null && type.startsWith("text")) && uri != null) {
