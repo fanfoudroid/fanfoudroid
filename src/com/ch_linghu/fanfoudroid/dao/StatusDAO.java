@@ -13,14 +13,14 @@ import com.ch_linghu.fanfoudroid.dao.SQLiteTemplate.RowMapper;
 import com.ch_linghu.fanfoudroid.data2.Photo;
 import com.ch_linghu.fanfoudroid.data2.Status;
 import com.ch_linghu.fanfoudroid.data2.User;
-import com.ch_linghu.fanfoudroid.db.StatusTable;
 import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
+import com.ch_linghu.fanfoudroid.db2.FanContent;
 import com.ch_linghu.fanfoudroid.db2.FanDatabase;
 import com.ch_linghu.fanfoudroid.util.DateTimeHelper;
+import com.ch_linghu.fanfoudroid.db2.FanContent.*;
 
 public class StatusDAO {
     private static final String TAG = "StatusDAO";
-    public static final String TABLE_NAME = "statuses";
 
     private SQLiteTemplate mSqlTemplate;
 
@@ -40,7 +40,7 @@ public class StatusDAO {
      */
     public long insertStatus(Status status) {
         if (!isExists(status)) {
-            return mSqlTemplate.getDb(true).insert(TABLE_NAME, null,
+            return mSqlTemplate.getDb(true).insert(StatusTable.TABLE_NAME, null,
                     statusToContentValues(status));
         } else {
             Log.e(TAG, status.getId() + " is exists.");
@@ -58,7 +58,7 @@ public class StatusDAO {
             for (int i = statuses.size() - 1; i >= 0; i--) {
                 Status status = statuses.get(i);
 
-                long id = db.insertWithOnConflict(TABLE_NAME, null,
+                long id = db.insertWithOnConflict(StatusTable.TABLE_NAME, null,
                         statusToContentValues(status),
                         SQLiteDatabase.CONFLICT_IGNORE);
 
@@ -91,21 +91,22 @@ public class StatusDAO {
      * @see StatusDAO#deleteStatus(Status)
      */
     public int deleteStatus(String statusId, String owner_id, int type) {
-        String where = StatusTable._ID + " =? ";
+    	//FIXME: 数据模型改变后这里的逻辑需要完全重写，目前仅保证编译可通过
+        String where = StatusTable.Columns.ID + " =? ";
         String[] binds;
 
         if (!TextUtils.isEmpty(owner_id)) {
-            where += " AND " + StatusTable.OWNER_ID + " = ? ";
+            where += " AND " + StatusGroupTable.Columns.OWNER_ID + " = ? ";
             binds = new String[] { statusId, owner_id };
         } else {
             binds = new String[] { statusId };
         }
 
         if (-1 != type) {
-            where += " AND " + StatusTable.STATUS_TYPE + " = " + type;
+            where += " AND " + StatusGroupTable.Columns.TYPE + " = " + type;
         }
 
-        return mSqlTemplate.getDb(true).delete(TABLE_NAME, where.toString(),
+        return mSqlTemplate.getDb(true).delete(StatusTable.TABLE_NAME, where.toString(),
                 binds);
     }
 
@@ -128,8 +129,8 @@ public class StatusDAO {
      * @return
      */
     public Status fetchStatus(String statusId) {
-        return mSqlTemplate.queryForObject(mRowMapper, TABLE_NAME, null,
-                StatusTable._ID + " = ?", new String[] { statusId }, null,
+        return mSqlTemplate.queryForObject(mRowMapper, StatusTable.TABLE_NAME, null,
+        		StatusTable.Columns.ID + " = ?", new String[] { statusId }, null,
                 null, "created_at DESC", "1");
     }
 
@@ -143,8 +144,8 @@ public class StatusDAO {
      * @return list of statuses
      */
     public List<Status> fetchStatuses(String userId, int statusType) {
-        return mSqlTemplate.queryForList(mRowMapper, TABLE_NAME, null,
-                StatusTable.OWNER_ID + " = ? AND " + StatusTable.STATUS_TYPE
+        return mSqlTemplate.queryForList(mRowMapper, FanContent.StatusTable.TABLE_NAME, null,
+                StatusGroupTable.Columns.OWNER_ID + " = ? AND " + StatusGroupTable.Columns.TYPE
                         + " = " + statusType, new String[] { userId }, null,
                 null, "created_at DESC", null);
     }
@@ -164,7 +165,7 @@ public class StatusDAO {
      * @return
      */
     public int updateStatus(String statusId, ContentValues values) {
-        return mSqlTemplate.updateById(TABLE_NAME, statusId, values);
+        return mSqlTemplate.updateById(FanContent.StatusTable.TABLE_NAME, statusId, values);
     }
 
     /**
@@ -187,10 +188,10 @@ public class StatusDAO {
      */
     public boolean isExists(Status status) {
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT COUNT(*) FROM ").append(TABLE_NAME)
-                .append(" WHERE ").append(StatusTable._ID).append(" =? AND ")
-                .append(StatusTable.OWNER_ID).append(" =? AND ")
-                .append(StatusTable.STATUS_TYPE).append(" = ")
+        sql.append("SELECT COUNT(*) FROM ").append(FanContent.StatusTable.TABLE_NAME)
+                .append(" WHERE ").append(StatusTable.Columns.ID).append(" =? AND ")
+                .append(StatusGroupTable.Columns.OWNER_ID).append(" =? AND ")
+                .append(StatusGroupTable.Columns.TYPE).append(" = ")
                 .append(status.getType());
 
         return mSqlTemplate.isExistsBySQL(sql.toString(),
@@ -206,33 +207,33 @@ public class StatusDAO {
      */
     private ContentValues statusToContentValues(Status status) {
         final ContentValues v = new ContentValues();
-        v.put(StatusTable._ID, status.getId());
-        v.put(StatusTable.STATUS_TYPE, status.getType());
-        v.put(StatusTable.TEXT, status.getText());
-        v.put(StatusTable.OWNER_ID, status.getOwnerId());
-        v.put(StatusTable.FAVORITED, status.isFavorited() + "");
-        v.put(StatusTable.TRUNCATED, status.isTruncated()); // TODO:
-        v.put(StatusTable.IN_REPLY_TO_STATUS_ID, status.getInReplyToStatusId());
-        v.put(StatusTable.IN_REPLY_TO_USER_ID, status.getInReplyToUserId());
-        v.put(StatusTable.IN_REPLY_TO_SCREEN_NAME,
-                status.getInReplyToScreenName());
+        v.put(StatusTable.Columns.ID, status.getId());
+        v.put(StatusGroupTable.Columns.TYPE, status.getType());
+        v.put(StatusTable.Columns.TEXT, status.getText());
+        v.put(StatusGroupTable.Columns.OWNER_ID, status.getOwnerId());
+        v.put(StatusTable.Columns.FAVORITED, status.isFavorited() + "");
+        v.put(StatusTable.Columns.TRUNCATED, status.isTruncated()); // TODO:
+        v.put(StatusTable.Columns.IN_REPLY_TO_STATUS_ID, status.getInReplyToStatusId());
+        v.put(StatusTable.Columns.IN_REPLY_TO_USER_ID, status.getInReplyToUserId());
+//        v.put(StatusTable.Columns.IN_REPLY_TO_SCREEN_NAME,
+//                status.getInReplyToScreenName());
         // v.put(IS_REPLY, status.isReply());
-        v.put(StatusTable.CREATED_AT,
+        v.put(StatusTable.Columns.CREATED_AT,
                 TwitterDatabase.DB_DATE_FORMATTER.format(status.getCreatedAt()));
-        v.put(StatusTable.SOURCE, status.getSource());
-        v.put(StatusTable.IS_UNREAD, status.isUnRead());
+        v.put(StatusTable.Columns.SOURCE, status.getSource());
+//        v.put(StatusTable.Columns.IS_UNREAD, status.isUnRead());
 
         final User user = status.getUser();
         if (user != null) {
-            v.put(StatusTable.USER_ID, user.getId());
-            v.put(StatusTable.USER_SCREEN_NAME, user.getScreenName());
-            v.put(StatusTable.PROFILE_IMAGE_URL, user.getProfileImageUrl());
+            v.put(UserTable.Columns.USER_ID, user.getId());
+            v.put(UserTable.Columns.SCREEN_NAME, user.getScreenName());
+            v.put(UserTable.Columns.PROFILE_IMAGE_URL, user.getProfileImageUrl());
         }
         final Photo photo = status.getPhotoUrl();
         if (photo != null) {
-            v.put(StatusTable.PIC_THUMB, photo.getThumburl());
-            v.put(StatusTable.PIC_MID, photo.getImageurl());
-            v.put(StatusTable.PIC_ORIG, photo.getLargeurl());
+            v.put(StatusTable.Columns.PIC_THUMB, photo.getThumburl());
+            v.put(StatusTable.Columns.PIC_MID, photo.getImageurl());
+            v.put(StatusTable.Columns.PIC_ORIG, photo.getLargeurl());
         }
 
         return v;
@@ -244,50 +245,50 @@ public class StatusDAO {
         public Status mapRow(Cursor cursor, int rowNum) {
             Photo photo = new Photo();
             photo.setImageurl(cursor.getString(cursor
-                    .getColumnIndex(StatusTable.PIC_MID)));
+                    .getColumnIndex(StatusTable.Columns.PIC_MID)));
             photo.setLargeurl(cursor.getString(cursor
-                    .getColumnIndex(StatusTable.PIC_ORIG)));
+                    .getColumnIndex(StatusTable.Columns.PIC_ORIG)));
             photo.setThumburl(cursor.getString(cursor
-                    .getColumnIndex(StatusTable.PIC_THUMB)));
+                    .getColumnIndex(StatusTable.Columns.PIC_THUMB)));
 
             User user = new User();
             user.setScreenName(cursor.getString(cursor
-                    .getColumnIndex(StatusTable.USER_SCREEN_NAME)));
+                    .getColumnIndex(UserTable.Columns.SCREEN_NAME)));
             user.setId(cursor.getString(cursor
-                    .getColumnIndex(StatusTable.USER_ID)));
+                    .getColumnIndex(UserTable.Columns.USER_ID)));
             user.setProfileImageUrl(cursor.getString(cursor
-                    .getColumnIndex(StatusTable.PROFILE_IMAGE_URL)));
+                    .getColumnIndex(UserTable.Columns.PROFILE_IMAGE_URL)));
 
             Status status = new Status();
             status.setPhotoUrl(photo);
             status.setUser(user);
             status.setOwnerId(cursor.getString(cursor
-                    .getColumnIndex(StatusTable.OWNER_ID)));
+                    .getColumnIndex(StatusGroupTable.Columns.OWNER_ID)));
             // TODO: 将数据库中的statusType改成Int类型
             status.setType(cursor.getInt(cursor
-                    .getColumnIndex(StatusTable.STATUS_TYPE)));
+                    .getColumnIndex(StatusGroupTable.Columns.TYPE)));
             status.setId(cursor.getString(cursor
-                    .getColumnIndex(StatusTable._ID)));
+                    .getColumnIndex(StatusTable.Columns.ID)));
             status.setCreatedAt(DateTimeHelper.parseDateTimeFromSqlite(cursor
-                    .getString(cursor.getColumnIndex(StatusTable.CREATED_AT))));
+                    .getString(cursor.getColumnIndex(StatusTable.Columns.CREATED_AT))));
             // TODO: 更改favorite 在数据库类型为boolean后改为 " != 0 "
             status.setFavorited(cursor.getString(
-                    cursor.getColumnIndex(StatusTable.FAVORITED))
+                    cursor.getColumnIndex(StatusTable.Columns.FAVORITED))
                     .equals("true"));
             status.setText(cursor.getString(cursor
-                    .getColumnIndex(StatusTable.TEXT)));
+                    .getColumnIndex(StatusTable.Columns.TEXT)));
             status.setSource(cursor.getString(cursor
-                    .getColumnIndex(StatusTable.SOURCE)));
-            status.setInReplyToScreenName(cursor.getString(cursor
-                    .getColumnIndex(StatusTable.IN_REPLY_TO_SCREEN_NAME)));
+                    .getColumnIndex(StatusTable.Columns.SOURCE)));
+//            status.setInReplyToScreenName(cursor.getString(cursor
+//                    .getColumnIndex(StatusTable.IN_REPLY_TO_SCREEN_NAME)));
             status.setInReplyToStatusId(cursor.getString(cursor
-                    .getColumnIndex(StatusTable.IN_REPLY_TO_STATUS_ID)));
+                    .getColumnIndex(StatusTable.Columns.IN_REPLY_TO_STATUS_ID)));
             status.setInReplyToUserId(cursor.getString(cursor
-                    .getColumnIndex(StatusTable.IN_REPLY_TO_USER_ID)));
+                    .getColumnIndex(StatusTable.Columns.IN_REPLY_TO_USER_ID)));
             status.setTruncated(cursor.getInt(cursor
-                    .getColumnIndex(StatusTable.TRUNCATED)) != 0);
-            status.setUnRead(cursor.getInt(cursor
-                    .getColumnIndex(StatusTable.IS_UNREAD)) != 0);
+                    .getColumnIndex(StatusTable.Columns.TRUNCATED)) != 0);
+//            status.setUnRead(cursor.getInt(cursor
+//                    .getColumnIndex(StatusTable.Columns.IS_UNREAD)) != 0);
             return status;
         }
 

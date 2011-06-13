@@ -6,8 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.ch_linghu.fanfoudroid.dao.StatusDAO;
-import com.ch_linghu.fanfoudroid.db2.FanContent.StatusColumns;
+import com.ch_linghu.fanfoudroid.db2.FanContent.*;
 
 public class FanDatabase {
     private static final String TAG = "FanDatabase";
@@ -135,32 +134,14 @@ public class FanDatabase {
     // Table - Statuses
 
     static void createStatusTable(SQLiteDatabase db) {
-        String createString = StatusDAO.TABLE_NAME + "( " 
-                + StatusColumns.ID + " INTEGER PRIMARY KEY, " 
-                + StatusColumns.STATUS_ID + " INT UNIQUE NOT NULL, " 
-                + StatusColumns.AUTHOR_ID + " INT, "
-                + StatusColumns.TEXT + " TEXT, " 
-                + StatusColumns.SOURCE + " TEXT, " 
-                + StatusColumns.TRUNCATED + " INT, "
-                + StatusColumns.IN_REPLY_TO_STATUS_ID + " INT, "
-                + StatusColumns.IN_REPLY_TO_USER_ID + " INT, "
-                + StatusColumns.FAVORITED + " INT, " 
-                + StatusColumns.CREATED_AT + " INT " 
-                + StatusColumns.PIC_THUMB + " TEXT, "
-                + StatusColumns.PIC_MID + " TEXT, " 
-                + StatusColumns.PIC_ORIG + " TEXT " 
-                + ");";
-
-        String[] indexColumns = new String[] {};
-
-        db.execSQL("CREATE TABLE " + createString);
-        createIndexes(db, StatusDAO.TABLE_NAME, indexColumns);
+        db.execSQL(StatusTable.getCreateSQL());
+        createIndexes(db, StatusTable.TABLE_NAME, StatusTable.getIndexColumns());
     }
 
     static void resetStatusTable(SQLiteDatabase db, int oldVersion,
             int newVersion) {
         try {
-            db.execSQL("DROP TABLE " + StatusDAO.TABLE_NAME);
+            db.execSQL(StatusTable.getDropSQL());
         } catch (SQLException e) {
         }
         createStatusTable(db);
