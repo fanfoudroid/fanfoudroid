@@ -57,7 +57,6 @@ import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory;
 import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory.FeedbackType;
 import com.ch_linghu.fanfoudroid.ui.module.NavBar;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
-import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 public abstract class TwitterListBaseActivity extends BaseActivity 
 	implements Refreshable {

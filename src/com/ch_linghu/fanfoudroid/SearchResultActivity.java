@@ -26,7 +26,6 @@ import com.ch_linghu.fanfoudroid.ui.module.MyListView;
 import com.ch_linghu.fanfoudroid.ui.module.SimpleFeedback;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 import com.ch_linghu.fanfoudroid.ui.module.TweetArrayAdapter;
-import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 public class SearchResultActivity extends TwitterListBaseActivity implements
 		MyListView.OnNeedMoreListener {

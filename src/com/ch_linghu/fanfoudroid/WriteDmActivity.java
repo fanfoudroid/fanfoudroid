@@ -47,7 +47,6 @@ import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.BaseActivity;
 import com.ch_linghu.fanfoudroid.ui.module.NavBar;
 import com.ch_linghu.fanfoudroid.ui.module.TweetEdit;
-import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 //FIXME: 将WriteDmActivity和WriteActivity进行整合。
 /**

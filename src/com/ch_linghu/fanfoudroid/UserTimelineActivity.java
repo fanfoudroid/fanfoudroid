@@ -26,7 +26,6 @@ import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory;
 import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory.FeedbackType;
 import com.ch_linghu.fanfoudroid.ui.module.MyListView;
 import com.ch_linghu.fanfoudroid.ui.module.TweetArrayAdapter;
-import com.ch_linghu.fanfoudroid.util.MiscHelper;
 
 public class UserTimelineActivity extends TwitterListBaseActivity implements
         MyListView.OnNeedMoreListener, Refreshable {
@@ -141,8 +140,7 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
             // Set header title
             mNavbar.setHeaderTitle("@" + mShowName);
 
-            boolean wasRunning = MiscHelper.isTrue(savedInstanceState,
-                    SIS_RUNNING_KEY);
+            boolean wasRunning = isTrue(savedInstanceState, SIS_RUNNING_KEY);
 
             // 此处要求mTweets不为空，最好确保profile页面消息为0时不能进入这个页面
             if (!mTweets.isEmpty() && !wasRunning) {

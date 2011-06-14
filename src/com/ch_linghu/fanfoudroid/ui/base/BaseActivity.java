@@ -305,4 +305,8 @@ public class BaseActivity extends Activity {
         return true;
     }
 
+    public static boolean isTrue(Bundle bundle, String key) {
+        return bundle != null && bundle.containsKey(key)
+                && bundle.getBoolean(key);
+    }
 }

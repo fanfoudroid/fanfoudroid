@@ -56,7 +56,6 @@ import com.ch_linghu.fanfoudroid.ui.module.TweetCursorAdapter;
 import com.ch_linghu.fanfoudroid.ui.module.Widget;
 import com.ch_linghu.fanfoudroid.util.DateTimeHelper;
 import com.ch_linghu.fanfoudroid.util.DebugTimer;
-import com.ch_linghu.fanfoudroid.util.MiscHelper;
 import com.hlidskialf.android.hardware.ShakeListener;
 
 /**
@@ -336,7 +335,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 
             if (diff > REFRESH_THRESHOLD) {
                 shouldRetrieve = true;
-            } else if (MiscHelper.isTrue(savedInstanceState, SIS_RUNNING_KEY)) {
+            } else if (isTrue(savedInstanceState, SIS_RUNNING_KEY)) {
                 // Check to see if it was running a send or retrieve task.
                 // It makes no sense to resend the send request (don't want
                 // dupes)

@@ -48,7 +48,6 @@ import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory.FeedbackType;
 import com.ch_linghu.fanfoudroid.ui.module.NavBar;
 import com.ch_linghu.fanfoudroid.ui.module.SimpleFeedback;
 import com.ch_linghu.fanfoudroid.util.DateTimeHelper;
-import com.ch_linghu.fanfoudroid.util.MiscHelper;
 import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 public class DmActivity extends BaseActivity implements Refreshable {
@@ -190,7 +189,7 @@ public class DmActivity extends BaseActivity implements Refreshable {
 	
 			if (diff > REFRESH_THRESHOLD) {
 				shouldRetrieve = true;
-			} else if (MiscHelper.isTrue(savedInstanceState, SIS_RUNNING_KEY)) {
+			} else if (isTrue(savedInstanceState, SIS_RUNNING_KEY)) {
 				// Check to see if it was running a send or retrieve task.
 				// It makes no sense to resend the send request (don't want dupes)
 				// so we instead retrieve (refresh) to see if the message has

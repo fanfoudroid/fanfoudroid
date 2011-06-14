@@ -21,7 +21,6 @@ import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.app.LazyImageLoader.ImageLoaderCallback;
 import com.ch_linghu.fanfoudroid.app.Preferences;
 import com.ch_linghu.fanfoudroid.db.UserInfoTable;
-import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 public class UserCursorAdapter extends CursorAdapter implements TweetAdapter {
 	private static final String TAG = "TweetCursorAdapter";

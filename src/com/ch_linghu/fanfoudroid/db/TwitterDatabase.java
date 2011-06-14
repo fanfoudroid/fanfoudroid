@@ -23,7 +23,6 @@ import com.ch_linghu.fanfoudroid.data.Dm;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.fanfou.Status;
 import com.ch_linghu.fanfoudroid.util.DebugTimer;
-import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 /**
  * A Database which contains all statuses and direct-messages, use

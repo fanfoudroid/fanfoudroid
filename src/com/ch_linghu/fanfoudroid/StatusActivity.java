@@ -19,6 +19,8 @@ package com.ch_linghu.fanfoudroid;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -57,7 +59,6 @@ import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory;
 import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory.FeedbackType;
 import com.ch_linghu.fanfoudroid.ui.module.NavBar;
 import com.ch_linghu.fanfoudroid.util.DateTimeHelper;
-import com.ch_linghu.fanfoudroid.util.PhotoHelper;
 import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 public class StatusActivity extends BaseActivity {
@@ -196,6 +197,57 @@ public class StatusActivity extends BaseActivity {
 		return intent;
 	}
 
+	private static Pattern PHOTO_PAGE_LINK = Pattern
+			.compile("http://fanfou.com(/photo/[-a-zA-Z0-9+&@#%?=~_|!:,.;]*[-a-zA-Z0-9+&@#%=~_|])");
+	private static Pattern PHOTO_SRC_LINK = Pattern
+			.compile("src=\"(http:\\/\\/photo\\.fanfou\\.com\\/.*?)\"");
+
+	/**
+	 * 获得消息中的照片页面链接
+	 * 
+	 * @param text
+	 *            消息文本
+	 * @param size
+	 *            照片尺寸
+	 * @return 照片页面的链接，若不存在，则返回null
+	 */
+	public static String getPhotoPageLink(String text, String size) {
+		Matcher m = PHOTO_PAGE_LINK.matcher(text);
+		if (m.find()) {
+			String THUMBNAIL = TwitterApplication.mContext
+					.getString(R.string.pref_photo_preview_type_thumbnail);
+			String MIDDLE = TwitterApplication.mContext
+					.getString(R.string.pref_photo_preview_type_middle);
+			String ORIGINAL = TwitterApplication.mContext
+					.getString(R.string.pref_photo_preview_type_original);
+			if (size.equals(THUMBNAIL) || size.equals(MIDDLE)) {
+				return "http://m.fanfou.com" + m.group(1);
+			} else if (size.endsWith(ORIGINAL)) {
+				return m.group(0);
+			} else {
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * 获得照片页面中的照片链接
+	 * 
+	 * @param pageHtml
+	 *            照片页面文本
+	 * @return 照片链接，若不存在，则返回null
+	 */
+	public static String getPhotoURL(String pageHtml) {
+		Matcher m = PHOTO_SRC_LINK.matcher(pageHtml);
+		if (m.find()) {
+			return m.group(1);
+		} else {
+			return null;
+		}
+	}
+	
 	@Override
 	protected boolean _onCreate(Bundle savedInstanceState) {
 		Log.d(TAG, "onCreate.");
@@ -473,8 +525,7 @@ public class StatusActivity extends BaseActivity {
 
 			// 如果选用了强制显示则再尝试分析图片链接
 			if (forceShowAllImage) {
-				photoLink = PhotoHelper
-						.getPhotoPageLink(tweet.text, photoPreviewSize);
+				photoLink = getPhotoPageLink(tweet.text, photoPreviewSize);
 				isPageLink = true;
 			}
 
@@ -638,7 +689,7 @@ public class StatusActivity extends BaseActivity {
 				if (!TextUtils.isEmpty(photoURL)) {
 					if (isPageLink) {
 						String pageHtml = fetchWebPage(photoURL);
-						String photoSrcURL = PhotoHelper.getPhotoURL(pageHtml);
+						String photoSrcURL = getPhotoURL(pageHtml);
 						if (photoSrcURL != null) {
 							mPhotoBitmap = fetchPhotoBitmap(photoSrcURL);
 						}

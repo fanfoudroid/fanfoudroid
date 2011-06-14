@@ -83,7 +83,7 @@ public class TextHelper {
     private static Pattern USER_LINK = Pattern
             .compile("@<a href=\"http:\\/\\/fanfou\\.com\\/(.*?)\" class=\"former\">(.*?)<\\/a>");
 
-    public static String preprocessText(String text) {
+    private static String preprocessText(String text) {
         // 处理HTML格式返回的用户链接
         Matcher m = USER_LINK.matcher(text);
         while (m.find()) {

@@ -44,8 +44,6 @@ import com.ch_linghu.fanfoudroid.task.TaskFeedback;
 import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
-import com.ch_linghu.fanfoudroid.util.EncryptUtils;
-import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 //登录页面需要个性化的菜单绑定, 不直接继承 BaseActivity
 public class LoginActivity extends Activity { 
@@ -299,7 +297,7 @@ public class LoginActivity extends Activity {
             editor.putString(Preferences.USERNAME_KEY, mUsername);
 
             editor.putString(Preferences.PASSWORD_KEY,
-                    EncryptUtils.encryptPassword(mPassword));
+                    encryptPassword(mPassword));
             // add 存储当前用户的id
             editor.putString(Preferences.CURRENT_USER_ID, user.getId());
             editor.commit();
@@ -321,4 +319,13 @@ public class LoginActivity extends Activity {
         }
     };
 
+    public static String encryptPassword(String password) {
+        //return Base64.encodeToString(password.getBytes(), Base64.DEFAULT);
+        return password;
+    }
+
+    public static String decryptPassword(String password) {
+        //return new String(Base64.decode(password, Base64.DEFAULT));
+        return password;
+    }    
 }

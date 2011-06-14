@@ -2,8 +2,8 @@ package com.ch_linghu.fanfoudroid;
 
 import java.util.HashSet;
 
-import org.acra.ReportingInteractionMode;
-import org.acra.annotation.ReportsCrashes;
+//import org.acra.ReportingInteractionMode;
+//import org.acra.annotation.ReportsCrashes;
 
 import android.app.Application;
 import android.content.Context;
@@ -22,7 +22,6 @@ import com.ch_linghu.fanfoudroid.fanfou.Configuration;
 import com.ch_linghu.fanfoudroid.fanfou.User;
 import com.ch_linghu.fanfoudroid.fanfou.Weibo;
 import com.ch_linghu.fanfoudroid.http.HttpException;
-import com.ch_linghu.fanfoudroid.util.EncryptUtils;
 
 //@ReportsCrashes(formKey="dHowMk5LMXQweVJkWGthb1E1T1NUUHc6MQ",
 //    mode = ReportingInteractionMode.NOTIFICATION,
@@ -116,7 +115,7 @@ public class TwitterApplication extends Application {
 		mPref = PreferenceManager.getDefaultSharedPreferences(this);
 		String username = mPref.getString(Preferences.USERNAME_KEY, "");
 		String password = mPref.getString(Preferences.PASSWORD_KEY, "");
-		password = EncryptUtils.decryptPassword(password);
+		password = LoginActivity.decryptPassword(password);
 
 		if (Weibo.isValidCredentials(username, password)) {
 			mApi.setCredentials(username, password); // Setup API and HttpClient
