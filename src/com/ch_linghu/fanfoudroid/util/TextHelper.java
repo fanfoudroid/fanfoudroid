@@ -110,7 +110,8 @@ public class TextHelper {
     public static String getSimpleTweetText(String text) {
         return text.replaceAll("<.*?>", "").replace("&lt;", "<")
                 .replace("&gt;", ">").replace("&nbsp;", " ")
-                .replace("&amp;", "&").replace("&quot;", "\"");
+                .replace("&amp;", "&").replace("&quot;", "\"")
+                .replace("&#039;", "'");
     }
 
     public static void setSimpleTweetText(TextView textView, String text) {
