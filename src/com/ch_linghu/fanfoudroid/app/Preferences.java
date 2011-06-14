@@ -53,9 +53,8 @@ public class Preferences {
 
     public static final String UI_FONT_SIZE = "ui_font_size";
 
+    public static final String USE_ENTER_SEND = "use_enter_send";
     public static final String USE_GESTRUE = "use_gestrue";
-    
     public static final String USE_SHAKE = "use_shake";
-
     public static final String FORCE_SCREEN_ORIENTATION_PORTRAIT = "force_screen_orientation_portrait";
 }

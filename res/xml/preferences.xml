@@ -94,6 +94,11 @@
 
   <!-- 行为 -->
   <PreferenceCategory android:title="@string/pref_title_action">
+        <CheckBoxPreference
+          android:key="use_enter_send"
+          android:title="@string/pref_use_enter_send_title"
+          android:summary="@string/pref_use_enter_send_summary"
+          android:defaultValue="false" />
 		<CheckBoxPreference
 		  android:key="force_screen_orientation_portrait"
 		  android:title="@string/pref_force_screen_orientation_portrait"

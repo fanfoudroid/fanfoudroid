@@ -147,6 +147,8 @@
     <string name="pref_network_type_3g">3G/wifi</string>
     <string name="pref_network_type_summary">选择当前网络的接入点或类型</string>
     <string name="pref_title_action">行为</string>
+    <string name="pref_use_enter_send_title">回车发送</string>
+    <string name="pref_use_enter_send_summary">使用键盘回车键发送消息</string>
     <string name="pref_use_gestrue_title">手势识别</string>
     <string name="pref_use_gestrue_summary">使用手势左右滑动切换页面</string>
     <string name="pref_force_screen_orientation_portrait">禁止横屏</string>
