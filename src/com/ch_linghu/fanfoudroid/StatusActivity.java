@@ -26,6 +26,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.ClipboardManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -341,7 +342,7 @@ public class StatusActivity extends BaseActivity {
 
 			@Override
 			public void onClick(View v) {
-				if (!TextHelper.isEmpty(tweet.inReplyToStatusId)) {
+				if (!TextUtils.isEmpty(tweet.inReplyToStatusId)) {
 					if (replyTweet == null) {
 						Log.w(TAG, "Selected item not available.");
 					} else {
@@ -477,7 +478,7 @@ public class StatusActivity extends BaseActivity {
 				isPageLink = true;
 			}
 
-			if (!TextHelper.isEmpty(photoLink)) {
+			if (!TextUtils.isEmpty(photoLink)) {
 				status_photo.setVisibility(View.VISIBLE);
 				status_photo.setImageBitmap(mPhotoBitmap);
 				doGetPhoto(photoLink, isPageLink);
@@ -486,7 +487,7 @@ public class StatusActivity extends BaseActivity {
 			status_photo.setVisibility(View.GONE);
 		}
 		// has reply
-		if (!TextHelper.isEmpty(tweet.inReplyToStatusId)) {
+		if (!TextUtils.isEmpty(tweet.inReplyToStatusId)) {
 			ViewGroup reply_wrap = (ViewGroup) findViewById(R.id.reply_wrap);
 			reply_wrap.setVisibility(View.VISIBLE);
 			reply_status_text = (TextView) findViewById(R.id.reply_status_text);
@@ -551,7 +552,7 @@ public class StatusActivity extends BaseActivity {
 			try {
 				String reply_id = param.getString("reply_id");
 
-				if (!TextHelper.isEmpty(reply_id)) {
+				if (!TextUtils.isEmpty(reply_id)) {
 					// 首先查看是否在数据库中，如不在再去获取
 					replyTweet = getDb().queryTweet(reply_id, -1);
 					if (replyTweet == null) {
@@ -594,7 +595,7 @@ public class StatusActivity extends BaseActivity {
 			try {
 				String id = param.getString("id");
 
-				if (!TextHelper.isEmpty(id)) {
+				if (!TextUtils.isEmpty(id)) {
 					status = getApi().showStatus(id);
 					mFeedback.update(80);
 					tweet = Tweet.create(status);
@@ -634,7 +635,7 @@ public class StatusActivity extends BaseActivity {
 			try {
 				String photoURL = param.getString("photo_url");
 				boolean isPageLink = param.getBoolean("is_page_link");
-				if (!TextHelper.isEmpty(photoURL)) {
+				if (!TextUtils.isEmpty(photoURL)) {
 					if (isPageLink) {
 						String pageHtml = fetchWebPage(photoURL);
 						String photoSrcURL = PhotoHelper.getPhotoURL(pageHtml);
@@ -684,7 +685,7 @@ public class StatusActivity extends BaseActivity {
 				&& mFavTask.getStatus() == GenericTask.Status.RUNNING) {
 			return;
 		} else {
-			if (!TextHelper.isEmpty(id)) {
+			if (!TextUtils.isEmpty(id)) {
 				Log.d(TAG, "doFavorite.");
 				mFavTask = new TweetCommonTask.FavoriteTask(this);
 				mFavTask.setListener(mFavTaskListener);

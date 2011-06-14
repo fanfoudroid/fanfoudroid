@@ -19,10 +19,6 @@ import android.widget.TextView.BufferType;
 public class TextHelper {
     private static final String TAG = "TextHelper";
 
-    public static boolean isEmpty(String s) {
-        return s == null || s.length() == 0;
-    }
-
     public static String stringifyStream(InputStream is) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         StringBuilder sb = new StringBuilder();
@@ -108,10 +104,7 @@ public class TextHelper {
     }
 
     public static String getSimpleTweetText(String text) {
-        return text.replaceAll("<.*?>", "").replace("&lt;", "<")
-                .replace("&gt;", ">").replace("&nbsp;", " ")
-                .replace("&amp;", "&").replace("&quot;", "\"")
-                .replace("&#039;", "'");
+    	return Html.fromHtml(text).toString();
     }
 
     public static void setSimpleTweetText(TextView textView, String text) {

@@ -39,6 +39,7 @@ import android.provider.MediaStore;
 import android.provider.MediaStore.MediaColumns;
 import android.text.Editable;
 import android.text.Selection;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -321,7 +322,7 @@ public class WriteActivity extends BaseActivity {
 				text = extras.getString(Intent.EXTRA_TEXT);
 				uri = (Uri) (extras.get(Intent.EXTRA_STREAM));
 
-				if (!TextHelper.isEmpty(subject)) {
+				if (!TextUtils.isEmpty(subject)) {
 					text = subject + " " + text;
 				}
 				if ((type != null && type.startsWith("text")) && uri != null) {
@@ -388,7 +389,7 @@ public class WriteActivity extends BaseActivity {
 
 
             if (NEW_TWEET_ACTION.equals(action) || Intent.ACTION_SEND.equals(action)){
-                if (!TextHelper.isEmpty(text)){
+                if (!TextUtils.isEmpty(text)){
                     //始终将光标置于最末尾，以方便回复消息时保持@用户在最前面
                 	EditText inputField = mTweetEdit.getEditText();
     	            inputField.setTextKeepState(text);
@@ -401,7 +402,7 @@ public class WriteActivity extends BaseActivity {
                 _reply_id = intent.getStringExtra(EXTRA_REPLY_ID);
                 _reply_to_name = intent.getStringExtra(EXTRA_REPLY_TO_NAME);
 
-                if (!TextHelper.isEmpty(text)){
+                if (!TextUtils.isEmpty(text)){
                 	String reply_to_name = "@"+_reply_to_name + " ";
                 	String other_replies = "";
 
@@ -424,7 +425,7 @@ public class WriteActivity extends BaseActivity {
                 }
                 
             }else if (REPOST_TWEET_ACTION.equals(action)) {
-                if (!TextHelper.isEmpty(text)){
+                if (!TextUtils.isEmpty(text)){
                     // 如果是转发消息，则根据用户习惯，将光标放置在转发消息的头部或尾部
                     SharedPreferences prefereces = getPreferences();
 	                boolean isAppendToTheBeginning = prefereces.getBoolean(
@@ -646,7 +647,7 @@ public class WriteActivity extends BaseActivity {
         } else {
             String status = mTweetEdit.getText().toString();
 
-            if (!TextHelper.isEmpty(status) || withPic) {
+            if (!TextUtils.isEmpty(status) || withPic) {
                 int mode = SendTask.TYPE_NORMAL;
 
                 if (withPic) {

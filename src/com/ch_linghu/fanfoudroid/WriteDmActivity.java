@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -127,7 +128,7 @@ public class WriteDmActivity extends BaseActivity {
 		Intent intent = new Intent(LAUNCH_ACTION);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-		if (!TextHelper.isEmpty(user)) {
+		if (!TextUtils.isEmpty(user)) {
 			intent.putExtra(EXTRA_USER, user);
 		}
 
@@ -198,7 +199,7 @@ public class WriteDmActivity extends BaseActivity {
 			// With extras
 		    if (extras != null) {
 		      String to = extras.getString(EXTRA_USER);
-		      if (!TextHelper.isEmpty(to)) {
+		      if (!TextUtils.isEmpty(to)) {
 		        mToEdit.setText(to);
 		        mTweetEdit.requestFocus();
 		      }
@@ -330,13 +331,13 @@ public class WriteDmActivity extends BaseActivity {
 			String to = mToEdit.getText().toString();
 			String status = mTweetEdit.getText().toString();
 
-			if (!TextHelper.isEmpty(status) && !TextHelper.isEmpty(to)) {
+			if (!TextUtils.isEmpty(status) && !TextUtils.isEmpty(to)) {
 				mSendTask = new DmSendTask();
 				mSendTask.setListener(mSendTaskListener);
 				mSendTask.execute();
-			} else if (TextHelper.isEmpty(status)) {
+			} else if (TextUtils.isEmpty(status)) {
 				updateProgress(getString(R.string.direct_meesage_status_texting_is_null));
-			} else if (TextHelper.isEmpty(to)) {
+			} else if (TextUtils.isEmpty(to)) {
 				updateProgress(getString(R.string.direct_meesage_status_user_is_null));
 			}
 		}

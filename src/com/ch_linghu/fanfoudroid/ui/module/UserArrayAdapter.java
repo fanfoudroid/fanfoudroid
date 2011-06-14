@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -102,7 +103,7 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter{
 
 		String profileImageUrl = user.profileImageUrl;
 		if (useProfileImage){
-			if (!TextHelper.isEmpty(profileImageUrl)) {
+			if (!TextUtils.isEmpty(profileImageUrl)) {
 				holder.profileImage.setImageBitmap(TwitterApplication.mImageLoader
 						.get(profileImageUrl, callback));
 			}

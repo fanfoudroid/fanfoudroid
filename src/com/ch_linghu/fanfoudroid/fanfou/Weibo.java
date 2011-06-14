@@ -38,6 +38,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.R;
@@ -87,7 +88,7 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
      * @return
      */
     public static boolean isValidCredentials(String username, String password) {
-        return !TextHelper.isEmpty(username) && !TextHelper.isEmpty(password);
+        return !TextUtils.isEmpty(username) && !TextUtils.isEmpty(password);
     }
     
     /**

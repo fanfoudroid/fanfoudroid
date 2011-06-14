@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -100,7 +101,7 @@ Log.d(TAG,"load newView");
 		boolean useProfileImage = pref.getBoolean(Preferences.USE_PROFILE_IMAGE, true);
 		String profileImageUrl = cursor.getString(mProfileImageUrlColumn);
 		if (useProfileImage){
-		if (!TextHelper.isEmpty(profileImageUrl)) {
+		if (!TextUtils.isEmpty(profileImageUrl)) {
 			holder.profileImage.setImageBitmap(TwitterApplication.mImageLoader
 					.get(profileImageUrl, callback));
 		}

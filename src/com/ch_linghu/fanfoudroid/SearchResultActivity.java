@@ -193,7 +193,7 @@ public class SearchResultActivity extends TwitterListBaseActivity implements
 
 			try {
 				Query query = new Query(mSearchQuery);
-				if (!TextHelper.isEmpty(mLastId)){
+				if (!TextUtils.isEmpty(mLastId)){
 					query.setMaxId(mLastId);
 				}
 				result = getApi().search(query);//.search(mSearchQuery, mNextPage);

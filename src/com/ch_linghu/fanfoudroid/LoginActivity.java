@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -202,7 +203,7 @@ public class LoginActivity extends Activity {
         if (mLoginTask != null && mLoginTask.getStatus() == GenericTask.Status.RUNNING){
         	return;
         }else{
-	        if (!TextHelper.isEmpty(mUsername) & !TextHelper.isEmpty(mPassword) ) {
+	        if (!TextUtils.isEmpty(mUsername) & !TextUtils.isEmpty(mPassword) ) {
 	            mLoginTask = new LoginTask();
 	            mLoginTask.setListener(mLoginTaskListener);
 	            

@@ -7,6 +7,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -263,13 +264,13 @@ public class SearchActivity extends BaseActivity {
     }
 
     protected boolean startSearch() {
-        if (!TextHelper.isEmpty(initialQuery)) {
+        if (!TextUtils.isEmpty(initialQuery)) {
             // 以下这个方法在7可用，在8就报空指针
             // triggerSearch(initialQuery, null);
             Intent i = new Intent(this, SearchResultActivity.class);
             i.putExtra(SearchManager.QUERY, initialQuery);
             startActivity(i);
-        } else if (TextHelper.isEmpty(initialQuery)) {
+        } else if (TextUtils.isEmpty(initialQuery)) {
             Toast.makeText(this,
                     getResources().getString(R.string.search_box_null),
                     Toast.LENGTH_SHORT).show();

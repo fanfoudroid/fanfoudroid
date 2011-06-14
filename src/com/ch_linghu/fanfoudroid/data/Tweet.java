@@ -23,6 +23,7 @@ import org.json.JSONObject;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
@@ -104,7 +105,7 @@ public class Tweet extends Message implements Parcelable {
     builder.append(TwitterApplication.mContext.getString(R.string.tweet_source_prefix));
     builder.append(source);
     
-	if (!TextHelper.isEmpty(replyTo)) {
+	if (!TextUtils.isEmpty(replyTo)) {
 		builder.append(" " + TwitterApplication.mContext.getString(R.string.tweet_reply_to_prefix));
 		builder.append(replyTo);
 		builder.append(TwitterApplication.mContext.getString(R.string.tweet_reply_to_suffix));

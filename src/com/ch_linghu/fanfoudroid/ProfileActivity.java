@@ -14,6 +14,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.BaseColumns;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -192,7 +193,7 @@ public class ProfileActivity extends BaseActivity {
                     return;
                 }
                 String showName;
-                if (!TextHelper.isEmpty(profileInfo.getScreenName())) {
+                if (!TextUtils.isEmpty(profileInfo.getScreenName())) {
                     showName = profileInfo.getScreenName();
                 } else {
                     showName = profileInfo.getName();
@@ -214,7 +215,7 @@ public class ProfileActivity extends BaseActivity {
                     return;
                 }
                 String showName;
-                if (!TextHelper.isEmpty(profileInfo.getScreenName())) {
+                if (!TextUtils.isEmpty(profileInfo.getScreenName())) {
                     showName = profileInfo.getScreenName();
                 } else {
                     showName = profileInfo.getName();
@@ -236,7 +237,7 @@ public class ProfileActivity extends BaseActivity {
                     return;
                 }
                 String showName;
-                if (!TextHelper.isEmpty(profileInfo.getScreenName())) {
+                if (!TextUtils.isEmpty(profileInfo.getScreenName())) {
                     showName = profileInfo.getScreenName();
                 } else {
                     showName = profileInfo.getName();

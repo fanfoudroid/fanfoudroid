@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -150,7 +151,7 @@ public class DmActivity extends BaseActivity implements Refreshable {
 		Intent intent = new Intent(LAUNCH_ACTION);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-		if (!TextHelper.isEmpty(user)) {
+		if (!TextUtils.isEmpty(user)) {
 			intent.putExtra(EXTRA_USER, user);
 		}
 
@@ -486,7 +487,7 @@ public class DmActivity extends BaseActivity implements Refreshable {
 
 			String profileImageUrl = cursor.getString(mProfileImageUrlColumn);
 
-			if (!TextHelper.isEmpty(profileImageUrl)) {
+			if (!TextUtils.isEmpty(profileImageUrl)) {
 				holder.profileImage
 						.setImageBitmap(TwitterApplication.mImageLoader
 								.get(profileImageUrl, new ImageLoaderCallback(){

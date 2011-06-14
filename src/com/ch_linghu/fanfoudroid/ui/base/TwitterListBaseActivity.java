@@ -23,6 +23,7 @@ package com.ch_linghu.fanfoudroid.ui.base;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -260,7 +261,7 @@ public abstract class TwitterListBaseActivity extends BaseActivity
 	// for HasFavorite interface
 	
 	public void doFavorite(String action, String id) {
-        if (!TextHelper.isEmpty(id)) {
+        if (!TextUtils.isEmpty(id)) {
 	    	if (mFavTask != null && mFavTask.getStatus() == GenericTask.Status.RUNNING){
 	    		return;	
 	    	}else{

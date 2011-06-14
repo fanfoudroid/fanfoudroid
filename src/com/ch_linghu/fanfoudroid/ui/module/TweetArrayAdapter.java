@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -103,7 +104,7 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 		String profileImageUrl = tweet.profileImageUrl;
 
 		if (useProfileImage){
-			if (!TextHelper.isEmpty(profileImageUrl)) {
+			if (!TextUtils.isEmpty(profileImageUrl)) {
 				holder.profileImage.setImageBitmap(TwitterApplication.mImageLoader
 						.get(profileImageUrl, callback));
 			}
@@ -120,7 +121,7 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 			holder.fav.setVisibility(View.GONE);
 		}
 		
-		if (!TextHelper.isEmpty(tweet.thumbnail_pic)) {
+		if (!TextUtils.isEmpty(tweet.thumbnail_pic)) {
 			holder.has_image.setVisibility(View.VISIBLE);
 		} else {
 			holder.has_image.setVisibility(View.GONE);

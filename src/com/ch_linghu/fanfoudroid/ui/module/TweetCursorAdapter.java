@@ -9,6 +9,7 @@ import java.util.Date;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -125,7 +126,7 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		TextHelper.setSimpleTweetText(holder.tweetText, cursor.getString(mTextColumn));
 		
 		String profileImageUrl = cursor.getString(mProfileImageUrlColumn);
-		if (useProfileImage && !TextHelper.isEmpty(profileImageUrl)) {
+		if (useProfileImage && !TextUtils.isEmpty(profileImageUrl)) {
 		    SimpleImageLoader.display(holder.profileImage, profileImageUrl);
 		} else {
 			holder.profileImage.setVisibility(View.GONE);
@@ -137,7 +138,7 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 			holder.fav.setVisibility(View.GONE);
 		}
 		
-		if (!TextHelper.isEmpty(cursor.getString(mThumbnailPic))) {
+		if (!TextUtils.isEmpty(cursor.getString(mThumbnailPic))) {
 			holder.has_image.setVisibility(View.VISIBLE);
 		} else {
 			holder.has_image.setVisibility(View.GONE);

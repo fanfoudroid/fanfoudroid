@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.TwitterApplication;
@@ -248,7 +249,7 @@ public class TwitterDatabase {
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         
         String where = StatusTable._ID + " =? "; 
-        if (!TextHelper.isEmpty(owner)){
+        if (!TextUtils.isEmpty(owner)){
         	where += " AND " + StatusTable.OWNER_ID + " = '" + owner + "' ";
         }
         if (-1 != type) {
@@ -276,7 +277,7 @@ public class TwitterDatabase {
                 + " (SELECT " + StatusTable._ID // 子句
                 + " FROM " + StatusTable.TABLE_NAME;
         boolean first = true;
-        if (!TextHelper.isEmpty(owner)){
+        if (!TextUtils.isEmpty(owner)){
         	sql += " WHERE " + StatusTable.OWNER_ID + " = '" + owner + "' ";
         	first = false;
         }
@@ -291,7 +292,7 @@ public class TwitterDatabase {
                 sql += " ORDER BY " + StatusTable.CREATED_AT + " DESC LIMIT "
                 + StatusTable.MAX_ROW_NUM + ")";
 
-        if (!TextHelper.isEmpty(owner)){
+        if (!TextUtils.isEmpty(owner)){
         	sql += " AND " + StatusTable.OWNER_ID + " = '" + owner + "' ";
         }
         if (type != -1) {
