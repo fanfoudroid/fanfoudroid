@@ -132,10 +132,14 @@ public class TwitterApplication extends Application {
 	public String getNetworkType() {
 		ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
-		NetworkInfo mobNetInfo = connectivityManager
-				.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-		return mobNetInfo.getExtraInfo(); // 接入点名称: 此名称可被用户任意更改 如: cmwap, cmnet,
-											// internet ...
+		//NetworkInfo mobNetInfo = connectivityManager
+		//		.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+		if (activeNetInfo != null){
+			return activeNetInfo.getExtraInfo(); // 接入点名称: 此名称可被用户任意更改 如: cmwap, cmnet,
+												 // internet ...
+		}else{
+			return null;
+		}
 	}
 
 	@Override
