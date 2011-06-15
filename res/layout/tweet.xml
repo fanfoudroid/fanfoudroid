@@ -41,7 +41,7 @@
 		  android:layout_height="wrap_content"
 		>
 		    <!-- user name -->
-			<TextView
+			<com.ch_linghu.fanfoudroid.ui.module.MyTextView
 			  android:id="@+id/tweet_user_text" 
 			  android:layout_width="fill_parent"
 			  android:layout_height="wrap_content"
