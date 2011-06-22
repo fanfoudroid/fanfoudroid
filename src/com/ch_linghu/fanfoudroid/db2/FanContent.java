@@ -1,5 +1,9 @@
 package com.ch_linghu.fanfoudroid.db2;
 
+import java.util.zip.CheckedOutputStream;
+
+import android.R.color;
+
 public abstract class FanContent {
 
     /**
@@ -77,6 +81,7 @@ public abstract class FanContent {
             public static final String STATUS_ID = "status_id";
             public static final String OWNER_ID = "owner_id";
             public static final String TYPE = "type";
+            public static final String SEQUENCE_FLAG = "sequence_flag";
             public static final String LOAD_TIME = "load_time";
         }
 
@@ -84,7 +89,8 @@ public abstract class FanContent {
             String createString = TABLE_NAME + "( " + Columns.ID
                     + " INTEGER PRIMARY KEY, " + Columns.STATUS_ID
                     + " TEXT NOT NULL, " + Columns.OWNER_ID + " TEXT, "
-                    + Columns.TYPE + " INT, " + Columns.LOAD_TIME
+                    + Columns.TYPE + " INT, " + Columns.SEQUENCE_FLAG
+                    + " INT, " + Columns.LOAD_TIME
                     + " TIMESTAMP default (DATETIME('now', 'localtime')) "
                     + ");";
 
@@ -97,7 +103,8 @@ public abstract class FanContent {
 
         public static String[] getIndexColumns() {
             return new String[] { Columns.ID, Columns.STATUS_ID,
-                    Columns.OWNER_ID, Columns.TYPE, Columns.LOAD_TIME };
+                    Columns.OWNER_ID, Columns.TYPE, Columns.SEQUENCE_FLAG,
+                    Columns.LOAD_TIME };
         }
     }
 
@@ -187,6 +194,7 @@ public abstract class FanContent {
             public static final String RECIPINET_ID = "recipinet_id";
             public static final String CREATED_AT = "created_at";
             public static final String LOAD_TIME = "load_time";
+            public static final String SEQUENCE_FLAG = "sequence_flag";
         }
 
         public static String getCreateSQL() {
@@ -195,7 +203,7 @@ public abstract class FanContent {
                     + " TEXT UNIQUE NOT NULL, " + Columns.TEXT + " TEXT, "
                     + Columns.SENDER_ID + " TEXT, " + Columns.RECIPINET_ID
                     + " TEXT, " + Columns.CREATED_AT + " INT, "
-                    + Columns.LOAD_TIME
+                    + Columns.SEQUENCE_FLAG + " INT, " + Columns.LOAD_TIME
                     + " TIMESTAMP default (DATETIME('now', 'localtime')) "
                     + ");";
 
@@ -209,7 +217,8 @@ public abstract class FanContent {
         public static String[] getIndexColumns() {
             return new String[] { Columns.ID, Columns.MSG_ID, Columns.TEXT,
                     Columns.SENDER_ID, Columns.RECIPINET_ID,
-                    Columns.CREATED_AT, Columns.LOAD_TIME };
+                    Columns.CREATED_AT, Columns.SEQUENCE_FLAG,
+                    Columns.LOAD_TIME };
         }
     }
 
