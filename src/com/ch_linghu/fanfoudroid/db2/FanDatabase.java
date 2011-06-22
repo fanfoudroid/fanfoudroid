@@ -45,7 +45,7 @@ public class FanDatabase {
         public void onCreate(SQLiteDatabase db) {
             Log.d(TAG, "Create Database.");
             // TODO: create tables
-            createStatusTable(db);
+            createStatusesTable(db);
         }
 
         @Override
@@ -133,18 +133,18 @@ public class FanDatabase {
 
     // Table - Statuses
 
-    static void createStatusTable(SQLiteDatabase db) {
-        db.execSQL(StatusTable.getCreateSQL());
-        createIndexes(db, StatusTable.TABLE_NAME, StatusTable.getIndexColumns());
+    static void createStatusesTable(SQLiteDatabase db) {
+        db.execSQL(StatusesTable.getCreateSQL());
+        createIndexes(db, StatusesTable.TABLE_NAME, StatusesTable.getIndexColumns());
     }
 
-    static void resetStatusTable(SQLiteDatabase db, int oldVersion,
+    static void resetStatusesTable(SQLiteDatabase db, int oldVersion,
             int newVersion) {
         try {
-            db.execSQL(StatusTable.getDropSQL());
+            db.execSQL(StatusesTable.getDropSQL());
         } catch (SQLException e) {
         }
-        createStatusTable(db);
+        createStatusesTable(db);
     }
 
     // Table - User
