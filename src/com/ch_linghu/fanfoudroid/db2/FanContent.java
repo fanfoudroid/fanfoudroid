@@ -54,6 +54,12 @@ public abstract class FanContent {
                     Columns.IN_REPLY_TO_USER_ID,
                     Columns.IN_REPLY_TO_SCREEN_NAME };
         }
+
+        public static String getCreateIndexSQL() {
+            String createIndexSQL = "CREATE INDEX " + TABLE_NAME + "_idx ON "
+                    + TABLE_NAME + " ( " + getIndexColumns()[1] + " );";
+            return createIndexSQL;
+        }
     }
 
     /**
@@ -279,10 +285,11 @@ public abstract class FanContent {
         }
     }
 
-    /**保存搜索表
-     * QUERY_ID(这个ID在API删除保存搜索词时使用)
+    /**
+     * 保存搜索表 QUERY_ID(这个ID在API删除保存搜索词时使用)
+     * 
      * @author phoenix
-     *
+     * 
      */
     public static class SavedSearchTable {
         public static final String TABLE_NAME = "t_saved_search";

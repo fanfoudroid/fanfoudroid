@@ -9,7 +9,7 @@ import android.util.Log;
 import com.ch_linghu.fanfoudroid.db2.FanContent.*;
 
 public class FanDatabase {
-    private static final String TAG = "FanDatabase";
+    private static final String TAG = FanDatabase.class.getSimpleName();
 
     /**
      * SQLite Database file name
@@ -45,7 +45,8 @@ public class FanDatabase {
         public void onCreate(SQLiteDatabase db) {
             Log.d(TAG, "Create Database.");
             // TODO: create tables
-            createStatusesTable(db);
+            createAllTables(db);
+            createAllIndexes(db);
         }
 
         @Override
@@ -112,41 +113,38 @@ public class FanDatabase {
         }
     }
 
-    /**
-     * Create Table Index
-     * 
-     * @param tableName
-     * @param columnName
-     * @return
-     */
-    public static String createIndex(String tableName, String columnName) {
-        return "CREATE INDEX " + tableName.toLowerCase() + '_' + columnName
-                + " on " + tableName + " (" + columnName + ");";
-    }
-
-    public static void createIndexes(SQLiteDatabase db, String tableName,
-            String[] indexColumns) {
-        for (String columnName : indexColumns) {
-            db.execSQL(createIndex(tableName, columnName));
-        }
-    }
-
-    // Table - Statuses
-
-    static void createStatusesTable(SQLiteDatabase db) {
+    // Create All tables
+    private static void createAllTables(SQLiteDatabase db) {
         db.execSQL(StatusesTable.getCreateSQL());
-        createIndexes(db, StatusesTable.TABLE_NAME, StatusesTable.getIndexColumns());
+        db.execSQL(StatusesPropertyTable.getCreateSQL());
+        db.execSQL(UserTable.getCreateSQL());
+        db.execSQL(DirectMessageTable.getCreateSQL());
+        db.execSQL(FollowRelationshipTable.getCreateSQL());
+        db.execSQL(TrendTable.getCreateSQL());
+        db.execSQL(SavedSearchTable.getCreateSQL());
     }
-
-    static void resetStatusesTable(SQLiteDatabase db, int oldVersion,
-            int newVersion) {
+    
+    private static void dropAllTables(SQLiteDatabase db) {
+        db.execSQL(StatusesTable.getDropSQL());
+        db.execSQL(StatusesPropertyTable.getDropSQL());
+        db.execSQL(UserTable.getDropSQL());
+        db.execSQL(DirectMessageTable.getDropSQL());
+        db.execSQL(FollowRelationshipTable.getDropSQL());
+        db.execSQL(TrendTable.getDropSQL());
+        db.execSQL(SavedSearchTable.getDropSQL());
+    }
+    
+    private static void resetAllTables(SQLiteDatabase db, int oldVersion, int newVersion) {
         try {
-            db.execSQL(StatusesTable.getDropSQL());
+            dropAllTables(db);
         } catch (SQLException e) {
+            Log.e(TAG, "resetAllTables ERROR!");
         }
-        createStatusesTable(db);
+        createAllTables(db);
     }
-
-    // Table - User
-
+    
+    //indexes    
+    private static void createAllIndexes(SQLiteDatabase db) {
+        db.execSQL(StatusesTable.getCreateIndexSQL());
+    }
 }
