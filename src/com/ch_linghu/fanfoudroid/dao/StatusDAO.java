@@ -44,7 +44,7 @@ public class StatusDAO {
             return mSqlTemplate.getDb(true).insert(StatusesTable.TABLE_NAME, null,
                     statusToContentValues(status));
         } else {
-            Log.e(TAG, status.getId() + " is exists.");
+            Log.e(TAG, status.getStatusId() + " is exists.");
             return -1;
         }
     }
@@ -119,7 +119,7 @@ public class StatusDAO {
      * @see StatusDAO#deleteStatus(String, String, int)
      */
     public int deleteStatus(Status status) {
-        return deleteStatus(status.getId(), status.getOwnerId(),
+        return deleteStatus(status.getStatusId(), status.getAuthorId(),
                 status.getType());
     }
 
@@ -176,7 +176,7 @@ public class StatusDAO {
      * @return
      */
     public int updateStatus(Status status) {
-        return updateStatus(status.getId(), statusToContentValues(status));
+        return updateStatus(status.getStatusId(), statusToContentValues(status));
     }
 
     /**
@@ -194,9 +194,9 @@ public class StatusDAO {
                 .append(StatusesPropertyTable.Columns.OWNER_ID).append(" =? AND ")
                 .append(StatusesPropertyTable.Columns.TYPE).append(" = ")
                 .append(status.getType());
-
-        return mSqlTemplate.isExistsBySQL(sql.toString(),
-                new String[] { status.getId(), status.getUser().getId() });
+return false;
+//        return mSqlTemplate.isExistsBySQL(sql.toString(),
+//                new String[] { status.getStatusId(), status.getUser().getStatusId() });
     }
 
     /**
@@ -208,10 +208,10 @@ public class StatusDAO {
      */
     private ContentValues statusToContentValues(Status status) {
         final ContentValues v = new ContentValues();
-        v.put(StatusesTable.Columns.ID, status.getId());
+        v.put(StatusesTable.Columns.ID, status.getStatusId());
         v.put(StatusesPropertyTable.Columns.TYPE, status.getType());
         v.put(StatusesTable.Columns.TEXT, status.getText());
-        v.put(StatusesPropertyTable.Columns.OWNER_ID, status.getOwnerId());
+//        v.put(StatusesPropertyTable.Columns.OWNER_ID, status.getOwnerId());
         v.put(StatusesTable.Columns.FAVORITED, status.isFavorited() + "");
         v.put(StatusesTable.Columns.TRUNCATED, status.isTruncated()); // TODO:
         v.put(StatusesTable.Columns.IN_REPLY_TO_STATUS_ID, status.getInReplyToStatusId());
@@ -224,13 +224,13 @@ public class StatusDAO {
         v.put(StatusesTable.Columns.SOURCE, status.getSource());
 //        v.put(StatusTable.Columns.IS_UNREAD, status.isUnRead());
 
-        final User user = status.getUser();
-        if (user != null) {
-            v.put(UserTable.Columns.USER_ID, user.getId());
-            v.put(UserTable.Columns.SCREEN_NAME, user.getScreenName());
-            v.put(UserTable.Columns.PROFILE_IMAGE_URL, user.getProfileImageUrl());
-        }
-        final Photo photo = status.getPhotoUrl();
+//        final User user = status.getUser();
+//        if (user != null) {
+//            v.put(UserTable.Columns.USER_ID, user.getId());
+//            v.put(UserTable.Columns.SCREEN_NAME, user.getScreenName());
+//            v.put(UserTable.Columns.PROFILE_IMAGE_URL, user.getProfileImageUrl());
+//        }
+        final Photo photo = status.getPhoto();
         /*if (photo != null) {
             v.put(StatusTable.Columns.PIC_THUMB, photo.getThumburl());
             v.put(StatusTable.Columns.PIC_MID, photo.getImageurl());
@@ -261,15 +261,15 @@ public class StatusDAO {
                     .getColumnIndex(UserTable.Columns.PROFILE_IMAGE_URL)));
 
             Status status = new Status();
-            status.setPhotoUrl(photo);
-            status.setUser(user);
-            status.setOwnerId(cursor.getString(cursor
-                    .getColumnIndex(StatusesPropertyTable.Columns.OWNER_ID)));
+            status.setPhoto(photo);
+//            status.setUser(user);
+//            status.setOwnerId(cursor.getString(cursor
+//                    .getColumnIndex(StatusesPropertyTable.Columns.OWNER_ID)));
             // TODO: 将数据库中的statusType改成Int类型
             status.setType(cursor.getInt(cursor
                     .getColumnIndex(StatusesPropertyTable.Columns.TYPE)));
-            status.setId(cursor.getString(cursor
-                    .getColumnIndex(StatusesTable.Columns.ID)));
+//            status.setId(cursor.getString(cursor
+//                    .getColumnIndex(StatusesTable.Columns.ID)));
             status.setCreatedAt(DateTimeHelper.parseDateTimeFromSqlite(cursor
                     .getString(cursor.getColumnIndex(StatusesTable.Columns.CREATED_AT))));
             // TODO: 更改favorite 在数据库类型为boolean后改为 " != 0 "

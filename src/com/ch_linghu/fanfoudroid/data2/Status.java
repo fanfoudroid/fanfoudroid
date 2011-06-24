@@ -3,39 +3,45 @@ package com.ch_linghu.fanfoudroid.data2;
 import java.util.Date;
 
 public class Status {
-    
-    private Date created_at;
-    private String id;
+
+    private String statusId;
+    private String authorId;
     private String text;
     private String source;
+    private Date createdAt;
     private boolean truncated;
-    private String in_reply_to_status_id;
-    private String in_reply_to_user_id;
     private boolean favorited;
-    private String in_reply_to_screen_name;
-    private Photo photo_url;
-    private User user;
+    private Photo photo;
+    private String inReplyToStatusId;
+    private String inReplyToUserId;
+    private String inReplyToScreenName;
+    private String onwerId;
+    private int type;
     
-    private boolean isUnRead = false;
-    private int type = -1;
-    private String owner_id;
+    public static int GLANCE = 1;
+    public static int MAINPAGE = 2;
+    public static int XXSTATUSES = 3;
+    public static int COLLECTION = 4;
+    public static int PHOTO = 5;
+    public static int SEARCHRESULTS = 6;
 
-    public Status() {}
-    
-    public Date getCreatedAt() {
-        return created_at;
+    public Status() {
     }
 
-    public void setCreatedAt(Date created_at) {
-        this.created_at = created_at;
+    public String getStatusId() {
+        return statusId;
     }
 
-    public String getId() {
-        return id;
+    public void setStatusId(String statusId) {
+        this.statusId = statusId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public String getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(String authorId) {
+        this.authorId = authorId;
     }
 
     public String getText() {
@@ -54,28 +60,20 @@ public class Status {
         this.source = source;
     }
 
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public boolean isTruncated() {
         return truncated;
     }
 
     public void setTruncated(boolean truncated) {
         this.truncated = truncated;
-    }
-
-    public String getInReplyToStatusId() {
-        return in_reply_to_status_id;
-    }
-
-    public void setInReplyToStatusId(String in_reply_to_status_id) {
-        this.in_reply_to_status_id = in_reply_to_status_id;
-    }
-
-    public String getInReplyToUserId() {
-        return in_reply_to_user_id;
-    }
-
-    public void setInReplyToUserId(String in_reply_to_user_id) {
-        this.in_reply_to_user_id = in_reply_to_user_id;
     }
 
     public boolean isFavorited() {
@@ -86,36 +84,44 @@ public class Status {
         this.favorited = favorited;
     }
 
+    public Photo getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(Photo photo) {
+        this.photo = photo;
+    }
+
+    public String getInReplyToStatusId() {
+        return inReplyToStatusId;
+    }
+
+    public void setInReplyToStatusId(String inReplyToStatusId) {
+        this.inReplyToStatusId = inReplyToStatusId;
+    }
+
+    public String getInReplyToUserId() {
+        return inReplyToUserId;
+    }
+
+    public void setInReplyToUserId(String inReplyToUserId) {
+        this.inReplyToUserId = inReplyToUserId;
+    }
+
     public String getInReplyToScreenName() {
-        return in_reply_to_screen_name;
+        return inReplyToScreenName;
     }
 
-    public void setInReplyToScreenName(String in_reply_to_screen_name) {
-        this.in_reply_to_screen_name = in_reply_to_screen_name;
+    public void setInReplyToScreenName(String inReplyToScreenName) {
+        this.inReplyToScreenName = inReplyToScreenName;
     }
 
-    public Photo getPhotoUrl() {
-        return photo_url;
+    public String getOnwerId() {
+        return onwerId;
     }
 
-    public void setPhotoUrl(Photo photo_url) {
-        this.photo_url = photo_url;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-    
-    public boolean isUnRead() {
-        return isUnRead;
-    }
-
-    public void setUnRead(boolean isUnRead) {
-        this.isUnRead = isUnRead;
+    public void setOnwerId(String onwerId) {
+        this.onwerId = onwerId;
     }
 
     public int getType() {
@@ -126,14 +132,6 @@ public class Status {
         this.type = type;
     }
 
-    public String getOwnerId() {
-        return owner_id;
-    }
-
-    public void setOwnerId(String owner_id) {
-        this.owner_id = owner_id;
-    }
-    
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -143,34 +141,74 @@ public class Status {
         if (getClass() != obj.getClass())
             return false;
         Status other = (Status) obj;
-        if (id == null) {
-            if (other.id != null)
+        if (statusId == null) {
+            if (other.statusId != null)
                 return false;
-        } else if (!id.equals(other.id))
+        } else if (!statusId.equals(other.statusId))
             return false;
-        if (owner_id == null) {
-            if (other.owner_id != null)
+        if (authorId == null) {
+            if (other.authorId != null)
                 return false;
-        } else if (!owner_id.equals(other.owner_id))
+        } else if (!authorId.equals(other.authorId))
+            return false;
+        if (text == null) {
+            if (other.text != null)
+                return false;
+        } else if (!text.equals(other.text))
+            return false;
+        if (source == null) {
+            if (other.source != null)
+                return false;
+        } else if (!source.equals(other.source))
+            return false;
+        if (createdAt == null) {
+            if (other.createdAt != null)
+                return false;
+        } else if (!createdAt.equals(other.createdAt))
+            return false;
+        if (truncated != other.truncated)
+            return false;
+        if (favorited != other.favorited)
+            return false;
+        if (photo == null) {
+            if (other.photo != null)
+                return false;
+        } else if (!photo.equals(other.photo))
+            return false;
+        if (inReplyToStatusId == null) {
+            if (other.inReplyToStatusId != null)
+                return false;
+        } else if (!inReplyToStatusId.equals(other.inReplyToStatusId))
+            return false;
+        if (inReplyToUserId == null) {
+            if (other.inReplyToUserId != null)
+                return false;
+        } else if (!inReplyToUserId.equals(other.inReplyToUserId))
+            return false;
+        if (inReplyToScreenName == null) {
+            if (other.inReplyToScreenName != null)
+                return false;
+        } else if (!inReplyToScreenName.equals(other.inReplyToScreenName))
+            return false;
+        if (onwerId == null) {
+            if (other.onwerId != null)
+                return false;
+        } else if (!onwerId.equals(other.onwerId))
             return false;
         if (type != other.type)
-            return false;
-        if (user == null) {
-            if (other.user != null)
-                return false;
-        } else if (!user.equals(other.user))
             return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return "Status [created_at=" + created_at + ", id=" + id + ", text="
-                + text + ", source=" + source + ", truncated=" + truncated
-                + ", in_reply_to_status_id=" + in_reply_to_status_id
-                + ", in_reply_to_user_id=" + in_reply_to_user_id
-                + ", favorited=" + favorited + ", in_reply_to_screen_name="
-                + in_reply_to_screen_name + ", photo_url=" + photo_url
-                + ", user=" + user + "]";
+        return "Status [statusId=" + statusId + ", authorId=" + authorId
+                + ", text=" + text + ", source=" + source + ", createdAt="
+                + createdAt.toString() + ", truncated=" + truncated
+                + ", favorited=" + favorited + ", photo=" + photo.toString()
+                + ", inReplyToStatusId=" + inReplyToStatusId
+                + ", inReplyToUserId=" + inReplyToUserId
+                + ", inReplyToScreenName=" + inReplyToScreenName + ", onwerId="
+                + onwerId + ", type" + type + "]";
     }
 }
