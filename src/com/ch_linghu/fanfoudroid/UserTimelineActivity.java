@@ -308,7 +308,7 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
             List<com.ch_linghu.fanfoudroid.data2.Status> statusList;
             try {
                 statusList = mStatusUtils.getMoreUserTimeline(mUserID,
-                        new Paging(mNextPage));
+                        mNextPage);
             } catch (HttpException e) {
                 Log.e(TAG, e.getMessage(), e);
                 Throwable cause = e.getCause();

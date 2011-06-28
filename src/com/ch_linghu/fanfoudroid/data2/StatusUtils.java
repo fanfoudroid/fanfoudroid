@@ -43,14 +43,16 @@ public class StatusUtils {
             } catch (JSONException e) {
             } catch (ParseException e) {
             }
+        } else {
+            //通过since_id，Paging去API取page=1数据，入库（判断连续性）
         }
-        return false;
+        return true;
     }
     
-    public List<Status> getMoreUserTimeline(String authorId, Paging paging) throws HttpException {
+    public List<Status> getMoreUserTimeline(String authorId, int nextPage) throws HttpException {
         List<Status> statusList = new ArrayList<Status>();
         //先判断数据库有没有连续的20-40条，有就取出来返回
-        //如果没有，就去用max_id和since_id，Paging去API取page=1数据，入库（判断重复和连续性）
+        //如果没有，就去用max_id和since_id，Paging去API取page=1数据，入库（判断连续性）
         //数据库取20-40条数据，返回
         return statusList;
     }
