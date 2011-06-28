@@ -3,9 +3,16 @@ package com.ch_linghu.fanfoudroid.dao;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ch_linghu.fanfoudroid.TwitterApplication;
+import com.ch_linghu.fanfoudroid.data2.Status;
+import com.ch_linghu.fanfoudroid.data2.User;
+import com.ch_linghu.fanfoudroid.db2.FanContent;
+import com.ch_linghu.fanfoudroid.db2.FanDatabase;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
 /**
@@ -18,7 +25,7 @@ public class SQLiteTemplate {
      * Default Primary key
      */
     protected String mPrimaryKey = "_id";
-    
+
     /**
      * SQLiteDatabase Open Helper
      */
@@ -79,7 +86,7 @@ public class SQLiteTemplate {
         return getDb(true).update(table, values, mPrimaryKey + "=?",
                 new String[] { id });
     }
-    
+
     /**
      * 根据主键查看某条数据是否存在
      * 
@@ -104,7 +111,7 @@ public class SQLiteTemplate {
 
         return isExistsBySQL(sql.toString(), new String[] { value });
     }
-    
+
     /**
      * 使用SQL语句查看某条数据是否存在
      * 
@@ -141,8 +148,8 @@ public class SQLiteTemplate {
             String groupBy, String having, String orderBy, String limit) {
         T object = null;
 
-        final Cursor c = getDb(false).query(table, columns, selection, selectionArgs,
-                groupBy, having, orderBy, limit);
+        final Cursor c = getDb(false).query(table, columns, selection,
+                selectionArgs, groupBy, having, orderBy, limit);
         try {
             if (c.moveToFirst()) {
                 object = rowMapper.mapRow(c, c.getCount());
@@ -168,8 +175,8 @@ public class SQLiteTemplate {
             String groupBy, String having, String orderBy, String limit) {
         List<T> list = new ArrayList<T>();
 
-        final Cursor c = getDb(false).query(table, columns, selection, selectionArgs,
-                groupBy, having, orderBy, limit);
+        final Cursor c = getDb(false).query(table, columns, selection,
+                selectionArgs, groupBy, having, orderBy, limit);
         try {
             while (c.moveToNext()) {
                 list.add(rowMapper.mapRow(c, 1));
@@ -197,7 +204,7 @@ public class SQLiteTemplate {
     public void setPrimaryKey(String primaryKey) {
         this.mPrimaryKey = primaryKey;
     }
-    
+
     /**
      * Get Database Connection
      * 
@@ -213,8 +220,7 @@ public class SQLiteTemplate {
             return mDatabaseOpenHelper.getReadableDatabase();
         }
     }
-    
-    
+
     /**
      * Some as Spring JDBC RowMapper
      * 
@@ -226,4 +232,48 @@ public class SQLiteTemplate {
         public T mapRow(Cursor cursor, int rowNum);
     }
 
+    /**
+     * 测试用
+     * @param authorId
+     * @return
+     */
+    public String getMaxStatusIdByAuthorInXXStatuses(String authorId) {
+        Cursor c = null;
+        String maxStatusId = "";
+        try {
+            c = getDb(false).query(
+                    FanContent.StatusesView.VIEW_NAME,
+                    new String[] { FanContent.StatusesView.Columns.STATUS_ID },
+                    FanContent.StatusesView.Columns.OWNER_ID + " ='"
+                            + TwitterApplication.getMyselfId() + "' AND "
+                            + FanContent.StatusesView.Columns.AUTHOR_ID + " ='"
+                            + authorId+"' AND "
+                            + FanContent.StatusesView.Columns.TYPE + " = '"
+                            + Status.TYPE_XXSTATUSES + "'", null, null, null,
+                    FanContent.StatusesView.Columns.CREATED_AT);
+            if (c.getCount() > 0) {
+                c.moveToLast();
+                maxStatusId = c.getString(0);
+            }
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+        } finally {
+            c.close();
+        }
+        return maxStatusId;
+    }
+    
+    public boolean insertOneStatus(Status status) {
+        
+        return false;
+        
+    }
+    
+    public boolean insertOneStatusProperty(Status status) {
+        return false;
+    }
+    
+    public boolean insertOrUpdateUser(User user) {
+        return false;
+    }
 }

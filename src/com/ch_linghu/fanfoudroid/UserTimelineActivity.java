@@ -9,7 +9,10 @@ import android.util.Log;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.ch_linghu.fanfoudroid.dao.StatusDAO;
 import com.ch_linghu.fanfoudroid.data.Tweet;
+import com.ch_linghu.fanfoudroid.data2.Status;
+import com.ch_linghu.fanfoudroid.data2.StatusUtils;
 import com.ch_linghu.fanfoudroid.fanfou.Paging;
 import com.ch_linghu.fanfoudroid.fanfou.User;
 import com.ch_linghu.fanfoudroid.http.HttpException;
@@ -34,6 +37,8 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
             .getSimpleName();
 
     private Feedback mFeedback;
+    private StatusUtils mStatusUtils;
+    private StatusDAO mStatusDAO;
 
     private static final String EXTRA_USERID = "userID";
     private static final String EXTRA_NAME_SHOW = "showName";
@@ -130,7 +135,9 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
         Log.d(TAG, "_onCreate()...");
         if (super._onCreate(savedInstanceState)) {
             mFeedback = FeedbackFactory.create(this, FeedbackType.PROGRESS);
-            
+            mStatusUtils = new StatusUtils(this);
+            mStatusDAO = new StatusDAO(this);
+
             Intent intent = getIntent();
             // get user id
             mUserID = intent.getStringExtra(EXTRA_USERID);
@@ -224,6 +231,16 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
         // 更新查询状态显示
         updateHeader(LOADINGFLAG);
         updateFooter(LOADINGFLAG);
+        List<Status> statusList = mStatusDAO.getOneGroupStatus(
+                TwitterApplication.getMyselfId(), mUserID,
+                Status.TYPE_XXSTATUSES);
+        for (com.ch_linghu.fanfoudroid.data2.Status status : statusList) {
+            Tweet tweet;
+            tweet = Tweet.create(status);
+            mTweets.add(tweet);
+        }
+        mTweets.clear();
+        addTweets(mTweets);
     }
 
     private void onLoadMoreBegin() {
@@ -235,10 +252,17 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
 
         @Override
         protected TaskResult _doInBackground(TaskParams... params) {
-            List<com.ch_linghu.fanfoudroid.fanfou.Status> statusList;
+            List<com.ch_linghu.fanfoudroid.data2.Status> statusList = null;
+            boolean hasNew = false;
             try {
-                statusList = getApi().getUserTimeline(mUserID,
-                        new Paging(mNextPage));
+                hasNew = mStatusUtils.getNewUserTimeline(mUserID);
+                if (hasNew) {
+                    statusList = mStatusDAO
+                            .getOneGroupStatus(
+                                    TwitterApplication.getMyselfId(),
+                                    mUserID,
+                                    com.ch_linghu.fanfoudroid.data2.Status.TYPE_XXSTATUSES);
+                }
                 mUser = getApi().showUser(mUserID);
                 mFeedback.update(60);
             } catch (HttpException e) {
@@ -253,19 +277,22 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
                     return TaskResult.IO_ERROR;
                 }
             }
-            mFeedback.update(100 - (int)Math.floor(statusList.size()*2)); // 60~100
-            for (com.ch_linghu.fanfoudroid.fanfou.Status status : statusList) {
-                if (isCancelled()) {
-                    return TaskResult.CANCELLED;
+            mFeedback.update(100 - (int) Math.floor(statusList.size() * 2)); // 60~100
+            if (hasNew) {
+                for (com.ch_linghu.fanfoudroid.data2.Status status : statusList) {
+                    if (isCancelled()) {
+                        return TaskResult.CANCELLED;
+                    }
+                    Tweet tweet;
+                    tweet = Tweet.create(status);
+                    mTweets.clear();
+                    mTweets.add(tweet);
+                    if (isCancelled()) {
+                        return TaskResult.CANCELLED;
+                    }
                 }
-                Tweet tweet;
-                tweet = Tweet.create(status);
-                mTweets.add(tweet);
-                if (isCancelled()) {
-                    return TaskResult.CANCELLED;
-                }
+                addTweets(mTweets);
             }
-            addTweets(mTweets);
             if (isCancelled()) {
                 return TaskResult.CANCELLED;
             }
@@ -278,9 +305,9 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
 
         @Override
         protected TaskResult _doInBackground(TaskParams... params) {
-            List<com.ch_linghu.fanfoudroid.fanfou.Status> statusList;
+            List<com.ch_linghu.fanfoudroid.data2.Status> statusList;
             try {
-                statusList = getApi().getUserTimeline(mUserID,
+                statusList = mStatusUtils.getMoreUserTimeline(mUserID,
                         new Paging(mNextPage));
             } catch (HttpException e) {
                 Log.e(TAG, e.getMessage(), e);
@@ -295,7 +322,7 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
                 }
             }
 
-            for (com.ch_linghu.fanfoudroid.fanfou.Status status : statusList) {
+            for (com.ch_linghu.fanfoudroid.data2.Status status : statusList) {
                 if (isCancelled()) {
                     return TaskResult.CANCELLED;
                 }

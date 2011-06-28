@@ -73,6 +73,12 @@ public class Tweet extends Message implements Parcelable {
 
     return tweet;
   }
+  
+  public static Tweet create(com.ch_linghu.fanfoudroid.data2.Status status){
+      Tweet tweet = new Tweet();
+
+      return tweet;
+    }
 
   public static Tweet createFromSearchApi(JSONObject jsonObject) throws JSONException {
     Tweet tweet = new Tweet();

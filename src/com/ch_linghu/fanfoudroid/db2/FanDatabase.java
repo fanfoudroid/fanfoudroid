@@ -47,6 +47,7 @@ public class FanDatabase {
             // TODO: create tables
             createAllTables(db);
             createAllIndexes(db);
+            createAllViews(db);
         }
 
         @Override
@@ -141,6 +142,24 @@ public class FanDatabase {
             Log.e(TAG, "resetAllTables ERROR!");
         }
         createAllTables(db);
+    }
+    
+ // Create All views
+    private static void createAllViews(SQLiteDatabase db) {
+        db.execSQL(StatusesView.getCreateSQL());
+    }
+    
+    private static void dropAllViews(SQLiteDatabase db) {
+        db.execSQL(StatusesView.getDropSQL());
+    }
+    
+    private static void resetAllViews(SQLiteDatabase db, int oldVersion, int newVersion) {
+        try {
+            dropAllViews(db);
+        } catch (SQLException e) {
+            Log.e(TAG, "resetAllTables ERROR!");
+        }
+        createAllViews(db);
     }
     
     //indexes    

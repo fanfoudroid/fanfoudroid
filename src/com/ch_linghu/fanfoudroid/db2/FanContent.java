@@ -331,4 +331,53 @@ public abstract class FanContent {
                     Columns.NAME, Columns.CREATED_AT, Columns.LOAD_TIME };
         }
     }
+
+    /**
+     * 关联Statuses表和其属性表
+     * 
+     * @author phoenix
+     * 
+     */
+    public static class StatusesView {
+        public static final String VIEW_NAME = "vw_statuses";
+
+        public static class Columns {
+            public static final String STATUS_ID = "status_id";
+            public static final String OWNER_ID = "owner_id";
+            public static final String AUTHOR_ID = "author_id";
+            public static final String TYPE = "type";
+            public static final String CREATED_AT = "created_at";
+        }
+
+        public static String getCreateSQL() {
+            String createString = VIEW_NAME + " AS SELECT "
+                    + StatusesPropertyTable.TABLE_NAME + "."
+                    + StatusesPropertyTable.Columns.STATUS_ID + ", "
+                    + StatusesPropertyTable.TABLE_NAME + "."
+                    + StatusesPropertyTable.Columns.OWNER_ID + ", "
+                    + StatusesTable.TABLE_NAME + "."
+                    + StatusesTable.Columns.AUTHOR_ID + ", "
+                    + StatusesPropertyTable.TABLE_NAME + "."
+                    + StatusesPropertyTable.Columns.TYPE + ", "
+                    + StatusesTable.TABLE_NAME + "."
+                    + StatusesTable.Columns.CREATED_AT + " FROM "
+                    + StatusesPropertyTable.TABLE_NAME + " LEFT JOIN "
+                    + StatusesTable.TABLE_NAME + " ON "
+                    + StatusesPropertyTable.TABLE_NAME + "."
+                    + StatusesPropertyTable.Columns.STATUS_ID + " = "
+                    + StatusesTable.TABLE_NAME + "."
+                    + StatusesTable.Columns.STATUS_ID + ";";
+
+            return "CREATE VIEW " + createString;
+        }
+
+        public static String getDropSQL() {
+            return "DROP VIEW " + VIEW_NAME;
+        }
+
+        public static String[] getIndexColumns() {
+            return new String[] { Columns.STATUS_ID, Columns.OWNER_ID,
+                    Columns.AUTHOR_ID, Columns.TYPE, Columns.CREATED_AT };
+        }
+    }
 }

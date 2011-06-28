@@ -465,6 +465,11 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
         return Status.constructStatuses(get(getBaseURL() + "statuses/user_timeline/" + id + ".json",
                 null, paging, http.isAuthenticationEnabled()));
     }
+    
+    public Response getNewUserTimeline(String userId, Paging paging) throws HttpException {
+        return get(getBaseURL() + "statuses/user_timeline/" + userId + ".json",
+                null, paging, http.isAuthenticationEnabled());
+    }
 
     /**
      * Returns the most recent statuses posted in the last 24 hours from the specified userid.

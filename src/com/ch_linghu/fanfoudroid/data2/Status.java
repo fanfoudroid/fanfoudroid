@@ -5,7 +5,7 @@ import java.util.Date;
 public class Status {
 
     private String statusId;
-    private String authorId;
+    private User author;
     private String text;
     private String source;
     private Date createdAt;
@@ -15,15 +15,15 @@ public class Status {
     private String inReplyToStatusId;
     private String inReplyToUserId;
     private String inReplyToScreenName;
-    private String onwerId;
+    private User owner;
     private int type;
     
-    public static int GLANCE = 1;
-    public static int MAINPAGE = 2;
-    public static int XXSTATUSES = 3;
-    public static int COLLECTION = 4;
-    public static int PHOTO = 5;
-    public static int SEARCHRESULTS = 6;
+    public static int TYPE_GLANCE = 1;
+    public static int TYPE_MAINPAGE = 2;
+    public static int TYPE_XXSTATUSES = 3;
+    public static int TYPE_COLLECTION = 4;
+    public static int TYPE_PHOTO = 5;
+    public static int TYPE_SEARCHRESULTS = 6;
 
     public Status() {
     }
@@ -36,12 +36,12 @@ public class Status {
         this.statusId = statusId;
     }
 
-    public String getAuthorId() {
-        return authorId;
+    public User getAuthor() {
+        return author;
     }
 
-    public void setAuthorId(String authorId) {
-        this.authorId = authorId;
+    public void setAuthor(User author) {
+        this.author = author;
     }
 
     public String getText() {
@@ -116,12 +116,12 @@ public class Status {
         this.inReplyToScreenName = inReplyToScreenName;
     }
 
-    public String getOnwerId() {
-        return onwerId;
+    public User getOwner() {
+        return owner;
     }
 
-    public void setOnwerId(String onwerId) {
-        this.onwerId = onwerId;
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 
     public int getType() {
@@ -146,10 +146,10 @@ public class Status {
                 return false;
         } else if (!statusId.equals(other.statusId))
             return false;
-        if (authorId == null) {
-            if (other.authorId != null)
+        if (author == null) {
+            if (other.author != null)
                 return false;
-        } else if (!authorId.equals(other.authorId))
+        } else if (!author.equals(other.author))
             return false;
         if (text == null) {
             if (other.text != null)
@@ -190,10 +190,10 @@ public class Status {
                 return false;
         } else if (!inReplyToScreenName.equals(other.inReplyToScreenName))
             return false;
-        if (onwerId == null) {
-            if (other.onwerId != null)
+        if (owner == null) {
+            if (other.owner != null)
                 return false;
-        } else if (!onwerId.equals(other.onwerId))
+        } else if (!owner.equals(other.owner))
             return false;
         if (type != other.type)
             return false;
@@ -202,13 +202,13 @@ public class Status {
 
     @Override
     public String toString() {
-        return "Status [statusId=" + statusId + ", authorId=" + authorId
+        return "Status [statusId=" + statusId + ", author=" + author.toString()
                 + ", text=" + text + ", source=" + source + ", createdAt="
                 + createdAt.toString() + ", truncated=" + truncated
                 + ", favorited=" + favorited + ", photo=" + photo.toString()
                 + ", inReplyToStatusId=" + inReplyToStatusId
                 + ", inReplyToUserId=" + inReplyToUserId
-                + ", inReplyToScreenName=" + inReplyToScreenName + ", onwerId="
-                + onwerId + ", type" + type + "]";
+                + ", inReplyToScreenName=" + inReplyToScreenName + ", owner="
+                + owner.toString() + ", type" + type + "]";
     }
 }

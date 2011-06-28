@@ -18,11 +18,16 @@ public class User {
     private boolean following;
     private boolean notifications;
     private int utc_offset;
-    
+
     private Status status; // null
-    
-    public User() {}
-    
+
+    public User() {
+    }
+
+    public User(String id) {
+        this.id = id;
+    }
+
     public String getId() {
         return id;
     }
@@ -150,7 +155,7 @@ public class User {
     public void setStatus(Status status) {
         this.status = status;
     }
-    
+
     @Override
     public String toString() {
         return "User [id=" + id + ", name=" + name + ", screen_name="
