@@ -16,28 +16,30 @@ import com.ch_linghu.fanfoudroid.http.Response;
 
 import android.content.Context;
 
-public class StatusUtils {
-    private static final String TAG = StatusUtils.class.getSimpleName();
+public class StatusHelper {
+    private static final String TAG = StatusHelper.class.getSimpleName();
 
     private Context context;
     private StatusDAO statusDAO;
+    
+    public final static int MAX_NUM = 20;
 
-    public StatusUtils(Context con) {
+    public StatusHelper(Context con) {
         context = con;
         statusDAO = new StatusDAO(con);
     }
 
     public boolean getNewUserTimeline(String authorId) {
         String maxStatusId = statusDAO
-                .getMaxStatusIdByAuthorInXXStatuses(authorId);
+                .getMaxStatusId(TwitterApplication.getMyselfId(), Status.TYPE_USER, authorId);
         // 数据库没有该用户消息时
         if (maxStatusId.equals("")) {
             try {
                 Response res = TwitterApplication.mApi.getNewUserTimeline(
-                        authorId, new Paging(1, 20));
+                        authorId, new Paging(1, MAX_NUM));
                 JSONArray jsonList = res.asJSONArray();
-                objects2DB(jsonList, new User(TwitterApplication.getMyselfId()),
-                        Status.TYPE_XXSTATUSES);
+                //UserTimeLine的Owner设置为user本身，便于做连续性判断。
+                objects2DB(jsonList, new User(authorId), Status.TYPE_USER);
             } catch (HttpException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
@@ -54,17 +56,35 @@ public class StatusUtils {
         //先判断数据库有没有连续的20-40条，有就取出来返回
         //如果没有，就去用max_id和since_id，Paging去API取page=1数据，入库（判断连续性）
         //数据库取20-40条数据，返回
-        return statusList;
+    	
+//      int sequenceFlag = 0;
+//    	if (jsonList.length() >= MAX_NUM){
+//    		//可能中间有断层
+//    		sequenceFlag = getCurrentSquenceFlag(owner, type);
+//    	}else{
+//    		sequenceFlag = getPrevSquenceFlag(owner, type);
+//    	}
+
+    	return statusList;
     }
 
     public boolean objects2DB(JSONArray jsonList, User owner, int type)
             throws JSONException, ParseException {
+    	int sequenceFlag = 0;
+    	if (jsonList.length() >= MAX_NUM){
+    		//中间有断层
+    		sequenceFlag = statusDAO.getNewSequenceFlag(owner.getId(), type);
+    	}else{
+    		sequenceFlag = statusDAO.getCurrentSequenceFlag(owner.getId(), type);
+    	}
+    	
         for (int i = 0; i < jsonList.length(); i++) {
             JSONObject jsonObject = jsonList.getJSONObject(i);
             Status status = json2Object(jsonObject);
             status.setOwner(owner);
             status.setType(type);
             
+            statusDAO.insertOneStatus(status, sequenceFlag);
         }
         return false;
     }

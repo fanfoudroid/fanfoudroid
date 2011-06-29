@@ -8,7 +8,7 @@ import android.content.Context;
 import com.ch_linghu.fanfoudroid.dao.UserDAO;
 
 public class UserUtils {
-    private static final String TAG = StatusUtils.class.getSimpleName();
+    private static final String TAG = StatusHelper.class.getSimpleName();
 
     private Context context;
     private UserDAO userDAO;

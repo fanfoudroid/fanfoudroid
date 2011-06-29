@@ -12,7 +12,7 @@ import android.widget.TextView;
 import com.ch_linghu.fanfoudroid.dao.StatusDAO;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data2.Status;
-import com.ch_linghu.fanfoudroid.data2.StatusUtils;
+import com.ch_linghu.fanfoudroid.data2.StatusHelper;
 import com.ch_linghu.fanfoudroid.fanfou.Paging;
 import com.ch_linghu.fanfoudroid.fanfou.User;
 import com.ch_linghu.fanfoudroid.http.HttpException;
@@ -37,7 +37,7 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
             .getSimpleName();
 
     private Feedback mFeedback;
-    private StatusUtils mStatusUtils;
+    private StatusHelper mStatusUtils;
     private StatusDAO mStatusDAO;
 
     private static final String EXTRA_USERID = "userID";
@@ -135,7 +135,7 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
         Log.d(TAG, "_onCreate()...");
         if (super._onCreate(savedInstanceState)) {
             mFeedback = FeedbackFactory.create(this, FeedbackType.PROGRESS);
-            mStatusUtils = new StatusUtils(this);
+            mStatusUtils = new StatusHelper(this);
             mStatusDAO = new StatusDAO(this);
 
             Intent intent = getIntent();
@@ -233,7 +233,7 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
         updateFooter(LOADINGFLAG);
         List<Status> statusList = mStatusDAO.getOneGroupStatus(
                 TwitterApplication.getMyselfId(), mUserID,
-                Status.TYPE_XXSTATUSES);
+                Status.TYPE_USER);
         for (com.ch_linghu.fanfoudroid.data2.Status status : statusList) {
             Tweet tweet;
             tweet = Tweet.create(status);
@@ -261,7 +261,7 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
                             .getOneGroupStatus(
                                     TwitterApplication.getMyselfId(),
                                     mUserID,
-                                    com.ch_linghu.fanfoudroid.data2.Status.TYPE_XXSTATUSES);
+                                    com.ch_linghu.fanfoudroid.data2.Status.TYPE_USER);
                 }
                 mUser = getApi().showUser(mUserID);
                 mFeedback.update(60);

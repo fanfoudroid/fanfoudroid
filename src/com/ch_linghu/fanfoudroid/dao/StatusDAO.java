@@ -1,15 +1,20 @@
 package com.ch_linghu.fanfoudroid.dao;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.dao.SQLiteTemplate.RowMapper;
 import com.ch_linghu.fanfoudroid.data2.Photo;
 import com.ch_linghu.fanfoudroid.data2.Status;
@@ -26,6 +31,9 @@ public class StatusDAO {
 
     private SQLiteTemplate mSqlTemplate;
 
+    public final static DateFormat DB_DATE_FORMATTER = new SimpleDateFormat(
+            "yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US);
+    
     public StatusDAO(Context context) {
         mSqlTemplate = new SQLiteTemplate(FanDatabase.getInstance(context)
                 .getSQLiteOpenHelper());
@@ -230,7 +238,7 @@ public class StatusDAO {
         // status.getInReplyToScreenName());
         // v.put(IS_REPLY, status.isReply());
         v.put(StatusesTable.Columns.CREATED_AT,
-                TwitterDatabase.DB_DATE_FORMATTER.format(status.getCreatedAt()));
+                DB_DATE_FORMATTER.format(status.getCreatedAt()));
         v.put(StatusesTable.Columns.SOURCE, status.getSource());
         // v.put(StatusTable.Columns.IS_UNREAD, status.isUnRead());
 
@@ -252,18 +260,133 @@ public class StatusDAO {
         return v;
     }
 
-    public String getMaxStatusIdByAuthorInXXStatuses(String authorId) {
-        return mSqlTemplate.getMaxStatusIdByAuthorInXXStatuses(authorId);
+    public String getMaxStatusId(String statusOwner, int statusType, String authorId) {
+        Cursor c = null;
+        String maxStatusId = "";
+        try {
+            c = mSqlTemplate.getDb(false).query(
+                    FanContent.StatusesView.VIEW_NAME,
+                    new String[] { FanContent.StatusesView.Columns.STATUS_ID },
+                    FanContent.StatusesView.Columns.OWNER_ID + " ='"
+                            + statusOwner + "' AND "
+                            + FanContent.StatusesView.Columns.AUTHOR_ID + " ='"
+                            + authorId+"' AND "
+                            + FanContent.StatusesView.Columns.TYPE + " = '"
+                            + statusType + "'", null, null, null,
+                    FanContent.StatusesView.Columns.CREATED_AT + " DESC");
+            if (c.getCount() > 0) {
+                c.moveToLast();
+                maxStatusId = c.getString(0);
+            }
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+        } finally {
+            c.close();
+        }
+        return maxStatusId;
     }
     
-    public boolean insertOneStatus(Status status){
-        //在这里应该判断一下要插入数据是否重复，还有连续标识
-        mSqlTemplate.insertOrUpdateUser(status.getAuthor());
-        mSqlTemplate.insertOrUpdateUser(status.getOwner());
-        //判断是否新增status
-        mSqlTemplate.insertOneStatus(status);
-        mSqlTemplate.insertOneStatusProperty(status);
-        return true;
+    private long insertOneStatusIntoStatusesTable(Status status){
+    	final ContentValues v = new ContentValues();
+        v.put(FanContent.StatusesTable.Columns.STATUS_ID, status.getStatusId());
+        v.put(FanContent.StatusesTable.Columns.TEXT, status.getText());
+        v.put(FanContent.StatusesTable.Columns.FAVORITED, status.isFavorited() + "");
+        v.put(FanContent.StatusesTable.Columns.TRUNCATED, status.isTruncated());
+        v.put(FanContent.StatusesTable.Columns.IN_REPLY_TO_STATUS_ID,
+                status.getInReplyToStatusId());
+        v.put(FanContent.StatusesTable.Columns.IN_REPLY_TO_USER_ID,
+                status.getInReplyToUserId());
+        v.put(FanContent.StatusesTable.Columns.CREATED_AT,
+                DB_DATE_FORMATTER.format(status.getCreatedAt()));
+        v.put(FanContent.StatusesTable.Columns.SOURCE, status.getSource());
+
+        final User author = status.getAuthor();
+        if (author != null) {
+        	v.put(FanContent.StatusesTable.Columns.AUTHOR_ID, author.getId());
+        }
+        
+        final Photo photo = status.getPhoto();
+        if (photo != null) { 
+        	v.put(FanContent.StatusesTable.Columns.PIC_THUMB, photo.getThumburl()); 
+        	v.put(FanContent.StatusesTable.Columns.PIC_MID, photo.getImageurl()); 
+        	v.put(FanContent.StatusesTable.Columns.PIC_ORIG, photo.getLargeurl()); }
+        
+        //FIXME: insertWithOnConflict 是 Level 8 的函数，为了低版本兼容性，这里需要修改。
+    	//TODO：这里是可能重复的，必须进行判断
+    	return mSqlTemplate.getDb(true).insertWithOnConflict(FanContent.StatusesTable.TABLE_NAME, "", v, SQLiteDatabase.CONFLICT_IGNORE);
+    }
+    
+    private long insertOneStatusIntoStatuesPropertyTable(Status status, int sequenceFlag){
+    	final ContentValues v = new ContentValues();
+    	v.put(FanContent.StatusesPropertyTable.Columns.STATUS_ID, status.getStatusId());
+    	v.put(FanContent.StatusesPropertyTable.Columns.OWNER_ID, status.getOwner().getId());
+    	v.put(FanContent.StatusesPropertyTable.Columns.TYPE, status.getType());
+    	v.put(FanContent.StatusesPropertyTable.Columns.SEQUENCE_FLAG, sequenceFlag);
+
+    	long result1 = 0;
+    	long result2 = 0;
+    	//FIXME: insertWithOnConflict 是 Level 8 的函数，为了低版本兼容性，这里需要修改。
+    	result1 = mSqlTemplate.getDb(true).insertWithOnConflict(FanContent.StatusesPropertyTable.TABLE_NAME, "", v, SQLiteDatabase.CONFLICT_IGNORE);
+    	
+        final Photo photo = status.getPhoto();
+        if (photo != null) {
+        	v.put(FanContent.StatusesPropertyTable.Columns.TYPE, Status.TYPE_PHOTO);
+        	//FIXME: insertWithOnConflict 是 Level 8 的函数，为了低版本兼容性，这里需要修改。
+        	//TODO：这里是可能重复的，必须进行判断
+        	result2 = mSqlTemplate.getDb(true).insertWithOnConflict(FanContent.StatusesPropertyTable.TABLE_NAME, "", v, SQLiteDatabase.CONFLICT_IGNORE);
+        }
+        
+        return result1+result2;
+    }
+    
+    public boolean insertOneStatus(Status status, int sequenceFlag){
+    	insertOneStatusIntoStatusesTable(status);
+    	insertOneStatusIntoStatuesPropertyTable(status, sequenceFlag);
+    	//TODO: 是否需要处理User信息？
+    	return true;
+    }
+    
+    public int getNewSequenceFlag(String ownerId, int statusType){
+    	//FIXME: 非常低效的方法，需要优化
+    	String SQL = "SELECT max( " + FanContent.StatusesPropertyTable.Columns.SEQUENCE_FLAG + " ) "
+    	            + " FROM " + FanContent.StatusesPropertyTable.TABLE_NAME;
+    	Cursor c = mSqlTemplate.getDb(false).rawQuery(SQL, new String[]{});
+    	
+    	int result = 0;
+    	if (c != null && c.moveToFirst()){
+    		result = c.getInt(0);
+    	}
+    	return result + 1;
+    }
+    
+    public int getCurrentSequenceFlag(String ownerId, int statusType){
+    	//FIXME: 非常低效的方法，需要优化
+    	String SQL = "SELECT max( " + FanContent.StatusesPropertyTable.Columns.SEQUENCE_FLAG + " ) "
+    	            + " FROM " + FanContent.StatusesPropertyTable.TABLE_NAME;
+    	Cursor c = mSqlTemplate.getDb(false).rawQuery(SQL, new String[]{});
+    	
+    	int result = 0;
+    	if (c != null && c.moveToFirst()){
+    		result = c.getInt(0);
+    	}
+    	return result;
+    }
+    
+    public int getPrevSequenceFlag(String ownerId, int statusType){
+    	//FIXME: 非常低效的方法，需要优化
+    	//取第二大的seq
+    	String SQL = "SELECT max( " + FanContent.StatusesPropertyTable.Columns.SEQUENCE_FLAG + " ) "
+    	            + " FROM " + FanContent.StatusesPropertyTable.TABLE_NAME + " "
+    	            + " WHERE " + FanContent.StatusesPropertyTable.Columns.SEQUENCE_FLAG + " < "
+    	            + " (SELECT max( "+ FanContent.StatusesPropertyTable.Columns.SEQUENCE_FLAG + " )"
+    	            + "    FROM " + FanContent.StatusesPropertyTable.TABLE_NAME + ") ";
+    	Cursor c = mSqlTemplate.getDb(false).rawQuery(SQL, new String[]{});
+    	
+    	int result = 0;
+    	if (c != null && c.moveToFirst()){
+    		result = c.getInt(0);
+    	}
+    	return result;
     }
     
     public List<Status> getOneGroupStatus(String ownerId, String authorId, int type) {

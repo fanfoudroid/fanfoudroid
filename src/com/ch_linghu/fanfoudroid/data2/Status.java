@@ -18,10 +18,10 @@ public class Status {
     private User owner;
     private int type;
     
-    public static int TYPE_GLANCE = 1;
-    public static int TYPE_MAINPAGE = 2;
-    public static int TYPE_XXSTATUSES = 3;
-    public static int TYPE_COLLECTION = 4;
+    public static int TYPE_PUBLIC = 1;
+    public static int TYPE_FRIENDS = 2;
+    public static int TYPE_USER = 3;
+    public static int TYPE_FAVERITES = 4;
     public static int TYPE_PHOTO = 5;
     public static int TYPE_SEARCHRESULTS = 6;
 

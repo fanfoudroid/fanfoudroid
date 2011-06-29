@@ -24,7 +24,9 @@ public abstract class FanContent {
             public static final String CREATED_AT = "created_at";
             public static final String TRUNCATED = "truncated";
             public static final String FAVORITED = "favorited";
-            public static final String PHOTO_URL = "photo_url";
+            public static final String PIC_THUMB = "pic_thumbnail";
+            public static final String PIC_MID = "pic_middle";
+            public static final String PIC_ORIG = "pic_original";
             public static final String IN_REPLY_TO_STATUS_ID = "in_reply_to_status_id";
             public static final String IN_REPLY_TO_USER_ID = "in_reply_to_user_id";
             public static final String IN_REPLY_TO_SCREEN_NAME = "in_reply_to_screen_name";
@@ -38,7 +40,10 @@ public abstract class FanContent {
                     + Columns.TEXT + " TEXT, " + Columns.SOURCE + " TEXT, "
                     + Columns.CREATED_AT + " INT, " + Columns.TRUNCATED
                     + " INT DEFAULT 0, " + Columns.FAVORITED
-                    + " INT DEFAULT 0, " + Columns.PHOTO_URL + " TEXT, "
+                    + " INT DEFAULT 0, " 
+                    + Columns.PIC_THUMB + " TEXT, "
+                    + Columns.PIC_MID + " TEXT, "
+                    + Columns.PIC_ORIG + " TEXT, "
                     + Columns.IN_REPLY_TO_STATUS_ID + " TEXT, "
                     + Columns.IN_REPLY_TO_USER_ID + " TEXT, "
                     + Columns.IN_REPLY_TO_SCREEN_NAME + " TEXT " + ");";
@@ -54,7 +59,8 @@ public abstract class FanContent {
             return new String[] { Columns.ID, Columns.STATUS_ID,
                     Columns.AUTHOR_ID, Columns.TEXT, Columns.SOURCE,
                     Columns.CREATED_AT, Columns.TRUNCATED, Columns.FAVORITED,
-                    Columns.PHOTO_URL, Columns.IN_REPLY_TO_STATUS_ID,
+                    Columns.PIC_THUMB, Columns.PIC_MID, Columns.PIC_ORIG,
+                    Columns.IN_REPLY_TO_STATUS_ID,
                     Columns.IN_REPLY_TO_USER_ID,
                     Columns.IN_REPLY_TO_SCREEN_NAME };
         }

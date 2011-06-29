@@ -6,7 +6,7 @@ import org.json.JSONObject;
 import android.content.Context;
 
 public class PhotoUtils {
-    private static final String TAG = StatusUtils.class.getSimpleName();
+    private static final String TAG = StatusHelper.class.getSimpleName();
 
     private Context context;
 
