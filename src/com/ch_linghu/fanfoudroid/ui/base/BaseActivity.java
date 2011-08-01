@@ -34,279 +34,279 @@ import com.ch_linghu.fanfoudroid.service.TwitterService;
 
 public class BaseActivity extends Activity {
 
-    private static final String TAG = "BaseActivity";
+	private static final String TAG = "BaseActivity";
 
-    protected SharedPreferences mPreferences;
+	protected SharedPreferences mPreferences;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        _onCreate(savedInstanceState);
-    }
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		_onCreate(savedInstanceState);
+	}
 
-    // 因为onCreate方法无法返回状态，因此无法进行状态判断，
-    // 为了能对上层返回的信息进行判断处理，我们使用_onCreate代替真正的
-    // onCreate进行工作。onCreate仅在顶层调用_onCreate。
-    protected boolean _onCreate(Bundle savedInstanceState) {
-        if (TwitterApplication.mPref.getBoolean(
-                Preferences.FORCE_SCREEN_ORIENTATION_PORTRAIT, false)) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        }
-        if (!checkIsLogedIn()) {
-            return false;
-        } else {
-            PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-            mPreferences = TwitterApplication.mPref; // PreferenceManager.getDefaultSharedPreferences(this);
+	// 因为onCreate方法无法返回状态，因此无法进行状态判断，
+	// 为了能对上层返回的信息进行判断处理，我们使用_onCreate代替真正的
+	// onCreate进行工作。onCreate仅在顶层调用_onCreate。
+	protected boolean _onCreate(Bundle savedInstanceState) {
+		if (TwitterApplication.mPref.getBoolean(
+				Preferences.FORCE_SCREEN_ORIENTATION_PORTRAIT, false)) {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		}
+		if (!checkIsLogedIn()) {
+			return false;
+		} else {
+			PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+			mPreferences = TwitterApplication.mPref; // PreferenceManager.getDefaultSharedPreferences(this);
 
-            return true;
-        }
-    }
+			return true;
+		}
+	}
 
-    protected void handleLoggedOut() {
-        if (isTaskRoot()) {
-            showLogin();
-        } else {
-            setResult(RESULT_LOGOUT);
-        }
+	protected void handleLoggedOut() {
+		if (isTaskRoot()) {
+			showLogin();
+		} else {
+			setResult(RESULT_LOGOUT);
+		}
 
-        finish();
-    }
+		finish();
+	}
 
-    public TwitterDatabase getDb() {
-        return TwitterApplication.mDb;
-    }
+	public TwitterDatabase getDb() {
+		return TwitterApplication.mDb;
+	}
 
-    public Weibo getApi() {
-        return TwitterApplication.mApi;
-    }
+	public Weibo getApi() {
+		return TwitterApplication.mApi;
+	}
 
-    public SharedPreferences getPreferences() {
-        return mPreferences;
-    }
+	public SharedPreferences getPreferences() {
+		return mPreferences;
+	}
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+	}
 
-    protected boolean isLoggedIn() {
-        return getApi().isLoggedIn();
-    }
+	protected boolean isLoggedIn() {
+		return getApi().isLoggedIn();
+	}
 
-    private static final int RESULT_LOGOUT = RESULT_FIRST_USER + 1;
+	private static final int RESULT_LOGOUT = RESULT_FIRST_USER + 1;
 
-    // Retrieve interface
+	// Retrieve interface
 
-    // public ImageManager getImageManager() {
-    // return TwitterApplication.mImageManager;
-    // }
+	// public ImageManager getImageManager() {
+	// return TwitterApplication.mImageManager;
+	// }
 
-    private void _logout() {
-        TwitterService.unschedule(BaseActivity.this);
+	private void _logout() {
+		TwitterService.unschedule(BaseActivity.this);
 
-        getDb().clearData();
-        getApi().reset();
+		getDb().clearData();
+		getApi().reset();
 
-        // Clear SharedPreferences
-        SharedPreferences.Editor editor = mPreferences.edit();
-        editor.clear();
-        editor.commit();
+		// Clear SharedPreferences
+		SharedPreferences.Editor editor = mPreferences.edit();
+		editor.clear();
+		editor.commit();
 
-        // TODO: 提供用户手动情况所有缓存选项
-        TwitterApplication.mImageLoader.getImageManager().clear();
+		// TODO: 提供用户手动情况所有缓存选项
+		TwitterApplication.mImageLoader.getImageManager().clear();
 
-        // TODO: cancel notifications.
-        TwitterService.unschedule(BaseActivity.this);
+		// TODO: cancel notifications.
+		TwitterService.unschedule(BaseActivity.this);
 
-        handleLoggedOut();
-    }
+		handleLoggedOut();
+	}
 
-    public void logout() {
-        Dialog dialog = new AlertDialog.Builder(BaseActivity.this)
-                .setTitle("提示").setMessage("确实要注销吗?")
-                .setPositiveButton("确定", new OnClickListener() {
+	public void logout() {
+		Dialog dialog = new AlertDialog.Builder(BaseActivity.this)
+				.setTitle("提示").setMessage("确实要注销吗?")
+				.setPositiveButton("确定", new OnClickListener() {
 
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        _logout();
-                    }
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						_logout();
+					}
 
-                }).setNegativeButton("取消", new OnClickListener() {
+				}).setNegativeButton("取消", new OnClickListener() {
 
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
 
-                    }
+					}
 
-                }).create();
-        dialog.show();
-    }
+				}).create();
+		dialog.show();
+	}
 
-    protected void showLogin() {
-        Intent intent = new Intent(this, LoginActivity.class);
-        // TODO: might be a hack?
-        intent.putExtra(Intent.EXTRA_INTENT, getIntent());
+	protected void showLogin() {
+		Intent intent = new Intent(this, LoginActivity.class);
+		// TODO: might be a hack?
+		intent.putExtra(Intent.EXTRA_INTENT, getIntent());
 
-        startActivity(intent);
-    }
+		startActivity(intent);
+	}
 
-    protected void manageUpdateChecks() {
-    	//检查后台更新状态设置
-        boolean isUpdateEnabled = mPreferences.getBoolean(
-                Preferences.CHECK_UPDATES_KEY, false);
+	protected void manageUpdateChecks() {
+		// 检查后台更新状态设置
+		boolean isUpdateEnabled = mPreferences.getBoolean(
+				Preferences.CHECK_UPDATES_KEY, false);
 
-        if (isUpdateEnabled) {
-            TwitterService.schedule(this);
-        } else if (!TwitterService.isWidgetEnabled()) {
-            TwitterService.unschedule(this);
-        }
-        
-        //检查强制竖屏设置
-        boolean isOrientationPortrait = mPreferences.getBoolean(
-                Preferences.FORCE_SCREEN_ORIENTATION_PORTRAIT, false);
-        if (isOrientationPortrait) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        } else {
-        	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED); 
-        }
-        
-    }
+		if (isUpdateEnabled) {
+			TwitterService.schedule(this);
+		} else if (!TwitterService.isWidgetEnabled()) {
+			TwitterService.unschedule(this);
+		}
 
-    // Menus.
+		// 检查强制竖屏设置
+		boolean isOrientationPortrait = mPreferences.getBoolean(
+				Preferences.FORCE_SCREEN_ORIENTATION_PORTRAIT, false);
+		if (isOrientationPortrait) {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		} else {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+		}
 
-    protected static final int OPTIONS_MENU_ID_LOGOUT = 1;
-    protected static final int OPTIONS_MENU_ID_PREFERENCES = 2;
-    protected static final int OPTIONS_MENU_ID_ABOUT = 3;
-    protected static final int OPTIONS_MENU_ID_SEARCH = 4;
-    protected static final int OPTIONS_MENU_ID_REPLIES = 5;
-    protected static final int OPTIONS_MENU_ID_DM = 6;
-    protected static final int OPTIONS_MENU_ID_TWEETS = 7;
-    protected static final int OPTIONS_MENU_ID_TOGGLE_REPLIES = 8;
-    protected static final int OPTIONS_MENU_ID_FOLLOW = 9;
-    protected static final int OPTIONS_MENU_ID_UNFOLLOW = 10;
-    protected static final int OPTIONS_MENU_ID_IMAGE_CAPTURE = 11;
-    protected static final int OPTIONS_MENU_ID_PHOTO_LIBRARY = 12;
-    protected static final int OPTIONS_MENU_ID_EXIT = 13;
+	}
 
-    /**
-     * 如果增加了Option Menu常量的数量，则必须重载此方法， 以保证其他人使用常量时不产生重复
-     * 
-     * @return 最大的Option Menu常量
-     */
-    protected int getLastOptionMenuId() {
-        return OPTIONS_MENU_ID_EXIT;
-    }
+	// Menus.
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
+	protected static final int OPTIONS_MENU_ID_LOGOUT = 1;
+	protected static final int OPTIONS_MENU_ID_PREFERENCES = 2;
+	protected static final int OPTIONS_MENU_ID_ABOUT = 3;
+	protected static final int OPTIONS_MENU_ID_SEARCH = 4;
+	protected static final int OPTIONS_MENU_ID_REPLIES = 5;
+	protected static final int OPTIONS_MENU_ID_DM = 6;
+	protected static final int OPTIONS_MENU_ID_TWEETS = 7;
+	protected static final int OPTIONS_MENU_ID_TOGGLE_REPLIES = 8;
+	protected static final int OPTIONS_MENU_ID_FOLLOW = 9;
+	protected static final int OPTIONS_MENU_ID_UNFOLLOW = 10;
+	protected static final int OPTIONS_MENU_ID_IMAGE_CAPTURE = 11;
+	protected static final int OPTIONS_MENU_ID_PHOTO_LIBRARY = 12;
+	protected static final int OPTIONS_MENU_ID_EXIT = 13;
 
-        // SubMenu submenu =
-        // menu.addSubMenu(R.string.write_label_insert_picture);
-        // submenu.setIcon(android.R.drawable.ic_menu_gallery);
-        //
-        // submenu.add(0, OPTIONS_MENU_ID_IMAGE_CAPTURE, 0,
-        // R.string.write_label_take_a_picture);
-        // submenu.add(0, OPTIONS_MENU_ID_PHOTO_LIBRARY, 0,
-        // R.string.write_label_choose_a_picture);
-        //
-        // MenuItem item = menu.add(0, OPTIONS_MENU_ID_SEARCH, 0,
-        // R.string.omenu_search);
-        // item.setIcon(android.R.drawable.ic_search_category_default);
-        // item.setAlphabeticShortcut(SearchManager.MENU_KEY);
+	/**
+	 * 如果增加了Option Menu常量的数量，则必须重载此方法， 以保证其他人使用常量时不产生重复
+	 * 
+	 * @return 最大的Option Menu常量
+	 */
+	protected int getLastOptionMenuId() {
+		return OPTIONS_MENU_ID_EXIT;
+	}
 
-        MenuItem item;
-        item = menu.add(0, OPTIONS_MENU_ID_PREFERENCES, 0,
-                R.string.omenu_settings);
-        item.setIcon(android.R.drawable.ic_menu_preferences);
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
 
-        item = menu.add(0, OPTIONS_MENU_ID_LOGOUT, 0, R.string.omenu_signout);
-        item.setIcon(android.R.drawable.ic_menu_revert);
+		// SubMenu submenu =
+		// menu.addSubMenu(R.string.write_label_insert_picture);
+		// submenu.setIcon(android.R.drawable.ic_menu_gallery);
+		//
+		// submenu.add(0, OPTIONS_MENU_ID_IMAGE_CAPTURE, 0,
+		// R.string.write_label_take_a_picture);
+		// submenu.add(0, OPTIONS_MENU_ID_PHOTO_LIBRARY, 0,
+		// R.string.write_label_choose_a_picture);
+		//
+		// MenuItem item = menu.add(0, OPTIONS_MENU_ID_SEARCH, 0,
+		// R.string.omenu_search);
+		// item.setIcon(android.R.drawable.ic_search_category_default);
+		// item.setAlphabeticShortcut(SearchManager.MENU_KEY);
 
-        item = menu.add(0, OPTIONS_MENU_ID_ABOUT, 0, R.string.omenu_about);
-        item.setIcon(android.R.drawable.ic_menu_info_details);
+		MenuItem item;
+		item = menu.add(0, OPTIONS_MENU_ID_PREFERENCES, 0,
+				R.string.omenu_settings);
+		item.setIcon(android.R.drawable.ic_menu_preferences);
 
-        item = menu.add(0, OPTIONS_MENU_ID_EXIT, 0, R.string.omenu_exit);
-        item.setIcon(android.R.drawable.ic_menu_rotate);
+		item = menu.add(0, OPTIONS_MENU_ID_LOGOUT, 0, R.string.omenu_signout);
+		item.setIcon(android.R.drawable.ic_menu_revert);
 
-        return true;
-    }
+		item = menu.add(0, OPTIONS_MENU_ID_ABOUT, 0, R.string.omenu_about);
+		item.setIcon(android.R.drawable.ic_menu_info_details);
 
-    protected static final int REQUEST_CODE_LAUNCH_ACTIVITY = 0;
-    protected static final int REQUEST_CODE_PREFERENCES = 1;
+		item = menu.add(0, OPTIONS_MENU_ID_EXIT, 0, R.string.omenu_exit);
+		item.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-        case OPTIONS_MENU_ID_LOGOUT:
-            logout();
-            return true;
-        case OPTIONS_MENU_ID_SEARCH:
-            onSearchRequested();
-            return true;
-        case OPTIONS_MENU_ID_PREFERENCES:
-            Intent launchPreferencesIntent = new Intent().setClass(this,
-                    PreferencesActivity.class);
-            startActivityForResult(launchPreferencesIntent,
-                    REQUEST_CODE_PREFERENCES);
-            return true;
-        case OPTIONS_MENU_ID_ABOUT:
-            //AboutDialog.show(this);
-        	Intent intent = new Intent().setClass(this, AboutActivity.class);
-        	startActivity(intent);
-            return true;
-        case OPTIONS_MENU_ID_EXIT:
-            exit();
-            return true;
-        }
+		return true;
+	}
 
-        return super.onOptionsItemSelected(item);
-    }
+	protected static final int REQUEST_CODE_LAUNCH_ACTIVITY = 0;
+	protected static final int REQUEST_CODE_PREFERENCES = 1;
 
-    protected void exit() {
-        TwitterService.unschedule(this);
-        Intent i = new Intent(Intent.ACTION_MAIN);
-        i.addCategory(Intent.CATEGORY_HOME);
-        startActivity(i);
-    }
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case OPTIONS_MENU_ID_LOGOUT:
+			logout();
+			return true;
+		case OPTIONS_MENU_ID_SEARCH:
+			onSearchRequested();
+			return true;
+		case OPTIONS_MENU_ID_PREFERENCES:
+			Intent launchPreferencesIntent = new Intent().setClass(this,
+					PreferencesActivity.class);
+			startActivityForResult(launchPreferencesIntent,
+					REQUEST_CODE_PREFERENCES);
+			return true;
+		case OPTIONS_MENU_ID_ABOUT:
+			// AboutDialog.show(this);
+			Intent intent = new Intent().setClass(this, AboutActivity.class);
+			startActivity(intent);
+			return true;
+		case OPTIONS_MENU_ID_EXIT:
+			exit();
+			return true;
+		}
 
-    protected void launchActivity(Intent intent) {
-        // TODO: probably don't need this result chaining to finish upon logout.
-        // since the subclasses have to check in onResume.
-        startActivityForResult(intent, REQUEST_CODE_LAUNCH_ACTIVITY);
-    }
+		return super.onOptionsItemSelected(item);
+	}
 
-    protected void launchDefaultActivity() {
-        Intent intent = new Intent();
-        intent.setClass(this, TwitterActivity.class);
-        startActivity(intent);
-    }
+	protected void exit() {
+		TwitterService.unschedule(this);
+		Intent i = new Intent(Intent.ACTION_MAIN);
+		i.addCategory(Intent.CATEGORY_HOME);
+		startActivity(i);
+	}
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+	protected void launchActivity(Intent intent) {
+		// TODO: probably don't need this result chaining to finish upon logout.
+		// since the subclasses have to check in onResume.
+		startActivityForResult(intent, REQUEST_CODE_LAUNCH_ACTIVITY);
+	}
 
-        if (requestCode == REQUEST_CODE_PREFERENCES && resultCode == RESULT_OK) {
-            manageUpdateChecks();
-        } else if (requestCode == REQUEST_CODE_LAUNCH_ACTIVITY
-                && resultCode == RESULT_LOGOUT) {
-            Log.d(TAG, "Result logout.");
-            handleLoggedOut();
-        }
-    }
+	protected void launchDefaultActivity() {
+		Intent intent = new Intent();
+		intent.setClass(this, TwitterActivity.class);
+		startActivity(intent);
+	}
 
-    protected boolean checkIsLogedIn() {
-        if (!getApi().isLoggedIn()) {
-            Log.d(TAG, "Not logged in.");
-            handleLoggedOut();
-            return false;
-        }
-        return true;
-    }
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
 
-    public static boolean isTrue(Bundle bundle, String key) {
-        return bundle != null && bundle.containsKey(key)
-                && bundle.getBoolean(key);
-    }
+		if (requestCode == REQUEST_CODE_PREFERENCES && resultCode == RESULT_OK) {
+			manageUpdateChecks();
+		} else if (requestCode == REQUEST_CODE_LAUNCH_ACTIVITY
+				&& resultCode == RESULT_LOGOUT) {
+			Log.d(TAG, "Result logout.");
+			handleLoggedOut();
+		}
+	}
+
+	protected boolean checkIsLogedIn() {
+		if (!getApi().isLoggedIn()) {
+			Log.d(TAG, "Not logged in.");
+			handleLoggedOut();
+			return false;
+		}
+		return true;
+	}
+
+	public static boolean isTrue(Bundle bundle, String key) {
+		return bundle != null && bundle.containsKey(key)
+				&& bundle.getBoolean(key);
+	}
 }

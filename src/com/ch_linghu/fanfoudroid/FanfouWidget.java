@@ -24,6 +24,7 @@ import com.ch_linghu.fanfoudroid.db.TwitterDatabase;
 import com.ch_linghu.fanfoudroid.service.TwitterService;
 import com.ch_linghu.fanfoudroid.util.DateTimeHelper;
 import com.ch_linghu.fanfoudroid.util.TextHelper;
+import com.ch_linghu.fanfoudroid.R;
 
 public class FanfouWidget extends AppWidgetProvider {
 	public final String TAG = "FanfouWidget";
@@ -108,12 +109,11 @@ public class FanfouWidget extends AppWidgetProvider {
 				R.layout.widget_initial_layout);
 		updateViews.setTextViewText(R.id.status_text,
 				TextHelper.getSimpleTweetText("请登录"));
-		
-		updateViews.setTextViewText(R.id.status_screen_name,"");
 
-		updateViews.setTextViewText(R.id.tweet_source,"");
-		updateViews.setTextViewText(R.id.tweet_created_at,
-				"");
+		updateViews.setTextViewText(R.id.status_screen_name, "");
+
+		updateViews.setTextViewText(R.id.tweet_source, "");
+		updateViews.setTextViewText(R.id.tweet_created_at, "");
 		return updateViews;
 	}
 
@@ -159,8 +159,8 @@ public class FanfouWidget extends AppWidgetProvider {
 				DateTimeHelper.getRelativeDate(t.createdAt));
 
 		updateViews.setImageViewBitmap(R.id.status_image,
-				TwitterApplication.mImageLoader.get(
-						t.profileImageUrl, new CacheCallback(updateViews)));
+				TwitterApplication.mImageLoader.get(t.profileImageUrl,
+						new CacheCallback(updateViews)));
 
 		Intent inext = new Intent(context, FanfouWidget.class);
 		inext.setAction(NEXTACTION);
@@ -195,7 +195,7 @@ public class FanfouWidget extends AppWidgetProvider {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		Log.d(TAG, "OnReceive");
-		
+
 		// FIXME: NullPointerException
 		Log.i(TAG, context.getApplicationContext().toString());
 		if (!TwitterApplication.mApi.isLoggedIn()) {

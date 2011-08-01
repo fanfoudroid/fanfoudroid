@@ -27,57 +27,60 @@ import android.util.Log;
 import com.ch_linghu.fanfoudroid.app.Preferences;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
 import com.ch_linghu.fanfoudroid.ui.module.MyTextView;
+import com.ch_linghu.fanfoudroid.R;
 
-public class PreferencesActivity extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        
-        //禁止横屏
-        if (TwitterApplication.mPref.getBoolean(
-                Preferences.FORCE_SCREEN_ORIENTATION_PORTRAIT, false)) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        }
-        // TODO: is this a hack?
-        setResult(RESULT_OK);
+public class PreferencesActivity extends PreferenceActivity implements
+		SharedPreferences.OnSharedPreferenceChangeListener {
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
-        addPreferencesFromResource(R.xml.preferences);
-        
-    }
+		// 禁止横屏
+		if (TwitterApplication.mPref.getBoolean(
+				Preferences.FORCE_SCREEN_ORIENTATION_PORTRAIT, false)) {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		}
+		// TODO: is this a hack?
+		setResult(RESULT_OK);
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        
-        // Set up a listener whenever a key changes
-        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-    }
+		addPreferencesFromResource(R.xml.preferences);
 
-    @Override
-    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
-            Preference preference) {
-        return super.onPreferenceTreeClick(preferenceScreen, preference);
-    }
-    
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-            String key) {
-        
-        if ( key.equalsIgnoreCase(Preferences.NETWORK_TYPE) ) {
-            HttpClient httpClient = TwitterApplication.mApi.getHttpClient();
-            String type =  sharedPreferences.getString(Preferences.NETWORK_TYPE, "");
-            
-            if (type.equalsIgnoreCase(getString(R.string.pref_network_type_cmwap))) {
-                Log.d("LDS", "Set proxy for cmwap mode.");
-                httpClient.setProxy("10.0.0.172", 80, "http");
-            } else {
-                Log.d("LDS", "No proxy.");
-                httpClient.removeProxy();
-            }
-        } else if ( key.equalsIgnoreCase(Preferences.UI_FONT_SIZE)) {
-            MyTextView.setFontSizeChanged(true);
-        }
-        
-    }
-    
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		// Set up a listener whenever a key changes
+		getPreferenceScreen().getSharedPreferences()
+				.registerOnSharedPreferenceChangeListener(this);
+	}
+
+	@Override
+	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
+			Preference preference) {
+		return super.onPreferenceTreeClick(preferenceScreen, preference);
+	}
+
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+			String key) {
+
+		if (key.equalsIgnoreCase(Preferences.NETWORK_TYPE)) {
+			HttpClient httpClient = TwitterApplication.mApi.getHttpClient();
+			String type = sharedPreferences.getString(Preferences.NETWORK_TYPE,
+					"");
+
+			if (type.equalsIgnoreCase(getString(R.string.pref_network_type_cmwap))) {
+				Log.d("LDS", "Set proxy for cmwap mode.");
+				httpClient.setProxy("10.0.0.172", 80, "http");
+			} else {
+				Log.d("LDS", "No proxy.");
+				httpClient.removeProxy();
+			}
+		} else if (key.equalsIgnoreCase(Preferences.UI_FONT_SIZE)) {
+			MyTextView.setFontSizeChanged(true);
+		}
+
+	}
 
 }

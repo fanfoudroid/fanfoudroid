@@ -4,12 +4,12 @@ All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
       notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
       notice, this list of conditions and the following disclaimer in the
       documentation and/or other materials provided with the distribution.
-    * Neither the name of the Yusuke Yamamoto nor the
+ * Neither the name of the Yusuke Yamamoto nor the
       names of its contributors may be used to endorse or promote products
       derived from this software without specific prior written permission.
 
@@ -23,7 +23,7 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package com.ch_linghu.fanfoudroid.fanfou;
 
 import java.util.ArrayList;
@@ -40,187 +40,190 @@ import org.w3c.dom.NodeList;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.Response;
 
-
 /**
  * A data class representing sent/received direct message.
+ * 
  * @author Yusuke Yamamoto - yusuke at mac.com
  */
-public class DirectMessage extends WeiboResponse implements java.io.Serializable {
-    private String id;
-    private String text;
-    private String sender_id;
-    private String recipient_id;
-    private Date created_at;
-    private String sender_screen_name;
-    private String recipient_screen_name;
-    private static final long serialVersionUID = -3253021825891789737L;
+public class DirectMessage extends WeiboResponse implements
+		java.io.Serializable {
+	private String id;
+	private String text;
+	private String sender_id;
+	private String recipient_id;
+	private Date created_at;
+	private String sender_screen_name;
+	private String recipient_screen_name;
+	private static final long serialVersionUID = -3253021825891789737L;
 
-    /*package*/DirectMessage(Response res, Weibo weibo) throws HttpException {
-        super(res);
-        init(res, res.asDocument().getDocumentElement(), weibo);
-    }
-    /*package*/DirectMessage(Response res, Element elem, Weibo weibo) throws HttpException {
-        super(res);
-        init(res, elem, weibo);
-    }
-    /*modify by sycheng add json call*/
-    /*package*/DirectMessage(JSONObject json) throws HttpException {
-        try {
-        	
+	/* package */DirectMessage(Response res, Weibo weibo) throws HttpException {
+		super(res);
+		init(res, res.asDocument().getDocumentElement(), weibo);
+	}
+
+	/* package */DirectMessage(Response res, Element elem, Weibo weibo)
+			throws HttpException {
+		super(res);
+		init(res, elem, weibo);
+	}
+
+	/* modify by sycheng add json call */
+	/* package */DirectMessage(JSONObject json) throws HttpException {
+		try {
+
 			id = json.getString("id");
 			text = json.getString("text");
 			sender_id = json.getString("sender_id");
 			recipient_id = json.getString("recipient_id");
-			created_at = parseDate(json.getString("created_at"), "EEE MMM dd HH:mm:ss z yyyy");
+			created_at = parseDate(json.getString("created_at"),
+					"EEE MMM dd HH:mm:ss z yyyy");
 			sender_screen_name = json.getString("sender_screen_name");
 			recipient_screen_name = json.getString("recipient_screen_name");
-			
-			if(!json.isNull("sender"))
+
+			if (!json.isNull("sender"))
 				sender = new User(json.getJSONObject("sender"));
-			if(!json.isNull("recipient"))
+			if (!json.isNull("recipient"))
 				recipient = new User(json.getJSONObject("recipient"));
 		} catch (JSONException jsone) {
-			throw new HttpException(jsone.getMessage() + ":" + json.toString(), jsone);
+			throw new HttpException(jsone.getMessage() + ":" + json.toString(),
+					jsone);
 		}
-        
-    }
-    
-    private void init(Response res, Element elem, Weibo weibo) throws HttpException{
-        
 
-    	ensureRootNodeNameIs("direct_message", elem);
-        sender = new User(res, (Element) elem.getElementsByTagName("sender").item(0),
-                weibo);
-        recipient = new User(res, (Element) elem.getElementsByTagName("recipient").item(0),
-                weibo);
-        id = getChildString("id", elem);
-        text = getChildText("text", elem);
-        sender_id = getChildString("sender_id", elem);
-        recipient_id = getChildString("recipient_id", elem);
-        created_at = getChildDate("created_at", elem);
-        sender_screen_name = getChildText("sender_screen_name", elem);
-        recipient_screen_name = getChildText("recipient_screen_name", elem);
+	}
 
-    }
+	private void init(Response res, Element elem, Weibo weibo)
+			throws HttpException {
 
-    public String getId() {
-        return id;
-    }
+		ensureRootNodeNameIs("direct_message", elem);
+		sender = new User(res, (Element) elem.getElementsByTagName("sender")
+				.item(0), weibo);
+		recipient = new User(res, (Element) elem.getElementsByTagName(
+				"recipient").item(0), weibo);
+		id = getChildString("id", elem);
+		text = getChildText("text", elem);
+		sender_id = getChildString("sender_id", elem);
+		recipient_id = getChildString("recipient_id", elem);
+		created_at = getChildDate("created_at", elem);
+		sender_screen_name = getChildText("sender_screen_name", elem);
+		recipient_screen_name = getChildText("recipient_screen_name", elem);
 
-    public String getText() {
-        return text;
-    }
+	}
 
-    public String getSenderId() {
-        return sender_id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getRecipientId() {
-        return recipient_id;
-    }
+	public String getText() {
+		return text;
+	}
 
-    /**
-     * @return created_at
-     * @since Weibo4J 1.1.0
-     */
-    public Date getCreatedAt() {
-        return created_at;
-    }
+	public String getSenderId() {
+		return sender_id;
+	}
 
-    public String getSenderScreenName() {
-        return sender_screen_name;
-    }
+	public String getRecipientId() {
+		return recipient_id;
+	}
 
-    public String getRecipientScreenName() {
-        return recipient_screen_name;
-    }
+	/**
+	 * @return created_at
+	 * @since Weibo4J 1.1.0
+	 */
+	public Date getCreatedAt() {
+		return created_at;
+	}
 
-    private User sender;
+	public String getSenderScreenName() {
+		return sender_screen_name;
+	}
 
-    public User getSender() {
-        return sender;
-    }
+	public String getRecipientScreenName() {
+		return recipient_screen_name;
+	}
 
-    private User recipient;
+	private User sender;
 
-    public User getRecipient() {
-        return recipient;
-    }
+	public User getSender() {
+		return sender;
+	}
 
-    /*package*/
-    static List<DirectMessage> constructDirectMessages(Response res,
-                                                       Weibo weibo) throws HttpException {
-        Document doc = res.asDocument();
-        if (isRootNodeNilClasses(doc)) {
-            return new ArrayList<DirectMessage>(0);
-        } else {
-            try {
-                ensureRootNodeNameIs("direct-messages", doc);
-                NodeList list = doc.getDocumentElement().getElementsByTagName(
-                        "direct_message");
-                int size = list.getLength();
-                List<DirectMessage> messages = new ArrayList<DirectMessage>(size);
-                for (int i = 0; i < size; i++) {
-                    Element status = (Element) list.item(i);
-                    messages.add(new DirectMessage(res, status, weibo));
-                }
-                return messages;
-            } catch (HttpException te) {
-                if (isRootNodeNilClasses(doc)) {
-                    return new ArrayList<DirectMessage>(0);
-                } else {
-                    throw te;
-                }
-            }
-        }
-    }
-    
-    /*package*/
-    static List<DirectMessage> constructDirectMessages(Response res
-                                                       ) throws HttpException {
-    	JSONArray list=	 res.asJSONArray();
-    	
-            try {
-                int size = list.length();
-                List<DirectMessage> messages = new ArrayList<DirectMessage>(size);
-                for (int i = 0; i < size; i++) {
-                    
-                    messages.add(new DirectMessage(list.getJSONObject(i)));
-                }
-                return messages;
-            } catch (JSONException jsone) {
-            	throw new HttpException(jsone);
-            }
-    }
+	private User recipient;
 
-    @Override
-    public int hashCode() {
-        return id.hashCode();
-    }
+	public User getRecipient() {
+		return recipient;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (null == obj) {
-            return false;
-        }
-        if (this == obj) {
-            return true;
-        }
-        return obj instanceof DirectMessage && ((DirectMessage) obj).id.equals(this.id);
-    }
+	/* package */
+	static List<DirectMessage> constructDirectMessages(Response res, Weibo weibo)
+			throws HttpException {
+		Document doc = res.asDocument();
+		if (isRootNodeNilClasses(doc)) {
+			return new ArrayList<DirectMessage>(0);
+		} else {
+			try {
+				ensureRootNodeNameIs("direct-messages", doc);
+				NodeList list = doc.getDocumentElement().getElementsByTagName(
+						"direct_message");
+				int size = list.getLength();
+				List<DirectMessage> messages = new ArrayList<DirectMessage>(
+						size);
+				for (int i = 0; i < size; i++) {
+					Element status = (Element) list.item(i);
+					messages.add(new DirectMessage(res, status, weibo));
+				}
+				return messages;
+			} catch (HttpException te) {
+				if (isRootNodeNilClasses(doc)) {
+					return new ArrayList<DirectMessage>(0);
+				} else {
+					throw te;
+				}
+			}
+		}
+	}
 
-    @Override
-    public String toString() {
-        return "DirectMessage{" +
-                "id=" + id +
-                ", text='" + text + '\'' +
-                ", sender_id=" + sender_id +
-                ", recipient_id=" + recipient_id +
-                ", created_at=" + created_at +
-                ", sender_screen_name='" + sender_screen_name + '\'' +
-                ", recipient_screen_name='" + recipient_screen_name + '\'' +
-                ", sender=" + sender +
-                ", recipient=" + recipient +
-                '}';
-    }
+	/* package */
+	static List<DirectMessage> constructDirectMessages(Response res)
+			throws HttpException {
+		JSONArray list = res.asJSONArray();
+
+		try {
+			int size = list.length();
+			List<DirectMessage> messages = new ArrayList<DirectMessage>(size);
+			for (int i = 0; i < size; i++) {
+
+				messages.add(new DirectMessage(list.getJSONObject(i)));
+			}
+			return messages;
+		} catch (JSONException jsone) {
+			throw new HttpException(jsone);
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		return id.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (null == obj) {
+			return false;
+		}
+		if (this == obj) {
+			return true;
+		}
+		return obj instanceof DirectMessage
+				&& ((DirectMessage) obj).id.equals(this.id);
+	}
+
+	@Override
+	public String toString() {
+		return "DirectMessage{" + "id=" + id + ", text='" + text + '\''
+				+ ", sender_id=" + sender_id + ", recipient_id=" + recipient_id
+				+ ", created_at=" + created_at + ", sender_screen_name='"
+				+ sender_screen_name + '\'' + ", recipient_screen_name='"
+				+ recipient_screen_name + '\'' + ", sender=" + sender
+				+ ", recipient=" + recipient + '}';
+	}
 }

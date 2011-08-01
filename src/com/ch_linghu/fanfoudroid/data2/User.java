@@ -3,181 +3,182 @@ package com.ch_linghu.fanfoudroid.data2;
 import java.util.Date;
 
 public class User {
-    private String id;
-    private String name;
-    private String screen_name;
-    private String location;
-    private String desription;
-    private String profile_image_url;
-    private String url;
-    private boolean isProtected;
-    private int friends_count;
-    private int followers_count;
-    private int favourites_count;
-    private Date created_at;
-    private boolean following;
-    private boolean notifications;
-    private int utc_offset;
-    
-    private Status status; // null
-    
-    public User() {}
-    
-    public String getId() {
-        return id;
-    }
+	private String id;
+	private String name;
+	private String screen_name;
+	private String location;
+	private String desription;
+	private String profile_image_url;
+	private String url;
+	private boolean isProtected;
+	private int friends_count;
+	private int followers_count;
+	private int favourites_count;
+	private Date created_at;
+	private boolean following;
+	private boolean notifications;
+	private int utc_offset;
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	private Status status; // null
 
-    public String getName() {
-        return name;
-    }
+	public User() {
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public String getScreenName() {
-        return screen_name;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void setScreenName(String screen_name) {
-        this.screen_name = screen_name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getLocation() {
-        return location;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setLocation(String location) {
-        this.location = location;
-    }
+	public String getScreenName() {
+		return screen_name;
+	}
 
-    public String getDesription() {
-        return desription;
-    }
+	public void setScreenName(String screen_name) {
+		this.screen_name = screen_name;
+	}
 
-    public void setDesription(String desription) {
-        this.desription = desription;
-    }
+	public String getLocation() {
+		return location;
+	}
 
-    public String getProfileImageUrl() {
-        return profile_image_url;
-    }
+	public void setLocation(String location) {
+		this.location = location;
+	}
 
-    public void setProfileImageUrl(String profile_image_url) {
-        this.profile_image_url = profile_image_url;
-    }
+	public String getDesription() {
+		return desription;
+	}
 
-    public String getUrl() {
-        return url;
-    }
+	public void setDesription(String desription) {
+		this.desription = desription;
+	}
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
+	public String getProfileImageUrl() {
+		return profile_image_url;
+	}
 
-    public boolean isProtected() {
-        return isProtected;
-    }
+	public void setProfileImageUrl(String profile_image_url) {
+		this.profile_image_url = profile_image_url;
+	}
 
-    public void setProtected(boolean isProtected) {
-        this.isProtected = isProtected;
-    }
+	public String getUrl() {
+		return url;
+	}
 
-    public int getFriendsCount() {
-        return friends_count;
-    }
+	public void setUrl(String url) {
+		this.url = url;
+	}
 
-    public void setFriendsCount(int friends_count) {
-        this.friends_count = friends_count;
-    }
+	public boolean isProtected() {
+		return isProtected;
+	}
 
-    public int getFollowersCount() {
-        return followers_count;
-    }
+	public void setProtected(boolean isProtected) {
+		this.isProtected = isProtected;
+	}
 
-    public void setFollowersCount(int followers_count) {
-        this.followers_count = followers_count;
-    }
+	public int getFriendsCount() {
+		return friends_count;
+	}
 
-    public int getFavouritesCount() {
-        return favourites_count;
-    }
+	public void setFriendsCount(int friends_count) {
+		this.friends_count = friends_count;
+	}
 
-    public void setFavouritesCount(int favourites_count) {
-        this.favourites_count = favourites_count;
-    }
+	public int getFollowersCount() {
+		return followers_count;
+	}
 
-    public Date getCreatedAt() {
-        return created_at;
-    }
+	public void setFollowersCount(int followers_count) {
+		this.followers_count = followers_count;
+	}
 
-    public void setCreatedAt(Date created_at) {
-        this.created_at = created_at;
-    }
+	public int getFavouritesCount() {
+		return favourites_count;
+	}
 
-    public boolean isFollowing() {
-        return following;
-    }
+	public void setFavouritesCount(int favourites_count) {
+		this.favourites_count = favourites_count;
+	}
 
-    public void setFollowing(boolean following) {
-        this.following = following;
-    }
+	public Date getCreatedAt() {
+		return created_at;
+	}
 
-    public boolean isNotifications() {
-        return notifications;
-    }
+	public void setCreatedAt(Date created_at) {
+		this.created_at = created_at;
+	}
 
-    public void setNotifications(boolean notifications) {
-        this.notifications = notifications;
-    }
+	public boolean isFollowing() {
+		return following;
+	}
 
-    public int getUtcOffset() {
-        return utc_offset;
-    }
+	public void setFollowing(boolean following) {
+		this.following = following;
+	}
 
-    public void setUtcOffset(int utc_offset) {
-        this.utc_offset = utc_offset;
-    }
+	public boolean isNotifications() {
+		return notifications;
+	}
 
-    public Status getStatus() {
-        return status;
-    }
+	public void setNotifications(boolean notifications) {
+		this.notifications = notifications;
+	}
 
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-    
-    @Override
-    public String toString() {
-        return "User [id=" + id + ", name=" + name + ", screen_name="
-                + screen_name + ", location=" + location + ", desription="
-                + desription + ", profile_image_url=" + profile_image_url
-                + ", url=" + url + ", isProtected=" + isProtected
-                + ", friends_count=" + friends_count + ", followers_count="
-                + followers_count + ", favourites_count=" + favourites_count
-                + ", created_at=" + created_at + ", following=" + following
-                + ", notifications=" + notifications + ", utc_offset="
-                + utc_offset + ", status=" + status + "]";
-    }
+	public int getUtcOffset() {
+		return utc_offset;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        User other = (User) obj;
-        if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id))
-            return false;
-        return true;
-    }
+	public void setUtcOffset(int utc_offset) {
+		this.utc_offset = utc_offset;
+	}
+
+	public Status getStatus() {
+		return status;
+	}
+
+	public void setStatus(Status status) {
+		this.status = status;
+	}
+
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", name=" + name + ", screen_name="
+				+ screen_name + ", location=" + location + ", desription="
+				+ desription + ", profile_image_url=" + profile_image_url
+				+ ", url=" + url + ", isProtected=" + isProtected
+				+ ", friends_count=" + friends_count + ", followers_count="
+				+ followers_count + ", favourites_count=" + favourites_count
+				+ ", created_at=" + created_at + ", following=" + following
+				+ ", notifications=" + notifications + ", utc_offset="
+				+ utc_offset + ", status=" + status + "]";
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		User other = (User) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
+	}
 }

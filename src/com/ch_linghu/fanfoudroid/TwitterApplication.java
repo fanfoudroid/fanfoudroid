@@ -22,6 +22,7 @@ import com.ch_linghu.fanfoudroid.fanfou.Configuration;
 import com.ch_linghu.fanfoudroid.fanfou.User;
 import com.ch_linghu.fanfoudroid.fanfou.Weibo;
 import com.ch_linghu.fanfoudroid.http.HttpException;
+import com.ch_linghu.fanfoudroid.R;
 
 //@ReportsCrashes(formKey="dHowMk5LMXQweVJkWGthb1E1T1NUUHc6MQ",
 //    mode = ReportingInteractionMode.NOTIFICATION,
@@ -45,7 +46,7 @@ public class TwitterApplication extends Application {
 	public static Weibo mApi; // new API
 	public static Context mContext;
 	public static SharedPreferences mPref;
-	
+
 	public static int networkType = 0;
 
 	public final static boolean DEBUG = Configuration.getDebug();
@@ -59,31 +60,35 @@ public class TwitterApplication extends Application {
 	private static void fetchMyselfInfo() {
 		User myself;
 		try {
-			myself = TwitterApplication.mApi.showUser(TwitterApplication.mApi.getUserId());
-			TwitterApplication.mPref.edit().putString(
-					Preferences.CURRENT_USER_ID, myself.getId()).commit();
-			TwitterApplication.mPref.edit().putString(
-					Preferences.CURRENT_USER_SCREEN_NAME, myself.getScreenName()).commit();
+			myself = TwitterApplication.mApi.showUser(TwitterApplication.mApi
+					.getUserId());
+			TwitterApplication.mPref.edit()
+					.putString(Preferences.CURRENT_USER_ID, myself.getId())
+					.commit();
+			TwitterApplication.mPref
+					.edit()
+					.putString(Preferences.CURRENT_USER_SCREEN_NAME,
+							myself.getScreenName()).commit();
 		} catch (HttpException e) {
 			e.printStackTrace();
 		}
 	}
 
 	public static String getMyselfId() {
-		if (!mPref.contains(Preferences.CURRENT_USER_ID) 
-			|| mPref.getString(Preferences.CURRENT_USER_ID, "~")
-				.startsWith("~")) {
+		if (!mPref.contains(Preferences.CURRENT_USER_ID)
+				|| mPref.getString(Preferences.CURRENT_USER_ID, "~")
+						.startsWith("~")) {
 			fetchMyselfInfo();
 		}
 		return mPref.getString(Preferences.CURRENT_USER_ID, "~");
 	}
-	
+
 	public static String getMyselfName() {
-		if (!mPref.contains(Preferences.CURRENT_USER_ID) 
+		if (!mPref.contains(Preferences.CURRENT_USER_ID)
 				|| !mPref.contains(Preferences.CURRENT_USER_SCREEN_NAME)
 				|| mPref.getString(Preferences.CURRENT_USER_ID, "~")
-					.startsWith("~")) {
-				fetchMyselfInfo();
+						.startsWith("~")) {
+			fetchMyselfInfo();
 		}
 		return mPref.getString(Preferences.CURRENT_USER_SCREEN_NAME, "");
 	}
@@ -132,20 +137,21 @@ public class TwitterApplication extends Application {
 	public String getNetworkType() {
 		ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
-		//NetworkInfo mobNetInfo = connectivityManager
-		//		.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-		if (activeNetInfo != null){
-			return activeNetInfo.getExtraInfo(); // 接入点名称: 此名称可被用户任意更改 如: cmwap, cmnet,
-												 // internet ...
-		}else{
+		// NetworkInfo mobNetInfo = connectivityManager
+		// .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+		if (activeNetInfo != null) {
+			return activeNetInfo.getExtraInfo(); // 接入点名称: 此名称可被用户任意更改 如: cmwap,
+													// cmnet,
+													// internet ...
+		} else {
 			return null;
 		}
 	}
 
 	@Override
 	public void onTerminate() {
-		//FIXME: 根据android文档，onTerminate不会在真实机器上被执行到
-		//因此这些清理动作需要再找合适的地方放置，以确保执行。
+		// FIXME: 根据android文档，onTerminate不会在真实机器上被执行到
+		// 因此这些清理动作需要再找合适的地方放置，以确保执行。
 		cleanupImages();
 		mDb.close();
 		Toast.makeText(this, "exit app", Toast.LENGTH_LONG);

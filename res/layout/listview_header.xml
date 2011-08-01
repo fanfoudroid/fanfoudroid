@@ -15,7 +15,7 @@
        android:paddingTop="10dp"
        android:paddingBottom="10dp"
        style="@style/normalText.Big"
-       android:text="刷新"
+       android:text="@string/omenu_refresh"
        />
       <ProgressBar   
         android:id="@+id/rectangleProgressBar_header"    

@@ -16,7 +16,6 @@
 
 package com.ch_linghu.fanfoudroid.service;
 
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -27,13 +26,13 @@ import android.util.Log;
  * checks for new tweets.
  */
 public class BootReceiver extends BroadcastReceiver {
-  private static final String TAG = "BootReceiver";
-  
-  @Override
-public void onReceive(Context context, Intent intent) {
-    Log.d(TAG, "Twitta BootReceiver is receiving.");
-    if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {      
-      TwitterService.schedule(context);
-    }
-  }
+	private static final String TAG = "BootReceiver";
+
+	@Override
+	public void onReceive(Context context, Intent intent) {
+		Log.d(TAG, "Twitta BootReceiver is receiving.");
+		if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
+			TwitterService.schedule(context);
+		}
+	}
 }

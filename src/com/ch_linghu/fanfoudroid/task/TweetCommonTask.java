@@ -9,12 +9,12 @@ import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.ui.base.BaseActivity;
 
 public class TweetCommonTask {
-	public static class DeleteTask extends GenericTask{
-		public static final String TAG="DeleteTask";
-		
+	public static class DeleteTask extends GenericTask {
+		public static final String TAG = "DeleteTask";
+
 		private BaseActivity activity;
-		
-		public DeleteTask(BaseActivity activity){
+
+		public DeleteTask(BaseActivity activity) {
 			this.activity = activity;
 		}
 
@@ -40,31 +40,31 @@ public class TweetCommonTask {
 
 	}
 
-
-	public static class FavoriteTask extends GenericTask{
+	public static class FavoriteTask extends GenericTask {
 		private static final String TAG = "FavoriteTask";
-		
+
 		private BaseActivity activity;
 
 		public static final String TYPE_ADD = "add";
-	    public static final String TYPE_DEL = "del";
-	    
-	    private String type;
-	    public String getType(){
-	    	return type;
-	    }
-	    
-	    public FavoriteTask(BaseActivity activity){
-	    	this.activity = activity;
-	    }
-	    
+		public static final String TYPE_DEL = "del";
+
+		private String type;
+
+		public String getType() {
+			return type;
+		}
+
+		public FavoriteTask(BaseActivity activity) {
+			this.activity = activity;
+		}
+
 		@Override
-		protected TaskResult _doInBackground(TaskParams...params){
+		protected TaskResult _doInBackground(TaskParams... params) {
 			TaskParams param = params[0];
 			try {
 				String action = param.getString("action");
 				String id = param.getString("id");
-				
+
 				com.ch_linghu.fanfoudroid.fanfou.Status status = null;
 				if (action.equals(TYPE_ADD)) {
 					status = activity.getApi().createFavorite(id);
@@ -78,34 +78,36 @@ public class TweetCommonTask {
 
 				Tweet tweet = Tweet.create(status);
 
-//				if (!Utils.isEmpty(tweet.profileImageUrl)) {
-//					// Fetch image to cache.
-//					try {
-//						activity.getImageManager().put(tweet.profileImageUrl);
-//					} catch (IOException e) {
-//						Log.e(TAG, e.getMessage(), e);
-//					}
-//				}
+				// if (!Utils.isEmpty(tweet.profileImageUrl)) {
+				// // Fetch image to cache.
+				// try {
+				// activity.getImageManager().put(tweet.profileImageUrl);
+				// } catch (IOException e) {
+				// Log.e(TAG, e.getMessage(), e);
+				// }
+				// }
 
-				if(action.equals(TYPE_DEL)){
-					activity.getDb().deleteTweet(tweet.id, TwitterApplication.getMyselfId(), StatusTable.TYPE_FAVORITE);
+				if (action.equals(TYPE_DEL)) {
+					activity.getDb().deleteTweet(tweet.id,
+							TwitterApplication.getMyselfId(),
+							StatusTable.TYPE_FAVORITE);
 				}
 			} catch (HttpException e) {
 				Log.e(TAG, e.getMessage(), e);
 				return TaskResult.IO_ERROR;
 			}
 
-			return TaskResult.OK;			
+			return TaskResult.OK;
 		}
 	}
-	
-//	public static class UserTask extends GenericTask{
-//
-//		@Override
-//		protected TaskResult _doInBackground(TaskParams... params) {
-//			// TODO Auto-generated method stub
-//			return null;
-//		}
-//		
-//	}
+
+	// public static class UserTask extends GenericTask{
+	//
+	// @Override
+	// protected TaskResult _doInBackground(TaskParams... params) {
+	// // TODO Auto-generated method stub
+	// return null;
+	// }
+	//
+	// }
 }

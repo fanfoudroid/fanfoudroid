@@ -10,88 +10,89 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 public class TweetEdit {
-  private EditText mEditText;
-  private TextView mCharsRemainText;
-  private int originTextColor;
-  
-  public TweetEdit(EditText editText, TextView charsRemainText) {
-    mEditText = editText;
-    mCharsRemainText = charsRemainText;
-    
-    originTextColor = mCharsRemainText.getTextColors().getDefaultColor();
-    
-    mEditText.addTextChangedListener(mTextWatcher);
-    mEditText.setFilters(new InputFilter[] { new InputFilter.LengthFilter(
-        MAX_TWEET_INPUT_LENGTH) });        
-  }  
+	private EditText mEditText;
+	private TextView mCharsRemainText;
+	private int originTextColor;
 
-  private static final int MAX_TWEET_LENGTH = 140;
-  private static final int MAX_TWEET_INPUT_LENGTH = 400;
-  
-  public void setTextAndFocus(String text, boolean start) {
-    setText(text);
-    Editable editable = mEditText.getText();
-    if (!start){
-    	Selection.setSelection(editable, editable.length());
-    }else{
-    	Selection.setSelection(editable, 0);    	
-    }
-    mEditText.requestFocus();    
-  }
+	public TweetEdit(EditText editText, TextView charsRemainText) {
+		mEditText = editText;
+		mCharsRemainText = charsRemainText;
 
-  public void setText(String text) {
-    mEditText.setText(text);
-    updateCharsRemain();
-  }
-  
-  private TextWatcher mTextWatcher = new TextWatcher() {
-    @Override
-    public void afterTextChanged(Editable e) {
-      updateCharsRemain();
-    }
+		originTextColor = mCharsRemainText.getTextColors().getDefaultColor();
 
-    @Override
-    public void beforeTextChanged(CharSequence s, int start, int count,
-        int after) {
-    }
+		mEditText.addTextChangedListener(mTextWatcher);
+		mEditText.setFilters(new InputFilter[] { new InputFilter.LengthFilter(
+				MAX_TWEET_INPUT_LENGTH) });
+	}
 
-    @Override
-    public void onTextChanged(CharSequence s, int start, int before, int count) {
-    }
-  };
+	private static final int MAX_TWEET_LENGTH = 140;
+	private static final int MAX_TWEET_INPUT_LENGTH = 400;
 
-  public void updateCharsRemain() {
-    int remaining = MAX_TWEET_LENGTH - mEditText.length();
-    if (remaining < 0 ) {
-    	mCharsRemainText.setTextColor(Color.RED);
-    } else {
-    	mCharsRemainText.setTextColor(originTextColor);
-    }
-    mCharsRemainText.setText(remaining + "");
-  }
+	public void setTextAndFocus(String text, boolean start) {
+		setText(text);
+		Editable editable = mEditText.getText();
+		if (!start) {
+			Selection.setSelection(editable, editable.length());
+		} else {
+			Selection.setSelection(editable, 0);
+		}
+		mEditText.requestFocus();
+	}
 
-  public String getText() {
-    return mEditText.getText().toString();
-  }
+	public void setText(String text) {
+		mEditText.setText(text);
+		updateCharsRemain();
+	}
 
-  public void setEnabled(boolean b) {
-    mEditText.setEnabled(b);
-  }
+	private TextWatcher mTextWatcher = new TextWatcher() {
+		@Override
+		public void afterTextChanged(Editable e) {
+			updateCharsRemain();
+		}
 
-  public void setOnKeyListener(OnKeyListener listener) {
-    mEditText.setOnKeyListener(listener);    
-  }
-  
-  public void addTextChangedListener(TextWatcher watcher){
-	  mEditText.addTextChangedListener(watcher);
-  }
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count,
+				int after) {
+		}
 
-  public void requestFocus() {
-    mEditText.requestFocus();
-  }
-  
-  public EditText getEditText() {
-      return mEditText;
-  }
-    
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before,
+				int count) {
+		}
+	};
+
+	public void updateCharsRemain() {
+		int remaining = MAX_TWEET_LENGTH - mEditText.length();
+		if (remaining < 0) {
+			mCharsRemainText.setTextColor(Color.RED);
+		} else {
+			mCharsRemainText.setTextColor(originTextColor);
+		}
+		mCharsRemainText.setText(remaining + "");
+	}
+
+	public String getText() {
+		return mEditText.getText().toString();
+	}
+
+	public void setEnabled(boolean b) {
+		mEditText.setEnabled(b);
+	}
+
+	public void setOnKeyListener(OnKeyListener listener) {
+		mEditText.setOnKeyListener(listener);
+	}
+
+	public void addTextChangedListener(TextWatcher watcher) {
+		mEditText.addTextChangedListener(watcher);
+	}
+
+	public void requestFocus() {
+		mEditText.requestFocus();
+	}
+
+	public EditText getEditText() {
+		return mEditText;
+	}
+
 }

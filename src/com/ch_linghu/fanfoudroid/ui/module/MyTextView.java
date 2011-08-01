@@ -19,109 +19,111 @@ import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.app.Preferences;
 
 public class MyTextView extends TextView {
-    private static float mFontSize = 15;
-    private static boolean mFontSizeChanged = true;
+	private static float mFontSize = 15;
+	private static boolean mFontSizeChanged = true;
 
-    public MyTextView(Context context) {
-        super(context, null);
-    }
+	public MyTextView(Context context) {
+		super(context, null);
+	}
 
-    public MyTextView(Context context, AttributeSet attrs) {
-        super(context, attrs);
+	public MyTextView(Context context, AttributeSet attrs) {
+		super(context, attrs);
 
-        setLinksClickable(false);
+		setLinksClickable(false);
 
-        Resources res = getResources();
-        int color = res.getColor(R.color.link_color);
-        setLinkTextColor(color);
-        
-        initFontSize();
-    }
-    
-    public void initFontSize() {
-        if ( mFontSizeChanged ) {
-            mFontSize = getFontSizeFromPreferences(mFontSize);
-            setFontSizeChanged(false); // reset
-        }
-        setTextSize(mFontSize);
-    }
-    
-    private float getFontSizeFromPreferences(float defaultValue) {
-        SharedPreferences preferences = TwitterApplication.mPref;
-        if (preferences.contains(Preferences.UI_FONT_SIZE)) {
-            Log.v("DEBUG", preferences.getString(Preferences.UI_FONT_SIZE, "null") + " CHANGE FONT SIZE");
-            return Float.parseFloat(preferences.getString(
-                    Preferences.UI_FONT_SIZE, "14"));
-        }
-        return defaultValue;
-    }
+		Resources res = getResources();
+		int color = res.getColor(R.color.link_color);
+		setLinkTextColor(color);
 
-    private URLSpan mCurrentLink;
-    private ForegroundColorSpan mLinkFocusStyle = new ForegroundColorSpan(
-            Color.RED);
+		initFontSize();
+	}
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        CharSequence text = getText();
-        int action = event.getAction();
+	public void initFontSize() {
+		if (mFontSizeChanged) {
+			mFontSize = getFontSizeFromPreferences(mFontSize);
+			setFontSizeChanged(false); // reset
+		}
+		setTextSize(mFontSize);
+	}
 
-        if (!(text instanceof Spannable)) {
-            return super.onTouchEvent(event);
-        }
+	private float getFontSizeFromPreferences(float defaultValue) {
+		SharedPreferences preferences = TwitterApplication.mPref;
+		if (preferences.contains(Preferences.UI_FONT_SIZE)) {
+			Log.v("DEBUG",
+					preferences.getString(Preferences.UI_FONT_SIZE, "null")
+							+ " CHANGE FONT SIZE");
+			return Float.parseFloat(preferences.getString(
+					Preferences.UI_FONT_SIZE, "14"));
+		}
+		return defaultValue;
+	}
 
-        Spannable buffer = (Spannable) text;
+	private URLSpan mCurrentLink;
+	private ForegroundColorSpan mLinkFocusStyle = new ForegroundColorSpan(
+			Color.RED);
 
-        if (action == MotionEvent.ACTION_UP
-                || action == MotionEvent.ACTION_DOWN
-                || action == MotionEvent.ACTION_MOVE) {
-            TextView widget = this;
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		CharSequence text = getText();
+		int action = event.getAction();
 
-            int x = (int) event.getX();
-            int y = (int) event.getY();
+		if (!(text instanceof Spannable)) {
+			return super.onTouchEvent(event);
+		}
 
-            x -= widget.getTotalPaddingLeft();
-            y -= widget.getTotalPaddingTop();
+		Spannable buffer = (Spannable) text;
 
-            x += widget.getScrollX();
-            y += widget.getScrollY();
+		if (action == MotionEvent.ACTION_UP
+				|| action == MotionEvent.ACTION_DOWN
+				|| action == MotionEvent.ACTION_MOVE) {
+			TextView widget = this;
 
-            Layout layout = widget.getLayout();
-            int line = layout.getLineForVertical(y);
-            int off = layout.getOffsetForHorizontal(line, x);
+			int x = (int) event.getX();
+			int y = (int) event.getY();
 
-            URLSpan[] link = buffer.getSpans(off, off, URLSpan.class);
+			x -= widget.getTotalPaddingLeft();
+			y -= widget.getTotalPaddingTop();
 
-            if (link.length != 0) {
-                if (action == MotionEvent.ACTION_UP) {
-                    if (mCurrentLink == link[0]) {
-                        link[0].onClick(widget);
-                    }
-                    mCurrentLink = null;
-                    buffer.removeSpan(mLinkFocusStyle);
-                } else if (action == MotionEvent.ACTION_DOWN) {
-                    mCurrentLink = link[0];
-                    buffer.setSpan(mLinkFocusStyle,
-                            buffer.getSpanStart(link[0]),
-                            buffer.getSpanEnd(link[0]),
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                }
+			x += widget.getScrollX();
+			y += widget.getScrollY();
 
-                return true;
-            }
-        }
+			Layout layout = widget.getLayout();
+			int line = layout.getLineForVertical(y);
+			int off = layout.getOffsetForHorizontal(line, x);
 
-        mCurrentLink = null;
-        buffer.removeSpan(mLinkFocusStyle);
+			URLSpan[] link = buffer.getSpans(off, off, URLSpan.class);
 
-        return super.onTouchEvent(event);
-    }
-    
-    public static void setFontSizeChanged(boolean isChanged) {
-        mFontSizeChanged = isChanged;
-    }
+			if (link.length != 0) {
+				if (action == MotionEvent.ACTION_UP) {
+					if (mCurrentLink == link[0]) {
+						link[0].onClick(widget);
+					}
+					mCurrentLink = null;
+					buffer.removeSpan(mLinkFocusStyle);
+				} else if (action == MotionEvent.ACTION_DOWN) {
+					mCurrentLink = link[0];
+					buffer.setSpan(mLinkFocusStyle,
+							buffer.getSpanStart(link[0]),
+							buffer.getSpanEnd(link[0]),
+							Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+				}
 
-    @Override
-    public void onWindowFocusChanged(boolean hasWindowFocus) {
-        super.onWindowFocusChanged(hasWindowFocus);
-    }
+				return true;
+			}
+		}
+
+		mCurrentLink = null;
+		buffer.removeSpan(mLinkFocusStyle);
+
+		return super.onTouchEvent(event);
+	}
+
+	public static void setFontSizeChanged(boolean isChanged) {
+		mFontSizeChanged = isChanged;
+	}
+
+	@Override
+	public void onWindowFocusChanged(boolean hasWindowFocus) {
+		super.onWindowFocusChanged(hasWindowFocus);
+	}
 }

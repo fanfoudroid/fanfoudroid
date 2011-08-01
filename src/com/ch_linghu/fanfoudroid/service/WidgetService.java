@@ -22,6 +22,7 @@ import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.ch_linghu.fanfoudroid.FanfouWidget;
+import com.ch_linghu.fanfoudroid.FanfouWidgetSmall;
 import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.app.Preferences;
@@ -48,7 +49,7 @@ public class WidgetService extends Service {
 		if (tweets == null) {
 			tweets = new ArrayList<Tweet>();
 
-		}else{
+		} else {
 			tweets.clear();
 		}
 		Cursor cursor = getDb().fetchAllTweets(getUserId(),
@@ -69,7 +70,7 @@ public class WidgetService extends Service {
 				R.layout.widget_initial_layout);
 		updateViews
 				.setTextViewText(R.id.status_text, tweets.get(position).text);
-		//updateViews.setOnClickPendingIntent(viewId, pendingIntent)
+		// updateViews.setOnClickPendingIntent(viewId, pendingIntent)
 
 		position++;
 		return updateViews;
@@ -82,8 +83,9 @@ public class WidgetService extends Service {
 
 		@Override
 		public void run() {
-			
-			Log.d(TAG, "tweets size="+tweets.size()+"  position=" + position);
+
+			Log.d(TAG, "tweets size=" + tweets.size() + "  position="
+					+ position);
 			if (position >= tweets.size()) {
 				position = 0;
 			}
@@ -92,6 +94,14 @@ public class WidgetService extends Service {
 			AppWidgetManager manager = AppWidgetManager
 					.getInstance(getBaseContext());
 			manager.updateAppWidget(fanfouWidget,
+					buildUpdate(WidgetService.this));
+			handler.postDelayed(mTask, 10000);
+
+			ComponentName fanfouWidgetSmall = new ComponentName(
+					WidgetService.this, FanfouWidgetSmall.class);
+			AppWidgetManager manager2 = AppWidgetManager
+					.getInstance(getBaseContext());
+			manager2.updateAppWidget(fanfouWidgetSmall,
 					buildUpdate(WidgetService.this));
 			handler.postDelayed(mTask, 10000);
 		}
@@ -151,16 +161,17 @@ public class WidgetService extends Service {
 	@Override
 	public void onStart(Intent intent, int startId) {
 		Log.d(TAG, "WidgetService onStart");
-		
+
 		fetchMessages();
 		handler.removeCallbacks(mTask);
 		handler.postDelayed(mTask, 10000);
 
 	}
+
 	@Override
 	public void onDestroy() {
 		Log.d(TAG, "WidgetService Stop ");
-		handler.removeCallbacks(mTask);//当服务结束时，删除线程
+		handler.removeCallbacks(mTask);// 当服务结束时，删除线程
 		super.onDestroy();
 	}
 }

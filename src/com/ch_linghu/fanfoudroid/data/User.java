@@ -26,9 +26,10 @@ public class User implements Parcelable {
 
 	// public boolean notifications;
 	// public utc_offset
-	
-	public User() {}
-	
+
+	public User() {
+	}
+
 	public static User create(com.ch_linghu.fanfoudroid.fanfou.User u) {
 		User user = new User();
 
@@ -74,7 +75,7 @@ public class User implements Parcelable {
 		out.writeInt(followersCount);
 		out.writeInt(statusesCount);
 	}
-	
+
 	public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
 		public User createFromParcel(Parcel in) {
 			return new User(in);
@@ -85,9 +86,9 @@ public class User implements Parcelable {
 			throw new UnsupportedOperationException();
 		}
 	};
-	
-	public User(Parcel in){
-		boolean[] boolArray =  new boolean[]{isProtected, isFollowing};
+
+	public User(Parcel in) {
+		boolean[] boolArray = new boolean[] { isProtected, isFollowing };
 		id = in.readString();
 		name = in.readString();
 		screenName = in.readString();
@@ -99,7 +100,7 @@ public class User implements Parcelable {
 		friendsCount = in.readInt();
 		followersCount = in.readInt();
 		statusesCount = in.readInt();
-		
+
 		isProtected = boolArray[0];
 		isFollowing = boolArray[1];
 	}

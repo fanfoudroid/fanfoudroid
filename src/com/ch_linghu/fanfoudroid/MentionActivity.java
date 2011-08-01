@@ -31,6 +31,7 @@ import com.ch_linghu.fanfoudroid.fanfou.Paging;
 import com.ch_linghu.fanfoudroid.fanfou.Status;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterCursorBaseActivity;
+import com.ch_linghu.fanfoudroid.R;
 
 public class MentionActivity extends TwitterCursorBaseActivity {
 	private static final String TAG = "MentionActivity";
@@ -55,10 +56,10 @@ public class MentionActivity extends TwitterCursorBaseActivity {
 
 	@Override
 	protected boolean _onCreate(Bundle savedInstanceState) {
-		if (super._onCreate(savedInstanceState)){
+		if (super._onCreate(savedInstanceState)) {
 			mNavbar.setHeaderTitle("@提到我的");
 			return true;
-		}else{
+		} else {
 			return false;
 		}
 	}
@@ -67,23 +68,22 @@ public class MentionActivity extends TwitterCursorBaseActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		return super.onCreateOptionsMenu(menu);
 	}
-	
+
 	@Override
 	protected Cursor fetchMessages() {
 		return getDb().fetchAllTweets(getUserId(), StatusTable.TYPE_MENTION);
 	}
-	
+
 	@Override
 	protected void markAllRead() {
 		getDb().markAllTweetsRead(getUserId(), StatusTable.TYPE_MENTION);
 	}
-	
+
 	@Override
 	protected String getActivityTitle() {
 		return getResources().getString(R.string.page_title_mentions);
 	}
-	
-	
+
 	// for Retrievable interface
 
 	@Override
@@ -93,16 +93,17 @@ public class MentionActivity extends TwitterCursorBaseActivity {
 
 	@Override
 	public List<Status> getMessageSinceId(String maxId) throws HttpException {
-		if (maxId != null){
+		if (maxId != null) {
 			return getApi().getMentions(new Paging(maxId));
-		}else{
+		} else {
 			return getApi().getMentions();
 		}
 	}
 
 	@Override
 	public int addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
-		return getDb().putTweets(tweets, getUserId(), StatusTable.TYPE_MENTION, isUnread);
+		return getDb().putTweets(tweets, getUserId(), StatusTable.TYPE_MENTION,
+				isUnread);
 	}
 
 	@Override
@@ -111,8 +112,7 @@ public class MentionActivity extends TwitterCursorBaseActivity {
 	}
 
 	@Override
-	public List<Status> getMoreMessageFromId(String minId)
-			throws HttpException {
+	public List<Status> getMoreMessageFromId(String minId) throws HttpException {
 		Paging paging = new Paging(1, 20);
 		paging.setMaxId(minId);
 		return getApi().getMentions(paging);

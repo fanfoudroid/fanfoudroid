@@ -60,6 +60,7 @@ import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory.FeedbackType;
 import com.ch_linghu.fanfoudroid.ui.module.NavBar;
 import com.ch_linghu.fanfoudroid.util.DateTimeHelper;
 import com.ch_linghu.fanfoudroid.util.TextHelper;
+import com.ch_linghu.fanfoudroid.R;
 
 public class StatusActivity extends BaseActivity {
 
@@ -80,10 +81,10 @@ public class StatusActivity extends BaseActivity {
 	private GenericTask mPhotoTask; // TODO: 压缩图片，提供获取图片的过程中可取消获取
 	private GenericTask mFavTask;
 	private GenericTask mDeleteTask;
-	
+
 	private NavBar mNavbar;
 	private Feedback mFeedback;
-	
+
 	private TaskListener mReplyTaskListener = new TaskAdapter() {
 		@Override
 		public void onPostExecute(GenericTask task, TaskResult result) {
@@ -99,7 +100,7 @@ public class StatusActivity extends BaseActivity {
 	};
 
 	private TaskListener mStatusTaskListener = new TaskAdapter() {
-		
+
 		@Override
 		public void onPreExecute(GenericTask task) {
 			clean();
@@ -117,7 +118,7 @@ public class StatusActivity extends BaseActivity {
 		}
 
 	};
-	
+
 	private TaskListener mPhotoTaskListener = new TaskAdapter() {
 		@Override
 		public void onPostExecute(GenericTask task, TaskResult result) {
@@ -247,7 +248,7 @@ public class StatusActivity extends BaseActivity {
 			return null;
 		}
 	}
-	
+
 	@Override
 	protected boolean _onCreate(Bundle savedInstanceState) {
 		Log.d(TAG, "onCreate.");
@@ -276,7 +277,7 @@ public class StatusActivity extends BaseActivity {
 			// Set view with intent data
 			this.tweet = extras.getParcelable(EXTRA_TWEET);
 			draw();
-            
+
 			bindFooterBarListener();
 			bindReplyViewListener();
 
@@ -285,31 +286,31 @@ public class StatusActivity extends BaseActivity {
 			return false;
 		}
 	}
-	
-	private void findView() {
-	    tweet_screen_name = (TextView) findViewById(R.id.tweet_screen_name);
-        tweet_user_info = (TextView) findViewById(R.id.tweet_user_info);
-        tweet_text = (TextView) findViewById(R.id.tweet_text);
-        tweet_source = (TextView) findViewById(R.id.tweet_source);
-        profile_image = (ImageView) findViewById(R.id.profile_image);
-        tweet_created_at = (TextView) findViewById(R.id.tweet_created_at);
-        btn_person_more = (ImageButton) findViewById(R.id.person_more);
-        tweet_fav = (ImageButton) findViewById(R.id.tweet_fav);
 
-        reply_wrap = (ViewGroup) findViewById(R.id.reply_wrap);
-        reply_status_text = (TextView) findViewById(R.id.reply_status_text);
-        reply_status_date = (TextView) findViewById(R.id.reply_tweet_created_at);
-        status_photo = (ImageView) findViewById(R.id.status_photo);
+	private void findView() {
+		tweet_screen_name = (TextView) findViewById(R.id.tweet_screen_name);
+		tweet_user_info = (TextView) findViewById(R.id.tweet_user_info);
+		tweet_text = (TextView) findViewById(R.id.tweet_text);
+		tweet_source = (TextView) findViewById(R.id.tweet_source);
+		profile_image = (ImageView) findViewById(R.id.profile_image);
+		tweet_created_at = (TextView) findViewById(R.id.tweet_created_at);
+		btn_person_more = (ImageButton) findViewById(R.id.person_more);
+		tweet_fav = (ImageButton) findViewById(R.id.tweet_fav);
+
+		reply_wrap = (ViewGroup) findViewById(R.id.reply_wrap);
+		reply_status_text = (TextView) findViewById(R.id.reply_status_text);
+		reply_status_date = (TextView) findViewById(R.id.reply_tweet_created_at);
+		status_photo = (ImageView) findViewById(R.id.status_photo);
 	}
-	
+
 	private void bindNavBarListener() {
-	    mNavbar.getRefreshButton().setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        doGetStatus(tweet.id);
-                    }
-                });
+		mNavbar.getRefreshButton().setOnClickListener(
+				new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						doGetStatus(tweet.id);
+					}
+				});
 	}
 
 	private void bindFooterBarListener() {
@@ -349,8 +350,8 @@ public class StatusActivity extends BaseActivity {
 		footer_btn_reply.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent intent = WriteActivity.createNewReplyIntent(
-						tweet.text, tweet.screenName, tweet.id);
+				Intent intent = WriteActivity.createNewReplyIntent(tweet.text,
+						tweet.screenName, tweet.id);
 				startActivity(intent);
 			}
 		});
@@ -474,11 +475,11 @@ public class StatusActivity extends BaseActivity {
 		tweet_fav.setEnabled(false);
 		profile_image.setImageBitmap(ImageCache.mDefaultBitmap);
 		status_photo.setVisibility(View.GONE);
-		
+
 		ViewGroup reply_wrap = (ViewGroup) findViewById(R.id.reply_wrap);
 		reply_wrap.setVisibility(View.GONE);
 	}
-	
+
 	private void draw() {
 		Log.d(TAG, "draw");
 
@@ -495,7 +496,8 @@ public class StatusActivity extends BaseActivity {
 
 		tweet_screen_name.setText(tweet.screenName);
 		TextHelper.setTweetText(tweet_text, tweet.text);
-		tweet_created_at.setText(DateTimeHelper.getRelativeDate(tweet.createdAt));
+		tweet_created_at.setText(DateTimeHelper
+				.getRelativeDate(tweet.createdAt));
 		tweet_source.setText(getString(R.string.tweet_source_prefix)
 				+ tweet.source);
 		tweet_user_info.setText(tweet.userId);
@@ -504,9 +506,8 @@ public class StatusActivity extends BaseActivity {
 
 		// Bitmap mProfileBitmap =
 		// TwitterApplication.mImageManager.get(tweet.profileImageUrl);
-		profile_image
-				.setImageBitmap(TwitterApplication.mImageLoader
-						.get(tweet.profileImageUrl, callback));
+		profile_image.setImageBitmap(TwitterApplication.mImageLoader.get(
+				tweet.profileImageUrl, callback));
 
 		// has photo
 		if (!photoPreviewSize.equals(PHOTO_PREVIEW_TYPE_NONE)) {
@@ -569,7 +570,7 @@ public class StatusActivity extends BaseActivity {
 		Log.d(TAG, "Fetching Photo: " + url);
 		Response res = mClient.get(url);
 
-		//FIXME:这里使用了一个作废的方法，如何修正？
+		// FIXME:这里使用了一个作废的方法，如何修正？
 		InputStream is = res.asStream();
 		Bitmap bitmap = BitmapFactory.decodeStream(is);
 		is.close();
@@ -662,8 +663,8 @@ public class StatusActivity extends BaseActivity {
 	}
 
 	private void doGetPhoto(String photoPageURL, boolean isPageLink) {
-	    mFeedback.start("");
-	    
+		mFeedback.start("");
+
 		if (mPhotoTask != null
 				&& mPhotoTask.getStatus() == GenericTask.Status.RUNNING) {
 			return;
@@ -712,7 +713,8 @@ public class StatusActivity extends BaseActivity {
 		if (tweet != null) {
 			String text = tweet.screenName + " : " + tweet.text;
 			TextHelper.setSimpleTweetText(reply_status_text, text);
-			reply_status_date.setText(DateTimeHelper.getRelativeDate(tweet.createdAt));
+			reply_status_date.setText(DateTimeHelper
+					.getRelativeDate(tweet.createdAt));
 		} else {
 			String msg = MessageFormat.format(
 					getString(R.string.status_status_reply_cannot_display),

@@ -27,14 +27,14 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 	private Context mContext;
 	protected LayoutInflater mInflater;
 	protected StringBuilder mMetaBuilder;
-	
-	private ImageLoaderCallback callback = new ImageLoaderCallback(){
+
+	private ImageLoaderCallback callback = new ImageLoaderCallback() {
 
 		@Override
 		public void refresh(String url, Bitmap bitmap) {
-			TweetArrayAdapter.this.refresh();			
+			TweetArrayAdapter.this.refresh();
 		}
-		
+
 	};
 
 	public TweetArrayAdapter(Context context) {
@@ -71,10 +71,11 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View view;
-		
-		SharedPreferences pref = TwitterApplication.mPref;  //PreferenceManager.getDefaultSharedPreferences(mContext);
-		boolean useProfileImage = pref.getBoolean(Preferences.USE_PROFILE_IMAGE, true);
-		
+
+		SharedPreferences pref = TwitterApplication.mPref; // PreferenceManager.getDefaultSharedPreferences(mContext);
+		boolean useProfileImage = pref.getBoolean(
+				Preferences.USE_PROFILE_IMAGE, true);
+
 		if (convertView == null) {
 			view = mInflater.inflate(R.layout.tweet, parent, false);
 
@@ -87,14 +88,15 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 			holder.metaText = (TextView) view
 					.findViewById(R.id.tweet_meta_text);
 			holder.fav = (ImageView) view.findViewById(R.id.tweet_fav);
-			holder.has_image = (ImageView) view.findViewById(R.id.tweet_has_image);
+			holder.has_image = (ImageView) view
+					.findViewById(R.id.tweet_has_image);
 			view.setTag(holder);
 		} else {
 			view = convertView;
 		}
 
 		ViewHolder holder = (ViewHolder) view.getTag();
-		
+
 		Tweet tweet = mTweets.get(position);
 
 		holder.tweetUserText.setText(tweet.screenName);
@@ -103,12 +105,13 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 
 		String profileImageUrl = tweet.profileImageUrl;
 
-		if (useProfileImage){
+		if (useProfileImage) {
 			if (!TextUtils.isEmpty(profileImageUrl)) {
-				holder.profileImage.setImageBitmap(TwitterApplication.mImageLoader
-						.get(profileImageUrl, callback));
+				holder.profileImage
+						.setImageBitmap(TwitterApplication.mImageLoader.get(
+								profileImageUrl, callback));
 			}
-		}else{
+		} else {
 			holder.profileImage.setVisibility(View.GONE);
 		}
 
@@ -120,7 +123,7 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 		} else {
 			holder.fav.setVisibility(View.GONE);
 		}
-		
+
 		if (!TextUtils.isEmpty(tweet.thumbnail_pic)) {
 			holder.has_image.setVisibility(View.VISIBLE);
 		} else {
@@ -129,7 +132,6 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 
 		return view;
 	}
-
 
 	public void refresh(ArrayList<Tweet> tweets) {
 		mTweets = tweets;

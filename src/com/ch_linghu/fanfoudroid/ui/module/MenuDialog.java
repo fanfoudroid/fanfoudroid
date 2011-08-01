@@ -53,38 +53,32 @@ import com.ch_linghu.fanfoudroid.UserTimelineActivity;
  * 
  */
 public class MenuDialog extends Dialog {
-    
-    private static final int PAGE_MINE = 0;
-    private static final int PAGE_PROFILE = 1;
-    private static final int PAGE_FOLLOWERS = 2;
-    private static final int PAGE_FOLLOWING = 3;
-    private static final int PAGE_HOME = 4;
-    private static final int PAGE_MENTIONS = 5;
-    private static final int PAGE_BROWSE = 6;
-    private static final int PAGE_FAVORITES = 7;
-    private static final int PAGE_MESSAGE = 8;
 
-    private List<int[]> pages = new ArrayList<int[]>();
-    {
-        pages.add(new int[] { R.drawable.menu_tweets,
-                R.string.pages_mine });
-        pages.add(new int[] { R.drawable.menu_profile,
-                R.string.pages_profile });
-        pages.add(new int[] { R.drawable.menu_followers,
-                R.string.pages_followers });
-        pages.add(new int[] { R.drawable.menu_following,
-                R.string.pages_following });
-        pages.add(new int[] { R.drawable.menu_list,
-                R.string.pages_home });
-        pages.add(new int[] { R.drawable.menu_mentions,
-                R.string.pages_mentions });
-        pages.add(new int[] { R.drawable.menu_listed,
-                R.string.pages_browse });
-        pages.add(new int[] { R.drawable.menu_favorites,
-                R.string.pages_search });
-        pages.add(new int[] { R.drawable.menu_create_list,
-                R.string.pages_message });
-    };
+	private static final int PAGE_MINE = 0;
+	private static final int PAGE_PROFILE = 1;
+	private static final int PAGE_FOLLOWERS = 2;
+	private static final int PAGE_FOLLOWING = 3;
+	private static final int PAGE_HOME = 4;
+	private static final int PAGE_MENTIONS = 5;
+	private static final int PAGE_BROWSE = 6;
+	private static final int PAGE_FAVORITES = 7;
+	private static final int PAGE_MESSAGE = 8;
+
+	private List<int[]> pages = new ArrayList<int[]>();
+	{
+		pages.add(new int[] { R.drawable.menu_tweets, R.string.pages_mine });
+		pages.add(new int[] { R.drawable.menu_profile, R.string.pages_profile });
+		pages.add(new int[] { R.drawable.menu_followers,
+				R.string.pages_followers });
+		pages.add(new int[] { R.drawable.menu_following,
+				R.string.pages_following });
+		pages.add(new int[] { R.drawable.menu_list, R.string.pages_home });
+		pages.add(new int[] { R.drawable.menu_mentions, R.string.pages_mentions });
+		pages.add(new int[] { R.drawable.menu_listed, R.string.pages_browse });
+		pages.add(new int[] { R.drawable.menu_favorites, R.string.pages_search });
+		pages.add(new int[] { R.drawable.menu_create_list,
+				R.string.pages_message });
+	};
 
 	private GridView gridview;
 
@@ -123,7 +117,7 @@ public class MenuDialog extends Dialog {
 			a.y = y;
 		getWindow().setAttributes(a);
 	}
-	
+
 	private void goTo(Class<?> cls, Intent intent) {
 		if (getOwnerActivity().getClass() != cls) {
 			dismiss();
@@ -131,44 +125,42 @@ public class MenuDialog extends Dialog {
 			getContext().startActivity(intent);
 		} else {
 			String msg = getContext().getString(R.string.page_status_same_page);
-			Toast.makeText(getContext(), msg,
-					Toast.LENGTH_SHORT).show();
+			Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
 		}
 	}
 
-	private void goTo(Class<?> cls){
+	private void goTo(Class<?> cls) {
 		Intent intent = new Intent();
 		goTo(cls, intent);
 	}
-	
+
 	private void initMenu() {
 		// 准备要添加的数据条目
 		List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
-            
-        for (int[] item : pages) { 
+
+		for (int[] item : pages) {
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("image", item[0]);
-			map.put("title", getContext().getString(item[1]) );
+			map.put("title", getContext().getString(item[1]));
 			items.add(map);
 		}
 
 		// 实例化一个适配器
-		SimpleAdapter adapter = new SimpleAdapter(getContext(), 
-		        items, // data
-				R.layout.menu_item, // grid item layout 
+		SimpleAdapter adapter = new SimpleAdapter(getContext(), items, // data
+				R.layout.menu_item, // grid item layout
 				new String[] { "title", "image" }, // data's key
 				new int[] { R.id.item_text, R.id.item_image }); // item view id
-		
+
 		// 获得GridView实例
 		gridview = (GridView) findViewById(R.id.mygridview);
 		// 将GridView和数据适配器关联
 		gridview.setAdapter(adapter);
-		
+
 	}
-	
+
 	public void bindEvent(Activity activity) {
 		setOwnerActivity(activity);
-		
+
 		// 绑定监听器
 		gridview.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
@@ -177,7 +169,8 @@ public class MenuDialog extends Dialog {
 				case PAGE_MINE:
 					String user = TwitterApplication.getMyselfId();
 					String name = TwitterApplication.getMyselfName();
-					Intent intent = UserTimelineActivity.createIntent(user, name);
+					Intent intent = UserTimelineActivity.createIntent(user,
+							name);
 					goTo(UserTimelineActivity.class, intent);
 					break;
 				case PAGE_PROFILE:
@@ -207,7 +200,7 @@ public class MenuDialog extends Dialog {
 				}
 			}
 		});
-		
+
 		Button close_button = (Button) findViewById(R.id.close_menu);
 		close_button.setOnClickListener(new View.OnClickListener() {
 			@Override
