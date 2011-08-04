@@ -119,6 +119,8 @@ public class TextHelper {
 		linkifyTags(textView);
 		_userLinkMapping.clear();
 	}
+	
+
 
 	/**
 	 * 从消息中获取全部提到的人，将它们按先后顺序放入一个列表

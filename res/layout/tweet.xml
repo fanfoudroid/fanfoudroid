@@ -1,92 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" 
-  android:orientation="horizontal"
-  android:layout_width="fill_parent"
-  android:layout_height="wrap_content"
-  android:padding="5dp"
->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:id="@+id/tweet_layout" 
+	android:orientation="horizontal" android:layout_width="fill_parent"
+	android:layout_height="wrap_content" android:padding="5dp">
 
-     <!-- profile image -->
-    <FrameLayout
-     android:layout_width="48dp"
-     android:layout_height="48dp"
-     android:layout_marginTop="2dp"
-     android:layout_marginLeft="2dp"
-     android:layout_marginBottom="2dp"
-     android:layout_marginRight="10dp"
-    >
-	   <ImageView
-	       android:id="@+id/profile_image"
-	       android:layout_width="fill_parent"
-	       android:layout_height="fill_parent"
-	   />
-	   <!-- image corner -->
-       <ImageView
-           android:background="@drawable/images_border_radius"
-           android:layout_width="fill_parent"
-           android:layout_height="fill_parent"
-       />
-     </FrameLayout>
-	
-	
-	<LinearLayout 
-	  android:orientation="vertical"
-	  android:layout_width="fill_parent"
-	  android:layout_height="wrap_content"
-	>
-		<LinearLayout 
-		  android:orientation="horizontal"
-		  android:layout_width="fill_parent"
-		  android:layout_height="wrap_content"
-		>
-		    <!-- user name -->
+	<!-- profile image -->
+	<FrameLayout android:layout_width="48dp"
+		android:layout_height="48dp" android:layout_marginTop="2dp"
+		android:layout_marginLeft="2dp" android:layout_marginBottom="2dp"
+		android:layout_marginRight="10dp">
+		<ImageView android:id="@+id/profile_image"
+			android:layout_width="fill_parent" android:layout_height="fill_parent" />
+		<!-- image corner -->
+		<ImageView android:background="@drawable/images_border_radius"
+			android:layout_width="fill_parent" android:layout_height="fill_parent" />
+	</FrameLayout>
+
+
+	<LinearLayout android:orientation="vertical"
+		android:layout_width="fill_parent" android:layout_height="wrap_content">
+		<LinearLayout android:orientation="horizontal"
+			android:layout_width="fill_parent" android:layout_height="wrap_content">
+			<!-- user name -->
 			<com.ch_linghu.fanfoudroid.ui.module.MyTextView
-			  android:id="@+id/tweet_user_text" 
-			  android:layout_width="fill_parent"
-			  android:layout_height="wrap_content"
-			  android:layout_weight="1"
-			  style="@style/LinkText.Bold.Big"
-			/>
+				android:id="@+id/tweet_user_text" android:layout_width="fill_parent"
+				android:layout_height="wrap_content" android:layout_weight="1"
+				style="@style/LinkText.Bold.Big" />
 			<!-- hasImage icon -->
-			<ImageView
-				android:id="@+id/tweet_has_image"
-				android:layout_gravity="right"
-				android:layout_width="16dp"
-				android:layout_height="16dp"
-				android:visibility="gone"
-				android:src="@drawable/pic"
-			/>
+			<ImageView android:id="@+id/tweet_has_image"
+				android:layout_gravity="right" android:layout_width="16dp"
+				android:layout_height="16dp" android:visibility="gone" android:src="@drawable/pic" />
 			<!-- favorited icon -->
-			<ImageView
-				android:id="@+id/tweet_fav"
-				android:layout_gravity="right"
-				android:layout_width="16dp"
-				android:layout_height="16dp"
-				android:visibility="gone"
-				android:src="@android:drawable/star_off"
-			/>
-		</LinearLayout>		
-		
+			<ImageView android:id="@+id/tweet_fav"
+				android:layout_gravity="right" android:layout_width="16dp"
+				android:layout_height="16dp" android:visibility="gone"
+				android:src="@android:drawable/star_off" />
+		</LinearLayout>
+
 		<!-- Tweet context -->
 		<com.ch_linghu.fanfoudroid.ui.module.MyTextView
-		  android:id="@+id/tweet_text" 
-		  android:layout_width="fill_parent"
-		  android:layout_height="wrap_content"
-		  android:textColor="@drawable/tweet_color"        
-		  android:lineSpacingExtra="2sp"
-		/>
-		
+			android:id="@+id/tweet_text" android:layout_width="fill_parent"
+			android:layout_height="wrap_content" android:textColor="@drawable/tweet_color"
+			android:lineSpacingExtra="2sp" />
+
 		<!-- Tweet Meta -->
-		<TextView
-		  android:id="@+id/tweet_meta_text" 
-		  android:layout_width="fill_parent"
-		  android:layout_height="wrap_content"
-		  android:paddingTop="2dp"
-		  android:textColor="@drawable/tweet_meta_color"
-		  android:textSize="12sp"
-		/>
-		
+		<TextView android:id="@+id/tweet_meta_text"
+			android:layout_width="fill_parent" android:layout_height="wrap_content"
+			android:paddingTop="2dp" android:textColor="@drawable/tweet_meta_color"
+			android:textSize="12sp" />
+
 	</LinearLayout>
 
 </LinearLayout>

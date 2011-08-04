@@ -417,7 +417,7 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
 
 	private void updateFooter(int flag) {
 		if (flag == LOADINGFLAG) {
-			footerView.setText("该用户总共？条消息");
+			footerView.setText("正在读取该用户所有消息...");
 		}
 		if (flag == SUCCESSFLAG) {
 			footerView.setText("该用户总共" + mUser.getStatusesCount() + "条消息，当前显示"

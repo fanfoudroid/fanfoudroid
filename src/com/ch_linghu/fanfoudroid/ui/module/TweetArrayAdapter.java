@@ -5,12 +5,15 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.R;
@@ -60,6 +63,7 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 	}
 
 	private static class ViewHolder {
+		public LinearLayout tweetLayout;
 		public TextView tweetUserText;
 		public TextView tweetText;
 		public ImageView profileImage;
@@ -80,6 +84,7 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 			view = mInflater.inflate(R.layout.tweet, parent, false);
 
 			ViewHolder holder = new ViewHolder();
+			holder.tweetLayout=(LinearLayout) view.findViewById(R.id.tweet_layout);
 			holder.tweetUserText = (TextView) view
 					.findViewById(R.id.tweet_user_text);
 			holder.tweetText = (TextView) view.findViewById(R.id.tweet_text);
@@ -102,7 +107,11 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 		holder.tweetUserText.setText(tweet.screenName);
 		TextHelper.setSimpleTweetText(holder.tweetText, tweet.text);
 		// holder.tweetText.setText(tweet.text, BufferType.SPANNABLE);
-
+		
+		/** 试图更改timeline某行的代码，尚未添加条件判断等
+		holder.tweetLayout.setBackgroundColor(0xffb2dfee);
+		*/
+		
 		String profileImageUrl = tweet.profileImageUrl;
 
 		if (useProfileImage) {
@@ -129,7 +138,10 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 		} else {
 			holder.has_image.setVisibility(View.GONE);
 		}
-
+		
+		
+	
+		
 		return view;
 	}
 
