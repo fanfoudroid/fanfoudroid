@@ -62,10 +62,10 @@ public class AboutActivity extends Activity {
 			}
 		});
 		
-		feedback = "@忽然兔 "+"#安能饭否#"+"版本"+versionName+",型号"+deviceModel+",系统"+versionRelease+" ";
+		feedback = "@令狐虫 @三日坊主 @忽然兔 "+"#安能饭否#"+"版本"+versionName+",型号"+deviceModel+",系统"+versionRelease+" ";
 				
-		Button chkUpdateBtn = (Button) findViewById(R.id.checkupdate_btn);
-		chkUpdateBtn.setOnClickListener(new Button.OnClickListener() {
+		Button feedbackBtn = (Button) findViewById(R.id.feedback_btn);
+		feedbackBtn.setOnClickListener(new Button.OnClickListener() {
 
 			
 			@Override

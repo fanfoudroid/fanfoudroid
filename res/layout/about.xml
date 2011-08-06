@@ -103,7 +103,7 @@
 			android:layout_height="wrap_content"
 			android:text="@string/about_label_ok"
 			/>
-			<Button android:id="@+id/checkupdate_btn"
+			<Button android:id="@+id/feedback_btn"
 			android:layout_width="120dp"
 			android:layout_height="wrap_content"
 			android:text="@string/about_label_feedback"
