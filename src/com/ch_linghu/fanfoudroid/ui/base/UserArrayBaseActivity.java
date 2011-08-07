@@ -24,11 +24,13 @@ import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.module.SimpleFeedback;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 import com.ch_linghu.fanfoudroid.ui.module.UserArrayAdapter;
+import com.markupartist.android.widget.PullToRefreshListView;
+import com.markupartist.android.widget.PullToRefreshListView.OnRefreshListener;
 
 public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 	static final String TAG = "UserArrayBaseActivity";
 	// Views.
-	protected ListView mUserList;
+	protected PullToRefreshListView mUserList;
 	protected UserArrayAdapter mUserListAdapter;
 
 	protected TextView loadMoreBtn;
@@ -100,7 +102,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 			} else if (result == TaskResult.OK) {
 				draw();
 			}
-
+			mUserList.onRefreshComplete();
 			updateProgress("");
 		}
 
@@ -171,8 +173,8 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 	protected void setupState() {
 		setTitle(getActivityTitle());
 
-		mUserList = (ListView) findViewById(R.id.follower_list);
-
+		mUserList = (PullToRefreshListView) findViewById(R.id.follower_list);
+		
 		setupListHeader(true);
 
 		mUserListAdapter = new UserArrayAdapter(this);
@@ -234,7 +236,13 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 		// Add footer to Listview
 		View footer = View.inflate(this, R.layout.listview_footer, null);
 		mUserList.addFooterView(footer, null, true);
+		mUserList.setOnRefreshListener(new OnRefreshListener() {
 
+			@Override
+			public void onRefresh() {
+				doRetrieve();
+				
+			}});
 		// Find View
 		loadMoreBtn = (TextView) findViewById(R.id.ask_for_more);
 		loadMoreGIF = (ProgressBar) findViewById(R.id.rectangleProgressBar);
