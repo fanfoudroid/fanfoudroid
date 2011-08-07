@@ -58,14 +58,14 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter {
 
 	@Override
 	public Object getItem(int position) {
-		return mUsers.get(position);
+		return mUsers.get(position==0?0:position-1);
 	}
 
 	@Override
 	public long getItemId(int position) {
 		return position;
 	}
-
+	
 	private static class ViewHolder {
 		public ImageView profileImage;
 		public TextView screenName;

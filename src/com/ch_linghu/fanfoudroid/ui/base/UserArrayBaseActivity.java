@@ -146,14 +146,14 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 				return TaskResult.IO_ERROR;
 			}
 			publishProgress(SimpleFeedback.calProgressBySize(40, 20, usersList));
-
+			
 			for (com.ch_linghu.fanfoudroid.fanfou.User user : usersList) {
 				if (isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
 
 				allUserList.add(User.create(user));
-
+				
 				if (isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
@@ -196,8 +196,10 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 	@Override
 	protected User getContextItemUser(int position) {
 		// position = position - 1;
+		Log.d(TAG, "list position:"+position);
 		// 加入footer跳过footer
 		if (position < mUserListAdapter.getCount()) {
+			
 			User item = (User) mUserListAdapter.getItem(position);
 			if (item == null) {
 				return null;
