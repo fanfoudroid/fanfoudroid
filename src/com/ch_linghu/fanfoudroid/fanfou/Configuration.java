@@ -44,8 +44,8 @@ public class Configuration {
 
 	/* package */static void init() {
 		defaultProperty = new Properties();
-		defaultProperty.setProperty("fanfoudroid.debug", "false");
-		//defaultProperty.setProperty("fanfoudroid.debug", "true");
+		//defaultProperty.setProperty("fanfoudroid.debug", "false");
+		defaultProperty.setProperty("fanfoudroid.debug", "true");
 		defaultProperty.setProperty("fanfoudroid.source", "fanfoudroid");
 		// defaultProperty.setProperty("fanfoudroid.clientVersion","");
 		defaultProperty.setProperty("fanfoudroid.clientURL",
