@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.R;
@@ -99,13 +100,15 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		holder.metaText = (TextView) view.findViewById(R.id.tweet_meta_text);
 		holder.fav = (ImageView) view.findViewById(R.id.tweet_fav);
 		holder.has_image = (ImageView) view.findViewById(R.id.tweet_has_image);
-
+		holder.tweetLayout=(LinearLayout)view.findViewById(R.id.tweet_layout);
+		
 		view.setTag(holder);
 
 		return view;
 	}
 
 	private static class ViewHolder {
+		public LinearLayout tweetLayout;
 		public TextView tweetUserText;
 		public TextView tweetText;
 		public ImageView profileImage;
@@ -125,6 +128,17 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		holder.tweetUserText.setText(cursor.getString(mUserTextColumn));
 		TextHelper.setSimpleTweetText(holder.tweetText,
 				cursor.getString(mTextColumn));
+		
+		/**
+		 * 添加特殊行的背景色，自己发的设为浅黄色，@自己的设为浅蓝色，其他默认为白色
+		 */
+		if(holder.tweetUserText.getText().equals(TwitterApplication.getMyselfName()))
+			holder.tweetLayout.setBackgroundColor(0xFFFFFF99);
+		else if(holder.tweetText.getText().toString().contains("@"+TwitterApplication.getMyselfName()))
+			holder.tweetLayout.setBackgroundColor(0xFF99CCFF);
+		else
+			holder.tweetLayout.setBackgroundColor(0xFFFFFFFF);
+		
 
 		String profileImageUrl = cursor.getString(mProfileImageUrlColumn);
 		if (useProfileImage && !TextUtils.isEmpty(profileImageUrl)) {
@@ -154,6 +168,9 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		} catch (ParseException e) {
 			Log.w(TAG, "Invalid created at data.");
 		}
+		
+		
+		
 	}
 
 	@Override

@@ -18,7 +18,7 @@ android:id="@+id/tweet_layout"
 	</FrameLayout>
 
 
-	<LinearLayout android:orientation="vertical"
+	<LinearLayout android:orientation="vertical" 
 		android:layout_width="fill_parent" android:layout_height="wrap_content">
 		<LinearLayout android:orientation="horizontal"
 			android:layout_width="fill_parent" android:layout_height="wrap_content">

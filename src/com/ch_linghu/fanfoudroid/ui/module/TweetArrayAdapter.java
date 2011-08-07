@@ -63,7 +63,7 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 	}
 
 	private static class ViewHolder {
-		public LinearLayout tweetLayout;
+		//public LinearLayout tweetLayout;
 		public TextView tweetUserText;
 		public TextView tweetText;
 		public ImageView profileImage;
@@ -84,7 +84,7 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 			view = mInflater.inflate(R.layout.tweet, parent, false);
 
 			ViewHolder holder = new ViewHolder();
-			holder.tweetLayout=(LinearLayout) view.findViewById(R.id.tweet_layout);
+			//holder.tweetLayout=(LinearLayout) view.findViewById(R.id.tweet_layout);
 			holder.tweetUserText = (TextView) view
 					.findViewById(R.id.tweet_user_text);
 			holder.tweetText = (TextView) view.findViewById(R.id.tweet_text);
@@ -108,7 +108,7 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 		TextHelper.setSimpleTweetText(holder.tweetText, tweet.text);
 		// holder.tweetText.setText(tweet.text, BufferType.SPANNABLE);
 		
-		/** 试图更改timeline某行的代码，尚未添加条件判断等
+		/** 试图更改timeline某行的代码，尚未添加条件判断等（在TweetCursorAdapter中使用）
 		holder.tweetLayout.setBackgroundColor(0xffb2dfee);
 		*/
 		
