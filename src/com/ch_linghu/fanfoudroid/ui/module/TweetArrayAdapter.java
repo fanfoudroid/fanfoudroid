@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -21,7 +20,6 @@ import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.app.LazyImageLoader.ImageLoaderCallback;
 import com.ch_linghu.fanfoudroid.app.Preferences;
-import com.ch_linghu.fanfoudroid.app.SimpleImageLoader;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.util.TextHelper;
 
@@ -65,10 +63,9 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 	}
 
 	private static class ViewHolder {
-		//public LinearLayout tweetLayout;
+		public LinearLayout tweetLayout;
 		public TextView tweetUserText;
 		public TextView tweetText;
-		public FrameLayout profileLayout;
 		public ImageView profileImage;
 		public TextView metaText;
 		public ImageView fav;
@@ -87,11 +84,10 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 			view = mInflater.inflate(R.layout.tweet, parent, false);
 
 			ViewHolder holder = new ViewHolder();
-			//holder.tweetLayout=(LinearLayout) view.findViewById(R.id.tweet_layout);
+			holder.tweetLayout=(LinearLayout) view.findViewById(R.id.tweet_layout);
 			holder.tweetUserText = (TextView) view
 					.findViewById(R.id.tweet_user_text);
 			holder.tweetText = (TextView) view.findViewById(R.id.tweet_text);
-			holder.profileLayout = (FrameLayout)view.findViewById(R.id.profile_layout);
 			holder.profileImage = (ImageView) view
 					.findViewById(R.id.profile_image);
 			holder.metaText = (TextView) view
@@ -112,19 +108,20 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 		TextHelper.setSimpleTweetText(holder.tweetText, tweet.text);
 		// holder.tweetText.setText(tweet.text, BufferType.SPANNABLE);
 		
-		/** 试图更改timeline某行的代码，尚未添加条件判断等（在TweetCursorAdapter中使用）
+		/** 试图更改timeline某行的代码，尚未添加条件判断等
 		holder.tweetLayout.setBackgroundColor(0xffb2dfee);
 		*/
 		
 		String profileImageUrl = tweet.profileImageUrl;
 
 		if (useProfileImage) {
-			holder.profileLayout.setVisibility(View.VISIBLE);
 			if (!TextUtils.isEmpty(profileImageUrl)) {
-				SimpleImageLoader.display(holder.profileImage, profileImageUrl);
+				holder.profileImage
+						.setImageBitmap(TwitterApplication.mImageLoader.get(
+								profileImageUrl, callback));
 			}
 		} else {
-			holder.profileLayout.setVisibility(View.GONE);
+			holder.profileImage.setVisibility(View.GONE);
 		}
 
 		holder.metaText.setText(Tweet.buildMetaText(mMetaBuilder,

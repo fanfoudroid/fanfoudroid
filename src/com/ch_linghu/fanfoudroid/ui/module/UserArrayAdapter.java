@@ -33,7 +33,6 @@ import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 
-//TODO：
 /*
  * 用于用户的Adapter
  */
@@ -145,7 +144,7 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter {
 	}
 
 	public void refresh(ArrayList<User> users) {
-		mUsers = users;
+		mUsers = (ArrayList<User>)users.clone();
 		notifyDataSetChanged();
 	}
 
