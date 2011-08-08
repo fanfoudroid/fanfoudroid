@@ -35,8 +35,8 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 	private Context mContext;
 	
 	private static final int COMMON_BACKGROUND_COLOR = 0xFFFFFFFF;
-	private static final int SELF_BACKGROUND_COLOR = 0xFF99CCFF;
-	private static final int MENTION_BACKGROUND_COLOR = 0xFFFFFF99;
+	private static final int SELF_BACKGROUND_COLOR = 0xFFC9E6F8;
+	private static final int MENTION_BACKGROUND_COLOR = 0xFFFAF4BE;
 	
 
 	public TweetCursorAdapter(Context context, Cursor cursor) {
