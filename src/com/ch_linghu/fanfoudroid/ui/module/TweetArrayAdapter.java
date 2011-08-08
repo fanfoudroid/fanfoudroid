@@ -88,6 +88,7 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 			holder.tweetUserText = (TextView) view
 					.findViewById(R.id.tweet_user_text);
 			holder.tweetText = (TextView) view.findViewById(R.id.tweet_text);
+			holder.tweetText.setBackgroundColor(Color.BLUE);
 			holder.profileImage = (ImageView) view
 					.findViewById(R.id.profile_image);
 			holder.metaText = (TextView) view

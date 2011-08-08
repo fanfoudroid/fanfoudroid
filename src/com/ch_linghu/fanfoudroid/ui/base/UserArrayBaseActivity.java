@@ -77,6 +77,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 				&& mRetrieveTask.getStatus() == GenericTask.Status.RUNNING) {
 			return;
 		} else {
+			
 			mRetrieveTask = new RetrieveTask();
 			mRetrieveTask.setFeedback(mFeedback);
 			mRetrieveTask.setListener(mRetrieveTaskListener);
@@ -146,14 +147,15 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 				return TaskResult.IO_ERROR;
 			}
 			publishProgress(SimpleFeedback.calProgressBySize(40, 20, usersList));
-			
+			allUserList.clear();
 			for (com.ch_linghu.fanfoudroid.fanfou.User user : usersList) {
 				if (isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
+				User u = User.create(user);
 
-				allUserList.add(User.create(user));
-				
+				allUserList.add(u);
+
 				if (isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
@@ -174,7 +176,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 		setTitle(getActivityTitle());
 
 		mUserList = (PullToRefreshListView) findViewById(R.id.follower_list);
-		
+
 		setupListHeader(true);
 
 		mUserListAdapter = new UserArrayAdapter(this);
@@ -196,10 +198,10 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 	@Override
 	protected User getContextItemUser(int position) {
 		// position = position - 1;
-		Log.d(TAG, "list position:"+position);
+		Log.d(TAG, "list position:" + position);
 		// 加入footer跳过footer
 		if (position < mUserListAdapter.getCount()) {
-			
+
 			User item = (User) mUserListAdapter.getItem(position);
 			if (item == null) {
 				return null;
@@ -243,8 +245,9 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 			@Override
 			public void onRefresh() {
 				doRetrieve();
-				
-			}});
+
+			}
+		});
 		// Find View
 		loadMoreBtn = (TextView) findViewById(R.id.ask_for_more);
 		loadMoreGIF = (ProgressBar) findViewById(R.id.rectangleProgressBar);
@@ -335,7 +338,6 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 
 	public void draw() {
 		mUserListAdapter.refresh(allUserList);
-
 	}
 
 }
