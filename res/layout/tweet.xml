@@ -6,7 +6,8 @@ android:id="@+id/tweet_layout"
 	android:layout_height="wrap_content" android:padding="5dp">
 
 	<!-- profile image -->
-	<FrameLayout android:layout_width="48dp"
+	<FrameLayout android:id="@+id/profile_layout"
+	    android:layout_width="48dp"
 		android:layout_height="48dp" android:layout_marginTop="2dp"
 		android:layout_marginLeft="2dp" android:layout_marginBottom="2dp"
 		android:layout_marginRight="10dp">
