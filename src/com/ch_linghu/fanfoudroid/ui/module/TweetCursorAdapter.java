@@ -33,6 +33,11 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 	private static final String TAG = "TweetCursorAdapter";
 
 	private Context mContext;
+	
+	private static final int COMMON_BACKGROUND_COLOR = 0xFFFFFFFF;
+	private static final int SELF_BACKGROUND_COLOR = 0xFF99CCFF;
+	private static final int MENTION_BACKGROUND_COLOR = 0xFFFFFF99;
+	
 
 	public TweetCursorAdapter(Context context, Cursor cursor) {
 		super(context, cursor);
@@ -133,14 +138,18 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 				cursor.getString(mTextColumn));
 		
 		/**
-		 * 添加特殊行的背景色，自己发的设为浅黄色，@自己的设为浅蓝色，其他默认为白色
+		 * 添加特殊行的背景色
 		 */
-		if(holder.tweetUserText.getText().equals(TwitterApplication.getMyselfName()))
-			holder.tweetLayout.setBackgroundColor(0xFFFFFF99);
-		else if(holder.tweetText.getText().toString().contains("@"+TwitterApplication.getMyselfName()))
-			holder.tweetLayout.setBackgroundColor(0xFF99CCFF);
-		else
-			holder.tweetLayout.setBackgroundColor(0xFFFFFFFF);
+		if(holder.tweetUserText.getText().equals(TwitterApplication.getMyselfName())){
+			holder.tweetLayout.setBackgroundColor(SELF_BACKGROUND_COLOR);
+			holder.profileLayout.setBackgroundColor(SELF_BACKGROUND_COLOR);
+		}else if(holder.tweetText.getText().toString().contains("@"+TwitterApplication.getMyselfName())){
+			holder.tweetLayout.setBackgroundColor(MENTION_BACKGROUND_COLOR);
+			holder.profileLayout.setBackgroundColor(MENTION_BACKGROUND_COLOR);
+		}else{
+			holder.tweetLayout.setBackgroundColor(COMMON_BACKGROUND_COLOR);
+			holder.profileLayout.setBackgroundColor(COMMON_BACKGROUND_COLOR);
+		}
 		
 
 		String profileImageUrl = cursor.getString(mProfileImageUrlColumn);
