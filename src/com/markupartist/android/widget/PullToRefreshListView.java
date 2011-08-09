@@ -399,7 +399,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         // the next item.
         if (mRefreshView.getBottom() > 0) {
             invalidateViews();
-            setSelection(1);
+            //setSelection(1);
         }
     }
 
