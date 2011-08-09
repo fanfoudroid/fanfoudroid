@@ -34,11 +34,6 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 
 	private Context mContext;
 	
-	private static final int COMMON_BACKGROUND_COLOR = 0xFFFFFFFF;
-	private static final int SELF_BACKGROUND_COLOR = 0xFFFAF4BE;
-	private static final int MENTION_BACKGROUND_COLOR = 0xFFC9E6F8;
-	
-
 	public TweetCursorAdapter(Context context, Cursor cursor) {
 		super(context, cursor);
 		mContext = context;
@@ -141,14 +136,14 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		 * 添加特殊行的背景色
 		 */
 		if(holder.tweetUserText.getText().equals(TwitterApplication.getMyselfName())){
-			holder.tweetLayout.setBackgroundColor(SELF_BACKGROUND_COLOR);
-			holder.profileLayout.setBackgroundColor(SELF_BACKGROUND_COLOR);
+			holder.tweetLayout.setBackgroundResource(R.drawable.list_selector_self);
+			holder.profileLayout.setBackgroundResource(R.color.self_background);
 		}else if(holder.tweetText.getText().toString().contains("@"+TwitterApplication.getMyselfName())){
-			holder.tweetLayout.setBackgroundColor(MENTION_BACKGROUND_COLOR);
-			holder.profileLayout.setBackgroundColor(MENTION_BACKGROUND_COLOR);
+			holder.tweetLayout.setBackgroundResource(R.drawable.list_selector_mention);
+			holder.profileLayout.setBackgroundResource(R.color.mention_background);
 		}else{
-			holder.tweetLayout.setBackgroundColor(COMMON_BACKGROUND_COLOR);
-			holder.profileLayout.setBackgroundColor(COMMON_BACKGROUND_COLOR);
+			holder.tweetLayout.setBackgroundResource(R.drawable.list_selector);
+			holder.profileLayout.setBackgroundResource(android.R.color.transparent);
 		}
 		
 
