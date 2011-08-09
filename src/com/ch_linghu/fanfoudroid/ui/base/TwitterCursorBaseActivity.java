@@ -94,6 +94,10 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
 
         @Override
         public void onPostExecute(GenericTask task, TaskResult result) {
+            // 刷新按钮停止旋转
+            loadMoreGIF.setVisibility(View.GONE);
+            mTweetList.onRefreshComplete();
+
             if (result == TaskResult.AUTH_ERROR) {
                 mFeedback.failed("登录信息出错");
                 logout();
@@ -122,12 +126,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
             } else {
                 // do nothing
             }
-
-            // 刷新按钮停止旋转
-            loadMoreGIF.setVisibility(View.GONE);
             
-            mTweetList.onRefreshComplete();
-
             // DEBUG
             if (TwitterApplication.DEBUG) {
                 DebugTimer.stop();
