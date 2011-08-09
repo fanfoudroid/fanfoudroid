@@ -52,6 +52,8 @@ import com.ch_linghu.fanfoudroid.ui.module.TweetCursorAdapter;
 import com.ch_linghu.fanfoudroid.util.DateTimeHelper;
 import com.ch_linghu.fanfoudroid.util.DebugTimer;
 import com.hlidskialf.android.hardware.ShakeListener;
+import com.markupartist.android.widget.PullToRefreshListView;
+import com.markupartist.android.widget.PullToRefreshListView.OnRefreshListener;
 
 /**
  * TwitterCursorBaseLine用于带有静态数据来源（对应数据库的，与twitter表同构的特定表）的展现
@@ -60,7 +62,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
       static final String TAG = "TwitterCursorBaseActivity";
 
     // Views.
-    protected ListView mTweetList;
+    protected PullToRefreshListView mTweetList;
     protected TweetCursorAdapter mTweetAdapter;
 
     protected View mListHeader;
@@ -122,8 +124,9 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
             }
 
             // 刷新按钮停止旋转
-            loadMoreGIFTop.setVisibility(View.GONE);
             loadMoreGIF.setVisibility(View.GONE);
+            
+            mTweetList.onRefreshComplete();
 
             // DEBUG
             if (TwitterApplication.DEBUG) {
@@ -211,7 +214,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
         setTitle(getActivityTitle());
         startManagingCursor(cursor);
 
-        mTweetList = (ListView) findViewById(R.id.tweet_list);
+        mTweetList = (PullToRefreshListView) findViewById(R.id.tweet_list);
 
         // TODO: 需处理没有数据时的情况
         Log.d("LDS", cursor.getCount() + " cursor count");
@@ -228,8 +231,14 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
      */
     protected void setupListHeader(boolean addFooter) {
         // Add Header to ListView
-        mListHeader = View.inflate(this, R.layout.listview_header, null);
-        mTweetList.addHeaderView(mListHeader, null, true);
+        //mListHeader = View.inflate(this, R.layout.listview_header, null);
+        //mTweetList.addHeaderView(mListHeader, null, true);
+    	mTweetList.setOnRefreshListener(new OnRefreshListener(){
+    		@Override
+    		public void onRefresh(){
+    			doRetrieve();
+    		}
+    	});
 
         // Add Footer to ListView
         mListFooter = View.inflate(this, R.layout.listview_footer, null);

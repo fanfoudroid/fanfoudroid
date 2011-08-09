@@ -10,7 +10,7 @@
     <include layout="@layout/header"/>
     
     <!-- Main content area. -->
-    <com.ch_linghu.fanfoudroid.ui.module.MyListView
+    <com.markupartist.android.widget.PullToRefreshListView
     android:id="@+id/tweet_list"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
