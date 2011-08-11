@@ -242,7 +242,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
         // Add Footer to ListView
         mListFooter = View.inflate(this, R.layout.listview_footer, null);
         mTweetList.addFooterView(mListFooter, null, true);
-
+        
         // Find View
         loadMoreBtn = (TextView) findViewById(R.id.ask_for_more);
         loadMoreGIF = (ProgressBar) findViewById(R.id.rectangleProgressBar);
@@ -419,6 +419,10 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
         super.onDestroy();
 
         taskManager.cancelAll();
+
+        // 刷新按钮停止旋转
+        loadMoreGIF.setVisibility(View.GONE);
+        mTweetList.onRefreshComplete();
     }
 
     @Override
