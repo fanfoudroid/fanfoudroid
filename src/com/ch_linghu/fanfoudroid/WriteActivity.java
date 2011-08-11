@@ -791,8 +791,10 @@ public class WriteActivity extends BaseActivity {
 	}
 
 	private void onSendFailure() {
-		dialog.setMessage(getString(R.string.page_status_unable_to_update));
-		dialog.dismiss();
+		if (dialog != null){
+			dialog.setMessage(getString(R.string.page_status_unable_to_update));
+			dialog.dismiss();
+		}
 		updateProgress(getString(R.string.page_status_unable_to_update));
 		enableEntry();
 	}
