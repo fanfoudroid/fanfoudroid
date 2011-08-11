@@ -142,7 +142,7 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 			holder.tweetLayout.setBackgroundResource(R.drawable.list_selector_mention);
 			holder.profileLayout.setBackgroundResource(R.color.mention_background);
 		}else{
-			holder.tweetLayout.setBackgroundResource(R.drawable.list_selector);
+			holder.tweetLayout.setBackgroundResource(android.R.drawable.list_selector_background);
 			holder.profileLayout.setBackgroundResource(android.R.color.transparent);
 		}
 		
