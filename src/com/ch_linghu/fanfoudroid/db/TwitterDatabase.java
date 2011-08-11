@@ -409,6 +409,12 @@ public class TwitterDatabase {
 			for (int i = tweets.size() - 1; i >= 0; i--) {
 				Tweet tweet = tweets.get(i);
 
+				Log.d(TAG, "insertTweet, tweet id=" + tweet.id);
+				if (TextUtils.isEmpty(tweet.id) || tweet.id.equals("false")){
+					Log.e(TAG, "tweet id is null, ghost message encounted");
+					continue;
+				}
+				
 				ContentValues initialValues = makeTweetValues(tweet, owner,
 						type, isUnread);
 				long id = db
