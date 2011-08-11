@@ -421,8 +421,12 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
         taskManager.cancelAll();
 
         // 刷新按钮停止旋转
-        loadMoreGIF.setVisibility(View.GONE);
-        mTweetList.onRefreshComplete();
+        if (loadMoreGIF != null){
+        	loadMoreGIF.setVisibility(View.GONE);
+        }
+        if (mTweetList != null){
+        	mTweetList.onRefreshComplete();
+        }
     }
 
     @Override
