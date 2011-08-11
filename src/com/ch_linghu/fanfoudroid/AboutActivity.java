@@ -48,9 +48,16 @@ public class AboutActivity extends Activity {
 		}
 
 		TextView version = (TextView) findViewById(R.id.version);
-		version.setText(String.format("v %s", pinfo.versionName));
 		
-		versionName = pinfo.versionName;
+		String versionString;
+		if (TwitterApplication.DEBUG){
+			version.setText(String.format("v %d(nightly)", pinfo.versionCode));
+			versionName = String.format("%d", pinfo.versionCode);
+		}else{
+			version.setText(String.format("v %s", pinfo.versionName));
+			versionName = pinfo.versionName;
+		}
+		
 
 		// bind button click event
 		Button okBtn = (Button) findViewById(R.id.ok_btn);
