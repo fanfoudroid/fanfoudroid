@@ -167,7 +167,7 @@
     <string name="tweet_source_prefix">来自</string>
     <string name="tweet_reply_to_prefix">给</string>
     <string name="tweet_reply_to_suffix">的回复</string>
-    <string name="tweet_created_at_beautify_prefix">大约</string>
+    <string name="tweet_created_at_beautify_prefix"></string>
     <string name="tweet_created_at_beautify_sec">秒</string>
     <string name="tweet_created_at_beautify_min">分钟</string>
     <string name="tweet_created_at_beautify_hour">小时</string>
