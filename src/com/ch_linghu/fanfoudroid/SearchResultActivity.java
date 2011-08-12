@@ -12,9 +12,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
-import com.ch_linghu.fanfoudroid.data.User;
 import com.ch_linghu.fanfoudroid.fanfou.Query;
 import com.ch_linghu.fanfoudroid.fanfou.QueryResult;
 import com.ch_linghu.fanfoudroid.http.HttpException;
@@ -24,7 +24,6 @@ import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterListBaseActivity;
-import com.ch_linghu.fanfoudroid.ui.module.MyListView;
 import com.ch_linghu.fanfoudroid.ui.module.SimpleFeedback;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 import com.ch_linghu.fanfoudroid.ui.module.TweetArrayAdapter;
@@ -38,6 +37,8 @@ public class SearchResultActivity extends TwitterListBaseActivity {
 	// Views.
 	private PullToRefreshListView mTweetList;
 	private View mListFooter;
+	private ProgressBar loadMoreGIF;
+	
 
 	// State.
 	private String mSearchQuery;
@@ -45,15 +46,14 @@ public class SearchResultActivity extends TwitterListBaseActivity {
 	private TweetArrayAdapter mAdapter;
 	private int mNextPage = 1;
 	private String mLastId = null;
+	private boolean mIsGetMore = false;
 
 	private static class State {
 		State(SearchResultActivity activity) {
 			mTweets = activity.mTweets;
-			mNextPage = activity.mNextPage;
 		}
 
 		public ArrayList<Tweet> mTweets;
-		public int mNextPage;
 	}
 
 	// Tasks.
@@ -62,6 +62,10 @@ public class SearchResultActivity extends TwitterListBaseActivity {
 	private TaskListener mSearchTaskListener = new TaskAdapter() {
 		@Override
 		public void onPreExecute(GenericTask task) {
+			if (mIsGetMore){
+				loadMoreGIF.setVisibility(View.VISIBLE);
+			}
+
 			if (mNextPage == 1) {
 				updateProgress(getString(R.string.page_status_refreshing));
 			} else {
@@ -76,12 +80,16 @@ public class SearchResultActivity extends TwitterListBaseActivity {
 
 		@Override
 		public void onPostExecute(GenericTask task, TaskResult result) {
+            loadMoreGIF.setVisibility(View.GONE);
 			mTweetList.onRefreshComplete();
+
 			if (result == TaskResult.AUTH_ERROR) {
 				logout();
 			} else if (result == TaskResult.OK) {
 				draw();
-				mTweetList.setSelection(1);
+				if (!mIsGetMore){
+					mTweetList.setSelection(1);
+				}
 			} else {
 				// Do nothing.
 			}
@@ -117,7 +125,7 @@ public class SearchResultActivity extends TwitterListBaseActivity {
 				mTweets = state.mTweets;
 				draw();
 			} else {
-				doSearch();
+				doSearch(false);
 			}
 
 			return true;
@@ -175,13 +183,14 @@ public class SearchResultActivity extends TwitterListBaseActivity {
 		mAdapter.refresh(mTweets);
 	}
 
-	private void doSearch() {
+	private void doSearch(boolean isGetMore) {
 		Log.d(TAG, "Attempting search.");
 
 		if (mSearchTask != null
 				&& mSearchTask.getStatus() == GenericTask.Status.RUNNING) {
 			return;
 		} else {
+			mIsGetMore = isGetMore;
 			mSearchTask = new SearchTask();
 			mSearchTask.setFeedback(mFeedback);
 			mSearchTask.setListener(mSearchTaskListener);
@@ -272,7 +281,7 @@ public class SearchResultActivity extends TwitterListBaseActivity {
 
 	public void doGetMore() {
 		if (!isLastPage()) {
-			doSearch();
+			doSearch(true);
 		}
 	}
 
@@ -303,8 +312,8 @@ public class SearchResultActivity extends TwitterListBaseActivity {
 
 	@Override
 	protected Tweet getContextItemTweet(int position) {
-		if (position >= 0 && position < mAdapter.getCount()) {
-			Tweet item = (Tweet) mAdapter.getItem(position);
+		if (position > 0 && position < mAdapter.getCount()) {
+			Tweet item = (Tweet) mAdapter.getItem(position - 1);
 			if (item == null) {
 				return null;
 			} else {
@@ -358,13 +367,12 @@ public class SearchResultActivity extends TwitterListBaseActivity {
         // Add Footer to ListView
         mListFooter = View.inflate(this, R.layout.listview_footer, null);
         mTweetList.addFooterView(mListFooter, null, true);
+        loadMoreGIF = (ProgressBar) findViewById(R.id.rectangleProgressBar);
 	}
 
 	@Override
 	public void doRetrieve() {
-		mTweets.clear();
-		mLastId = "";
-		doSearch();
+		doSearch(false);
 	}
 
     @Override

@@ -150,11 +150,7 @@ public class NavBar implements Widget {
 	 */
 	private void addRefreshButtonTo(final Activity activity) {
 		mRefreshButton = (ImageView) activity.findViewById(R.id.top_refresh);
-
-		// FIXME: DELETE ME 暂时取消旋转效果, 测试ProgressBar
-		// refreshButton.setBackgroundResource(R.drawable.top_refresh);
-		// mRefreshAnimation = (AnimationDrawable)
-		// refreshButton.getBackground();
+		
 
 		mProgressBar = (ProgressBar) activity.findViewById(R.id.progress_bar);
 		mLoadingProgress = (ProgressBar) activity
@@ -173,6 +169,9 @@ public class NavBar implements Widget {
 			}
 
 		});
+
+		//TODO: 将RefreshButton隐藏，仅使用下拉刷新，简化界面
+		mRefreshButton.setVisibility(View.GONE);
 	}
 
 	/**
