@@ -200,7 +200,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 		// position = position - 1;
 		Log.d(TAG, "list position:" + position);
 		// 加入footer跳过footer
-		if (position < mUserListAdapter.getCount()) {
+		if (position >=0 && position < mUserListAdapter.getCount()) {
 
 			User item = (User) mUserListAdapter.getItem(position);
 			if (item == null) {

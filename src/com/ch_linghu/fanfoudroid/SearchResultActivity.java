@@ -10,9 +10,11 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
 import android.widget.ListView;
 
 import com.ch_linghu.fanfoudroid.data.Tweet;
+import com.ch_linghu.fanfoudroid.data.User;
 import com.ch_linghu.fanfoudroid.fanfou.Query;
 import com.ch_linghu.fanfoudroid.fanfou.QueryResult;
 import com.ch_linghu.fanfoudroid.http.HttpException;
@@ -27,13 +29,15 @@ import com.ch_linghu.fanfoudroid.ui.module.SimpleFeedback;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 import com.ch_linghu.fanfoudroid.ui.module.TweetArrayAdapter;
 import com.ch_linghu.fanfoudroid.R;
+import com.markupartist.android.widget.PullToRefreshListView;
+import com.markupartist.android.widget.PullToRefreshListView.OnRefreshListener;
 
-public class SearchResultActivity extends TwitterListBaseActivity implements
-		MyListView.OnNeedMoreListener {
+public class SearchResultActivity extends TwitterListBaseActivity {
 	private static final String TAG = "SearchActivity";
 
 	// Views.
-	private MyListView mTweetList;
+	private PullToRefreshListView mTweetList;
+	private View mListFooter;
 
 	// State.
 	private String mSearchQuery;
@@ -72,10 +76,12 @@ public class SearchResultActivity extends TwitterListBaseActivity implements
 
 		@Override
 		public void onPostExecute(GenericTask task, TaskResult result) {
+			mTweetList.onRefreshComplete();
 			if (result == TaskResult.AUTH_ERROR) {
 				logout();
 			} else if (result == TaskResult.OK) {
 				draw();
+				mTweetList.setSelection(1);
 			} else {
 				// Do nothing.
 			}
@@ -264,8 +270,7 @@ public class SearchResultActivity extends TwitterListBaseActivity implements
 		return super.onCreateOptionsMenu(menu);
 	}
 
-	@Override
-	public void needMore() {
+	public void doGetMore() {
 		if (!isLastPage()) {
 			doSearch();
 		}
@@ -298,7 +303,16 @@ public class SearchResultActivity extends TwitterListBaseActivity implements
 
 	@Override
 	protected Tweet getContextItemTweet(int position) {
-		return (Tweet) mAdapter.getItem(position);
+		if (position >= 0 && position < mAdapter.getCount()) {
+			Tweet item = (Tweet) mAdapter.getItem(position);
+			if (item == null) {
+				return null;
+			} else {
+				return item;
+			}
+		} else {
+			return null;
+		}
 	}
 
 	@Override
@@ -330,15 +344,39 @@ public class SearchResultActivity extends TwitterListBaseActivity implements
 	@Override
 	protected void setupState() {
 		mTweets = new ArrayList<Tweet>();
-		mTweetList = (MyListView) findViewById(R.id.tweet_list);
+		mTweetList = (PullToRefreshListView) findViewById(R.id.tweet_list);
 		mAdapter = new TweetArrayAdapter(this);
 		mTweetList.setAdapter(mAdapter);
-		mTweetList.setOnNeedMoreListener(this);
+
+    	mTweetList.setOnRefreshListener(new OnRefreshListener(){
+    		@Override
+    		public void onRefresh(){
+    			doRetrieve();
+    		}
+    	});
+    	
+        // Add Footer to ListView
+        mListFooter = View.inflate(this, R.layout.listview_footer, null);
+        mTweetList.addFooterView(mListFooter, null, true);
 	}
 
 	@Override
 	public void doRetrieve() {
+		mTweets.clear();
+		mLastId = "";
 		doSearch();
 	}
 
-}
+    @Override
+    protected void specialItemClicked(int position) {
+        // 注意 mTweetAdapter.getCount 和 mTweetList.getCount的区别
+        // 前者仅包含数据的数量（不包括foot和head），后者包含foot和head
+        // 因此在同时存在foot和head的情况下，list.count = adapter.count + 2
+        if (position == 0) {
+            doRetrieve();
+        } else if (position == mTweetList.getCount() - 1) {
+            // 最后一个Item(footer)
+            doGetMore();
+        }
+    }
+ }
