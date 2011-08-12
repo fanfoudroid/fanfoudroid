@@ -33,9 +33,11 @@ public class UserTimelineActivity extends TwitterListBaseActivity {
 	private static class State {
 		State(UserTimelineActivity activity) {
 			mTweets = activity.mTweets;
+			mMaxId = activity.mMaxId;
 		}
 
 		public ArrayList<Tweet> mTweets;
+		public String mMaxId;
 	}
 	
 	private static final String TAG = UserTimelineActivity.class
@@ -155,6 +157,7 @@ public class UserTimelineActivity extends TwitterListBaseActivity {
 			if (state != null) {
 				// 此处要求mTweets不为空，最好确保profile页面消息为0时不能进入这个页面
 				mTweets = state.mTweets;
+				mMaxId = state.mMaxId;
 				if (!mTweets.isEmpty() && !wasRunning) {
 					draw();
 				}

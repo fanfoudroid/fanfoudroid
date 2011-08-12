@@ -51,9 +51,13 @@ public class SearchResultActivity extends TwitterListBaseActivity {
 	private static class State {
 		State(SearchResultActivity activity) {
 			mTweets = activity.mTweets;
+			mNextPage = activity.mNextPage;
+			mLastId = activity.mLastId;
 		}
 
 		public ArrayList<Tweet> mTweets;
+		public int mNextPage;
+		public String mLastId;
 	}
 
 	// Tasks.
@@ -123,6 +127,8 @@ public class SearchResultActivity extends TwitterListBaseActivity {
 
 			if (state != null) {
 				mTweets = state.mTweets;
+				mNextPage = state.mNextPage;
+				mLastId = state.mLastId;
 				draw();
 			} else {
 				doSearch(false);
