@@ -24,11 +24,13 @@ import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.module.SimpleFeedback;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 import com.ch_linghu.fanfoudroid.ui.module.UserArrayAdapter;
+import com.markupartist.android.widget.PullToRefreshListView;
+import com.markupartist.android.widget.PullToRefreshListView.OnRefreshListener;
 
 public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 	static final String TAG = "UserArrayBaseActivity";
 	// Views.
-	protected ListView mUserList;
+	protected PullToRefreshListView mUserList;
 	protected UserArrayAdapter mUserListAdapter;
 
 	protected TextView loadMoreBtn;
@@ -75,6 +77,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 				&& mRetrieveTask.getStatus() == GenericTask.Status.RUNNING) {
 			return;
 		} else {
+			
 			mRetrieveTask = new RetrieveTask();
 			mRetrieveTask.setFeedback(mFeedback);
 			mRetrieveTask.setListener(mRetrieveTaskListener);
@@ -100,7 +103,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 			} else if (result == TaskResult.OK) {
 				draw();
 			}
-
+			mUserList.onRefreshComplete();
 			updateProgress("");
 		}
 
@@ -144,13 +147,14 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 				return TaskResult.IO_ERROR;
 			}
 			publishProgress(SimpleFeedback.calProgressBySize(40, 20, usersList));
-
+			allUserList.clear();
 			for (com.ch_linghu.fanfoudroid.fanfou.User user : usersList) {
 				if (isCancelled()) {
 					return TaskResult.CANCELLED;
 				}
+				User u = User.create(user);
 
-				allUserList.add(User.create(user));
+				allUserList.add(u);
 
 				if (isCancelled()) {
 					return TaskResult.CANCELLED;
@@ -171,7 +175,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 	protected void setupState() {
 		setTitle(getActivityTitle());
 
-		mUserList = (ListView) findViewById(R.id.follower_list);
+		mUserList = (PullToRefreshListView) findViewById(R.id.follower_list);
 
 		setupListHeader(true);
 
@@ -194,8 +198,10 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 	@Override
 	protected User getContextItemUser(int position) {
 		// position = position - 1;
+		Log.d(TAG, "list position:" + position);
 		// 加入footer跳过footer
-		if (position < mUserListAdapter.getCount()) {
+		if (position >=0 && position < mUserListAdapter.getCount()) {
+
 			User item = (User) mUserListAdapter.getItem(position);
 			if (item == null) {
 				return null;
@@ -234,7 +240,14 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 		// Add footer to Listview
 		View footer = View.inflate(this, R.layout.listview_footer, null);
 		mUserList.addFooterView(footer, null, true);
+		mUserList.setOnRefreshListener(new OnRefreshListener() {
 
+			@Override
+			public void onRefresh() {
+				doRetrieve();
+
+			}
+		});
 		// Find View
 		loadMoreBtn = (TextView) findViewById(R.id.ask_for_more);
 		loadMoreGIF = (ProgressBar) findViewById(R.id.rectangleProgressBar);
@@ -325,7 +338,6 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 
 	public void draw() {
 		mUserListAdapter.refresh(allUserList);
-
 	}
 
 }

@@ -167,7 +167,7 @@
     <string name="tweet_source_prefix">来自</string>
     <string name="tweet_reply_to_prefix">给</string>
     <string name="tweet_reply_to_suffix">的回复</string>
-    <string name="tweet_created_at_beautify_prefix">大约</string>
+    <string name="tweet_created_at_beautify_prefix"></string>
     <string name="tweet_created_at_beautify_sec">秒</string>
     <string name="tweet_created_at_beautify_min">分钟</string>
     <string name="tweet_created_at_beautify_hour">小时</string>
@@ -187,8 +187,8 @@
 \n\ndodo la: dinophp@gmail.com
 \n\nPhoenix: phoenix.nir@gmail.com
 \n\n忽然兔: zhoumeng1987@gmail.com</string>
-	<string name="about_thanks_title">\n感谢\n</string>
-	<string name="about_thanks">感谢所有对这个项目提供了切实帮助的人们。</string>
+    <string name="about_thanks_title">\n感谢\n</string>
+    <string name="about_thanks">感谢所有对这个项目提供了切实帮助的人们。</string>
     <string name="about_label_ok">了解</string>
     <string name="about_label_feedback">反馈</string>
     <!-- 搜索  -->
@@ -227,4 +227,9 @@
     <string name="crash_dialog_text">安能饭否出现了我们未曾捕获到的错误，你点击\'OK\'之后，错误报告会发送给开发者.</string>
     <string name="crash_dialog_comment_prompt">如果你能多花点时间填写一下错误发生时你做了什么，我们将不胜感激:</string>
     <string name="crash_dialog_ok_toast">感谢你的配合！</string>
+    	<!-- 下拉刷新 -->
+	<string name="pull_to_refresh_pull_label">下拉刷新...</string>
+	<string name="pull_to_refresh_release_label">松开刷新...</string>
+	<string name="pull_to_refresh_refreshing_label">读取中...</string>
+	<string name="pull_to_refresh_tap_label">点击刷新...</string>
 </resources>

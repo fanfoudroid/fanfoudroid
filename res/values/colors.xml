@@ -21,4 +21,7 @@
   <color name="button_text">#444</color>
   <color name="action_bar">#fff</color>
   <color name="action_bar_pressed">#ffd0d0d0</color>
+  
+  <color name="self_background">#FFFAF4BE</color>
+  <color name="mention_background">#FFC9E6F8</color>
 </resources>

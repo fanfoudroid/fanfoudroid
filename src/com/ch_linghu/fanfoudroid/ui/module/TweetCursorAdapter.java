@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -32,7 +33,7 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 	private static final String TAG = "TweetCursorAdapter";
 
 	private Context mContext;
-
+	
 	public TweetCursorAdapter(Context context, Cursor cursor) {
 		super(context, cursor);
 		mContext = context;
@@ -96,6 +97,7 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		holder.tweetUserText = (TextView) view
 				.findViewById(R.id.tweet_user_text);
 		holder.tweetText = (TextView) view.findViewById(R.id.tweet_text);
+		holder.profileLayout = (FrameLayout) view.findViewById(R.id.profile_layout);
 		holder.profileImage = (ImageView) view.findViewById(R.id.profile_image);
 		holder.metaText = (TextView) view.findViewById(R.id.tweet_meta_text);
 		holder.fav = (ImageView) view.findViewById(R.id.tweet_fav);
@@ -111,6 +113,7 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		public LinearLayout tweetLayout;
 		public TextView tweetUserText;
 		public TextView tweetText;
+		public FrameLayout profileLayout;
 		public ImageView profileImage;
 		public TextView metaText;
 		public ImageView fav;
@@ -130,21 +133,26 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 				cursor.getString(mTextColumn));
 		
 		/**
-		 * 添加特殊行的背景色，自己发的设为浅黄色，@自己的设为浅蓝色，其他默认为白色
+		 * 添加特殊行的背景色
 		 */
-		if(holder.tweetUserText.getText().equals(TwitterApplication.getMyselfName()))
-			holder.tweetLayout.setBackgroundColor(0xFFFFFF99);
-		else if(holder.tweetText.getText().toString().contains("@"+TwitterApplication.getMyselfName()))
-			holder.tweetLayout.setBackgroundColor(0xFF99CCFF);
-		else
-			holder.tweetLayout.setBackgroundColor(0xFFFFFFFF);
+		if(holder.tweetUserText.getText().equals(TwitterApplication.getMyselfName())){
+			holder.tweetLayout.setBackgroundResource(R.drawable.list_selector_self);
+			holder.profileLayout.setBackgroundResource(R.color.self_background);
+		}else if(holder.tweetText.getText().toString().contains("@"+TwitterApplication.getMyselfName())){
+			holder.tweetLayout.setBackgroundResource(R.drawable.list_selector_mention);
+			holder.profileLayout.setBackgroundResource(R.color.mention_background);
+		}else{
+			holder.tweetLayout.setBackgroundResource(android.R.drawable.list_selector_background);
+			holder.profileLayout.setBackgroundResource(android.R.color.transparent);
+		}
 		
 
 		String profileImageUrl = cursor.getString(mProfileImageUrlColumn);
 		if (useProfileImage && !TextUtils.isEmpty(profileImageUrl)) {
+			holder.profileLayout.setVisibility(View.VISIBLE);
 			SimpleImageLoader.display(holder.profileImage, profileImageUrl);
 		} else {
-			holder.profileImage.setVisibility(View.GONE);
+			holder.profileLayout.setVisibility(View.GONE);
 		}
 
 		if (cursor.getString(mFavorited).equals("true")) {

@@ -44,6 +44,7 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 
 	private String userId = null;
 	private String userName = null;
+	private int currentPage = 1;
 
 	public static Intent createIntent(String userId, String userName) {
 		Intent intent = new Intent(LAUNCH_ACTION);
@@ -119,11 +120,10 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 
 	@Override
 	public List<Status> getMessageSinceId(String maxId) throws HttpException {
-		if (maxId != null) {
-			return getApi().getFavorites(getUserId(), new Paging(maxId));
-		} else {
-			return getApi().getFavorites(getUserId());
-		}
+		getDb().gc(getUserId(), StatusTable.TYPE_FAVORITE);
+		currentPage = 1;
+		Paging paging = new Paging(currentPage, 20);
+		return getApi().getFavorites(getUserId(), paging);
 	}
 
 	@Override
@@ -133,8 +133,8 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 
 	@Override
 	public List<Status> getMoreMessageFromId(String minId) throws HttpException {
-		Paging paging = new Paging(1, 20);
-		paging.setMaxId(minId);
+		++currentPage;
+		Paging paging = new Paging(currentPage, 20);
 		return getApi().getFavorites(getUserId(), paging);
 	}
 

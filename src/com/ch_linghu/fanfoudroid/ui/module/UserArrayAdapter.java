@@ -33,7 +33,6 @@ import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
 
-//TODO：
 /*
  * 用于用户的Adapter
  */
@@ -58,14 +57,14 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter {
 
 	@Override
 	public Object getItem(int position) {
-		return mUsers.get(position);
+		return mUsers.get(position==0?0:position-1);
 	}
 
 	@Override
 	public long getItemId(int position) {
 		return position;
 	}
-
+	
 	private static class ViewHolder {
 		public ImageView profileImage;
 		public TextView screenName;
@@ -145,7 +144,7 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter {
 	}
 
 	public void refresh(ArrayList<User> users) {
-		mUsers = users;
+		mUsers = (ArrayList<User>)users.clone();
 		notifyDataSetChanged();
 	}
 
