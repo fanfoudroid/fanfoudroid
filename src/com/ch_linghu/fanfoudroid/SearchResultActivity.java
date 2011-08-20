@@ -75,6 +75,7 @@ public class SearchResultActivity extends TwitterListBaseActivity {
 			} else {
 				updateProgress(getString(R.string.page_status_refreshing));
 			}
+			mTweetList.prepareForRefresh();
 		}
 
 		@Override
