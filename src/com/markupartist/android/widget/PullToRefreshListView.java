@@ -165,6 +165,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     public boolean onTouchEvent(MotionEvent event) {
         final int y = (int) event.getY();
 
+    	Log.d(TAG, String.format("[onTouchEvent]event.Action=%d, currState=%d, refreshState=%d", event.getAction(), mCurrentScrollState,mRefreshState));
         switch (event.getAction()) {
             case MotionEvent.ACTION_UP:
                 if (!isVerticalScrollBarEnabled()) {
@@ -199,6 +200,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     private void applyHeaderPadding(MotionEvent ev) {
         final int historySize = ev.getHistorySize();
 
+    	Log.d(TAG, String.format("[applyHeaderPadding]currState=%d, refreshState=%d", mCurrentScrollState,mRefreshState));
         // Workaround for getPointerCount() which is unavailable in 1.5
         // (it's always 1 in 1.5)
         int pointerCount = 1;
@@ -258,6 +260,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
      * Sets the header padding back to original size.
      */
     private void resetHeaderPadding() {
+    	Log.d(TAG, String.format("[resetHeaderPadding]currState=%d, refreshState=%d", mCurrentScrollState,mRefreshState));
         mRefreshView.setPadding(
                 mRefreshView.getPaddingLeft(),
                 mRefreshOriginalTopPadding,
@@ -269,6 +272,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
      * Resets the header to the original state.
      */
     private void resetHeader() {
+    	Log.d(TAG, String.format("[resetHeader]currState=%d, refreshState=%d", mCurrentScrollState,mRefreshState));
         if (mRefreshState != TAP_TO_REFRESH) {
             mRefreshState = TAP_TO_REFRESH;
 
@@ -287,6 +291,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     }
 
     private void measureView(View child) {
+    	Log.d(TAG,  String.format("[measureView]currState=%d, refreshState=%d", mCurrentScrollState,mRefreshState));
         ViewGroup.LayoutParams p = child.getLayoutParams();
         if (p == null) {
             p = new ViewGroup.LayoutParams(
@@ -311,6 +316,8 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
             int visibleItemCount, int totalItemCount) {
         // When the refresh view is completely visible, change the text to say
         // "Release to refresh..." and flip the arrow drawable.
+    	
+    	Log.d(TAG, String.format("[OnScroll]first=%d, currState=%d, refreshState=%d", firstVisibleItem, mCurrentScrollState,mRefreshState));
         if (mCurrentScrollState == SCROLL_STATE_TOUCH_SCROLL
                 && mRefreshState != REFRESHING) {
             if (firstVisibleItem == 0) {

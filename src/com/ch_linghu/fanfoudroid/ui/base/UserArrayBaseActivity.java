@@ -104,6 +104,8 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 				draw();
 			}
 			mUserList.onRefreshComplete();
+			mUserList.setSelection(1);
+
 			updateProgress("");
 		}
 
