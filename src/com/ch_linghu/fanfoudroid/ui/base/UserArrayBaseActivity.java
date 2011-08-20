@@ -124,6 +124,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 	}
 
 	public void onRetrieveBegin() {
+		mUserList.prepareForRefresh();
 		updateProgress(getString(R.string.page_status_refreshing));
 	}
 

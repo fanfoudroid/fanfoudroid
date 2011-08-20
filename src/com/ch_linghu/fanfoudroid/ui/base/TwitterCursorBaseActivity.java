@@ -137,6 +137,7 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
         @Override
         public void onPreExecute(GenericTask task) {
             mRetrieveCount = 0;
+            mTweetList.prepareForRefresh();
 
             if (TwitterApplication.DEBUG) {
                 DebugTimer.start();

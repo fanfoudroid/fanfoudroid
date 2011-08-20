@@ -245,6 +245,7 @@ public class UserTimelineActivity extends TwitterListBaseActivity {
 
 	private void onRetrieveBegin() {
 		mFeedback.start("");
+		mTweetList.prepareForRefresh();
 		// 更新查询状态显示
 	}
 
