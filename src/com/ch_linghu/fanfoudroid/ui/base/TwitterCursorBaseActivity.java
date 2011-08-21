@@ -321,8 +321,6 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
     protected boolean _onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate.");
         if (super._onCreate(savedInstanceState)) {
-            goTop(); // skip the header
-
             // Mark all as read.
             // getDb().markAllMentionsRead();
             markAllRead();
@@ -353,6 +351,8 @@ public abstract class TwitterCursorBaseActivity extends TwitterListBaseActivity 
             if (shouldRetrieve) {
                 doRetrieve();
             }
+
+            goTop(); // skip the header
 
             long lastFollowersRefreshTime = mPreferences.getLong(
                     Preferences.LAST_FOLLOWERS_REFRESH_KEY, 0);
