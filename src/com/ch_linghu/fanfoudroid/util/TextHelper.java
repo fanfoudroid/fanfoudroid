@@ -68,7 +68,7 @@ public class TextHelper {
 		@Override
 		public final String transformUrl(Matcher match, String url) {
 			String result = url.substring(1, url.length() - 1);
-			return "%23" + result + "%23";
+			return result;
 		}
 	};
 
