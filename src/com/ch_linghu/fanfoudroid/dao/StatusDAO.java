@@ -15,7 +15,6 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.TwitterApplication;
-import com.ch_linghu.fanfoudroid.dao.SQLiteTemplate.RowMapper;
 import com.ch_linghu.fanfoudroid.data2.Photo;
 import com.ch_linghu.fanfoudroid.data2.Status;
 import com.ch_linghu.fanfoudroid.data2.User;
@@ -26,267 +25,83 @@ import com.ch_linghu.fanfoudroid.db2.FanDatabase;
 import com.ch_linghu.fanfoudroid.util.DateTimeHelper;
 import com.ch_linghu.fanfoudroid.db2.FanContent.*;
 
+//TODO: 目前仅实现旧版兼容接口，不考虑新特性引入
 public class StatusDAO {
     private static final String TAG = "StatusDAO";
 
-    private SQLiteTemplate mSqlTemplate;
+    private FanDatabase mDb;
 
     public final static DateFormat DB_DATE_FORMATTER = new SimpleDateFormat(
             "yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US);
     
     public StatusDAO(Context context) {
-        mSqlTemplate = new SQLiteTemplate(FanDatabase.getInstance(context)
-                .getSQLiteOpenHelper());
+        mDb = FanDatabase.getInstance(context);
     }
 
     /**
-     * Insert a Status
-     * 
-     * 若报 SQLiteconstraintexception 异常, 检查是否某not null字段为空
-     * 
-     * @param status
-     * @param isUnread
-     * @return
-     */
-    public long insertStatus(Status status) {
-        if (!isExists(status)) {
-            return mSqlTemplate.getDb(true).insert(StatusesTable.TABLE_NAME,
-                    null, statusToContentValues(status));
-        } else {
-            Log.e(TAG, status.getStatusId() + " is exists.");
-            return -1;
-        }
-    }
-
-    // TODO:
-    public int insertStatuses(List<Status> statuses) {
-        int result = 0;
-        SQLiteDatabase db = mSqlTemplate.getDb(true);
-
-        try {
-            db.beginTransaction();
-            for (int i = statuses.size() - 1; i >= 0; i--) {
-                Status status = statuses.get(i);
-
-                long id = db.insertWithOnConflict(StatusesTable.TABLE_NAME,
-                        null, statusToContentValues(status),
-                        SQLiteDatabase.CONFLICT_IGNORE);
-
-                if (-1 == id) {
-                    Log.e(TAG, "cann't insert the tweet : " + status.toString());
-                } else {
-                    ++result;
-                    Log.v(TAG, String.format(
-                            "Insert a status into database : %s",
-                            status.toString()));
-                }
-            }
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
-
-        return result;
-    }
-
-    /**
-     * Delete a status
-     * 
-     * @param statusId
-     * @param owner_id
-     *            owner id
-     * @param type
-     *            status type
-     * @return
-     * @see StatusDAO#deleteStatus(Status)
-     */
-    public int deleteStatus(String statusId, String owner_id, int type) {
-        // FIXME: 数据模型改变后这里的逻辑需要完全重写，目前仅保证编译可通过
-        String where = StatusesTable.Columns.ID + " =? ";
-        String[] binds;
-
-        if (!TextUtils.isEmpty(owner_id)) {
-            where += " AND " + StatusesPropertyTable.Columns.OWNER_ID + " = ? ";
-            binds = new String[] { statusId, owner_id };
-        } else {
-            binds = new String[] { statusId };
-        }
-
-        if (-1 != type) {
-            where += " AND " + StatusesPropertyTable.Columns.TYPE + " = "
-                    + type;
-        }
-
-        return mSqlTemplate.getDb(true).delete(StatusesTable.TABLE_NAME,
-                where.toString(), binds);
-    }
-
-    /**
-     * Delete a Status
-     * 
-     * @param status
-     * @return
-     * @see StatusDAO#deleteStatus(String, String, int)
-     */
-    public int deleteStatus(Status status) {
-        return deleteStatus(status.getStatusId(), status.getStatusId(),
-                status.getType());
-    }
-
-    /**
-     * Find a status by status ID
-     * 
-     * @param statusId
-     * @return
-     */
-    public Status fetchStatus(String statusId) {
-        return mSqlTemplate.queryForObject(mRowMapper,
-                StatusesTable.TABLE_NAME, null, StatusesTable.Columns.ID
-                        + " = ?", new String[] { statusId }, null, null,
-                "created_at DESC", "1");
-    }
-
-    /**
-     * Find user's statuses
-     * 
-     * @param userId
-     *            user id
-     * @param statusType
-     *            status type, see {@link StatusTable#TYPE_USER}...
-     * @return list of statuses
-     */
-    public List<Status> fetchStatuses(String userId, int statusType) {
-        return mSqlTemplate.queryForList(mRowMapper,
-                FanContent.StatusesTable.TABLE_NAME, null,
-                StatusesPropertyTable.Columns.OWNER_ID + " = ? AND "
-                        + StatusesPropertyTable.Columns.TYPE + " = "
-                        + statusType, new String[] { userId }, null, null,
-                "created_at DESC", null);
-    }
-
-    /**
-     * @see StatusDAO#fetchStatuses(String, int)
-     */
-    public List<Status> fetchStatuses(String userId, String statusType) {
-        return fetchStatuses(userId, Integer.parseInt(statusType));
-    }
-
-    /**
-     * Update by using {@link ContentValues}
-     * 
-     * @param statusId
-     * @param newValues
-     * @return
-     */
-    public int updateStatus(String statusId, ContentValues values) {
-        return mSqlTemplate.updateById(FanContent.StatusesTable.TABLE_NAME,
-                statusId, values);
-    }
-
-    /**
-     * Update by using {@link Status}
-     * 
-     * @param status
-     * @return
-     */
-    public int updateStatus(Status status) {
-        return updateStatus(status.getStatusId(), statusToContentValues(status));
-    }
-
-    /**
-     * Check if status exists
+     * 判断指定ID的消息是否存在于StatusTable
      * 
      * FIXME: 取消使用Query
      * 
      * @param status
      * @return
      */
-    public boolean isExists(Status status) {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT COUNT(*) FROM ")
-                .append(FanContent.StatusesTable.TABLE_NAME).append(" WHERE ")
-                .append(StatusesTable.Columns.ID).append(" =? AND ")
-                .append(StatusesPropertyTable.Columns.OWNER_ID)
-                .append(" =? AND ").append(StatusesPropertyTable.Columns.TYPE)
-                .append(" = ").append(status.getType());
-        return false;
-        // return mSqlTemplate.isExistsBySQL(sql.toString(),
-        // new String[] { status.getStatusId(), status.getUser().getStatusId()
-        // });
+    public boolean isExistsInStatus(String statusId) {
+    	int count = 0;
+    	Cursor c = mDb.getDb(false).query(FanContent.StatusesTable.TABLE_NAME, 
+    			new String[] {FanContent.StatusesTable.Columns.ID}, 
+    			FanContent.StatusesTable.Columns.STATUS_ID + "=" + statusId, 
+    			null, null, null, null);
+    	count = c.getCount();
+    	c.close();
+    	
+        return count > 0;
     }
 
     /**
-     * Status -> ContentValues
+     * 判断指定ID的消息是否存在于StatusPropertyTable
+     * 
+     * FIXME: 取消使用Query
      * 
      * @param status
-     * @param isUnread
      * @return
      */
-    private ContentValues statusToContentValues(Status status) {
-        final ContentValues v = new ContentValues();
-        v.put(StatusesTable.Columns.ID, status.getStatusId());
-        v.put(StatusesPropertyTable.Columns.TYPE, status.getType());
-        v.put(StatusesTable.Columns.TEXT, status.getText());
-        // v.put(StatusesPropertyTable.Columns.OWNER_ID, status.getOwnerId());
-        v.put(StatusesTable.Columns.FAVORITED, status.isFavorited() + "");
-        v.put(StatusesTable.Columns.TRUNCATED, status.isTruncated()); // TODO:
-        v.put(StatusesTable.Columns.IN_REPLY_TO_STATUS_ID,
-                status.getInReplyToStatusId());
-        v.put(StatusesTable.Columns.IN_REPLY_TO_USER_ID,
-                status.getInReplyToUserId());
-        // v.put(StatusTable.Columns.IN_REPLY_TO_SCREEN_NAME,
-        // status.getInReplyToScreenName());
-        // v.put(IS_REPLY, status.isReply());
-        v.put(StatusesTable.Columns.CREATED_AT,
-                DB_DATE_FORMATTER.format(status.getCreatedAt()));
-        v.put(StatusesTable.Columns.SOURCE, status.getSource());
-        // v.put(StatusTable.Columns.IS_UNREAD, status.isUnRead());
-
-        // final User user = status.getUser();
-        // if (user != null) {
-        // v.put(UserTable.Columns.USER_ID, user.getId());
-        // v.put(UserTable.Columns.SCREEN_NAME, user.getScreenName());
-        // v.put(UserTable.Columns.PROFILE_IMAGE_URL,
-        // user.getProfileImageUrl());
-        // }
-        final Photo photo = status.getPhoto();
-        /*
-         * if (photo != null) { v.put(StatusTable.Columns.PIC_THUMB,
-         * photo.getThumburl()); v.put(StatusTable.Columns.PIC_MID,
-         * photo.getImageurl()); v.put(StatusTable.Columns.PIC_ORIG,
-         * photo.getLargeurl()); }
-         */
-
-        return v;
+    public boolean isExistsInProperty(String statusId) {
+    	int count = 0;
+    	Cursor c = mDb.getDb(false).query(FanContent.StatusesPropertyTable.TABLE_NAME, 
+    			new String[] {FanContent.StatusesPropertyTable.Columns.ID}, 
+    			FanContent.StatusesPropertyTable.Columns.STATUS_ID + "=" + statusId, 
+    			null, null, null, null);
+    	count = c.getCount();
+    	c.close();
+    	
+        return count > 0;
     }
 
-    public String getMaxStatusId(String statusOwner, int statusType, String authorId) {
-        Cursor c = null;
-        String maxStatusId = "";
-        try {
-            c = mSqlTemplate.getDb(false).query(
-                    FanContent.StatusesView.VIEW_NAME,
-                    new String[] { FanContent.StatusesView.Columns.STATUS_ID },
-                    FanContent.StatusesView.Columns.OWNER_ID + " ='"
-                            + statusOwner + "' AND "
-                            + FanContent.StatusesView.Columns.AUTHOR_ID + " ='"
-                            + authorId+"' AND "
-                            + FanContent.StatusesView.Columns.TYPE + " = '"
-                            + statusType + "'", null, null, null,
-                    FanContent.StatusesView.Columns.CREATED_AT + " DESC");
-            if (c.getCount() > 0) {
-                c.moveToLast();
-                maxStatusId = c.getString(0);
-            }
-        } catch (SQLiteException e) {
-            e.printStackTrace();
-        } finally {
-            c.close();
-        }
-        return maxStatusId;
+    /**
+     * 判断指定条件的消息是否存在于StatusPropertyTable
+     * 
+     * FIXME: 取消使用Query
+     * 
+     * @param status
+     * @return
+     */
+    public boolean isExistsInProperty(String statusId, String ownerId, int statusType) {
+    	int count = 0;
+    	Cursor c = mDb.getDb(false).query(FanContent.StatusesPropertyTable.TABLE_NAME, 
+    			new String[] {FanContent.StatusesPropertyTable.Columns.ID}, 
+    			FanContent.StatusesPropertyTable.Columns.STATUS_ID + "='" + statusId + "'"
+    			+ " AND " + FanContent.StatusesPropertyTable.Columns.OWNER_ID + "='" + ownerId + "'"
+    			+ " AND " + FanContent.StatusesPropertyTable.Columns.TYPE + "=" + statusType, 
+    			null, null, null, null);
+    	count = c.getCount();
+    	c.close();
+    	
+        return count > 0;
     }
-    
-    private long insertOneStatusIntoStatusesTable(Status status){
+
+    //辅助函数
+    private long insertSingleStatusIntoStatusesTable(Status status){
     	final ContentValues v = new ContentValues();
         v.put(FanContent.StatusesTable.Columns.STATUS_ID, status.getStatusId());
         v.put(FanContent.StatusesTable.Columns.TEXT, status.getText());
@@ -311,145 +126,186 @@ public class StatusDAO {
         	v.put(FanContent.StatusesTable.Columns.PIC_MID, photo.getImageurl()); 
         	v.put(FanContent.StatusesTable.Columns.PIC_ORIG, photo.getLargeurl()); }
         
-        //FIXME: insertWithOnConflict 是 Level 8 的函数，为了低版本兼容性，这里需要修改。
-    	//TODO：这里是可能重复的，必须进行判断
-    	return mSqlTemplate.getDb(true).insertWithOnConflict(FanContent.StatusesTable.TABLE_NAME, "", v, SQLiteDatabase.CONFLICT_IGNORE);
+        if (!isExistsInStatus(status.getStatusId())){
+        	return mDb.getDb(true).insert(FanContent.StatusesTable.TABLE_NAME, "", v);
+        }else{
+        	Log.w(TAG, "[insertSingleStatusIntoStatusesTable]" + status.getStatusId()+" is already exist.");
+        	return 0;
+        }
     }
     
-    private long insertOneStatusIntoStatuesPropertyTable(Status status, int sequenceFlag){
+    private long insertSingleStatusIntoStatuesPropertyTable(Status status, int sequenceFlag){
     	final ContentValues v = new ContentValues();
     	v.put(FanContent.StatusesPropertyTable.Columns.STATUS_ID, status.getStatusId());
     	v.put(FanContent.StatusesPropertyTable.Columns.OWNER_ID, status.getOwner().getId());
     	v.put(FanContent.StatusesPropertyTable.Columns.TYPE, status.getType());
     	v.put(FanContent.StatusesPropertyTable.Columns.SEQUENCE_FLAG, sequenceFlag);
 
-    	long result1 = 0;
-    	long result2 = 0;
-    	//FIXME: insertWithOnConflict 是 Level 8 的函数，为了低版本兼容性，这里需要修改。
-    	result1 = mSqlTemplate.getDb(true).insertWithOnConflict(FanContent.StatusesPropertyTable.TABLE_NAME, "", v, SQLiteDatabase.CONFLICT_IGNORE);
+    	//long result1 = 0;
+    	//long result2 = 0;
+    	if (!isExistsInProperty(status.getStatusId(), status.getOwner().getId(), status.getType())){
+    		return mDb.getDb(true).insert(FanContent.StatusesPropertyTable.TABLE_NAME, "", v);
+    	}else{
+        	Log.w(TAG, "[insertSingleStatusIntoStatuesPropertyTable]" + status.getStatusId()+" is already exist.");
+        	return 0;    		
+    	}
     	
-        final Photo photo = status.getPhoto();
-        if (photo != null) {
-        	v.put(FanContent.StatusesPropertyTable.Columns.TYPE, Status.TYPE_PHOTO);
-        	//FIXME: insertWithOnConflict 是 Level 8 的函数，为了低版本兼容性，这里需要修改。
-        	//TODO：这里是可能重复的，必须进行判断
-        	result2 = mSqlTemplate.getDb(true).insertWithOnConflict(FanContent.StatusesPropertyTable.TABLE_NAME, "", v, SQLiteDatabase.CONFLICT_IGNORE);
-        }
-        
-        return result1+result2;
+        //final Photo photo = status.getPhoto();
+        //if (photo != null) {
+        //	v.put(FanContent.StatusesPropertyTable.Columns.TYPE, Status.TYPE_PHOTO);
+        //	//FIXME: insertWithOnConflict 是 Level 8 的函数，为了低版本兼容性，这里需要修改。
+        //	//TODO：这里是可能重复的，必须进行判断
+        //	result2 = mSqlTemplate.getDb(true).insertWithOnConflict(FanContent.StatusesPropertyTable.TABLE_NAME, "", v, SQLiteDatabase.CONFLICT_IGNORE);
+        //}
+        //
+        //return result1+result2;
     }
     
-    public boolean insertOneStatus(Status status, int sequenceFlag){
-    	insertOneStatusIntoStatusesTable(status);
-    	insertOneStatusIntoStatuesPropertyTable(status, sequenceFlag);
-    	//TODO: 是否需要处理User信息？
+    /**
+     * 插入单一记录
+     * 
+     * @param statusOwner, statusType, authorId
+     * @return
+     */
+    public boolean insertSingleStatus(Status status){
+    	insertSingleStatusIntoStatusesTable(status);
+    	insertSingleStatusIntoStatuesPropertyTable(status, 1);
+    	//FIXME: 是否需要处理User信息？
+    	return true;
+    }
+
+    public boolean insertSingleStatus(Status status, int sequenceFlag){
+    	insertSingleStatusIntoStatusesTable(status);
+    	insertSingleStatusIntoStatuesPropertyTable(status, sequenceFlag);
+    	//FIXME: 是否需要处理User信息？
     	return true;
     }
     
-    public int getNewSequenceFlag(String ownerId, int statusType){
-    	//FIXME: 非常低效的方法，需要优化
-    	String SQL = "SELECT max( " + FanContent.StatusesPropertyTable.Columns.SEQUENCE_FLAG + " ) "
-    	            + " FROM " + FanContent.StatusesPropertyTable.TABLE_NAME;
-    	Cursor c = mSqlTemplate.getDb(false).rawQuery(SQL, new String[]{});
+    /**
+     * 删除单一记录
+     * 
+     * @param statusOwner, statusType, authorId
+     * @return
+     */
+    public boolean deleteSingleStatus(String statusId, String ownerId, int statusType){
+    	mDb.getDb(true).delete(FanContent.StatusesPropertyTable.TABLE_NAME, 
+    			FanContent.StatusesPropertyTable.Columns.STATUS_ID + "='" + statusId + "'"
+    			+ " AND " + FanContent.StatusesPropertyTable.Columns.OWNER_ID + "='" + ownerId + "'"
+    			+ " AND " + FanContent.StatusesPropertyTable.Columns.TYPE + "=" + statusType, 
+    			null);
     	
-    	int result = 0;
-    	if (c != null && c.moveToFirst()){
-    		result = c.getInt(0);
+    	//如果属性表中的记录完全被删除，则同时删除主表中的记录
+    	if (!isExistsInProperty(statusId)){
+    		mDb.getDb(true).delete(FanContent.StatusesTable.TABLE_NAME, 
+    				FanContent.StatusesTable.Columns.STATUS_ID + "='" + statusId + "'", 
+    				null);
     	}
-    	return result + 1;
+    	
+    	return true;
     }
     
-    public int getCurrentSequenceFlag(String ownerId, int statusType){
-    	//FIXME: 非常低效的方法，需要优化
-    	String SQL = "SELECT max( " + FanContent.StatusesPropertyTable.Columns.SEQUENCE_FLAG + " ) "
-    	            + " FROM " + FanContent.StatusesPropertyTable.TABLE_NAME;
-    	Cursor c = mSqlTemplate.getDb(false).rawQuery(SQL, new String[]{});
-    	
-    	int result = 0;
-    	if (c != null && c.moveToFirst()){
-    		result = c.getInt(0);
-    	}
-    	return result;
-    }
-    
-    public int getPrevSequenceFlag(String ownerId, int statusType){
-    	//FIXME: 非常低效的方法，需要优化
-    	//取第二大的seq
-    	String SQL = "SELECT max( " + FanContent.StatusesPropertyTable.Columns.SEQUENCE_FLAG + " ) "
-    	            + " FROM " + FanContent.StatusesPropertyTable.TABLE_NAME + " "
-    	            + " WHERE " + FanContent.StatusesPropertyTable.Columns.SEQUENCE_FLAG + " < "
-    	            + " (SELECT max( "+ FanContent.StatusesPropertyTable.Columns.SEQUENCE_FLAG + " )"
-    	            + "    FROM " + FanContent.StatusesPropertyTable.TABLE_NAME + ") ";
-    	Cursor c = mSqlTemplate.getDb(false).rawQuery(SQL, new String[]{});
-    	
-    	int result = 0;
-    	if (c != null && c.moveToFirst()){
-    		result = c.getInt(0);
-    	}
-    	return result;
-    }
-    
-    public List<Status> getOneGroupStatus(String ownerId, String authorId, int type) {
-        List<Status> statuses = new ArrayList<Status>();
-        //在mSqlTemplate查
-        return statuses;
+    /**
+     * 设置某条消息的收藏状态
+     * 
+     * @param statusOwner, statusType, authorId
+     * @return
+     */
+    public boolean setFavorited(String statusId, boolean isFavorited){
+    	final ContentValues v = new ContentValues();
+    	v.put(FanContent.StatusesTable.Columns.FAVORITED, isFavorited);
+    	mDb.getDb(true).update(FanContent.StatusesTable.TABLE_NAME, 
+    			v, FanContent.StatusesTable.Columns.STATUS_ID + "='" + statusId + "'", null);
+    	return true;
     }
 
-    private static final RowMapper<Status> mRowMapper = new RowMapper<Status>() {
+    /**
+     * 获得指定用户指定类型的信息
+     * 
+     * @param statusOwner, statusType, authorId
+     * @return
+     */
+    public Cursor fetchStatus(String ownerId, int statusType){
+    	return mDb.getDb(false).query(FanContent.StatusesView.VIEW_NAME, 
+    			FanContent.StatusesView.getColumns(), 
+    			FanContent.StatusesView.Columns.OWNER_ID + "='" + ownerId + "'"
+    			+ " AND " + FanContent.StatusesView.Columns.TYPE + "=" + statusType, 
+    			null, null, null, 
+    			FanContent.StatusesView.Columns.CREATED_AT + " DESC");
+    }
 
-        @Override
-        public Status mapRow(Cursor cursor, int rowNum) {
-            Photo photo = new Photo();
-            /*
-             * photo.setImageurl(cursor.getString(cursor
-             * .getColumnIndex(StatusTable.Columns.PIC_MID)));
-             * photo.setLargeurl(cursor.getString(cursor
-             * .getColumnIndex(StatusTable.Columns.PIC_ORIG)));
-             * photo.setThumburl(cursor.getString(cursor
-             * .getColumnIndex(StatusTable.Columns.PIC_THUMB)));
-             */
-            User user = new User();
-            user.setScreenName(cursor.getString(cursor
-                    .getColumnIndex(UserTable.Columns.SCREEN_NAME)));
-            user.setId(cursor.getString(cursor
-                    .getColumnIndex(UserTable.Columns.USER_ID)));
-            user.setProfileImageUrl(cursor.getString(cursor
-                    .getColumnIndex(UserTable.Columns.PROFILE_IMAGE_URL)));
-
-            Status status = new Status();
-            status.setPhoto(photo);
-            // status.setUser(user);
-            // status.setOwnerId(cursor.getString(cursor
-            // .getColumnIndex(StatusesPropertyTable.Columns.OWNER_ID)));
-            // TODO: 将数据库中的statusType改成Int类型
-            status.setType(cursor.getInt(cursor
-                    .getColumnIndex(StatusesPropertyTable.Columns.TYPE)));
-            // status.setId(cursor.getString(cursor
-            // .getColumnIndex(StatusesTable.Columns.ID)));
-            status.setCreatedAt(DateTimeHelper.parseDateTimeFromSqlite(cursor
-                    .getString(cursor
-                            .getColumnIndex(StatusesTable.Columns.CREATED_AT))));
-            // TODO: 更改favorite 在数据库类型为boolean后改为 " != 0 "
-            status.setFavorited(cursor.getString(
-                    cursor.getColumnIndex(StatusesTable.Columns.FAVORITED))
-                    .equals("true"));
-            status.setText(cursor.getString(cursor
-                    .getColumnIndex(StatusesTable.Columns.TEXT)));
-            status.setSource(cursor.getString(cursor
-                    .getColumnIndex(StatusesTable.Columns.SOURCE)));
-            // status.setInReplyToScreenName(cursor.getString(cursor
-            // .getColumnIndex(StatusTable.IN_REPLY_TO_SCREEN_NAME)));
-            status.setInReplyToStatusId(cursor.getString(cursor
-                    .getColumnIndex(StatusesTable.Columns.IN_REPLY_TO_STATUS_ID)));
-            status.setInReplyToUserId(cursor.getString(cursor
-                    .getColumnIndex(StatusesTable.Columns.IN_REPLY_TO_USER_ID)));
-            status.setTruncated(cursor.getInt(cursor
-                    .getColumnIndex(StatusesTable.Columns.TRUNCATED)) != 0);
-            // status.setUnRead(cursor.getInt(cursor
-            // .getColumnIndex(StatusTable.Columns.IS_UNREAD)) != 0);
-            return status;
+    /**
+     * 获得表中的最大ID
+     * 
+     * @param statusOwner, statusType, authorId
+     * @return
+     */
+    public String getMaxStatusId(String ownerId, int statusType, String authorId) {
+        Cursor c = null;
+        String maxStatusId = "";
+        try {
+            c = mDb.getDb(false).query(
+                    FanContent.StatusesView.VIEW_NAME,
+                    new String[] { FanContent.StatusesView.Columns.STATUS_ID },
+                    FanContent.StatusesView.Columns.OWNER_ID + " ='"
+                            + ownerId + "' AND "
+                            + FanContent.StatusesView.Columns.AUTHOR_ID + " ='"
+                            + authorId+"' AND "
+                            + FanContent.StatusesView.Columns.TYPE + " = '"
+                            + statusType + "'", null, null, null,
+                    FanContent.StatusesView.Columns.CREATED_AT + " DESC");
+            if (c.getCount() > 0) {
+                c.moveToLast();
+                maxStatusId = c.getString(0);
+            }
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+        } finally {
+            c.close();
         }
-
-    };
-
+        return maxStatusId;
+    }
+    
+    
+//    public int getNewSequenceFlag(String ownerId, int statusType){
+//    	//FIXME: 非常低效的方法，需要优化
+//    	String SQL = "SELECT max( " + FanContent.StatusesPropertyTable.Columns.SEQUENCE_FLAG + " ) "
+//    	            + " FROM " + FanContent.StatusesPropertyTable.TABLE_NAME;
+//    	Cursor c = mSqlTemplate.getDb(false).rawQuery(SQL, new String[]{});
+//    	
+//    	int result = 0;
+//    	if (c != null && c.moveToFirst()){
+//    		result = c.getInt(0);
+//    	}
+//    	return result + 1;
+//    }
+//    
+//    public int getCurrentSequenceFlag(String ownerId, int statusType){
+//    	//FIXME: 非常低效的方法，需要优化
+//    	String SQL = "SELECT max( " + FanContent.StatusesPropertyTable.Columns.SEQUENCE_FLAG + " ) "
+//    	            + " FROM " + FanContent.StatusesPropertyTable.TABLE_NAME;
+//    	Cursor c = mSqlTemplate.getDb(false).rawQuery(SQL, new String[]{});
+//    	
+//    	int result = 0;
+//    	if (c != null && c.moveToFirst()){
+//    		result = c.getInt(0);
+//    	}
+//    	return result;
+//    }
+//    
+//    public int getPrevSequenceFlag(String ownerId, int statusType){
+//    	//FIXME: 非常低效的方法，需要优化
+//    	//取第二大的seq
+//    	String SQL = "SELECT max( " + FanContent.StatusesPropertyTable.Columns.SEQUENCE_FLAG + " ) "
+//    	            + " FROM " + FanContent.StatusesPropertyTable.TABLE_NAME + " "
+//    	            + " WHERE " + FanContent.StatusesPropertyTable.Columns.SEQUENCE_FLAG + " < "
+//    	            + " (SELECT max( "+ FanContent.StatusesPropertyTable.Columns.SEQUENCE_FLAG + " )"
+//    	            + "    FROM " + FanContent.StatusesPropertyTable.TABLE_NAME + ") ";
+//    	Cursor c = mSqlTemplate.getDb(false).rawQuery(SQL, new String[]{});
+//    	
+//    	int result = 0;
+//    	if (c != null && c.moveToFirst()){
+//    		result = c.getInt(0);
+//    	}
+//    	return result;
+//    }
 }

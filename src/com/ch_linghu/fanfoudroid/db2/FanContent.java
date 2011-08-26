@@ -70,11 +70,18 @@ public abstract class FanContent {
                     + TABLE_NAME + " ( " + getIndexColumns()[1] + " );";
             return createIndexSQL;
         }
+        
+        public static String getDropIndexSQL() {
+            String createIndexSQL = "DROP INDEX " + TABLE_NAME + "_idx ON "
+                    + TABLE_NAME + ";";
+            return createIndexSQL;
+        }
+        
     }
 
     /**
      * 消息属性表 每一条消息所属类别、所有者等信息 消息ID(外键) 所有者(随便看看的所有者为空)
-     * 消息类别(随便看看/首页(自己及自己好友)/个人(仅自己)/收藏/照片)
+     * 消息类别(随便看看/首页(自己及自己好友)/指定USER/收藏/照片)
      * 
      * @author phoenix
      * 
@@ -89,6 +96,15 @@ public abstract class FanContent {
             public static final String TYPE = "type";
             public static final String SEQUENCE_FLAG = "sequence_flag";
             public static final String LOAD_TIME = "load_time";
+        }
+        
+        public static class Types {
+        	public static final int HOME = 1; // 首页(我和我的好友)
+        	public static final int MENTION = 2; // 提到我的
+        	public static final int USER = 3; // 指定USER的
+        	public static final int FAVORITE = 4; // 收藏
+        	public static final int BROWSE = 5; // 随便看看
+        	public static final int PHOTO = 6;	//照片
         }
 
         public static String getCreateSQL() {
@@ -112,6 +128,18 @@ public abstract class FanContent {
                     Columns.OWNER_ID, Columns.TYPE, Columns.SEQUENCE_FLAG,
                     Columns.LOAD_TIME };
         }
+        public static String getCreateIndexSQL() {
+            String createIndexSQL = "CREATE INDEX " + TABLE_NAME + "_idx ON "
+                    + TABLE_NAME + " ( " + getIndexColumns()[1] + " );";
+            return createIndexSQL;
+        }
+        
+        public static String getDropIndexSQL() {
+            String createIndexSQL = "DROP INDEX " + TABLE_NAME + "_idx ON "
+                    + TABLE_NAME + ";";
+            return createIndexSQL;
+        }
+        
     }
 
     /**
@@ -181,6 +209,18 @@ public abstract class FanContent {
                     Columns.FOLLOWING, Columns.NOTIFICATIONS,
                     Columns.UTC_OFFSET, Columns.LOAD_TIME };
         }
+        public static String getCreateIndexSQL() {
+            String createIndexSQL = "CREATE INDEX " + TABLE_NAME + "_idx ON "
+                    + TABLE_NAME + " ( " + getIndexColumns()[1] + " );";
+            return createIndexSQL;
+        }
+        
+        public static String getDropIndexSQL() {
+            String createIndexSQL = "DROP INDEX " + TABLE_NAME + "_idx ON "
+                    + TABLE_NAME + ";";
+            return createIndexSQL;
+        }
+        
     }
 
     /**
@@ -226,6 +266,18 @@ public abstract class FanContent {
                     Columns.CREATED_AT, Columns.SEQUENCE_FLAG,
                     Columns.LOAD_TIME };
         }
+        public static String getCreateIndexSQL() {
+            String createIndexSQL = "CREATE INDEX " + TABLE_NAME + "_idx ON "
+                    + TABLE_NAME + " ( " + getIndexColumns()[1] + " );";
+            return createIndexSQL;
+        }
+        
+        public static String getDropIndexSQL() {
+            String createIndexSQL = "DROP INDEX " + TABLE_NAME + "_idx ON "
+                    + TABLE_NAME + ";";
+            return createIndexSQL;
+        }
+        
     }
 
     /**
@@ -262,6 +314,18 @@ public abstract class FanContent {
             return new String[] { Columns.USER1_ID, Columns.USER2_ID,
                     Columns.LOAD_TIME };
         }
+        public static String getCreateIndexSQL() {
+            String createIndexSQL = "CREATE INDEX " + TABLE_NAME + "_idx ON "
+                    + TABLE_NAME + " ( " + getIndexColumns()[1] + " );";
+            return createIndexSQL;
+        }
+        
+        public static String getDropIndexSQL() {
+            String createIndexSQL = "DROP INDEX " + TABLE_NAME + "_idx ON "
+                    + TABLE_NAME + ";";
+            return createIndexSQL;
+        }
+        
     }
 
     /**
@@ -298,6 +362,18 @@ public abstract class FanContent {
             return new String[] { Columns.NAME, Columns.QUERY, Columns.URL,
                     Columns.LOAD_TIME };
         }
+        public static String getCreateIndexSQL() {
+            String createIndexSQL = "CREATE INDEX " + TABLE_NAME + "_idx ON "
+                    + TABLE_NAME + " ( " + getIndexColumns()[1] + " );";
+            return createIndexSQL;
+        }
+        
+        public static String getDropIndexSQL() {
+            String createIndexSQL = "DROP INDEX " + TABLE_NAME + "_idx ON "
+                    + TABLE_NAME + ";";
+            return createIndexSQL;
+        }
+        
     }
 
     /**
@@ -336,6 +412,18 @@ public abstract class FanContent {
             return new String[] { Columns.QUERY_ID, Columns.QUERY,
                     Columns.NAME, Columns.CREATED_AT, Columns.LOAD_TIME };
         }
+        public static String getCreateIndexSQL() {
+            String createIndexSQL = "CREATE INDEX " + TABLE_NAME + "_idx ON "
+                    + TABLE_NAME + " ( " + getIndexColumns()[1] + " );";
+            return createIndexSQL;
+        }
+        
+        public static String getDropIndexSQL() {
+            String createIndexSQL = "DROP INDEX " + TABLE_NAME + "_idx ON "
+                    + TABLE_NAME + ";";
+            return createIndexSQL;
+        }
+        
     }
 
     /**
@@ -349,30 +437,49 @@ public abstract class FanContent {
 
         public static class Columns {
             public static final String STATUS_ID = "status_id";
-            public static final String OWNER_ID = "owner_id";
             public static final String AUTHOR_ID = "author_id";
-            public static final String TYPE = "type";
+            public static final String TEXT = "text";
+            public static final String SOURCE = "source";
             public static final String CREATED_AT = "created_at";
+            public static final String TRUNCATED = "truncated";
+            public static final String FAVORITED = "favorited";
+            public static final String PIC_THUMB = "pic_thumbnail";
+            public static final String PIC_MID = "pic_middle";
+            public static final String PIC_ORIG = "pic_original";
+            public static final String IN_REPLY_TO_STATUS_ID = "in_reply_to_status_id";
+            public static final String IN_REPLY_TO_USER_ID = "in_reply_to_user_id";
+            public static final String IN_REPLY_TO_SCREEN_NAME = "in_reply_to_screen_name";
+            
+            public static final String OWNER_ID = "owner_id";
+            public static final String TYPE = "type";
+            public static final String SEQUENCE_FLAG = "sequence_flag";
+            public static final String LOAD_TIME = "load_time";
         }
 
         public static String getCreateSQL() {
             String createString = VIEW_NAME + " AS SELECT "
-                    + StatusesPropertyTable.TABLE_NAME + "."
-                    + StatusesPropertyTable.Columns.STATUS_ID + ", "
-                    + StatusesPropertyTable.TABLE_NAME + "."
-                    + StatusesPropertyTable.Columns.OWNER_ID + ", "
-                    + StatusesTable.TABLE_NAME + "."
-                    + StatusesTable.Columns.AUTHOR_ID + ", "
-                    + StatusesPropertyTable.TABLE_NAME + "."
-                    + StatusesPropertyTable.Columns.TYPE + ", "
-                    + StatusesTable.TABLE_NAME + "."
-                    + StatusesTable.Columns.CREATED_AT + " FROM "
-                    + StatusesPropertyTable.TABLE_NAME + " LEFT JOIN "
-                    + StatusesTable.TABLE_NAME + " ON "
-                    + StatusesPropertyTable.TABLE_NAME + "."
-                    + StatusesPropertyTable.Columns.STATUS_ID + " = "
-                    + StatusesTable.TABLE_NAME + "."
-                    + StatusesTable.Columns.STATUS_ID + ";";
+            	+ StatusesTable.TABLE_NAME + "." + StatusesTable.Columns.STATUS_ID + " " + Columns.STATUS_ID + ", "
+            	+ StatusesTable.TABLE_NAME + "." + StatusesTable.Columns.AUTHOR_ID + " " + Columns.AUTHOR_ID + ", "
+            	+ StatusesTable.TABLE_NAME + "." + StatusesTable.Columns.TEXT + " " + Columns.TEXT + ", "
+            	+ StatusesTable.TABLE_NAME + "." + StatusesTable.Columns.SOURCE + " " + Columns.SOURCE + ", "
+            	+ StatusesTable.TABLE_NAME + "." + StatusesTable.Columns.CREATED_AT + " " + Columns.CREATED_AT + ", "
+            	+ StatusesTable.TABLE_NAME + "." + StatusesTable.Columns.TRUNCATED + " " + Columns.TRUNCATED + ", "
+            	+ StatusesTable.TABLE_NAME + "." + StatusesTable.Columns.FAVORITED + " " + Columns.FAVORITED + ", "
+            	+ StatusesTable.TABLE_NAME + "." + StatusesTable.Columns.PIC_THUMB + " " + Columns.PIC_THUMB + ", "
+            	+ StatusesTable.TABLE_NAME + "." + StatusesTable.Columns.PIC_MID + " " + Columns.PIC_MID + ", "
+            	+ StatusesTable.TABLE_NAME + "." + StatusesTable.Columns.PIC_ORIG + " " + Columns.PIC_ORIG + ", "
+            	+ StatusesTable.TABLE_NAME + "." + StatusesTable.Columns.IN_REPLY_TO_STATUS_ID + " " + Columns.IN_REPLY_TO_STATUS_ID + ", "
+            	+ StatusesTable.TABLE_NAME + "." + StatusesTable.Columns.IN_REPLY_TO_USER_ID + " " + Columns.IN_REPLY_TO_USER_ID + ", "
+            	+ StatusesTable.TABLE_NAME + "." + StatusesTable.Columns.IN_REPLY_TO_SCREEN_NAME + " " + Columns.IN_REPLY_TO_SCREEN_NAME + ", "
+
+            	+ StatusesPropertyTable.TABLE_NAME + "." + StatusesPropertyTable.Columns.OWNER_ID + " " + Columns.OWNER_ID + ", "
+            	+ StatusesPropertyTable.TABLE_NAME + "." + StatusesPropertyTable.Columns.TYPE + " " + Columns.TYPE + ", "
+            	+ StatusesPropertyTable.TABLE_NAME + "." + StatusesPropertyTable.Columns.SEQUENCE_FLAG + " " + Columns.SEQUENCE_FLAG + ", "
+            	+ StatusesPropertyTable.TABLE_NAME + "." + StatusesPropertyTable.Columns.LOAD_TIME + " " + Columns.LOAD_TIME + " "
+            	
+            	+ " FROM " + StatusesTable.TABLE_NAME 
+            	+ " LEFT JOIN " + StatusesPropertyTable.TABLE_NAME
+            	+ " ON " + StatusesPropertyTable.Columns.STATUS_ID + " = " + StatusesTable.Columns.STATUS_ID;
 
             return "CREATE VIEW " + createString;
         }
@@ -384,6 +491,30 @@ public abstract class FanContent {
         public static String[] getIndexColumns() {
             return new String[] { Columns.STATUS_ID, Columns.OWNER_ID,
                     Columns.AUTHOR_ID, Columns.TYPE, Columns.CREATED_AT };
+        }
+        
+        public static String[] getColumns() {
+        	return new String [] {
+        			Columns.STATUS_ID,
+        			Columns.AUTHOR_ID,
+        			Columns.TEXT,
+        			Columns.SOURCE,
+        			Columns.CREATED_AT,
+        			Columns.TRUNCATED,
+        			Columns.FAVORITED,
+        			Columns.PIC_THUMB,
+        			Columns.PIC_MID,
+        			Columns.PIC_ORIG,
+        			Columns.IN_REPLY_TO_STATUS_ID,
+        			Columns.IN_REPLY_TO_USER_ID,
+        			Columns.IN_REPLY_TO_SCREEN_NAME,
+
+        			Columns.OWNER_ID,
+        			Columns.TYPE,
+        			Columns.SEQUENCE_FLAG,
+        			Columns.LOAD_TIME,
+        			
+        	};
         }
     }
 }

@@ -231,14 +231,14 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
         // 更新查询状态显示
         updateHeader(LOADINGFLAG);
         updateFooter(LOADINGFLAG);
-        List<Status> statusList = mStatusDAO.getOneGroupStatus(
-                TwitterApplication.getMyselfId(), mUserID,
-                Status.TYPE_USER);
-        for (com.ch_linghu.fanfoudroid.data2.Status status : statusList) {
-            Tweet tweet;
-            tweet = Tweet.create(status);
-            mTweets.add(tweet);
-        }
+//        List<Status> statusList = mStatusDAO.getOneGroupStatus(
+//                TwitterApplication.getMyselfId(), mUserID,
+//                Status.TYPE_USER);
+//        for (com.ch_linghu.fanfoudroid.data2.Status status : statusList) {
+//            Tweet tweet;
+//            tweet = Tweet.create(status);
+//            mTweets.add(tweet);
+//        }
         mTweets.clear();
         addTweets(mTweets);
     }
@@ -257,11 +257,11 @@ public class UserTimelineActivity extends TwitterListBaseActivity implements
             try {
                 hasNew = mStatusUtils.getNewUserTimeline(mUserID);
                 if (hasNew) {
-                    statusList = mStatusDAO
-                            .getOneGroupStatus(
-                                    TwitterApplication.getMyselfId(),
-                                    mUserID,
-                                    com.ch_linghu.fanfoudroid.data2.Status.TYPE_USER);
+//                    statusList = mStatusDAO
+//                            .getOneGroupStatus(
+//                                    TwitterApplication.getMyselfId(),
+//                                    mUserID,
+//                                    com.ch_linghu.fanfoudroid.data2.Status.TYPE_USER);
                 }
                 mUser = getApi().showUser(mUserID);
                 mFeedback.update(60);

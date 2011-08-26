@@ -53,8 +53,9 @@ public class FanDatabase {
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
             Log.d(TAG, "Upgrade Database.");
-            // TODO: DROP TABLE
-            onCreate(db);
+            resetAllTables(db, oldVersion, newVersion);
+            resetAllIndexes(db, oldVersion, newVersion);
+            resetAllViews(db, oldVersion, newVersion);
         }
 
     }
@@ -157,7 +158,7 @@ public class FanDatabase {
         try {
             dropAllViews(db);
         } catch (SQLException e) {
-            Log.e(TAG, "resetAllTables ERROR!");
+            Log.e(TAG, "resetAllViews ERROR!");
         }
         createAllViews(db);
     }
@@ -165,5 +166,32 @@ public class FanDatabase {
     //indexes    
     private static void createAllIndexes(SQLiteDatabase db) {
         db.execSQL(StatusesTable.getCreateIndexSQL());
+        db.execSQL(StatusesPropertyTable.getCreateIndexSQL());
+        db.execSQL(UserTable.getCreateIndexSQL());
+        db.execSQL(DirectMessageTable.getCreateIndexSQL());
+        db.execSQL(FollowRelationshipTable.getCreateIndexSQL());
+        db.execSQL(TrendTable.getCreateIndexSQL());
+        db.execSQL(SavedSearchTable.getCreateIndexSQL());
     }
+
+    private static void dropAllIndexes(SQLiteDatabase db) {
+        db.execSQL(StatusesTable.getDropIndexSQL());
+        db.execSQL(StatusesPropertyTable.getDropIndexSQL());
+        db.execSQL(UserTable.getDropIndexSQL());
+        db.execSQL(DirectMessageTable.getDropIndexSQL());
+        db.execSQL(FollowRelationshipTable.getDropIndexSQL());
+        db.execSQL(TrendTable.getDropIndexSQL());
+        db.execSQL(SavedSearchTable.getDropIndexSQL());
+    }
+    
+    private static void resetAllIndexes(SQLiteDatabase db, int oldVersion, int newVersion) {
+        try {
+        	dropAllIndexes(db);
+        } catch (SQLException e) {
+            Log.e(TAG, "resetAllIndexes ERROR!");
+        }
+        createAllIndexes(db);
+    }
+    
+
 }

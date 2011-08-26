@@ -73,9 +73,9 @@ public class StatusHelper {
     	int sequenceFlag = 0;
     	if (jsonList.length() >= MAX_NUM){
     		//中间有断层
-    		sequenceFlag = statusDAO.getNewSequenceFlag(owner.getId(), type);
+//    		sequenceFlag = statusDAO.getNewSequenceFlag(owner.getId(), type);
     	}else{
-    		sequenceFlag = statusDAO.getCurrentSequenceFlag(owner.getId(), type);
+//    		sequenceFlag = statusDAO.getCurrentSequenceFlag(owner.getId(), type);
     	}
     	
         for (int i = 0; i < jsonList.length(); i++) {
@@ -84,7 +84,7 @@ public class StatusHelper {
             status.setOwner(owner);
             status.setType(type);
             
-            statusDAO.insertOneStatus(status, sequenceFlag);
+            statusDAO.insertSingleStatus(status, sequenceFlag);
         }
         return false;
     }
