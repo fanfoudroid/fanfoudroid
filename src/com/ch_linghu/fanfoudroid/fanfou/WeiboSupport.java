@@ -4,12 +4,12 @@ All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
       notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
       notice, this list of conditions and the following disclaimer in the
       documentation and/or other materials provided with the distribution.
-    * Neither the name of the Yusuke Yamamoto nor the
+ * Neither the name of the Yusuke Yamamoto nor the
       names of its contributors may be used to endorse or promote products
       derived from this software without specific prior written permission.
 
@@ -23,7 +23,7 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package com.ch_linghu.fanfoudroid.fanfou;
 
 import com.ch_linghu.fanfoudroid.http.HttpClient;
@@ -31,40 +31,41 @@ import com.ch_linghu.fanfoudroid.http.HttpClient;
 /**
  * @author Yusuke Yamamoto - yusuke at mac.com
  */
-/*protected*/ class WeiboSupport {
-    protected HttpClient http = null;
-    protected String source = Configuration.getSource();
-    protected final boolean USE_SSL;
+/* protected */class WeiboSupport {
+	protected HttpClient http = null;
+	protected String source = Configuration.getSource();
+	protected final boolean USE_SSL;
 
-    /*package*/ WeiboSupport(){
-        USE_SSL = Configuration.useSSL();
-        http = new HttpClient(); // In case that the user is not logged in
-    }
-    /*package*/ WeiboSupport(String userId, String password){
-        USE_SSL = Configuration.useSSL();
-        http = new HttpClient(userId, password);
-    }
+	/* package */WeiboSupport() {
+		USE_SSL = Configuration.useSSL();
+		http = new HttpClient(); // In case that the user is not logged in
+	}
 
-    /**
-     * Returns authenticating userid
-     *
-     * @return userid
-     */
-    public String getUserId() {
-        return http.getUserId();
-    }
+	/* package */WeiboSupport(String userId, String password) {
+		USE_SSL = Configuration.useSSL();
+		http = new HttpClient(userId, password);
+	}
 
-    /**
-     * Returns authenticating password
-     *
-     * @return password
-     */
-    public String getPassword() {
-        return http.getPassword();
-    }
-    
-    //Low-level interface
-    public HttpClient getHttpClient(){
-    	return http;
-    }
+	/**
+	 * Returns authenticating userid
+	 * 
+	 * @return userid
+	 */
+	public String getUserId() {
+		return http.getUserId();
+	}
+
+	/**
+	 * Returns authenticating password
+	 * 
+	 * @return password
+	 */
+	public String getPassword() {
+		return http.getPassword();
+	}
+
+	// Low-level interface
+	public HttpClient getHttpClient() {
+		return http;
+	}
 }

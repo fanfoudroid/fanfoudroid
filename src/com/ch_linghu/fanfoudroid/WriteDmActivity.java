@@ -47,12 +47,14 @@ import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.base.BaseActivity;
 import com.ch_linghu.fanfoudroid.ui.module.NavBar;
 import com.ch_linghu.fanfoudroid.ui.module.TweetEdit;
+import com.ch_linghu.fanfoudroid.R;
 
 //FIXME: 将WriteDmActivity和WriteActivity进行整合。
 /**
  * 撰写私信界面
+ * 
  * @author lds
- *
+ * 
  */
 public class WriteDmActivity extends BaseActivity {
 
@@ -69,14 +71,14 @@ public class WriteDmActivity extends BaseActivity {
 	private EditText mTweetEditText;
 	private TextView mProgressText;
 	private Button mSendButton;
-	//private AutoCompleteTextView mToEdit;
+	// private AutoCompleteTextView mToEdit;
 	private TextView mToEdit;
-	
+
 	private NavBar mNavbar;
-	
+
 	// Task
 	private GenericTask mSendTask;
-	
+
 	private TaskListener mSendTaskListener = new TaskAdapter() {
 		@Override
 		public void onPreExecute(GenericTask task) {
@@ -85,8 +87,7 @@ public class WriteDmActivity extends BaseActivity {
 		}
 
 		@Override
-		public void onPostExecute(GenericTask task,
-				TaskResult result) {
+		public void onPostExecute(GenericTask task, TaskResult result) {
 			if (result == TaskResult.AUTH_ERROR) {
 				logout();
 			} else if (result == TaskResult.OK) {
@@ -96,10 +97,11 @@ public class WriteDmActivity extends BaseActivity {
 				enableEntry();
 				// 发送成功就直接关闭界面
 				finish();
-				
-				 // 关闭软键盘
-		        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-		        imm.hideSoftInputFromWindow(mTweetEdit.getEditText().getWindowToken(), 0);
+
+				// 关闭软键盘
+				InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(mTweetEdit.getEditText()
+						.getWindowToken(), 0);
 			} else if (result == TaskResult.NOT_FOLLOWED_ERROR) {
 				updateProgress(getString(R.string.direct_meesage_status_the_person_not_following_you));
 				enableEntry();
@@ -115,7 +117,7 @@ public class WriteDmActivity extends BaseActivity {
 			return "DMSend";
 		}
 	};
-	
+
 	private FriendsAdapter mFriendsAdapter; // Adapter for To: recipient
 											// autocomplete.
 
@@ -135,98 +137,98 @@ public class WriteDmActivity extends BaseActivity {
 	}
 
 	// sub menu
-//	protected void createInsertPhotoDialog() {
-//
-//		final CharSequence[] items = {
-//				getString(R.string.write_label_take_a_picture),
-//				getString(R.string.write_label_choose_a_picture) };
-//
-//		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//		builder.setTitle(getString(R.string.write_label_insert_picture));
-//		builder.setItems(items, new DialogInterface.OnClickListener() {
-//			public void onClick(DialogInterface dialog, int item) {
-//				// Toast.makeText(getApplicationContext(), items[item],
-//				// Toast.LENGTH_SHORT).show();
-//				switch (item) {
-//				case 0:
-//					openImageCaptureMenu();
-//					break;
-//				case 1:
-//					openPhotoLibraryMenu();
-//				}
-//			}
-//		});
-//		AlertDialog alert = builder.create();
-//		alert.show();
-//	}
+	// protected void createInsertPhotoDialog() {
+	//
+	// final CharSequence[] items = {
+	// getString(R.string.write_label_take_a_picture),
+	// getString(R.string.write_label_choose_a_picture) };
+	//
+	// AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	// builder.setTitle(getString(R.string.write_label_insert_picture));
+	// builder.setItems(items, new DialogInterface.OnClickListener() {
+	// public void onClick(DialogInterface dialog, int item) {
+	// // Toast.makeText(getApplicationContext(), items[item],
+	// // Toast.LENGTH_SHORT).show();
+	// switch (item) {
+	// case 0:
+	// openImageCaptureMenu();
+	// break;
+	// case 1:
+	// openPhotoLibraryMenu();
+	// }
+	// }
+	// });
+	// AlertDialog alert = builder.create();
+	// alert.show();
+	// }
 
 	@Override
 	protected boolean _onCreate(Bundle savedInstanceState) {
 		Log.d(TAG, "onCreate.");
-		if (super._onCreate(savedInstanceState)){
+		if (super._onCreate(savedInstanceState)) {
 			// init View
 			setContentView(R.layout.write_dm);
 			mNavbar = new NavBar(NavBar.HEADER_STYLE_WRITE, this);
-	
+
 			// Intent & Action & Extras
 			Intent intent = getIntent();
 			Bundle extras = intent.getExtras();
-	
+
 			// View
 			mProgressText = (TextView) findViewById(R.id.progress_text);
 			mTweetEditText = (EditText) findViewById(R.id.tweet_edit);
-			
+
 			TwitterDatabase db = getDb();
-	
-			//FIXME: 暂时取消收件人自动完成功能
-			//FIXME: 可根据目前以后内容重新完成自动完成功能
-		    //mToEdit = (AutoCompleteTextView) findViewById(R.id.to_edit);
-		    //Cursor cursor = db.getFollowerUsernames("");
-		    //// startManagingCursor(cursor);
-		    //mFriendsAdapter = new FriendsAdapter(this, cursor);
-		    //mToEdit.setAdapter(mFriendsAdapter);
-			
+
+			// FIXME: 暂时取消收件人自动完成功能
+			// FIXME: 可根据目前以后内容重新完成自动完成功能
+			// mToEdit = (AutoCompleteTextView) findViewById(R.id.to_edit);
+			// Cursor cursor = db.getFollowerUsernames("");
+			// // startManagingCursor(cursor);
+			// mFriendsAdapter = new FriendsAdapter(this, cursor);
+			// mToEdit.setAdapter(mFriendsAdapter);
+
 			mToEdit = (TextView) findViewById(R.id.to_edit);
-		    
-		    // Update status
+
+			// Update status
 			mTweetEdit = new TweetEdit(mTweetEditText,
 					(TextView) findViewById(R.id.chars_text));
 			mTweetEdit.setOnKeyListener(editEnterHandler);
-			mTweetEdit
-					.addTextChangedListener(new MyTextWatcher(WriteDmActivity.this));
-	
+			mTweetEdit.addTextChangedListener(new MyTextWatcher(
+					WriteDmActivity.this));
+
 			// With extras
-		    if (extras != null) {
-		      String to = extras.getString(EXTRA_USER);
-		      if (!TextUtils.isEmpty(to)) {
-		        mToEdit.setText(to);
-		        mTweetEdit.requestFocus();
-		      }
-		    }
-		    
-		    View.OnClickListener sendListenner = new View.OnClickListener() {
-                public void onClick(View v) {
-                    doSend();
-                }
-            };
-	
+			if (extras != null) {
+				String to = extras.getString(EXTRA_USER);
+				if (!TextUtils.isEmpty(to)) {
+					mToEdit.setText(to);
+					mTweetEdit.requestFocus();
+				}
+			}
+
+			View.OnClickListener sendListenner = new View.OnClickListener() {
+				public void onClick(View v) {
+					doSend();
+				}
+			};
+
 			mSendButton = (Button) findViewById(R.id.send_button);
 			mSendButton.setOnClickListener(sendListenner);
-            
-            Button mTopSendButton = (Button) findViewById(R.id.top_send_btn);
-            mTopSendButton.setOnClickListener(sendListenner);
-			
+
+			Button mTopSendButton = (Button) findViewById(R.id.top_send_btn);
+			mTopSendButton.setOnClickListener(sendListenner);
+
 			return true;
-		}else{
+		} else {
 			return false;
 		}
 	}
-	
+
 	@Override
 	protected void onRestoreInstanceState(Bundle bundle) {
-	    super.onRestoreInstanceState(bundle);
+		super.onRestoreInstanceState(bundle);
 
-	    mTweetEdit.updateCharsRemain();
+		mTweetEdit.updateCharsRemain();
 	}
 
 	@Override
@@ -354,14 +356,14 @@ public class WriteDmActivity extends BaseActivity {
 						text);
 				Dm dm = Dm.create(directMessage, true);
 
-//				if (!Utils.isEmpty(dm.profileImageUrl)) {
-//					// Fetch image to cache.
-//					try {
-//						getImageManager().put(dm.profileImageUrl);
-//					} catch (IOException e) {
-//						Log.e(TAG, e.getMessage(), e);
-//					}
-//				}
+				// if (!Utils.isEmpty(dm.profileImageUrl)) {
+				// // Fetch image to cache.
+				// try {
+				// getImageManager().put(dm.profileImageUrl);
+				// } catch (IOException e) {
+				// Log.e(TAG, e.getMessage(), e);
+				// }
+				// }
 
 				getDb().createDm(dm, false);
 			} catch (HttpException e) {
@@ -441,18 +443,18 @@ public class WriteDmActivity extends BaseActivity {
 	private void updateProgress(String progress) {
 		mProgressText.setText(progress);
 	}
-	
+
 	private View.OnKeyListener editEnterHandler = new View.OnKeyListener() {
-	    public boolean onKey(View v, int keyCode, KeyEvent event) {
-	      if (keyCode == KeyEvent.KEYCODE_ENTER
-	          || keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
-	        if (event.getAction() == KeyEvent.ACTION_UP) {
-	          doSend();
-	        }
-	        return true;
-	      }
-	      return false;
-	    }
+		public boolean onKey(View v, int keyCode, KeyEvent event) {
+			if (keyCode == KeyEvent.KEYCODE_ENTER
+					|| keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
+				if (event.getAction() == KeyEvent.ACTION_UP) {
+					doSend();
+				}
+				return true;
+			}
+			return false;
+		}
 	};
 
 }

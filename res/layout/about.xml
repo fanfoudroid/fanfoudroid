@@ -3,35 +3,31 @@
   android:orientation="vertical"
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
-  android:background="@drawable/background_login"
+  android:background="@drawable/about_bg"
   >
 
 	<RelativeLayout 
       android:layout_width="fill_parent"
       android:layout_height="wrap_content"
       >
-	    <ImageView android:id="@+id/fanfoudroid_follow_me"
-	        android:src="@drawable/twitter_follow_me"
+	        
+	    <ImageView android:id="@+id/fanfoudroid_logo"
+	        android:src="@drawable/fanfoudroid_logo"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_centerHorizontal="true"
 	        android:layout_alignParentTop="true"
 	        android:layout_marginTop="25dp"
 	         />
-	    <ImageView android:id="@+id/fanfoudroid_logo" 
-	    	android:src="@drawable/fanfoudroid_logo"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_toRightOf="@id/fanfoudroid_follow_me"
-	        android:layout_alignBottom="@id/fanfoudroid_follow_me"
-	         />
+	         
 	    <TextView android:id="@+id/version"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:layout_above="@id/fanfoudroid_logo"
-	        android:layout_alignRight="@id/fanfoudroid_logo"
-	        android:paddingBottom="8dp"
-	        android:text="placeholder,will be filled in code"
+	        android:layout_below="@id/fanfoudroid_logo"
+	        android:layout_centerHorizontal="true"
+	        android:layout_marginBottom="15dp"
+	        android:layout_marginTop="25dp"
+	        android:text="version info"
 		    style="@style/normalText"
 	         />
 	    </RelativeLayout>
@@ -99,11 +95,22 @@
 		</LinearLayout>
 		</ScrollView>
 		
-		<Button android:id="@+id/ok_btn"
-			android:layout_width="fill_parent"
+		<LinearLayout android:layout_width="fill_parent" 
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:gravity="center">
+			<Button android:id="@+id/ok_btn"
+			android:layout_width="120dp"
 			android:layout_height="wrap_content"
 			android:text="@string/about_label_ok"
-		/>
+			/>
+			<Button android:id="@+id/feedback_btn"
+			android:layout_width="120dp"
+			android:layout_height="wrap_content"
+			android:text="@string/about_label_feedback"
+			/>
+		</LinearLayout>
+
 </LinearLayout>
 
 

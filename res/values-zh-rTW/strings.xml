@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+    <string name="app_name">安能飯否</string>
+    <!-- 頁面Title -->
+    <string name="page_title_home">首頁</string>
+    <string name="page_title_direct_messages">我的私信</string>
+    <string name="page_title_favorites">{0}的收藏</string>
+    <string name="page_title_mentions">提到我的</string>
+    <string name="page_title_browse">隨便看看</string>
+    <string name="page_title_write">撰寫信息</string>
+    <!-- 狀態條提示  -->
+    <string name="page_status_refreshing">正在獲取...</string>
+    <string name="page_status_updating">正在發送...</string>
+    <string name="page_status_deleting">正在刪除...</string>
+    <string name="page_status_update_success">發送成功.</string>
+    <string name="page_status_unable_to_update">無法發送資訊...</string>
+    <string name="page_status_timeout">網路超時.</string>
+    <string name="page_status_same_page">您正在此頁.</string>
+    <string name="page_dm_texting_is_null">請輸入私信內容.</string>
+    <string name="page_text_is_null">內容不能為空.</string>
+    <string name="page_dm_user_is_null">請輸入收信人.</string>
+    <string name="page_is_the_person_following_you">無法發送私信，通過用戶端只能給互相關注的人發私信。</string>
+    <!-- 錯誤提示 -->
+    <string name="error_not_authorized">帳號驗證失敗，請重新登錄.</string>
+    <string name="error_server_down">伺服器暫時無法回應.</string>
+    <!-- 按鈕提示 -->
+    <string name="page_label_get_more">獲取更多</string>
+    <string name="page_label_go_back">返回</string>
+    <!-- options menu -->
+    <string name="omenu_signout">註銷</string>
+    <string name="omenu_refresh">刷新</string>
+    <string name="omenu_preferences">選項</string>
+    <string name="omenu_settings">設置</string>
+    <string name="omenu_search">搜索</string>
+    <string name="omenu_about">關於</string>
+    <string name="omenu_exit">退出</string>
+    <!-- context menu -->
+    <string name="cmenu_reply">回復</string>
+    <string name="cmenu_retweet">轉發</string>
+    <string name="cmenu_direct_message">私信</string>
+    <string name="cmenu_add_fav">收藏</string>
+    <string name="cmenu_del_fav">取消收藏</string>
+    <string name="cmenu_delete">刪除</string>
+    <string name="cmenu_share">分享</string>
+    <string name="cmenu_clipboard">複製到剪貼板</string>
+    <string name="cmenu_more">更多</string>
+    <string name="cmenu_user_profile_prefix">的空間</string>
+    <string name="cmenu_user_status">的消息</string>
+    <string name="cmenu_user_addfriend_prefix">設置對</string>
+    <string name="cmenu_user_friend_suffix">的關注</string>
+    <string name="cmenu_user_delfriend_prefix">取消對</string>
+    <string name="cmenu_user_send_prefix">給</string>
+    <string name="cmenu_user_senddm_suffix">發私信</string>
+    <string name="cmenu_user_sendmention_suffix">留言</string>
+    <!-- Login頁面 -->
+    <string name="login_label_username">Email或手機號:</string>
+    <string name="login_label_password">飯否密碼:</string>
+    <string name="login_label_signin">登 錄</string>
+    <string name="login_status_logging_in">登錄中...</string>
+    <string name="login_status_null_username_or_password">帳號和密碼不能為空。</string>
+    <string name="login_status_invalid_username_or_password">帳號或密碼錯誤，請重新輸入。</string>
+    <string name="login_status_network_or_connection_error">網路錯誤，請稍後再試。</string>
+    <string name="login_register_link">沒有帳號？ <a href="http://fanfou.com/register">註冊</a></string>
+    <string name="login_status_failure">登錄失敗。</string>
+    <!-- User頁面 -->
+    <string name="user_label_follow">關注此人</string>
+    <string name="user_label_unfollow">取消關注</string>
+    <string name="user_status_following">正在關注...</string>
+    <string name="user_status_unfollowing">正在取消關注...</string>
+    <string name="user_prompt_this_person_has_protected_their_updates">該用戶只向關注他/她的人公開消息。</string>
+    <string name="user_query_status_success">查詢成功！</string>
+    <!-- Write頁面 -->
+    <string name="write_label_send">發送</string>
+    <string name="write_label_send_hint">有什麼要說的？</string>
+    <string name="write_label_choose_images">插入圖片</string>
+    <string name="write_label_send_in_background">後臺發送</string>
+    <string name="write_label_take_a_picture">相機拍攝</string>
+    <string name="write_label_choose_a_picture">手機相冊</string>
+    <string name="write_label_insert_picture">插入圖片</string>
+    <string name="write_label_you_can_type_prefix">可以輸入</string>
+    <string name="write_label_you_can_type_suffix">字</string>
+    <!-- 單推頁面 -->
+    <string name="status_status_reply_cannot_display">該消息可能已被刪除，或你沒有通過 {0} 的驗證，所以無法查看該回復消息。</string>
+    <!-- 私信頁面 -->
+    <string name="direct_meesage_status_texting_is_null">請輸入私信內容.</string>
+    <string name="direct_meesage_status_user_is_null">請輸入收信人.</string>
+    <string name="direct_meesage_status_the_person_not_following_you">無法發送私信，通過用戶端只能給互相關注的人發私信。</string>
+    <string name="direct_message_label_from_prefix">來自: </string>
+    <string name="direct_message_label_to_prefix">發給: </string>
+    <!-- 使用者資訊頁面profile -->
+    <string name="profile_user_location_title">所在地:</string>
+    <string name="profile_user_url_title">網站:</string>
+    <string name="profile_friends_count_title">{0}關注的人</string>
+    <string name="profile_followers_count_title">關注{0}的人</string>
+    <string name="profile_statuses_count_title">消息</string>
+    <string name="profile_favourites_count_title">收藏</string>
+    <string name="profile_description_null">用戶未設置自述</string>
+    <string name="profile_location_null">用戶未設置地點</string>
+    <string name="profile_isyou">這是你本人</string>
+    <string name="profile_isfollowing">您已關注該用戶</string>
+    <string name="profile_notfollowing">您尚未關注該用戶</string>
+    <string name="profile_following_error">添加用戶失敗</string>
+    <string name="profile_send_mention">給ta留言</string>
+    <string name="profile_send_dm">發私信</string>
+    <!-- 設置頁面  -->
+    <string name="pref_title_notifications">後臺提示</string>
+    <string name="pref_title_apperance">外觀</string>
+    <string name="pref_title_misc">其他</string>
+    <string name="pref_check_updates_title">設置後臺提醒</string>
+    <string name="pref_check_updates_summary">選中可以在後臺提醒新發言、提到我的和私信</string>
+    <string name="pref_check_updates_timeline_only_title">消息</string>
+    <string name="pref_check_updates_timeline_only_summary">提示好友消息</string>
+    <string name="pref_check_updates_replies_only_title">回復</string>
+    <string name="pref_check_updates_replies_only_summary">提示提到我的回復</string>
+    <string name="pref_check_updates_direct_message_only_title">私信</string>
+    <string name="pref_check_updates_direct_message_only_summary">提示私信</string>
+    <string name="pref_check_updates_interval_title">檢查頻率</string>
+    <string name="pref_check_updates_interval_summary">兩次檢查的間隔分鐘數</string>
+    <string name="pref_check_updates_interval_dialog_title">間隔分鐘數:</string>
+    <string name="pref_check_updates_interval_default">10</string>
+    <string name="pref_check_updates_vibrate_title">振動</string>
+    <string name="pref_check_updates_vibrate_summary">有新消息提示時手機振動</string>
+    <string name="pref_check_updates_ringtone_title">選擇提示鈴音</string>
+    <string name="pref_check_updates_ringtone_summary"/>
+    <string name="pref_use_profile_image">用戶頭像</string>
+    <string name="pref_use_profile_image_summary">是否顯示使用者頭像</string>
+    <string name="pref_photo_preview">圖片預覽</string>
+    <string name="pref_photo_preview_summary">指定預覽圖片的大小</string>
+    <string name="pref_force_show_all_image">強制預覽所有圖片</string>
+    <string name="pref_force_show_all_image_summary">即使不是飯否認為包含圖片的消息也使用預覽</string>
+    <string name="pref_photo_preview_type_none">不顯示</string>
+    <!-- NOTE:縮略圖尺寸在這裡沒有實用價值，在array.xml中被遮罩 -->
+    <string name="pref_photo_preview_type_thumbnail">縮略圖尺寸</string>
+    <string name="pref_photo_preview_type_middle">小尺寸</string>
+    <string name="pref_photo_preview_type_original">大尺寸</string>
+    <string name="pref_ui_font_size_title">字體大小</string>
+    <string name="pref_ui_font_size_summary">消息清單中的字體大小, 重啟頁面後生效.</string>
+    <string name="pref_rt_prefix_title">轉發首碼</string>
+    <string name="pref_rt_prefix_summary">轉發消息時的首碼</string>
+    <string name="pref_rt_prefix_default">轉</string>
+    <string name="pref_rt_cursor_position_title">轉發時游標在前</string>
+    <string name="pref_rt_cursor_position_summary">選中的話轉發時游標在轉發消息的開頭，不選中的話游標在末尾</string>
+    <string name="pref_title_network">網路</string>
+    <string name="pref_network_type_title">網路類型</string>
+    <string name="pref_network_type_cmnet">cmnet</string>
+    <string name="pref_network_type_cmwap">cmwap</string>
+    <string name="pref_network_type_3g">3G/wifi</string>
+    <string name="pref_network_type_summary">選擇當前網路的接入點或類型</string>
+    <string name="pref_title_action">行為</string>
+    <string name="pref_use_enter_send_title">回車發送</string>
+    <string name="pref_use_enter_send_summary">使用鍵盤回車鍵發送消息</string>
+    <string name="pref_use_gestrue_title">手勢識別</string>
+    <string name="pref_use_gestrue_summary">使用手勢左右滑動切換頁面</string>
+    <string name="pref_force_screen_orientation_portrait">禁止橫屏</string>
+    <string name="pref_force_screen_orientation_portrait_summary">強制螢幕豎向顯示</string>
+    <string name="pref_use_shake_title">晃動刷新</string>
+    <string name="pref_use_shake_summary">晃動手機獲得最新消息</string>
+    <string name="pref_title_labs">實驗室</string>
+    <!-- Service -->
+    <string name="service_new_twitter_updates">新消息</string>
+    <string name="service_x_new_tweets">{0} 條新消息</string>
+    <string name="service_new_mention_updates">新提到我的消息</string>
+    <string name="service_x_new_mentions">{0} 條新提到我的消息</string>
+    <string name="service_new_direct_message_updates">新私信</string>
+    <string name="service_x_new_direct_messages">{0} 條新私信</string>
+    <!-- Tweet Item相關 -->
+    <string name="tweet_source_prefix">來自</string>
+    <string name="tweet_reply_to_prefix">給</string>
+    <string name="tweet_reply_to_suffix">的回復</string>
+    <string name="tweet_created_at_beautify_prefix"></string>
+    <string name="tweet_created_at_beautify_sec">秒</string>
+    <string name="tweet_created_at_beautify_min">分鐘</string>
+    <string name="tweet_created_at_beautify_hour">小時</string>
+    <string name="tweet_created_at_beautify_day">天</string>
+    <string name="tweet_created_at_beautify_suffix">前</string>
+    <!-- About -->
+    <string name="about_introduce_title">\n項目介紹\n</string>
+    <string name="about_introduce">安能飯否是一個開源的飯否用戶端，修改自開源項目twitta，採用Apache License 2.0協議發佈。</string>
+    <string name="about_links_title">\n相關連結\n</string>
+    <string name="about_links">飯否主頁: http://fanfou.com
+\n\n安能飯否項目主頁: http://code.google.com/p/fanfoudroid
+\n\n现項目主頁: http://code.google.com/p/fanfoudroid2
+\n\ntwitta項目主頁: http://code.google.com/p/twitta
+\n\nApache License 2.0: http://www.apache.org/licenses/LICENSE-2.0</string>
+    <string name="about_developers_title">\n開發者\n</string>
+    <string name="about_developers">令狐蟲: ch.linghu@gmail.com
+\n\n三日坊主：lds2012@gmail.com
+\n\ndodo la: dinophp@gmail.com
+\n\nPhoenix: phoenix.nir@gmail.com
+\n\n忽然兔: zhoumeng1987@gmail.com</string>
+	<string name="about_thanks_title">\n鳴謝\n</string>
+	<string name="about_thanks">感謝所有對這個項目提供了切實幫助的人們。</string>
+    <string name="about_label_ok">瞭解</string>
+    <string name="about_label_feedback">反馈</string>
+    <!-- 搜索  -->
+    <string name="search_label">安能飯否</string>
+    <string name="search_hint">搜索飯否</string>
+    <string name="search_box_null">您未提供任何搜索資訊！\n請輸入關鍵字或點擊話題！</string>
+    <string name="trends_title">熱門話題</string>
+    <string name="saved_search_title">關注的話題</string>
+    <string name="search_loading">正在查詢...</string>
+    <!-- 通用 -->
+    <string name="general_lable_ok">確定</string>
+    <string name="general_lable_cancel">取消</string>
+    <string name="general_del_friend">取消關注</string>
+    <string name="general_add_friend">添加關注</string>
+    <string name="general_add_friend_short">關注</string>
+    <!-- PAGES -->
+    <string name="pages_mine">我的消息</string>
+    <string name="pages_profile">個人資料</string>
+    <string name="pages_followers">關注我的</string>
+    <string name="pages_following">我關注的</string>
+    <string name="pages_home">首頁</string>
+    <string name="pages_mentions">提到我的</string>
+    <string name="pages_browse">隨便看看</string>
+    <string name="pages_search">收藏</string>
+    <string name="pages_message">我的私信</string>
+    <!-- Widget -->
+    <string name="widget_no_message">暫無消息</string>
+    <string name="widget_input_prompt">說點什麼唄</string>
+    <string name="widget_label">安能飯否（大）</string>
+    <string name="widget_small_label">安能飯否（小）</string>
+    <!-- acra 提示資訊  -->
+    <string name="crash_notif_ticker_text">安能飯否發生錯誤，請協助提交錯誤報告</string>
+    <string name="crash_notif_title">安能飯否出錯了</string>
+    <string name="crash_notif_text">我們需要你的説明，請點擊</string>
+    <string name="crash_dialog_title">安能飯否出錯了</string>
+    <string name="crash_dialog_text">安能飯否出現了我們未曾捕獲到的錯誤，你點擊\'OK\'之後，錯誤報告會發送給開發者.</string>
+    <string name="crash_dialog_comment_prompt">如果你能多花點時間填寫一下錯誤發生時你做了什麼，我們將不勝感激:</string>
+    <string name="crash_dialog_ok_toast">感謝你的配合！</string>
+</resources>
+

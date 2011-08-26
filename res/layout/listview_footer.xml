@@ -16,7 +16,7 @@
       android:paddingTop="10dp"
       android:paddingBottom="10dp"
       style="@style/normalText.Big"
-      android:text="更多"
+      android:text="@string/cmenu_more"
          />
      <ProgressBar   
       android:id="@+id/rectangleProgressBar"    

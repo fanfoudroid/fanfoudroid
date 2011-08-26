@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<manifest android:versionCode="20110605" android:versionName="0.7.3.1"
-    package="com.ch_linghu.fanfoudroid" xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest android:versionCode="20110823" android:versionName="0.7.5"
+    xmlns:android="http://schemas.android.com/apk/res/android" package="com.ch_linghu.fanfoudroid">
     <uses-sdk android:minSdkVersion="4"/>
     <supports-screens android:anyDensity="true"/>
     <application android:icon="@drawable/icon"
-        android:label="@string/app_name" android:name="TwitterApplication">
+        android:label="@string/app_name" android:name=".TwitterApplication">
         <meta-data android:name="android.app.default_searchable" android:value=".SearchResultActivity"/>
-        <activity android:name=".TwitterActivity" android:label="@string/app_name" android:theme="@style/Theme.Fanfoudroid" 
+        <activity android:name="com.ch_linghu.fanfoudroid.TwitterActivity" android:label="@string/app_name" android:theme="@style/Theme.Fanfoudroid" 
              android:windowSoftInputMode="adjustResize|stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -17,11 +17,11 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity" android:label="@string/app_name" android:theme="@style/Theme.Fanfoudroid" 
+        <activity android:name="com.ch_linghu.fanfoudroid.LoginActivity" android:label="@string/app_name" android:theme="@style/Theme.Fanfoudroid" 
              android:windowSoftInputMode="adjustResize|stateHidden"/>
-        <activity android:name=".AboutActivity" android:label="@string/app_name" android:theme="@style/Theme.Fanfoudroid" 
+        <activity android:name="com.ch_linghu.fanfoudroid.AboutActivity" android:label="@string/app_name" android:theme="@style/Theme.Fanfoudroid" 
              android:windowSoftInputMode="adjustResize|stateHidden"/>
-        <activity android:name=".WriteActivity" android:label="@string/app_name" android:theme="@style/Theme.Fanfoudroid" 
+        <activity android:name="com.ch_linghu.fanfoudroid.WriteActivity" android:label="@string/app_name" android:theme="@style/Theme.Fanfoudroid" 
              android:windowSoftInputMode="adjustResize|stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.SEND"/>
@@ -42,14 +42,14 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <activity android:name=".WriteDmActivity" android:label="@string/app_name" android:theme="@style/Theme.Fanfoudroid" 
+        <activity android:name="com.ch_linghu.fanfoudroid.WriteDmActivity" android:label="@string/app_name" android:theme="@style/Theme.Fanfoudroid" 
              android:windowSoftInputMode="adjustResize|stateHidden">
             <intent-filter>
                 <action android:name="com.ch_linghu.fanfoudroid.DMSW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <activity android:name=".StatusActivity" android:label="@string/app_name" android:theme="@style/Theme.Fanfoudroid" 
+        <activity android:name="com.ch_linghu.fanfoudroid.StatusActivity" android:label="@string/app_name" android:theme="@style/Theme.Fanfoudroid" 
             android:windowSoftInputMode="adjustResize|stateHidden">
             <intent-filter>
                 <action android:name="com.ch_linghu.fanfoudroid.STATUS"/>
@@ -57,14 +57,14 @@
             </intent-filter>
         </activity>
         <activity android:label="@string/app_name" android:theme="@style/Theme.Fanfoudroid" 
-            android:name=".FavoritesActivity" android:windowSoftInputMode="adjustResize|stateHidden">
+            android:name="com.ch_linghu.fanfoudroid.FavoritesActivity" android:windowSoftInputMode="adjustResize|stateHidden">
             <intent-filter>
                 <action android:name="com.ch_linghu.fanfoudroid.FAVORITES"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity android:label="@string/app_name" android:theme="@style/Theme.Fanfoudroid" 
-            android:name=".BrowseActivity" android:windowSoftInputMode="adjustResize|stateHidden">
+            android:name="com.ch_linghu.fanfoudroid.BrowseActivity" android:windowSoftInputMode="adjustResize|stateHidden">
             <intent-filter>
                 <action android:name="com.ch_linghu.fanfoudroid.BROWSES"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -72,7 +72,7 @@
         </activity>
         <!--  TODO: why need stateHidden on the magic? -->
         <activity android:label="@string/page_title_mentions" android:theme="@style/Theme.Fanfoudroid" 
-            android:name=".MentionActivity" android:windowSoftInputMode="adjustResize|stateHidden">
+            android:name="com.ch_linghu.fanfoudroid.MentionActivity" android:windowSoftInputMode="adjustResize|stateHidden">
             <intent-filter>
                 <action android:name="com.ch_linghu.fanfoudroid.REPLIES"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -80,13 +80,13 @@
         </activity>
         <!--  TODO: why need stateHidden on the magic? -->
         <activity android:label="@string/page_title_direct_messages" android:theme="@style/Theme.Fanfoudroid" 
-            android:name=".DmActivity" android:windowSoftInputMode="adjustResize|stateHidden">
+            android:name="com.ch_linghu.fanfoudroid.DmActivity" android:windowSoftInputMode="adjustResize|stateHidden">
             <intent-filter>
                 <action android:name="com.ch_linghu.fanfoudroid.DMS"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <activity android:name=".SearchResultActivity" android:theme="@style/Theme.Fanfoudroid" >
+        <activity android:name="com.ch_linghu.fanfoudroid.SearchResultActivity" android:theme="@style/Theme.Fanfoudroid" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -100,7 +100,7 @@
                 <data android:host="search" android:scheme="twitta"/>
             </intent-filter>
         </activity>
-        <activity android:name=".UserTimelineActivity" android:theme="@style/Theme.Fanfoudroid" >
+        <activity android:name="com.ch_linghu.fanfoudroid.UserTimelineActivity" android:theme="@style/Theme.Fanfoudroid" >
             <intent-filter>
                 <action android:name="com.ch_linghu.fanfoudroid.USERTIMELINE"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -111,7 +111,7 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
             </intent-filter>
         </activity>
-        <activity android:name=".ProfileActivity" android:theme="@style/Theme.Fanfoudroid" >
+        <activity android:name="com.ch_linghu.fanfoudroid.ProfileActivity" android:theme="@style/Theme.Fanfoudroid" >
             <intent-filter>
                 <action android:name="com.ch_linghu.fanfoudroid.PROFILE"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -124,7 +124,7 @@
                 <data android:host="users" android:scheme="twitta"/>
             </intent-filter>
         </activity>
-        <activity android:name=".FollowersActivity" android:theme="@style/Theme.Fanfoudroid" >
+        <activity android:name="com.ch_linghu.fanfoudroid.FollowersActivity" android:theme="@style/Theme.Fanfoudroid" >
             <intent-filter>
                 <action android:name="com.ch_linghu.fanfoudroid.FOLLOWERS"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -135,7 +135,7 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
             </intent-filter>
         </activity>
-        <activity android:name=".FollowingActivity" android:theme="@style/Theme.Fanfoudroid" >
+        <activity android:name="com.ch_linghu.fanfoudroid.FollowingActivity" android:theme="@style/Theme.Fanfoudroid" >
             <intent-filter>
                 <action android:name="com.ch_linghu.fanfoudroid.FOLLOWING"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -146,16 +146,17 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
             </intent-filter>
         </activity>
-        <activity android:name=".SearchActivity" android:theme="@style/Theme.Fanfoudroid" />
-        <activity android:name="PreferencesActivity" android:label="@string/app_name"
+        <activity android:name="com.ch_linghu.fanfoudroid.SearchActivity" android:theme="@style/Theme.Fanfoudroid" />
+        <activity android:name=".PreferencesActivity" android:label="@string/app_name"
             android:theme="@style/Theme.Fanfoudroid" />
         <service android:name=".service.TwitterService" />
-        <receiver android:name=".service.BootReceiver">
+        <receiver android:name="com.ch_linghu.fanfoudroid.service.BootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
-        <receiver android:name="FanfouWidget">
+        <receiver android:name="com.ch_linghu.fanfoudroid.FanfouWidget"
+        android:label="@string/widget_label">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
                 <action android:name="com.ch_linghu.fanfoudroid.FanfouWidget.NEXT"/>
@@ -163,6 +164,16 @@
             </intent-filter>
             <meta-data android:name="android.appwidget.provider" 
             android:resource="@xml/widget_info"/>
+        </receiver>
+        <receiver android:name=".FanfouWidgetSmall"
+        android:label="@string/widget_small_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="com.ch_linghu.fanfoudroid.FanfouWidget.NEXT"/>
+                <action android:name="com.ch_linghu.fanfoudroid.FanfouWidget.PREV"/> 
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" 
+            android:resource="@xml/widget_small_info"/>
         </receiver>
 
         <!-- <service android:name="com.ch_linghu.fanfoudroid.service.WidgetService"/> -->

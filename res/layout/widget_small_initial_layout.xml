@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/small_linearLayout2" android:layout_height="72dp"
+	android:orientation="horizontal"
+	android:layout_width="fill_parent" android:gravity="left|center_vertical"
+	android:background="@drawable/widget_bg_small" android:layout_marginLeft="2dp"
+	android:layout_marginRight="2dp" android:layout_marginTop="2dp">
+	<ImageView android:id="@+id/small_logo_image"
+		android:layout_height="48dp" android:layout_width="48dp" android:src="@drawable/icon"
+		android:clickable="true" 	android:layout_marginLeft="2dp"/>
+	<LinearLayout android:id="@+id/small_write_message"
+		android:layout_width="fill_parent" android:layout_height="58dp"
+		android:layout_weight="1" android:gravity="center_vertical"
+		android:layout_marginLeft="2dp" android:layout_marginRight="7dp"
+		android:background="@drawable/textfield_search_empty"
+		android:clickable="true">
+		<TextView android:layout_width="fill_parent"
+			android:textSize="20dp" android:layout_height="wrap_content"
+			android:text="@string/widget_input_prompt" />
+	</LinearLayout>
+</LinearLayout>
+
+
+
+	

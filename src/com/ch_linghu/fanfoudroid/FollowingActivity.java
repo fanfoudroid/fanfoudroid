@@ -17,6 +17,7 @@ import com.ch_linghu.fanfoudroid.fanfou.Paging;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.ui.base.UserArrayBaseActivity;
 import com.ch_linghu.fanfoudroid.ui.module.UserArrayAdapter;
+import com.ch_linghu.fanfoudroid.R;
 
 public class FollowingActivity extends UserArrayBaseActivity {
 
@@ -27,52 +28,66 @@ public class FollowingActivity extends UserArrayBaseActivity {
 	private static final String LAUNCH_ACTION = "com.ch_linghu.fanfoudroid.FOLLOWING";
 	private static final String USER_ID = "userId";
 	private static final String USER_NAME = "userName";
-	private int currentPage=1;
-	String myself="";
+	private int currentPage = 1;
+	String myself = "";
+
 	@Override
 	protected boolean _onCreate(Bundle savedInstanceState) {
-		   Intent intent = getIntent();
-			Bundle extras = intent.getExtras();
-			if (extras != null) {
-				this.userId = extras.getString(USER_ID);
-				this.userName = extras.getString(USER_NAME);
-			} else {
-				// 获取登录用户id
-				userId=TwitterApplication.getMyselfId();
-				userName = TwitterApplication.getMyselfName();
-			}
+		Intent intent = getIntent();
+		Bundle extras = intent.getExtras();
+		if (extras != null) {
+			this.userId = extras.getString(USER_ID);
+			this.userName = extras.getString(USER_NAME);
+		} else {
+			// 获取登录用户id
+			userId = TwitterApplication.getMyselfId();
+			userName = TwitterApplication.getMyselfName();
+		}
 
-			if(super._onCreate(savedInstanceState)){
-				
-				myself = TwitterApplication.getMyselfId();
-				if(getUserId()==myself){
-					mNavbar.setHeaderTitle(MessageFormat.format(
-							getString(R.string.profile_friends_count_title), "我"));
-				} else {
-					mNavbar.setHeaderTitle(MessageFormat.format(
-							getString(R.string.profile_friends_count_title), userName));
-				}
-				return true;
-			}else{
-				return false;
+		if (super._onCreate(savedInstanceState)) {
+
+			myself = TwitterApplication.getMyselfId();
+			if (getUserId() == myself) {
+				mNavbar.setHeaderTitle(MessageFormat.format(
+						getString(R.string.profile_friends_count_title), "我"));
+			} else {
+				mNavbar.setHeaderTitle(MessageFormat.format(
+						getString(R.string.profile_friends_count_title),
+						userName));
 			}
+			return true;
+		} else {
+			return false;
+		}
 	}
-	
+
 	/*
 	 * 添加取消关注按钮
-	 * @see com.ch_linghu.fanfoudroid.ui.base.UserListBaseActivity#onCreateContextMenu(android.view.ContextMenu, android.view.View, android.view.ContextMenu.ContextMenuInfo)
+	 * 
+	 * @see
+	 * com.ch_linghu.fanfoudroid.ui.base.UserListBaseActivity#onCreateContextMenu
+	 * (android.view.ContextMenu, android.view.View,
+	 * android.view.ContextMenu.ContextMenuInfo)
 	 */
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		if(getUserId()==myself){
+		if (getUserId() == myself) {
 			AdapterView.AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
 			User user = getContextItemUser(info.position);
-			menu.add(0,CONTENT_DEL_FRIEND,0,getResources().getString(R.string.cmenu_user_addfriend_prefix)+user.screenName+getResources().getString(R.string.cmenu_user_friend_suffix));
+			menu.add(
+					0,
+					CONTENT_DEL_FRIEND,
+					0,
+					getResources().getString(
+							R.string.cmenu_user_addfriend_prefix)
+							+ user.screenName
+							+ getResources().getString(
+									R.string.cmenu_user_friend_suffix));
 
 		}
-		
+
 	}
 
 	public static Intent createIntent(String userId, String userName) {
@@ -82,14 +97,12 @@ public class FollowingActivity extends UserArrayBaseActivity {
 		intent.putExtra(USER_NAME, userName);
 		return intent;
 	}
-	
-	
+
 	@Override
 	public Paging getNextPage() {
-		currentPage+=1;
+		currentPage += 1;
 		return new Paging(currentPage);
 	}
-	
 
 	@Override
 	protected String getUserId() {

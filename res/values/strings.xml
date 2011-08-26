@@ -36,7 +36,7 @@
     <string name="omenu_exit">退出</string>
     <!-- context menu -->
     <string name="cmenu_reply">回复</string>
-    <string name="cmenu_retweet">热饭</string>
+    <string name="cmenu_retweet">转发</string>
     <string name="cmenu_direct_message">私信</string>
     <string name="cmenu_add_fav">收藏</string>
     <string name="cmenu_del_fav">取消收藏</string>
@@ -71,7 +71,7 @@
     <string name="user_query_status_success">查询成功！</string>
     <!-- Write页面 -->
     <string name="write_label_send">发送</string>
-    <string name="write_label_send_hint">你在做什么？</string>
+    <string name="write_label_send_hint">有什么要说的？</string>
     <string name="write_label_choose_images">插入图片</string>
     <string name="write_label_send_in_background">后台发送</string>
     <string name="write_label_take_a_picture">相机拍摄</string>
@@ -137,8 +137,8 @@
     <string name="pref_ui_font_size_summary">消息列表中的字体大小, 重启页面后生效.</string>
     <string name="pref_rt_prefix_title">转发前缀</string>
     <string name="pref_rt_prefix_summary">转发消息时的前缀</string>
-    <string name="pref_rt_prefix_default">热饭</string>
-    <string name="pref_rt_cursor_position_title">热饭时光标在前</string>
+    <string name="pref_rt_prefix_default">转</string>
+    <string name="pref_rt_cursor_position_title">转发时光标在前</string>
     <string name="pref_rt_cursor_position_summary">选中的话转发时光标在转发消息的开头，不选中的话光标在末尾</string>
     <string name="pref_title_network">网络</string>
     <string name="pref_network_type_title">网络类型</string>
@@ -167,7 +167,7 @@
     <string name="tweet_source_prefix">来自</string>
     <string name="tweet_reply_to_prefix">给</string>
     <string name="tweet_reply_to_suffix">的回复</string>
-    <string name="tweet_created_at_beautify_prefix">大约</string>
+    <string name="tweet_created_at_beautify_prefix"></string>
     <string name="tweet_created_at_beautify_sec">秒</string>
     <string name="tweet_created_at_beautify_min">分钟</string>
     <string name="tweet_created_at_beautify_hour">小时</string>
@@ -185,10 +185,12 @@
     <string name="about_developers">令狐虫: ch.linghu@gmail.com
 \n\n三日坊主：lds2012@gmail.com
 \n\ndodo la: dinophp@gmail.com
-\n\nPhoenix: phoenix.nir@gmail.com</string>
-	<string name="about_thanks_title">\n感谢名单\n</string>
-	<string name="about_thanks">这里列出所有对这个项目提供了切实帮助的人们。</string>
+\n\nPhoenix: phoenix.nir@gmail.com
+\n\n忽然兔: zhoumeng1987@gmail.com</string>
+    <string name="about_thanks_title">\n感谢\n</string>
+    <string name="about_thanks">感谢所有对这个项目提供了切实帮助的人们。</string>
     <string name="about_label_ok">了解</string>
+    <string name="about_label_feedback">反馈</string>
     <!-- 搜索  -->
     <string name="search_label">安能饭否</string>
     <string name="search_hint">搜索饭否</string>
@@ -215,6 +217,8 @@
     <!-- Widget -->
     <string name="widget_no_message">暂无消息</string>
     <string name="widget_input_prompt">说点什么呗</string>
+    <string name="widget_label">安能饭否（大）</string>
+    <string name="widget_small_label">安能饭否（小）</string>
     <!-- acra 提示信息  -->
     <string name="crash_notif_ticker_text">安能饭否发生错误，请协助提交错误报告</string>
     <string name="crash_notif_title">安能饭否出错了</string>
@@ -223,4 +227,9 @@
     <string name="crash_dialog_text">安能饭否出现了我们未曾捕获到的错误，你点击\'OK\'之后，错误报告会发送给开发者.</string>
     <string name="crash_dialog_comment_prompt">如果你能多花点时间填写一下错误发生时你做了什么，我们将不胜感激:</string>
     <string name="crash_dialog_ok_toast">感谢你的配合！</string>
+    	<!-- 下拉刷新 -->
+	<string name="pull_to_refresh_pull_label">下拉刷新...</string>
+	<string name="pull_to_refresh_release_label">松开刷新...</string>
+	<string name="pull_to_refresh_refreshing_label">读取中...</string>
+	<string name="pull_to_refresh_tap_label">点击刷新...</string>
 </resources>

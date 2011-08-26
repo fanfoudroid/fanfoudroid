@@ -49,6 +49,7 @@ import com.ch_linghu.fanfoudroid.ui.module.NavBar;
 import com.ch_linghu.fanfoudroid.ui.module.SimpleFeedback;
 import com.ch_linghu.fanfoudroid.util.DateTimeHelper;
 import com.ch_linghu.fanfoudroid.util.TextHelper;
+import com.ch_linghu.fanfoudroid.R;
 
 public class DmActivity extends BaseActivity implements Refreshable {
 
@@ -70,15 +71,15 @@ public class DmActivity extends BaseActivity implements Refreshable {
 	private static final int DM_TYPE_SENDBOX = 2;
 
 	private TextView mProgressText;
-	
+
 	private NavBar mNavbar;
 	private Feedback mFeedback;
 
 	// Tasks.
 	private GenericTask mRetrieveTask;
 	private GenericTask mDeleteTask;
-	
-	private TaskListener mDeleteTaskListener = new TaskAdapter(){
+
+	private TaskListener mDeleteTaskListener = new TaskAdapter() {
 		@Override
 		public void onPreExecute(GenericTask task) {
 			updateProgress(getString(R.string.page_status_deleting));
@@ -102,7 +103,7 @@ public class DmActivity extends BaseActivity implements Refreshable {
 			return "DmDeleteTask";
 		}
 	};
-	private TaskListener mRetrieveTaskListener = new TaskAdapter(){
+	private TaskListener mRetrieveTaskListener = new TaskAdapter() {
 		@Override
 		public void onPreExecute(GenericTask task) {
 			updateProgress(getString(R.string.page_status_refreshing));
@@ -119,7 +120,7 @@ public class DmActivity extends BaseActivity implements Refreshable {
 				logout();
 			} else if (result == TaskResult.OK) {
 				SharedPreferences.Editor editor = mPreferences.edit();
-				editor.putLong(Preferences.LAST_DM_REFRESH_KEY, 
+				editor.putLong(Preferences.LAST_DM_REFRESH_KEY,
 						DateTimeHelper.getNowTime());
 				editor.commit();
 				draw();
@@ -159,56 +160,56 @@ public class DmActivity extends BaseActivity implements Refreshable {
 
 	@Override
 	protected boolean _onCreate(Bundle savedInstanceState) {
-		if (super._onCreate(savedInstanceState))
-		{
+		if (super._onCreate(savedInstanceState)) {
 			setContentView(R.layout.dm);
 			mNavbar = new NavBar(NavBar.HEADER_STYLE_HOME, this);
 			mNavbar.setHeaderTitle("我的私信");
-			
+
 			mFeedback = FeedbackFactory.create(this, FeedbackType.PROGRESS);
-	
+
 			bindFooterButtonEvent();
-	
+
 			mTweetList = (ListView) findViewById(R.id.tweet_list);
 			mProgressText = (TextView) findViewById(R.id.progress_text);
-	
+
 			TwitterDatabase db = getDb();
 			// Mark all as read.
 			db.markAllDmsRead();
-	
+
 			setupAdapter(); // Make sure call bindFooterButtonEvent first
-	
+
 			boolean shouldRetrieve = false;
-	
+
 			long lastRefreshTime = mPreferences.getLong(
 					Preferences.LAST_DM_REFRESH_KEY, 0);
 			long nowTime = DateTimeHelper.getNowTime();
-	
+
 			long diff = nowTime - lastRefreshTime;
 			Log.d(TAG, "Last refresh was " + diff + " ms ago.");
-	
+
 			if (diff > REFRESH_THRESHOLD) {
 				shouldRetrieve = true;
 			} else if (isTrue(savedInstanceState, SIS_RUNNING_KEY)) {
 				// Check to see if it was running a send or retrieve task.
-				// It makes no sense to resend the send request (don't want dupes)
+				// It makes no sense to resend the send request (don't want
+				// dupes)
 				// so we instead retrieve (refresh) to see if the message has
 				// posted.
 				Log.d(TAG,
 						"Was last running a retrieve or send task. Let's refresh.");
 				shouldRetrieve = true;
 			}
-	
+
 			if (shouldRetrieve) {
 				doRetrieve();
 			}
-	
+
 			// Want to be able to focus on the items with the trackball.
 			// That way, we can navigate up and down by changing item focus.
 			mTweetList.setItemsCanFocus(true);
-			
+
 			return true;
-		}else{
+		} else {
 			return false;
 		}
 	}
@@ -312,13 +313,13 @@ public class DmActivity extends BaseActivity implements Refreshable {
 
 	private class DmRetrieveTask extends GenericTask {
 		@Override
-		protected TaskResult _doInBackground(TaskParams...params) {
+		protected TaskResult _doInBackground(TaskParams... params) {
 			List<DirectMessage> dmList;
 
 			ArrayList<Dm> dms = new ArrayList<Dm>();
 
 			TwitterDatabase db = getDb();
-			//ImageManager imageManager = getImageManager();
+			// ImageManager imageManager = getImageManager();
 
 			String maxId = db.fetchMaxDmId(false);
 
@@ -385,31 +386,30 @@ public class DmActivity extends BaseActivity implements Refreshable {
 
 			db.addDms(dms, false);
 
-//			if (isCancelled()) {
-//				return TaskResult.CANCELLED;
-//			}
-//
-//			publishProgress(null);
-//
-//			for (String imageUrl : imageUrls) {
-//				if (!Utils.isEmpty(imageUrl)) {
-//					// Fetch image to cache.
-//					try {
-//						imageManager.put(imageUrl);
-//					} catch (IOException e) {
-//						Log.e(TAG, e.getMessage(), e);
-//					}
-//				}
-//
-//				if (isCancelled()) {
-//					return TaskResult.CANCELLED;
-//				}
-//			}
+			// if (isCancelled()) {
+			// return TaskResult.CANCELLED;
+			// }
+			//
+			// publishProgress(null);
+			//
+			// for (String imageUrl : imageUrls) {
+			// if (!Utils.isEmpty(imageUrl)) {
+			// // Fetch image to cache.
+			// try {
+			// imageManager.put(imageUrl);
+			// } catch (IOException e) {
+			// Log.e(TAG, e.getMessage(), e);
+			// }
+			// }
+			//
+			// if (isCancelled()) {
+			// return TaskResult.CANCELLED;
+			// }
+			// }
 
 			return TaskResult.OK;
 		}
 	}
-	
 
 	private static class Adapter extends CursorAdapter {
 
@@ -419,11 +419,10 @@ public class DmActivity extends BaseActivity implements Refreshable {
 			mInflater = LayoutInflater.from(context);
 
 			// TODO: 可使用:
-			//DM dm = MessageTable.parseCursor(cursor);
+			// DM dm = MessageTable.parseCursor(cursor);
 			mUserTextColumn = cursor
 					.getColumnIndexOrThrow(MessageTable.FIELD_USER_SCREEN_NAME);
-			mTextColumn = cursor
-					.getColumnIndexOrThrow(MessageTable.FIELD_TEXT);
+			mTextColumn = cursor.getColumnIndexOrThrow(MessageTable.FIELD_TEXT);
 			mProfileImageUrlColumn = cursor
 					.getColumnIndexOrThrow(MessageTable.FIELD_PROFILE_IMAGE_URL);
 			mCreatedAtColumn = cursor
@@ -482,21 +481,22 @@ public class DmActivity extends BaseActivity implements Refreshable {
 						+ user);
 			}
 
-			TextHelper.setTweetText(holder.tweetText, cursor.getString(mTextColumn));
+			TextHelper.setTweetText(holder.tweetText,
+					cursor.getString(mTextColumn));
 
 			String profileImageUrl = cursor.getString(mProfileImageUrlColumn);
 
 			if (!TextUtils.isEmpty(profileImageUrl)) {
 				holder.profileImage
-						.setImageBitmap(TwitterApplication.mImageLoader
-								.get(profileImageUrl, new ImageLoaderCallback(){
+						.setImageBitmap(TwitterApplication.mImageLoader.get(
+								profileImageUrl, new ImageLoaderCallback() {
 
 									@Override
 									public void refresh(String url,
 											Bitmap bitmap) {
 										Adapter.this.refresh();
 									}
-									
+
 								}));
 			}
 
@@ -584,12 +584,13 @@ public class DmActivity extends BaseActivity implements Refreshable {
 	private void doDestroy(String id) {
 		Log.d(TAG, "Attempting delete.");
 
-		if (mDeleteTask != null && mDeleteTask.getStatus() == GenericTask.Status.RUNNING){
+		if (mDeleteTask != null
+				&& mDeleteTask.getStatus() == GenericTask.Status.RUNNING) {
 			return;
-		}else{
+		} else {
 			mDeleteTask = new DmDeleteTask();
 			mDeleteTask.setListener(mDeleteTaskListener);
-			
+
 			TaskParams params = new TaskParams();
 			params.put("id", id);
 			mDeleteTask.execute(params);
@@ -597,9 +598,9 @@ public class DmActivity extends BaseActivity implements Refreshable {
 	}
 
 	private class DmDeleteTask extends GenericTask {
-		
+
 		@Override
-		protected TaskResult _doInBackground(TaskParams...params) {
+		protected TaskResult _doInBackground(TaskParams... params) {
 			TaskParams param = params[0];
 			try {
 				String id = param.getString("id");
@@ -622,9 +623,10 @@ public class DmActivity extends BaseActivity implements Refreshable {
 	public void doRetrieve() {
 		Log.d(TAG, "Attempting retrieve.");
 
-		if (mRetrieveTask != null && mRetrieveTask.getStatus() == GenericTask.Status.RUNNING){
+		if (mRetrieveTask != null
+				&& mRetrieveTask.getStatus() == GenericTask.Status.RUNNING) {
 			return;
-		}else{
+		} else {
 			mRetrieveTask = new DmRetrieveTask();
 			mRetrieveTask.setFeedback(mFeedback);
 			mRetrieveTask.setListener(mRetrieveTaskListener);
@@ -632,9 +634,9 @@ public class DmActivity extends BaseActivity implements Refreshable {
 		}
 	}
 
-    public void goTop() {
-        mTweetList.setSelection(0);
-    }
+	public void goTop() {
+		mTweetList.setSelection(0);
+	}
 
 	public void draw() {
 		mAdapter.refresh();

@@ -6,9 +6,9 @@ import android.widget.ListView;
 
 public class RefreshableListView extends ListView {
 
-    public RefreshableListView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        // TODO Auto-generated constructor stub
-    }
+	public RefreshableListView(Context context, AttributeSet attrs, int defStyle) {
+		super(context, attrs, defStyle);
+		// TODO Auto-generated constructor stub
+	}
 
 }

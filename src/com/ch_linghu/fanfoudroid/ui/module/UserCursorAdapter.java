@@ -24,7 +24,7 @@ import com.ch_linghu.fanfoudroid.db.UserInfoTable;
 
 public class UserCursorAdapter extends CursorAdapter implements TweetAdapter {
 	private static final String TAG = "TweetCursorAdapter";
-	
+
 	private Context mContext;
 
 	public UserCursorAdapter(Context context, Cursor cursor) {
@@ -36,47 +36,45 @@ public class UserCursorAdapter extends CursorAdapter implements TweetAdapter {
 		}
 
 		if (cursor != null) {
-			
-			 mScreenNametColumn=cursor.getColumnIndexOrThrow(UserInfoTable.FIELD_USER_SCREEN_NAME);
-		 mUserIdColumn=cursor.getColumnIndexOrThrow(UserInfoTable._ID);
-			 mProfileImageUrlColumn=cursor.getColumnIndexOrThrow(UserInfoTable.FIELD_PROFILE_IMAGE_URL);
-		// mLastStatusColumn=cursor.getColumnIndexOrThrow(UserInfoTable.FIELD_LAST_STATUS);
 
-			
+			mScreenNametColumn = cursor
+					.getColumnIndexOrThrow(UserInfoTable.FIELD_USER_SCREEN_NAME);
+			mUserIdColumn = cursor.getColumnIndexOrThrow(UserInfoTable._ID);
+			mProfileImageUrlColumn = cursor
+					.getColumnIndexOrThrow(UserInfoTable.FIELD_PROFILE_IMAGE_URL);
+			// mLastStatusColumn=cursor.getColumnIndexOrThrow(UserInfoTable.FIELD_LAST_STATUS);
+
 		}
 		mMetaBuilder = new StringBuilder();
 	}
 
-	
 	private LayoutInflater mInflater;
 
 	private int mScreenNametColumn;
 	private int mUserIdColumn;
 	private int mProfileImageUrlColumn;
-	//private int mLastStatusColumn;
-
-	
+	// private int mLastStatusColumn;
 
 	private StringBuilder mMetaBuilder;
-	
-	private ImageLoaderCallback callback = new ImageLoaderCallback(){
+
+	private ImageLoaderCallback callback = new ImageLoaderCallback() {
 
 		@Override
 		public void refresh(String url, Bitmap bitmap) {
 			UserCursorAdapter.this.refresh();
 		}
-		
+
 	};
 
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
 		View view = mInflater.inflate(R.layout.follower_item, parent, false);
-Log.d(TAG,"load newView");
+		Log.d(TAG, "load newView");
 		UserCursorAdapter.ViewHolder holder = new ViewHolder();
-		holder.screenName=(TextView) view.findViewById(R.id.screen_name);
-		holder.profileImage=(ImageView)view.findViewById(R.id.profile_image);
-		//holder.lastStatus=(TextView) view.findViewById(R.id.last_status);
-		holder.userId=(TextView) view.findViewById(R.id.user_id);
+		holder.screenName = (TextView) view.findViewById(R.id.screen_name);
+		holder.profileImage = (ImageView) view.findViewById(R.id.profile_image);
+		// holder.lastStatus=(TextView) view.findViewById(R.id.last_status);
+		holder.userId = (TextView) view.findViewById(R.id.user_id);
 		view.setTag(holder);
 
 		return view;
@@ -94,17 +92,19 @@ Log.d(TAG,"load newView");
 	public void bindView(View view, Context context, Cursor cursor) {
 		UserCursorAdapter.ViewHolder holder = (UserCursorAdapter.ViewHolder) view
 				.getTag();
-		Log.d(TAG, "cursor count="+cursor.getCount());
-		Log.d(TAG,"holder is null?"+(holder==null?"yes":"no"));
-		SharedPreferences pref = TwitterApplication.mPref;  //PreferenceManager.getDefaultSharedPreferences(mContext);;
-		boolean useProfileImage = pref.getBoolean(Preferences.USE_PROFILE_IMAGE, true);
+		Log.d(TAG, "cursor count=" + cursor.getCount());
+		Log.d(TAG, "holder is null?" + (holder == null ? "yes" : "no"));
+		SharedPreferences pref = TwitterApplication.mPref; // PreferenceManager.getDefaultSharedPreferences(mContext);;
+		boolean useProfileImage = pref.getBoolean(
+				Preferences.USE_PROFILE_IMAGE, true);
 		String profileImageUrl = cursor.getString(mProfileImageUrlColumn);
-		if (useProfileImage){
-		if (!TextUtils.isEmpty(profileImageUrl)) {
-			holder.profileImage.setImageBitmap(TwitterApplication.mImageLoader
-					.get(profileImageUrl, callback));
-		}
-		}else{
+		if (useProfileImage) {
+			if (!TextUtils.isEmpty(profileImageUrl)) {
+				holder.profileImage
+						.setImageBitmap(TwitterApplication.mImageLoader.get(
+								profileImageUrl, callback));
+			}
+		} else {
 			holder.profileImage.setVisibility(View.GONE);
 		}
 		holder.screenName.setText(cursor.getString(mScreenNametColumn));

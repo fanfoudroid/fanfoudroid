@@ -58,8 +58,8 @@ import com.ch_linghu.fanfoudroid.ui.module.FeedbackFactory.FeedbackType;
 import com.ch_linghu.fanfoudroid.ui.module.NavBar;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 
-public abstract class TwitterListBaseActivity extends BaseActivity 
-	implements Refreshable {
+public abstract class TwitterListBaseActivity extends BaseActivity implements
+		Refreshable {
 	static final String TAG = "TwitterListBaseActivity";
 
 	protected TextView mProgressText;
@@ -71,8 +71,8 @@ public abstract class TwitterListBaseActivity extends BaseActivity
 
 	// Tasks.
 	protected GenericTask mFavTask;
-	private TaskListener mFavTaskListener = new TaskAdapter(){
-		
+	private TaskListener mFavTaskListener = new TaskAdapter() {
+
 		@Override
 		public String getName() {
 			return "FavoriteTask";
@@ -91,15 +91,19 @@ public abstract class TwitterListBaseActivity extends BaseActivity
 	};
 
 	static final int DIALOG_WRITE_ID = 0;
-	
+
 	abstract protected int getLayoutId();
+
 	abstract protected ListView getTweetList();
+
 	abstract protected TweetAdapter getTweetAdapter();
+
 	abstract protected void setupState();
 
 	abstract protected String getActivityTitle();
+
 	abstract protected boolean useBasicMenu();
-	
+
 	abstract protected Tweet getContextItemTweet(int position);
 
 	abstract protected void updateTweet(Tweet tweet);
@@ -111,33 +115,34 @@ public abstract class TwitterListBaseActivity extends BaseActivity
 	public static final int CONTEXT_MORE_ID = Menu.FIRST + 5;
 	public static final int CONTEXT_ADD_FAV_ID = Menu.FIRST + 6;
 	public static final int CONTEXT_DEL_FAV_ID = Menu.FIRST + 7;
-	
+
 	/**
-	 * 如果增加了Context Menu常量的数量，则必须重载此方法，
-	 * 以保证其他人使用常量时不产生重复
+	 * 如果增加了Context Menu常量的数量，则必须重载此方法， 以保证其他人使用常量时不产生重复
+	 * 
 	 * @return 最大的Context Menu常量
 	 */
-	protected int getLastContextMenuId(){
+	protected int getLastContextMenuId() {
 		return CONTEXT_DEL_FAV_ID;
 	}
-	
+
 	@Override
-	protected boolean _onCreate(Bundle savedInstanceState){
-		if (super._onCreate(savedInstanceState)){
+	protected boolean _onCreate(Bundle savedInstanceState) {
+		if (super._onCreate(savedInstanceState)) {
 			setContentView(getLayoutId());
 			mNavbar = new NavBar(NavBar.HEADER_STYLE_HOME, this);
-            mFeedback = FeedbackFactory.create(this, FeedbackType.PROGRESS);
+			mFeedback = FeedbackFactory.create(this, FeedbackType.PROGRESS);
 
-			mPreferences.getInt(Preferences.TWITTER_ACTIVITY_STATE_KEY, STATE_ALL);
+			mPreferences.getInt(Preferences.TWITTER_ACTIVITY_STATE_KEY,
+					STATE_ALL);
 
 			// 提示栏
 			mProgressText = (TextView) findViewById(R.id.progress_text);
-			
+
 			setupState();
 
 			registerForContextMenu(getTweetList());
-			registerOnClickListener(getTweetList());		
-			
+			registerOnClickListener(getTweetList());
+
 			return true;
 		} else {
 			return false;
@@ -155,30 +160,38 @@ public abstract class TwitterListBaseActivity extends BaseActivity
 	protected void onDestroy() {
 		super.onDestroy();
 
-		if (mFavTask != null && mFavTask.getStatus() == GenericTask.Status.RUNNING) {
+		if (mFavTask != null
+				&& mFavTask.getStatus() == GenericTask.Status.RUNNING) {
 			mFavTask.cancel(true);
 		}
 	}
+
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
-	    Log.d("FLING", "onContextItemSelected");
+		Log.d("FLING", "onContextItemSelected");
 		super.onCreateContextMenu(menu, v, menuInfo);
 
-		if (useBasicMenu()){
+		if (useBasicMenu()) {
 			AdapterView.AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
 			Tweet tweet = getContextItemTweet(info.position);
-			
+
 			if (tweet == null) {
 				Log.w(TAG, "Selected item not available.");
 				return;
 			}
-			
-			menu.add(0, CONTEXT_MORE_ID, 0, tweet.screenName + getResources().getString(R.string.cmenu_user_profile_prefix));
+
+			menu.add(
+					0,
+					CONTEXT_MORE_ID,
+					0,
+					tweet.screenName
+							+ getResources().getString(
+									R.string.cmenu_user_profile_prefix));
 			menu.add(0, CONTEXT_REPLY_ID, 0, R.string.cmenu_reply);
 			menu.add(0, CONTEXT_RETWEET_ID, 0, R.string.cmenu_retweet);
 			menu.add(0, CONTEXT_DM_ID, 0, R.string.cmenu_direct_message);
-	
+
 			if (tweet.favorited.equals("true")) {
 				menu.add(0, CONTEXT_DEL_FAV_ID, 0, R.string.cmenu_del_fav);
 			} else {
@@ -205,42 +218,43 @@ public abstract class TwitterListBaseActivity extends BaseActivity
 		case CONTEXT_REPLY_ID: {
 			// TODO: this isn't quite perfect. It leaves extra empty spaces if
 			// you perform the reply action again.
-		    Intent intent = WriteActivity.createNewReplyIntent(tweet.text, tweet.screenName, tweet.id);
+			Intent intent = WriteActivity.createNewReplyIntent(tweet.text,
+					tweet.screenName, tweet.id);
 			startActivity(intent);
 			return true;
 		}
 		case CONTEXT_RETWEET_ID:
-		    Intent intent = WriteActivity.createNewRepostIntent(this,
-		            tweet.text, tweet.screenName, tweet.id);
+			Intent intent = WriteActivity.createNewRepostIntent(this,
+					tweet.text, tweet.screenName, tweet.id);
 			startActivity(intent);
 			return true;
 		case CONTEXT_DM_ID:
 			launchActivity(WriteDmActivity.createIntent(tweet.userId));
 			return true;
-		case CONTEXT_ADD_FAV_ID: 
+		case CONTEXT_ADD_FAV_ID:
 			doFavorite("add", tweet.id);
 			return true;
-		case CONTEXT_DEL_FAV_ID: 
+		case CONTEXT_DEL_FAV_ID:
 			doFavorite("del", tweet.id);
 			return true;
 		default:
 			return super.onContextItemSelected(item);
 		}
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case OPTIONS_MENU_ID_TWEETS:
 			launchActivity(TwitterActivity.createIntent(this));
 			return true;
-	      case OPTIONS_MENU_ID_REPLIES:
-	        launchActivity(MentionActivity.createIntent(this));
-	        return true;
-	      case OPTIONS_MENU_ID_DM:
-	        launchActivity(DmActivity.createIntent());
-	        return true;
-	    }
+		case OPTIONS_MENU_ID_REPLIES:
+			launchActivity(MentionActivity.createIntent(this));
+			return true;
+		case OPTIONS_MENU_ID_DM:
+			launchActivity(DmActivity.createIntent());
+			return true;
+		}
 
 		return super.onOptionsItemSelected(item);
 	}
@@ -252,29 +266,30 @@ public abstract class TwitterListBaseActivity extends BaseActivity
 	protected void goTop() {
 		getTweetList().setSelection(1);
 	}
-	
-	protected void adapterRefresh(){
+
+	protected void adapterRefresh() {
 		getTweetAdapter().refresh();
 	}
-	
+
 	// for HasFavorite interface
-	
+
 	public void doFavorite(String action, String id) {
-        if (!TextUtils.isEmpty(id)) {
-	    	if (mFavTask != null && mFavTask.getStatus() == GenericTask.Status.RUNNING){
-	    		return;	
-	    	}else{
-	        	mFavTask = new TweetCommonTask.FavoriteTask(this);
-	        	mFavTask.setListener(mFavTaskListener);
-	
-	        	TaskParams params = new TaskParams();
-	        	params.put("action", action);
-	        	params.put("id", id);
-	        	mFavTask.execute(params);
-	    	}
-        }
-    }
-	
+		if (!TextUtils.isEmpty(id)) {
+			if (mFavTask != null
+					&& mFavTask.getStatus() == GenericTask.Status.RUNNING) {
+				return;
+			} else {
+				mFavTask = new TweetCommonTask.FavoriteTask(this);
+				mFavTask.setListener(mFavTaskListener);
+
+				TaskParams params = new TaskParams();
+				params.put("action", action);
+				params.put("id", id);
+				mFavTask.execute(params);
+			}
+		}
+	}
+
 	public void onFavSuccess() {
 		// updateProgress(getString(R.string.refreshing));
 		adapterRefresh();
@@ -283,29 +298,30 @@ public abstract class TwitterListBaseActivity extends BaseActivity
 	public void onFavFailure() {
 		// updateProgress(getString(R.string.refreshing));
 	}
-	
-	protected void specialItemClicked(int position){
-		
+
+	protected void specialItemClicked(int position) {
+
 	}
-	
+
 	protected void registerOnClickListener(ListView listView) {
 
-		listView.setOnItemClickListener(new OnItemClickListener(){
+		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position,
-					long id) {
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
 				Tweet tweet = getContextItemTweet(position);
-		
+
 				if (tweet == null) {
 					Log.w(TAG, "Selected item not available.");
 					specialItemClicked(position);
-				}else{
+				} else {
 					launchActivity(StatusActivity.createIntent(tweet));
 				}
 			}
 		});
 
 	}
+
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);

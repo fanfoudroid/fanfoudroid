@@ -104,16 +104,12 @@
 		  android:title="@string/pref_force_screen_orientation_portrait"
 		  android:summary="@string/pref_force_screen_orientation_portrait_summary"
 		  android:defaultValue="false" />
-		<CheckBoxPreference
-		  android:key="use_gestrue"
-		  android:title="@string/pref_use_gestrue_title"
-		  android:summary="@string/pref_use_gestrue_summary"
-		  android:defaultValue="false" />
-		<CheckBoxPreference
+		  		<CheckBoxPreference
 		  android:key="use_shake"
 		  android:title="@string/pref_use_shake_title"
 		  android:summary="@string/pref_use_shake_summary"
 		  android:defaultValue="false" />
+		
   </PreferenceCategory>
 
   <!-- 网络 -->
@@ -143,11 +139,17 @@
     android:defaultValue="true" />
   </PreferenceCategory>
   
-  <!-- 实验功能(目前暂无) -->
- <!--
+  <!-- 实验功能 -->
+
   <PreferenceCategory android:title="@string/pref_title_labs">
+  <CheckBoxPreference
+		  android:key="use_gestrue"
+		  android:title="@string/pref_use_gestrue_title"
+		  android:summary="@string/pref_use_gestrue_summary"
+		  android:defaultValue="false" />
+
   </PreferenceCategory>
--->
+
 
 
 </PreferenceScreen>

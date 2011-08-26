@@ -31,6 +31,7 @@ import com.ch_linghu.fanfoudroid.fanfou.Paging;
 import com.ch_linghu.fanfoudroid.fanfou.Status;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.ui.base.TwitterCursorBaseActivity;
+import com.ch_linghu.fanfoudroid.R;
 
 //TODO: 数据来源换成 getFavorites()
 public class FavoritesActivity extends TwitterCursorBaseActivity {
@@ -40,10 +41,11 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 	private static final String USER_ID = "userid";
 	private static final String USER_NAME = "userName";
 	private static final int DIALOG_WRITE_ID = 0;
-	
+
 	private String userId = null;
 	private String userName = null;
-	
+	private int currentPage = 1;
+
 	public static Intent createIntent(String userId, String userName) {
 		Intent intent = new Intent(LAUNCH_ACTION);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -55,11 +57,11 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 
 	@Override
 	protected boolean _onCreate(Bundle savedInstanceState) {
-		if (super._onCreate(savedInstanceState)){
+		if (super._onCreate(savedInstanceState)) {
 			mNavbar.setHeaderTitle(getActivityTitle());
-			
+
 			return true;
-		}else{
+		} else {
 			return false;
 		}
 
@@ -89,29 +91,28 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 		// TODO Auto-generated method stub
 		String template = getString(R.string.page_title_favorites);
 		String who;
-		if (getUserId().equals(TwitterApplication.getMyselfId())){
+		if (getUserId().equals(TwitterApplication.getMyselfId())) {
 			who = "我";
-		}else{
+		} else {
 			who = getUserName();
 		}
 		return MessageFormat.format(template, who);
 	}
 
-	
 	@Override
 	protected void markAllRead() {
 		// TODO Auto-generated method stub
 		getDb().markAllTweetsRead(getUserId(), StatusTable.TYPE_FAVORITE);
 	}
-	
-	
+
 	// hasRetrieveListTask interface
-	
+
 	@Override
 	public int addMessages(ArrayList<Tweet> tweets, boolean isUnread) {
-		return getDb().putTweets(tweets, getUserId(), StatusTable.TYPE_FAVORITE, isUnread);
+		return getDb().putTweets(tweets, getUserId(),
+				StatusTable.TYPE_FAVORITE, isUnread);
 	}
-	
+
 	@Override
 	public String fetchMaxId() {
 		return getDb().fetchMaxTweetId(getUserId(), StatusTable.TYPE_FAVORITE);
@@ -119,11 +120,10 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 
 	@Override
 	public List<Status> getMessageSinceId(String maxId) throws HttpException {
-		if (maxId != null){
-			return getApi().getFavorites(getUserId(), new Paging(maxId));
-		}else{
-			return getApi().getFavorites(getUserId());
-		}
+		getDb().gc(getUserId(), StatusTable.TYPE_FAVORITE);
+		currentPage = 1;
+		Paging paging = new Paging(currentPage, 20);
+		return getApi().getFavorites(getUserId(), paging);
 	}
 
 	@Override
@@ -132,10 +132,9 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 	}
 
 	@Override
-	public List<Status> getMoreMessageFromId(String minId)
-			throws HttpException {
-		Paging paging = new Paging(1, 20);
-		paging.setMaxId(minId);
+	public List<Status> getMoreMessageFromId(String minId) throws HttpException {
+		++currentPage;
+		Paging paging = new Paging(currentPage, 20);
 		return getApi().getFavorites(getUserId(), paging);
 	}
 
@@ -148,7 +147,7 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 	public String getUserId() {
 		Intent intent = getIntent();
 		Bundle extras = intent.getExtras();
-		if (extras != null){
+		if (extras != null) {
 			userId = extras.getString(USER_ID);
 		} else {
 			userId = TwitterApplication.getMyselfId();
@@ -156,16 +155,16 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 
 		return userId;
 	}
-	
-	public String getUserName(){
+
+	public String getUserName() {
 		Intent intent = getIntent();
 		Bundle extras = intent.getExtras();
-		if (extras != null){
+		if (extras != null) {
 			userName = extras.getString(USER_NAME);
 		} else {
 			userName = TwitterApplication.getMyselfName();
 		}
 
-		return userName;		
+		return userName;
 	}
 }

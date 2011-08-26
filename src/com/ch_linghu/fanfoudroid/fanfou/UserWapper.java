@@ -9,6 +9,7 @@ import java.util.List;
 
 /**
  * 对User对象列表进行的包装，以支持cursor相关信息传递
+ * 
  * @author liudaoru - daoru at sina.com.cn
  */
 public class UserWapper implements Serializable {

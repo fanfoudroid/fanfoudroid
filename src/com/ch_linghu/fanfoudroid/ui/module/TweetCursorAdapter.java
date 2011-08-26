@@ -15,7 +15,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.R;
@@ -29,9 +31,9 @@ import com.ch_linghu.fanfoudroid.util.TextHelper;
 
 public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 	private static final String TAG = "TweetCursorAdapter";
-	
-	private Context mContext;
 
+	private Context mContext;
+	
 	public TweetCursorAdapter(Context context, Cursor cursor) {
 		super(context, cursor);
 		mContext = context;
@@ -41,23 +43,23 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		}
 
 		if (cursor != null) {
-		    //TODO: 可使用:
-		    //Tweet tweet = StatusTable.parseCursor(cursor);
+			// TODO: 可使用:
+			// Tweet tweet = StatusTable.parseCursor(cursor);
 
-            mUserTextColumn = cursor
-                    .getColumnIndexOrThrow(StatusTable.USER_SCREEN_NAME);
-            mTextColumn = cursor.getColumnIndexOrThrow(StatusTable.TEXT);
-            mProfileImageUrlColumn = cursor
-                    .getColumnIndexOrThrow(StatusTable.PROFILE_IMAGE_URL);
-            mCreatedAtColumn = cursor
-                    .getColumnIndexOrThrow(StatusTable.CREATED_AT);
-            mSourceColumn = cursor.getColumnIndexOrThrow(StatusTable.SOURCE);
-            mInReplyToScreenName = cursor
-                    .getColumnIndexOrThrow(StatusTable.IN_REPLY_TO_SCREEN_NAME);
-            mFavorited = cursor.getColumnIndexOrThrow(StatusTable.FAVORITED);
-            mThumbnailPic = cursor.getColumnIndexOrThrow(StatusTable.PIC_THUMB);
-            mMiddlePic = cursor.getColumnIndexOrThrow(StatusTable.PIC_MID);
-            mOriginalPic = cursor.getColumnIndexOrThrow(StatusTable.PIC_ORIG);
+			mUserTextColumn = cursor
+					.getColumnIndexOrThrow(StatusTable.USER_SCREEN_NAME);
+			mTextColumn = cursor.getColumnIndexOrThrow(StatusTable.TEXT);
+			mProfileImageUrlColumn = cursor
+					.getColumnIndexOrThrow(StatusTable.PROFILE_IMAGE_URL);
+			mCreatedAtColumn = cursor
+					.getColumnIndexOrThrow(StatusTable.CREATED_AT);
+			mSourceColumn = cursor.getColumnIndexOrThrow(StatusTable.SOURCE);
+			mInReplyToScreenName = cursor
+					.getColumnIndexOrThrow(StatusTable.IN_REPLY_TO_SCREEN_NAME);
+			mFavorited = cursor.getColumnIndexOrThrow(StatusTable.FAVORITED);
+			mThumbnailPic = cursor.getColumnIndexOrThrow(StatusTable.PIC_THUMB);
+			mMiddlePic = cursor.getColumnIndexOrThrow(StatusTable.PIC_MID);
+			mOriginalPic = cursor.getColumnIndexOrThrow(StatusTable.PIC_ORIG);
 		}
 		mMetaBuilder = new StringBuilder();
 	}
@@ -76,17 +78,16 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 	private int mOriginalPic;
 
 	private StringBuilder mMetaBuilder;
-	
-	/*
-	private ProfileImageCacheCallback callback = new ProfileImageCacheCallback(){
 
-		@Override
-		public void refresh(String url, Bitmap bitmap) {
-			TweetCursorAdapter.this.refresh();
-		}
-		
-	};
-	*/
+	/*
+	 * private ProfileImageCacheCallback callback = new
+	 * ProfileImageCacheCallback(){
+	 * 
+	 * @Override public void refresh(String url, Bitmap bitmap) {
+	 * TweetCursorAdapter.this.refresh(); }
+	 * 
+	 * };
+	 */
 
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
@@ -96,10 +97,12 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		holder.tweetUserText = (TextView) view
 				.findViewById(R.id.tweet_user_text);
 		holder.tweetText = (TextView) view.findViewById(R.id.tweet_text);
+		holder.profileLayout = (FrameLayout) view.findViewById(R.id.profile_layout);
 		holder.profileImage = (ImageView) view.findViewById(R.id.profile_image);
 		holder.metaText = (TextView) view.findViewById(R.id.tweet_meta_text);
 		holder.fav = (ImageView) view.findViewById(R.id.tweet_fav);
 		holder.has_image = (ImageView) view.findViewById(R.id.tweet_has_image);
+		holder.tweetLayout=(LinearLayout)view.findViewById(R.id.tweet_layout);
 		
 		view.setTag(holder);
 
@@ -107,8 +110,10 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 	}
 
 	private static class ViewHolder {
+		public LinearLayout tweetLayout;
 		public TextView tweetUserText;
 		public TextView tweetText;
+		public FrameLayout profileLayout;
 		public ImageView profileImage;
 		public TextView metaText;
 		public ImageView fav;
@@ -119,25 +124,43 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 	public void bindView(View view, Context context, Cursor cursor) {
 		TweetCursorAdapter.ViewHolder holder = (TweetCursorAdapter.ViewHolder) view
 				.getTag();
-		
-		SharedPreferences pref = TwitterApplication.mPref;  //PreferenceManager.getDefaultSharedPreferences(mContext);;
-		boolean useProfileImage = pref.getBoolean(Preferences.USE_PROFILE_IMAGE, true);
+
+		SharedPreferences pref = TwitterApplication.mPref; // PreferenceManager.getDefaultSharedPreferences(mContext);;
+		boolean useProfileImage = pref.getBoolean(
+				Preferences.USE_PROFILE_IMAGE, true);
 		holder.tweetUserText.setText(cursor.getString(mUserTextColumn));
-		TextHelper.setSimpleTweetText(holder.tweetText, cursor.getString(mTextColumn));
+		TextHelper.setSimpleTweetText(holder.tweetText,
+				cursor.getString(mTextColumn));
 		
-		String profileImageUrl = cursor.getString(mProfileImageUrlColumn);
-		if (useProfileImage && !TextUtils.isEmpty(profileImageUrl)) {
-		    SimpleImageLoader.display(holder.profileImage, profileImageUrl);
-		} else {
-			holder.profileImage.setVisibility(View.GONE);
+		/**
+		 * 添加特殊行的背景色
+		 */
+		if(holder.tweetUserText.getText().equals(TwitterApplication.getMyselfName())){
+			holder.tweetLayout.setBackgroundResource(R.drawable.list_selector_self);
+			holder.profileLayout.setBackgroundResource(R.color.self_background);
+		}else if(holder.tweetText.getText().toString().contains("@"+TwitterApplication.getMyselfName())){
+			holder.tweetLayout.setBackgroundResource(R.drawable.list_selector_mention);
+			holder.profileLayout.setBackgroundResource(R.color.mention_background);
+		}else{
+			holder.tweetLayout.setBackgroundResource(android.R.drawable.list_selector_background);
+			holder.profileLayout.setBackgroundResource(android.R.color.transparent);
 		}
 		
+
+		String profileImageUrl = cursor.getString(mProfileImageUrlColumn);
+		if (useProfileImage && !TextUtils.isEmpty(profileImageUrl)) {
+			holder.profileLayout.setVisibility(View.VISIBLE);
+			SimpleImageLoader.display(holder.profileImage, profileImageUrl);
+		} else {
+			holder.profileLayout.setVisibility(View.GONE);
+		}
+
 		if (cursor.getString(mFavorited).equals("true")) {
 			holder.fav.setVisibility(View.VISIBLE);
 		} else {
 			holder.fav.setVisibility(View.GONE);
 		}
-		
+
 		if (!TextUtils.isEmpty(cursor.getString(mThumbnailPic))) {
 			holder.has_image.setVisibility(View.VISIBLE);
 		} else {
@@ -148,11 +171,14 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 			Date createdAt = TwitterDatabase.DB_DATE_FORMATTER.parse(cursor
 					.getString(mCreatedAtColumn));
 			holder.metaText.setText(Tweet.buildMetaText(mMetaBuilder,
-					createdAt, cursor.getString(mSourceColumn), cursor
-							.getString(mInReplyToScreenName)));
+					createdAt, cursor.getString(mSourceColumn),
+					cursor.getString(mInReplyToScreenName)));
 		} catch (ParseException e) {
 			Log.w(TAG, "Invalid created at data.");
 		}
+		
+		
+		
 	}
 
 	@Override

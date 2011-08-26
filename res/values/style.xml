@@ -36,6 +36,7 @@
     
     <style name="normalText.Big">
         <item name="android:textSize">18sp</item>
+        <item name="android:typeface">serif</item>
     </style>
     
     <style name="normalText.span">

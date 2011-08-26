@@ -1,39 +1,40 @@
 package com.ch_linghu.fanfoudroid.data2;
 
 public class Photo {
-    private String thumburl;
-    private String imageurl;
-    private String largeurl;
-    
-    public Photo() {}
+	private String thumburl;
+	private String imageurl;
+	private String largeurl;
 
-    public String getThumburl() {
-        return thumburl;
-    }
+	public Photo() {
+	}
 
-    public void setThumburl(String thumburl) {
-        this.thumburl = thumburl;
-    }
+	public String getThumburl() {
+		return thumburl;
+	}
 
-    public String getImageurl() {
-        return imageurl;
-    }
+	public void setThumburl(String thumburl) {
+		this.thumburl = thumburl;
+	}
 
-    public void setImageurl(String imageurl) {
-        this.imageurl = imageurl;
-    }
+	public String getImageurl() {
+		return imageurl;
+	}
 
-    public String getLargeurl() {
-        return largeurl;
-    }
+	public void setImageurl(String imageurl) {
+		this.imageurl = imageurl;
+	}
 
-    public void setLargeurl(String largeurl) {
-        this.largeurl = largeurl;
-    }
+	public String getLargeurl() {
+		return largeurl;
+	}
 
-    @Override
-    public String toString() {
-        return "Photo [thumburl=" + thumburl + ", imageurl=" + imageurl
-                + ", largeurl=" + largeurl + "]";
-    }
+	public void setLargeurl(String largeurl) {
+		this.largeurl = largeurl;
+	}
+
+	@Override
+	public String toString() {
+		return "Photo [thumburl=" + thumburl + ", imageurl=" + imageurl
+				+ ", largeurl=" + largeurl + "]";
+	}
 }

@@ -4,12 +4,12 @@ All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
+ * Redistributions of source code must retain the above copyright
       notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
+ * Redistributions in binary form must reproduce the above copyright
       notice, this list of conditions and the following disclaimer in the
       documentation and/or other materials provided with the distribution.
-    * Neither the name of the Yusuke Yamamoto nor the
+ * Neither the name of the Yusuke Yamamoto nor the
       names of its contributors may be used to endorse or promote products
       derived from this software without specific prior written permission.
 
@@ -23,7 +23,7 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package com.ch_linghu.fanfoudroid.fanfou;
 
 import java.util.ArrayList;
@@ -40,95 +40,98 @@ import org.w3c.dom.NodeList;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.Response;
 
-
 /**
  * A data class representing one single status of a user.
+ * 
  * @author Yusuke Yamamoto - yusuke at mac.com
  */
 public class Status extends WeiboResponse implements java.io.Serializable {
-    private static final long serialVersionUID = 1608000492860584608L;
+	private static final long serialVersionUID = 1608000492860584608L;
 
-    private Date createdAt;
-    private String id;
-    private String text;
-    private String source;
-    private boolean isTruncated;
-    private String inReplyToStatusId;
-    private String inReplyToUserId;
-    private boolean isFavorited;
-    private String inReplyToScreenName;
-    private double latitude = -1;
-    private double longitude = -1;
-    private String thumbnail_pic;
-    private String bmiddle_pic;
-    private String original_pic;
-    private String photo_url;
-    private RetweetDetails retweetDetails;
-    private User user = null;
+	private Date createdAt;
+	private String id;
+	private String text;
+	private String source;
+	private boolean isTruncated;
+	private String inReplyToStatusId;
+	private String inReplyToUserId;
+	private boolean isFavorited;
+	private String inReplyToScreenName;
+	private double latitude = -1;
+	private double longitude = -1;
+	private String thumbnail_pic;
+	private String bmiddle_pic;
+	private String original_pic;
+	private String photo_url;
+	private RetweetDetails retweetDetails;
+	private User user = null;
 
-    /*package*/Status(Response res, Weibo weibo) throws HttpException {
-        super(res);
-        Element elem = res.asDocument().getDocumentElement();
-        init(res, elem, weibo);
-    }
+	/* package */Status(Response res, Weibo weibo) throws HttpException {
+		super(res);
+		Element elem = res.asDocument().getDocumentElement();
+		init(res, elem, weibo);
+	}
 
-    /*package*/Status(Response res, Element elem, Weibo weibo) throws
-            HttpException {
-        super(res);
-        init(res, elem, weibo);
-    }
-    
-    Status(Response res)throws HttpException{
-    	super(res);
-    	JSONObject json=res.asJSONObject();
-    	try {
+	/* package */Status(Response res, Element elem, Weibo weibo)
+			throws HttpException {
+		super(res);
+		init(res, elem, weibo);
+	}
+
+	Status(Response res) throws HttpException {
+		super(res);
+		JSONObject json = res.asJSONObject();
+		try {
 			id = json.getString("id");
 			text = json.getString("text");
 			source = json.getString("source");
-			createdAt = parseDate(json.getString("created_at"), "EEE MMM dd HH:mm:ss z yyyy");
+			createdAt = parseDate(json.getString("created_at"),
+					"EEE MMM dd HH:mm:ss z yyyy");
 
 			inReplyToStatusId = getString("in_reply_to_status_id", json);
 			inReplyToUserId = getString("in_reply_to_user_id", json);
 			isFavorited = getBoolean("favorited", json);
-//			System.out.println("json photo" + json.getJSONObject("photo"));
-			if(!json.isNull("photo")) {
-//				System.out.println("not null" + json.getJSONObject("photo"));
+			// System.out.println("json photo" + json.getJSONObject("photo"));
+			if (!json.isNull("photo")) {
+				// System.out.println("not null" + json.getJSONObject("photo"));
 				Photo photo = new Photo(json.getJSONObject("photo"));
 				thumbnail_pic = photo.getThumbnail_pic();
 				bmiddle_pic = photo.getBmiddle_pic();
 				original_pic = photo.getOriginal_pic();
 			} else {
-//				System.out.println("Null");
+				// System.out.println("Null");
 				thumbnail_pic = "";
 				bmiddle_pic = "";
 				original_pic = "";
 			}
-			if(!json.isNull("user"))
+			if (!json.isNull("user"))
 				user = new User(json.getJSONObject("user"));
-				inReplyToScreenName=json.getString("in_reply_to_screen_name");
-			if(!json.isNull("retweetDetails")){
-				retweetDetails = new RetweetDetails(json.getJSONObject("retweetDetails"));
+			inReplyToScreenName = json.getString("in_reply_to_screen_name");
+			if (!json.isNull("retweetDetails")) {
+				retweetDetails = new RetweetDetails(
+						json.getJSONObject("retweetDetails"));
 			}
 		} catch (JSONException je) {
 			throw new HttpException(je.getMessage() + ":" + json.toString(), je);
 		}
-        
-    }
-    
-    /* modify by sycheng add some field*/
-    public Status(JSONObject json)throws HttpException, JSONException{
-    	id = json.getString("id");
-        text = json.getString("text");
-        source = json.getString("source");
-        createdAt = parseDate(json.getString("created_at"), "EEE MMM dd HH:mm:ss z yyyy");
 
-        isFavorited = getBoolean("favorited", json);
-        isTruncated=getBoolean("truncated", json);
-        
-        inReplyToStatusId = getString("in_reply_to_status_id", json);
-        inReplyToUserId = getString("in_reply_to_user_id", json);
-        inReplyToScreenName=json.getString("in_reply_to_screen_name");
-        if(!json.isNull("photo")) {
+	}
+
+	/* modify by sycheng add some field */
+	public Status(JSONObject json) throws HttpException, JSONException {
+		id = json.getString("id");
+		text = json.getString("text");
+		source = json.getString("source");
+		createdAt = parseDate(json.getString("created_at"),
+				"EEE MMM dd HH:mm:ss z yyyy");
+
+		isFavorited = getBoolean("favorited", json);
+		isTruncated = getBoolean("truncated", json);
+
+		inReplyToStatusId = getString("in_reply_to_status_id", json);
+		inReplyToUserId = getString("in_reply_to_user_id", json);
+		inReplyToScreenName = json.getString("in_reply_to_screen_name");
+		if (!json.isNull("photo")) {
 			Photo photo = new Photo(json.getJSONObject("photo"));
 			thumbnail_pic = photo.getThumbnail_pic();
 			bmiddle_pic = photo.getBmiddle_pic();
@@ -138,21 +141,23 @@ public class Status extends WeiboResponse implements java.io.Serializable {
 			bmiddle_pic = "";
 			original_pic = "";
 		}
-        user = new User(json.getJSONObject("user"));
-    }
-    public Status(String str) throws HttpException, JSONException {
-        // StatusStream uses this constructor
-        super();
-        JSONObject json = new JSONObject(str);
-        id = json.getString("id");
-        text = json.getString("text");
-        source = json.getString("source");
-        createdAt = parseDate(json.getString("created_at"), "EEE MMM dd HH:mm:ss z yyyy");
+		user = new User(json.getJSONObject("user"));
+	}
 
-        inReplyToStatusId = getString("in_reply_to_status_id", json);
-        inReplyToUserId = getString("in_reply_to_user_id", json);
-        isFavorited = getBoolean("favorited", json);
-        if(!json.isNull("photo")) {
+	public Status(String str) throws HttpException, JSONException {
+		// StatusStream uses this constructor
+		super();
+		JSONObject json = new JSONObject(str);
+		id = json.getString("id");
+		text = json.getString("text");
+		source = json.getString("source");
+		createdAt = parseDate(json.getString("created_at"),
+				"EEE MMM dd HH:mm:ss z yyyy");
+
+		inReplyToStatusId = getString("in_reply_to_status_id", json);
+		inReplyToUserId = getString("in_reply_to_user_id", json);
+		isFavorited = getBoolean("favorited", json);
+		if (!json.isNull("photo")) {
 			Photo photo = new Photo(json.getJSONObject("photo"));
 			thumbnail_pic = photo.getThumbnail_pic();
 			bmiddle_pic = photo.getBmiddle_pic();
@@ -162,147 +167,149 @@ public class Status extends WeiboResponse implements java.io.Serializable {
 			bmiddle_pic = "";
 			original_pic = "";
 		}
-        user = new User(json.getJSONObject("user"));
-    }
+		user = new User(json.getJSONObject("user"));
+	}
 
-    private void init(Response res, Element elem, Weibo weibo) throws
-            HttpException {
-        ensureRootNodeNameIs("status", elem);
-        user = new User(res, (Element) elem.getElementsByTagName("user").item(0)
-                , weibo);
-        id = getChildString("id", elem);
-        text = getChildText("text", elem);
-        source = getChildText("source", elem);
-        createdAt = getChildDate("created_at", elem);
-        isTruncated = getChildBoolean("truncated", elem);
-        inReplyToStatusId = getChildString("in_reply_to_status_id", elem);
-        inReplyToUserId = getChildString("in_reply_to_user_id", elem);
-        isFavorited = getChildBoolean("favorited", elem);
-        inReplyToScreenName = getChildText("in_reply_to_screen_name", elem);
-        NodeList georssPoint = elem.getElementsByTagName("georss:point");
-        
-        if(1 == georssPoint.getLength()){
-            String[] point = georssPoint.item(0).getFirstChild().getNodeValue().split(" ");
-            if(!"null".equals(point[0]))
-            	latitude = Double.parseDouble(point[0]);
-            if(!"null".equals(point[1]))
-            	longitude = Double.parseDouble(point[1]);
-        }
-        NodeList retweetDetailsNode = elem.getElementsByTagName("retweet_details");
-        if(1 == retweetDetailsNode.getLength()){
-            retweetDetails = new RetweetDetails(res,(Element)retweetDetailsNode.item(0),weibo);
-        }
-    }
+	private void init(Response res, Element elem, Weibo weibo)
+			throws HttpException {
+		ensureRootNodeNameIs("status", elem);
+		user = new User(res, (Element) elem.getElementsByTagName("user")
+				.item(0), weibo);
+		id = getChildString("id", elem);
+		text = getChildText("text", elem);
+		source = getChildText("source", elem);
+		createdAt = getChildDate("created_at", elem);
+		isTruncated = getChildBoolean("truncated", elem);
+		inReplyToStatusId = getChildString("in_reply_to_status_id", elem);
+		inReplyToUserId = getChildString("in_reply_to_user_id", elem);
+		isFavorited = getChildBoolean("favorited", elem);
+		inReplyToScreenName = getChildText("in_reply_to_screen_name", elem);
+		NodeList georssPoint = elem.getElementsByTagName("georss:point");
 
-    /**
-     * Return the created_at
-     *
-     * @return created_at
-     * @since Weibo4J 1.1.0
-     */
+		if (1 == georssPoint.getLength()) {
+			String[] point = georssPoint.item(0).getFirstChild().getNodeValue()
+					.split(" ");
+			if (!"null".equals(point[0]))
+				latitude = Double.parseDouble(point[0]);
+			if (!"null".equals(point[1]))
+				longitude = Double.parseDouble(point[1]);
+		}
+		NodeList retweetDetailsNode = elem
+				.getElementsByTagName("retweet_details");
+		if (1 == retweetDetailsNode.getLength()) {
+			retweetDetails = new RetweetDetails(res,
+					(Element) retweetDetailsNode.item(0), weibo);
+		}
+	}
 
-    public Date getCreatedAt() {
-        return this.createdAt;
-    }
+	/**
+	 * Return the created_at
+	 * 
+	 * @return created_at
+	 * @since Weibo4J 1.1.0
+	 */
 
-    /**
-     * Returns the id of the status
-     *
-     * @return the id
-     */
-    public String getId() {
-        return this.id;
-    }
+	public Date getCreatedAt() {
+		return this.createdAt;
+	}
 
-    /**
-     * Returns the text of the status
-     *
-     * @return the text
-     */
-    public String getText() {
-        return this.text;
-    }
+	/**
+	 * Returns the id of the status
+	 * 
+	 * @return the id
+	 */
+	public String getId() {
+		return this.id;
+	}
 
-    /**
-     * Returns the source
-     *
-     * @return the source
-     * @since Weibo4J 1.0.4
-     */
-    public String getSource() {
-        return this.source;
-    }
+	/**
+	 * Returns the text of the status
+	 * 
+	 * @return the text
+	 */
+	public String getText() {
+		return this.text;
+	}
 
+	/**
+	 * Returns the source
+	 * 
+	 * @return the source
+	 * @since Weibo4J 1.0.4
+	 */
+	public String getSource() {
+		return this.source;
+	}
 
-    /**
-     * Test if the status is truncated
-     *
-     * @return true if truncated
-     * @since Weibo4J 1.0.4
-     */
-    public boolean isTruncated() {
-        return isTruncated;
-    }
+	/**
+	 * Test if the status is truncated
+	 * 
+	 * @return true if truncated
+	 * @since Weibo4J 1.0.4
+	 */
+	public boolean isTruncated() {
+		return isTruncated;
+	}
 
-    /**
-     * Returns the in_reply_tostatus_id
-     *
-     * @return the in_reply_tostatus_id
-     * @since Weibo4J 1.0.4
-     */
-    public String getInReplyToStatusId() {
-        return inReplyToStatusId;
-    }
+	/**
+	 * Returns the in_reply_tostatus_id
+	 * 
+	 * @return the in_reply_tostatus_id
+	 * @since Weibo4J 1.0.4
+	 */
+	public String getInReplyToStatusId() {
+		return inReplyToStatusId;
+	}
 
-    /**
-     * Returns the in_reply_user_id
-     *
-     * @return the in_reply_tostatus_id
-     * @since Weibo4J 1.0.4
-     */
-    public String getInReplyToUserId() {
-        return inReplyToUserId;
-    }
+	/**
+	 * Returns the in_reply_user_id
+	 * 
+	 * @return the in_reply_tostatus_id
+	 * @since Weibo4J 1.0.4
+	 */
+	public String getInReplyToUserId() {
+		return inReplyToUserId;
+	}
 
-    /**
-     * Returns the in_reply_to_screen_name
-     *
-     * @return the in_in_reply_to_screen_name
-     * @since Weibo4J 2.0.4
-     */
-    public String getInReplyToScreenName() {
-        return inReplyToScreenName;
-    }
+	/**
+	 * Returns the in_reply_to_screen_name
+	 * 
+	 * @return the in_in_reply_to_screen_name
+	 * @since Weibo4J 2.0.4
+	 */
+	public String getInReplyToScreenName() {
+		return inReplyToScreenName;
+	}
 
-    /**
-     * returns The location's latitude that this tweet refers to.
-     *
-     * @since Weibo4J 2.0.10
-     */
-    public double getLatitude() {
-        return latitude;
-    }
+	/**
+	 * returns The location's latitude that this tweet refers to.
+	 * 
+	 * @since Weibo4J 2.0.10
+	 */
+	public double getLatitude() {
+		return latitude;
+	}
 
-    /**
-     * returns The location's longitude that this tweet refers to.
-     *
-     * @since Weibo4J 2.0.10
-     */
-    public double getLongitude() {
-        return longitude;
-    }
+	/**
+	 * returns The location's longitude that this tweet refers to.
+	 * 
+	 * @since Weibo4J 2.0.10
+	 */
+	public double getLongitude() {
+		return longitude;
+	}
 
-    /**
-     * Test if the status is favorited
-     *
-     * @return true if favorited
-     * @since Weibo4J 1.0.4
-     */
-    public boolean isFavorited() {
-        return isFavorited;
-    }
+	/**
+	 * Test if the status is favorited
+	 * 
+	 * @return true if favorited
+	 * @since Weibo4J 1.0.4
+	 */
+	public boolean isFavorited() {
+		return isFavorited;
+	}
 
-    public String getThumbnail_pic() {
+	public String getThumbnail_pic() {
 		return thumbnail_pic;
 	}
 
@@ -314,124 +321,113 @@ public class Status extends WeiboResponse implements java.io.Serializable {
 		return original_pic;
 	}
 
-	
+	/**
+	 * Return the user
+	 * 
+	 * @return the user
+	 */
+	public User getUser() {
+		return user;
+	}
 
-    /**
-     * Return the user
-     *
-     * @return the user
-     */
-    public User getUser() {
-        return user;
-    }
-    
-    // TODO: 等合并Tweet, Status
-    public int getType() {
-        return -1111111;
-    }
+	// TODO: 等合并Tweet, Status
+	public int getType() {
+		return -1111111;
+	}
 
-    /**
-     *
-     * @since Weibo4J 2.0.10
-     */
-    public boolean isRetweet(){
-        return null != retweetDetails;
-    }
+	/**
+	 * 
+	 * @since Weibo4J 2.0.10
+	 */
+	public boolean isRetweet() {
+		return null != retweetDetails;
+	}
 
-    /**
-     *
-     * @since Weibo4J 2.0.10
-     */
-    public RetweetDetails getRetweetDetails() {
-        return retweetDetails;
-    }
+	/**
+	 * 
+	 * @since Weibo4J 2.0.10
+	 */
+	public RetweetDetails getRetweetDetails() {
+		return retweetDetails;
+	}
 
+	/* package */
+	static List<Status> constructStatuses(Response res, Weibo weibo)
+			throws HttpException {
 
-    /*package*/
-    static List<Status> constructStatuses(Response res,
-                                          Weibo weibo) throws HttpException {
-    	
-    	 Document doc = res.asDocument();
-        if (isRootNodeNilClasses(doc)) {
-            return new ArrayList<Status>(0);
-        } else {
-            try {
-                ensureRootNodeNameIs("statuses", doc);
-                NodeList list = doc.getDocumentElement().getElementsByTagName(
-                        "status");
-                int size = list.getLength();
-                List<Status> statuses = new ArrayList<Status>(size);
-                for (int i = 0; i < size; i++) {
-                    Element status = (Element) list.item(i);
-                    statuses.add(new Status(res, status, weibo));
-                }
-                return statuses;
-            } catch (HttpException te) {
-                ensureRootNodeNameIs("nil-classes", doc);
-                return new ArrayList<Status>(0);
-            }
-        }
-       
-    }
+		Document doc = res.asDocument();
+		if (isRootNodeNilClasses(doc)) {
+			return new ArrayList<Status>(0);
+		} else {
+			try {
+				ensureRootNodeNameIs("statuses", doc);
+				NodeList list = doc.getDocumentElement().getElementsByTagName(
+						"status");
+				int size = list.getLength();
+				List<Status> statuses = new ArrayList<Status>(size);
+				for (int i = 0; i < size; i++) {
+					Element status = (Element) list.item(i);
+					statuses.add(new Status(res, status, weibo));
+				}
+				return statuses;
+			} catch (HttpException te) {
+				ensureRootNodeNameIs("nil-classes", doc);
+				return new ArrayList<Status>(0);
+			}
+		}
 
-    /* modify by sycheng add json call method */
-    /* package */
-    static List<Status> constructStatuses(Response res) throws HttpException {
-        try {
-            JSONArray list = res.asJSONArray();
-            int size = list.length();
-            List<Status> statuses = new ArrayList<Status>(size);
-            for (int i = 0; i < size; i++) {
-                statuses.add(new Status(list.getJSONObject(i)));
-            }
-            return statuses;
-        } catch (JSONException jsone) {
-            throw new HttpException(jsone);
-        } catch (HttpException te) {
-            throw te;
-        }
-    }
-    
-    @Override
-    public int hashCode() {
-        return id.hashCode();
-    }
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (null == obj) {
-            return false;
-        }
-        if (this == obj) {
-            return true;
-        }
-//      return obj instanceof Status && ((Status) obj).id == this.id;
-        return obj instanceof Status && this.id.equals(((Status) obj).id);
-    }
+	/* modify by sycheng add json call method */
+	/* package */
+	static List<Status> constructStatuses(Response res) throws HttpException {
+		try {
+			JSONArray list = res.asJSONArray();
+			int size = list.length();
+			List<Status> statuses = new ArrayList<Status>(size);
+			for (int i = 0; i < size; i++) {
+				statuses.add(new Status(list.getJSONObject(i)));
+			}
+			return statuses;
+		} catch (JSONException jsone) {
+			throw new HttpException(jsone);
+		} catch (HttpException te) {
+			throw te;
+		}
+	}
 
-    @Override
-    public String toString() {
-        return "Status{" +
-                "createdAt=" + createdAt +
-                ", id=" + id +
-                ", text='" + text + '\'' +
-                ", source='" + source + '\'' +
-                ", isTruncated=" + isTruncated +
-                ", inReplyToStatusId=" + inReplyToStatusId +
-                ", inReplyToUserId=" + inReplyToUserId +
-                ", isFavorited=" + isFavorited +
-                ", thumbnail_pic=" + thumbnail_pic +
-                ", bmiddle_pic=" + bmiddle_pic +
-                ", original_pic=" + original_pic +
-                ", inReplyToScreenName='" + inReplyToScreenName + '\'' +
-                ", latitude=" + latitude +
-                ", longitude=" + longitude +
-                ", retweetDetails=" + retweetDetails +
-                ", user=" + user +
-                '}';
-    }
-    
-    public boolean isEmpty() {
-    	return (null == id);
-    }
+	@Override
+	public int hashCode() {
+		return id.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (null == obj) {
+			return false;
+		}
+		if (this == obj) {
+			return true;
+		}
+		// return obj instanceof Status && ((Status) obj).id == this.id;
+		return obj instanceof Status && this.id.equals(((Status) obj).id);
+	}
+
+	@Override
+	public String toString() {
+		return "Status{" + "createdAt=" + createdAt + ", id=" + id + ", text='"
+				+ text + '\'' + ", source='" + source + '\'' + ", isTruncated="
+				+ isTruncated + ", inReplyToStatusId=" + inReplyToStatusId
+				+ ", inReplyToUserId=" + inReplyToUserId + ", isFavorited="
+				+ isFavorited + ", thumbnail_pic=" + thumbnail_pic
+				+ ", bmiddle_pic=" + bmiddle_pic + ", original_pic="
+				+ original_pic + ", inReplyToScreenName='"
+				+ inReplyToScreenName + '\'' + ", latitude=" + latitude
+				+ ", longitude=" + longitude + ", retweetDetails="
+				+ retweetDetails + ", user=" + user + '}';
+	}
+
+	public boolean isEmpty() {
+		return (null == id);
+	}
 }

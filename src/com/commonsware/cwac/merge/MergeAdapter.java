@@ -11,7 +11,7 @@
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 	See the License for the specific language governing permissions and
 	limitations under the License.
-*/		
+ */
 
 package com.commonsware.cwac.merge;
 
@@ -28,351 +28,367 @@ import android.widget.SectionIndexer;
 import com.commonsware.cwac.sacklist.SackOfViewsAdapter;
 
 /**
- * Adapter that merges multiple child adapters and views
- * into a single contiguous whole.
- *
- * Adapters used as pieces within MergeAdapter must
- * have view type IDs monotonically increasing from 0. Ideally,
- * adapters also have distinct ranges for their row ids, as
- * returned by getItemId().
- *
+ * Adapter that merges multiple child adapters and views into a single
+ * contiguous whole.
+ * 
+ * Adapters used as pieces within MergeAdapter must have view type IDs
+ * monotonically increasing from 0. Ideally, adapters also have distinct ranges
+ * for their row ids, as returned by getItemId().
+ * 
  */
 public class MergeAdapter extends BaseAdapter implements SectionIndexer {
-	private ArrayList<ListAdapter> pieces=new ArrayList<ListAdapter>();
+	private ArrayList<ListAdapter> pieces = new ArrayList<ListAdapter>();
 
 	/**
-		* Stock constructor, simply chaining to the superclass.
-    */
+	 * Stock constructor, simply chaining to the superclass.
+	 */
 	public MergeAdapter() {
 		super();
 	}
 
 	/**
-		* Adds a new adapter to the roster of things to appear
-		* in the aggregate list.
-		* @param adapter Source for row views for this section
-    */
+	 * Adds a new adapter to the roster of things to appear in the aggregate
+	 * list.
+	 * 
+	 * @param adapter
+	 *            Source for row views for this section
+	 */
 	public void addAdapter(ListAdapter adapter) {
 		pieces.add(adapter);
 		adapter.registerDataSetObserver(new CascadeDataSetObserver());
 	}
 
 	/**
-		* Adds a new View to the roster of things to appear
-		* in the aggregate list.
-		* @param view Single view to add
-    */
+	 * Adds a new View to the roster of things to appear in the aggregate list.
+	 * 
+	 * @param view
+	 *            Single view to add
+	 */
 	public void addView(View view) {
 		addView(view, false);
 	}
 
 	/**
-		* Adds a new View to the roster of things to appear
-		* in the aggregate list.
-		* @param view Single view to add
-		* @param enabled false if views are disabled, true if enabled
-    */
+	 * Adds a new View to the roster of things to appear in the aggregate list.
+	 * 
+	 * @param view
+	 *            Single view to add
+	 * @param enabled
+	 *            false if views are disabled, true if enabled
+	 */
 	public void addView(View view, boolean enabled) {
-		ArrayList<View> list=new ArrayList<View>(1);
-		
+		ArrayList<View> list = new ArrayList<View>(1);
+
 		list.add(view);
-		
+
 		addViews(list, enabled);
 	}
 
 	/**
-		* Adds a list of views to the roster of things to appear
-		* in the aggregate list.
-		* @param views List of views to add
-    */
+	 * Adds a list of views to the roster of things to appear in the aggregate
+	 * list.
+	 * 
+	 * @param views
+	 *            List of views to add
+	 */
 	public void addViews(List<View> views) {
 		addViews(views, false);
 	}
 
 	/**
-		* Adds a list of views to the roster of things to appear
-		* in the aggregate list.
-		* @param views List of views to add
-		* @param enabled false if views are disabled, true if enabled
-    */
+	 * Adds a list of views to the roster of things to appear in the aggregate
+	 * list.
+	 * 
+	 * @param views
+	 *            List of views to add
+	 * @param enabled
+	 *            false if views are disabled, true if enabled
+	 */
 	public void addViews(List<View> views, boolean enabled) {
 		if (enabled) {
 			addAdapter(new EnabledSackAdapter(views));
-		}
-		else {
+		} else {
 			addAdapter(new SackOfViewsAdapter(views));
 		}
 	}
 
 	/**
-		* Get the data item associated with the specified
-		* position in the data set.
-		* @param position Position of the item whose data we want
-    */
+	 * Get the data item associated with the specified position in the data set.
+	 * 
+	 * @param position
+	 *            Position of the item whose data we want
+	 */
 	@Override
 	public Object getItem(int position) {
 		for (ListAdapter piece : pieces) {
-			int size=piece.getCount();
+			int size = piece.getCount();
 
-			if (position<size) {
-				return(piece.getItem(position));
+			if (position < size) {
+				return (piece.getItem(position));
 			}
 
-			position-=size;
+			position -= size;
 		}
-		
-		return(null);
+
+		return (null);
 	}
 
 	/**
-		* Get the adapter associated with the specified
-		* position in the data set.
-		* @param position Position of the item whose adapter we want
-    */
+	 * Get the adapter associated with the specified position in the data set.
+	 * 
+	 * @param position
+	 *            Position of the item whose adapter we want
+	 */
 	public ListAdapter getAdapter(int position) {
 		for (ListAdapter piece : pieces) {
-			int size=piece.getCount();
+			int size = piece.getCount();
 
-			if (position<size) {
-				return(piece);
+			if (position < size) {
+				return (piece);
 			}
 
-			position-=size;
+			position -= size;
 		}
-		
-		return(null);
+
+		return (null);
 	}
 
 	/**
-		* How many items are in the data set represented by this
-		* Adapter.
-    */
+	 * How many items are in the data set represented by this Adapter.
+	 */
 	@Override
 	public int getCount() {
-		int total=0;
-		
+		int total = 0;
+
 		for (ListAdapter piece : pieces) {
-			total+=piece.getCount();
+			total += piece.getCount();
 		}
-		
-		return(total);
+
+		return (total);
 	}
 
 	/**
-		* Returns the number of types of Views that will be
-		* created by getView().
-    */
+	 * Returns the number of types of Views that will be created by getView().
+	 */
 	@Override
 	public int getViewTypeCount() {
-		int total=0;
-		
+		int total = 0;
+
 		for (ListAdapter piece : pieces) {
-			total+=piece.getViewTypeCount();
+			total += piece.getViewTypeCount();
 		}
-		
-		return(Math.max(total, 1));		// needed for setListAdapter() before content add'
+
+		return (Math.max(total, 1)); // needed for setListAdapter() before
+										// content add'
 	}
 
 	/**
-		* Get the type of View that will be created by getView()
-		* for the specified item.
-		* @param position Position of the item whose data we want
-    */
+	 * Get the type of View that will be created by getView() for the specified
+	 * item.
+	 * 
+	 * @param position
+	 *            Position of the item whose data we want
+	 */
 	@Override
 	public int getItemViewType(int position) {
-		int typeOffset=0;
-		int result=-1;
-		
-		for (ListAdapter piece : pieces) {
-			int size=piece.getCount();
+		int typeOffset = 0;
+		int result = -1;
 
-			if (position<size) {
-				result=typeOffset+piece.getItemViewType(position);
+		for (ListAdapter piece : pieces) {
+			int size = piece.getCount();
+
+			if (position < size) {
+				result = typeOffset + piece.getItemViewType(position);
 				break;
 			}
 
-			position-=size;
-			typeOffset+=piece.getViewTypeCount();
+			position -= size;
+			typeOffset += piece.getViewTypeCount();
 		}
 
-		return(result);
+		return (result);
 	}
 
 	/**
-		* Are all items in this ListAdapter enabled? If yes it
-		* means all items are selectable and clickable.
-    */
+	 * Are all items in this ListAdapter enabled? If yes it means all items are
+	 * selectable and clickable.
+	 */
 	@Override
 	public boolean areAllItemsEnabled() {
-		return(false);
+		return (false);
 	}
 
 	/**
-		* Returns true if the item at the specified position is
-		* not a separator.
-		* @param position Position of the item whose data we want
-    */
+	 * Returns true if the item at the specified position is not a separator.
+	 * 
+	 * @param position
+	 *            Position of the item whose data we want
+	 */
 	@Override
 	public boolean isEnabled(int position) {
 		for (ListAdapter piece : pieces) {
-			int size=piece.getCount();
+			int size = piece.getCount();
 
-			if (position<size) {
-				return(piece.isEnabled(position));
+			if (position < size) {
+				return (piece.isEnabled(position));
 			}
 
-			position-=size;
+			position -= size;
 		}
-		
-		return(false);
+
+		return (false);
 	}
 
 	/**
-		* Get a View that displays the data at the specified
-		* position in the data set.
-		* @param position Position of the item whose data we want
-		* @param convertView View to recycle, if not null
-		* @param parent ViewGroup containing the returned View
-    */
+	 * Get a View that displays the data at the specified position in the data
+	 * set.
+	 * 
+	 * @param position
+	 *            Position of the item whose data we want
+	 * @param convertView
+	 *            View to recycle, if not null
+	 * @param parent
+	 *            ViewGroup containing the returned View
+	 */
 	@Override
-	public View getView(int position, View convertView,
-											ViewGroup parent) {
+	public View getView(int position, View convertView, ViewGroup parent) {
 		for (ListAdapter piece : pieces) {
-			int size=piece.getCount();
+			int size = piece.getCount();
 
-			if (position<size) {
-				
-				return(piece.getView(position, convertView, parent));
+			if (position < size) {
+
+				return (piece.getView(position, convertView, parent));
 			}
 
-			position-=size;
+			position -= size;
 		}
-		
-		return(null);
+
+		return (null);
 	}
 
 	/**
-		* Get the row id associated with the specified position
-		* in the list.
-		* @param position Position of the item whose data we want
-    */
+	 * Get the row id associated with the specified position in the list.
+	 * 
+	 * @param position
+	 *            Position of the item whose data we want
+	 */
 	@Override
 	public long getItemId(int position) {
 		for (ListAdapter piece : pieces) {
-			int size=piece.getCount();
-			
-			if (position<size) {
-				return(piece.getItemId(position));
+			int size = piece.getCount();
+
+			if (position < size) {
+				return (piece.getItemId(position));
 			}
 
-			position-=size;
+			position -= size;
 		}
-		
-		return(-1);
+
+		return (-1);
 	}
-	
+
 	@Override
 	public int getPositionForSection(int section) {
-		int position=0;
-		
+		int position = 0;
+
 		for (ListAdapter piece : pieces) {
 			if (piece instanceof SectionIndexer) {
-				Object[] sections=((SectionIndexer)piece).getSections();
-				int numSections=0;
-				
-				if (sections!=null) {
-					numSections=sections.length;
+				Object[] sections = ((SectionIndexer) piece).getSections();
+				int numSections = 0;
+
+				if (sections != null) {
+					numSections = sections.length;
 				}
-				
-				if (section<numSections) {
-					return(position+((SectionIndexer)piece).getPositionForSection(section));
-				}
-				else if (sections!=null) {
-					section-=numSections;
+
+				if (section < numSections) {
+					return (position + ((SectionIndexer) piece)
+							.getPositionForSection(section));
+				} else if (sections != null) {
+					section -= numSections;
 				}
 			}
-			
-			position+=piece.getCount();
+
+			position += piece.getCount();
 		}
-		
-		return(0);
+
+		return (0);
 	}
-	
+
 	@Override
 	public int getSectionForPosition(int position) {
-		int section=0;
-		
+		int section = 0;
+
 		for (ListAdapter piece : pieces) {
-			int size=piece.getCount();
-			
-			if (position<size) {
+			int size = piece.getCount();
+
+			if (position < size) {
 				if (piece instanceof SectionIndexer) {
-					return(section+((SectionIndexer)piece).getSectionForPosition(position));
+					return (section + ((SectionIndexer) piece)
+							.getSectionForPosition(position));
 				}
-				
-				return(0);
-			}
-			else {
+
+				return (0);
+			} else {
 				if (piece instanceof SectionIndexer) {
-					Object[] sections=((SectionIndexer)piece).getSections();
-					
-					if (sections!=null) {
-						section+=sections.length;
+					Object[] sections = ((SectionIndexer) piece).getSections();
+
+					if (sections != null) {
+						section += sections.length;
 					}
 				}
 			}
-			
-			position-=size;
+
+			position -= size;
 		}
-		
-		return(0);
+
+		return (0);
 	}
-	
+
 	@Override
 	public Object[] getSections() {
-		ArrayList<Object> sections=new ArrayList<Object>();
-		
+		ArrayList<Object> sections = new ArrayList<Object>();
+
 		for (ListAdapter piece : pieces) {
 			if (piece instanceof SectionIndexer) {
-				Object[] curSections=((SectionIndexer)piece).getSections();
-				
-				if (curSections!=null) {
+				Object[] curSections = ((SectionIndexer) piece).getSections();
+
+				if (curSections != null) {
 					for (Object section : curSections) {
 						sections.add(section);
 					}
 				}
 			}
 		}
-		
-		if (sections.size()==0) {
-			return(null);
+
+		if (sections.size() == 0) {
+			return (null);
 		}
 
-		return(sections.toArray(new Object[0]));
+		return (sections.toArray(new Object[0]));
 	}
-	
+
 	private static class EnabledSackAdapter extends SackOfViewsAdapter {
 		public EnabledSackAdapter(List<View> views) {
 			super(views);
 		}
-	
+
 		@Override
 		public boolean areAllItemsEnabled() {
-			return(true);
+			return (true);
 		}
-		
+
 		@Override
 		public boolean isEnabled(int position) {
-			return(true);
+			return (true);
 		}
 	}
-	
+
 	private class CascadeDataSetObserver extends DataSetObserver {
 		@Override
 		public void onChanged() {
 			notifyDataSetChanged();
 		}
-		
+
 		@Override
 		public void onInvalidated() {
 			notifyDataSetInvalidated();

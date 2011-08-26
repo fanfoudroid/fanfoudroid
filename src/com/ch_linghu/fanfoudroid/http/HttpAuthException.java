@@ -1,6 +1,5 @@
 package com.ch_linghu.fanfoudroid.http;
 
-
 /**
  * NOT AUTHORIZED, HTTP CODE 401
  */

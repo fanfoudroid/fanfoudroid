@@ -43,7 +43,7 @@
 			android:layout_marginLeft="2dp" />
 			
 		<LinearLayout android:layout_height="fill_parent"
-			android:layout_width="62dp" android:layout_alignParentRight="true"
+			android:layout_width="65dp" android:layout_alignParentRight="true"
 			android:layout_centerVertical="true" android:gravity="center"
 			android:background="@drawable/write_corner"
 			>
