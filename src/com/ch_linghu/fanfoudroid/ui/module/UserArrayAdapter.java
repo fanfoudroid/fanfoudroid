@@ -57,7 +57,7 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter {
 
 	@Override
 	public Object getItem(int position) {
-		return mUsers.get(position == 0 ? 0 : position - 1);
+		return mUsers.get(position);
 	}
 
 	@Override
