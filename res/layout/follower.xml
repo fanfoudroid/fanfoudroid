@@ -10,18 +10,17 @@
       <include layout="@layout/header"/> 
     
     <!-- Main content area. -->
-    <com.markupartist.android.widget.PullToRefreshListView
-    android:id="@+id/follower_list"
-    android:layout_width="fill_parent"
-    android:layout_height="0dp"
-    android:layout_weight="1"
-    android:cacheColorHint="#00000000"
-    android:fadeScrollbars="true"
-    android:divider="@drawable/dashed_line"
-    android:dividerHeight="1dip"
-    android:fastScrollEnabled="true"
-    />                
-
+	    <com.ch_linghu.fanfoudroid.ui.module.MyListView
+	    android:id="@+id/follower_list"
+	    android:layout_width="fill_parent"
+	    android:layout_height="0dp"
+	    android:layout_weight="1"
+	    android:cacheColorHint="#00000000"
+	    android:fadeScrollbars="true"
+	    android:divider="@drawable/dashed_line"
+	    android:dividerHeight="1dip"
+	    android:fastScrollEnabled="true"
+	    />                
 	 <!-- 提示栏 -->
      <TextView
      android:id="@+id/progress_text"

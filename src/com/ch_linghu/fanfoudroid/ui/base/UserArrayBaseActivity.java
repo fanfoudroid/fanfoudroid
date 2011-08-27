@@ -30,7 +30,8 @@ import com.markupartist.android.widget.PullToRefreshListView.OnRefreshListener;
 public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 	static final String TAG = "UserArrayBaseActivity";
 	// Views.
-	protected PullToRefreshListView mUserList;
+	//protected PullToRefreshListView mUserList;//PullToRefresh
+	protected ListView mUserList;
 	protected UserArrayAdapter mUserListAdapter;
 
 	protected TextView loadMoreBtn;
@@ -39,7 +40,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 	protected ProgressBar loadMoreGIFTop;
 
 	protected static int lastPosition = 0;
-
+ 
 	// Tasks.
 	protected TaskManager taskManager = new TaskManager();
 	private GenericTask mRetrieveTask;
@@ -103,7 +104,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 			} else if (result == TaskResult.OK) {
 				draw();
 			}
-			mUserList.onRefreshComplete();
+			//mUserList.onRefreshComplete();
 			mUserList.setSelection(1);
 
 			updateProgress("");
@@ -126,7 +127,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 	}
 
 	public void onRetrieveBegin() {
-		mUserList.prepareForRefresh();
+		//mUserList.prepareForRefresh();
 		updateProgress(getString(R.string.page_status_refreshing));
 	}
 
@@ -178,7 +179,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 	protected void setupState() {
 		setTitle(getActivityTitle());
 
-		mUserList = (PullToRefreshListView) findViewById(R.id.follower_list);
+		mUserList = (ListView) findViewById(R.id.follower_list);
 
 		setupListHeader(true);
 
@@ -243,14 +244,14 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 		// Add footer to Listview
 		View footer = View.inflate(this, R.layout.listview_footer, null);
 		mUserList.addFooterView(footer, null, true);
-		mUserList.setOnRefreshListener(new OnRefreshListener() {
-
-			@Override
-			public void onRefresh() {
-				doRetrieve();
-
-			}
-		});
+//		mUserList.setOnRefreshListener(new OnRefreshListener() {
+//
+//			@Override
+//			public void onRefresh() {
+//				doRetrieve();
+//
+//			}
+//		});
 		// Find View
 		loadMoreBtn = (TextView) findViewById(R.id.ask_for_more);
 		loadMoreGIF = (ProgressBar) findViewById(R.id.rectangleProgressBar);

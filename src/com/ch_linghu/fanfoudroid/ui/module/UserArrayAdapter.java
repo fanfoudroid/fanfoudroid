@@ -57,14 +57,14 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter {
 
 	@Override
 	public Object getItem(int position) {
-		return mUsers.get(position==0?0:position-1);
+		return mUsers.get(position == 0 ? 0 : position - 1);
 	}
 
 	@Override
 	public long getItemId(int position) {
 		return position;
 	}
-	
+
 	private static class ViewHolder {
 		public ImageView profileImage;
 		public TextView screenName;
@@ -128,7 +128,7 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter {
 					public void onClick(View v) {
 						// Toast.makeText(mContext, user.name+"following",
 						// Toast.LENGTH_SHORT).show();
-						delFriend(user.id);
+						delFriend(user.id,v);
 					}
 				} : new OnClickListener() {
 
@@ -137,14 +137,14 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter {
 						// Toast.makeText(mContext, user.name+"not following",
 						// Toast.LENGTH_SHORT).show();
 
-						addFriend(user.id);
+						addFriend(user.id,v);
 					}
 				});
 		return view;
 	}
 
 	public void refresh(ArrayList<User> users) {
-		mUsers = (ArrayList<User>)users.clone();
+		mUsers = (ArrayList<User>) users.clone();
 		notifyDataSetChanged();
 	}
 
@@ -167,7 +167,7 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter {
 	 * 
 	 * @param id
 	 */
-	private void delFriend(final String id) {
+	private void delFriend(final String id,final View v) {
 		Builder diaBuilder = new AlertDialog.Builder(mContext).setTitle("关注提示")
 				.setMessage("确实要取消关注吗?");
 		diaBuilder.setPositiveButton("确定",
@@ -180,10 +180,40 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter {
 							return;
 						} else {
 							cancelFollowingTask = new CancelFollowingTask();
-							cancelFollowingTask
-									.setListener(cancelFollowingTaskLinstener);
+							cancelFollowingTask.setListener(new TaskAdapter() {//闭包？
+								@Override
+								public void onPostExecute(GenericTask task,
+										TaskResult result) {
+									if (result == TaskResult.OK) {
+										//添加成功后动态改变按钮
+										TextView followBtn=(TextView)v.findViewById(R.id.follow_btn);
+										followBtn.setText("添加关注");
+										followBtn.setOnClickListener( new OnClickListener() {
+
+											@Override
+											public void onClick(View view) {
+												addFriend(id,view);
+											}
+										});
+										Toast.makeText(mContext, "取消关注成功",
+												Toast.LENGTH_SHORT).show();
+
+									} else if (result == TaskResult.FAILED) {
+										Toast.makeText(mContext, "取消关注失败",
+												Toast.LENGTH_SHORT).show();
+									}
+								}
+
+								@Override
+								public String getName() {
+									
+									return null;
+								}
+
+							});
 							TaskParams params = new TaskParams();
 							params.put(USER_ID, id);
+
 							cancelFollowingTask.execute(params);
 						}
 					}
@@ -214,8 +244,9 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter {
 		@Override
 		protected TaskResult _doInBackground(TaskParams... params) {
 			try {
-				// TODO:userid
+				
 				String userId = params[0].getString(USER_ID);
+			
 				getApi().destroyFriendship(userId);
 			} catch (HttpException e) {
 				Log.w(TAG, "create friend ship error");
@@ -226,28 +257,24 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter {
 
 	}
 
-	private TaskListener cancelFollowingTaskLinstener = new TaskAdapter() {
-		@Override
-		public void onPostExecute(GenericTask task, TaskResult result) {
-			if (result == TaskResult.OK) {
-				// followingBtn.setText("添加关注");
-				// isFollowingText.setText(getResources().getString(
-				// R.string.profile_notfollowing));
-				// followingBtn.setOnClickListener(setfollowingListener);
-				Toast.makeText(mContext, "取消关注成功", Toast.LENGTH_SHORT).show();
-
-			} else if (result == TaskResult.FAILED) {
-				Toast.makeText(mContext, "取消关注失败", Toast.LENGTH_SHORT).show();
-			}
-		}
-
-		@Override
-		public String getName() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-	};
+//	private TaskListener cancelFollowingTaskLinstener = new TaskAdapter() {
+//		@Override
+//		public void onPostExecute(GenericTask task, TaskResult result) {
+//			if (result == TaskResult.OK) {
+//				Toast.makeText(mContext, "取消关注成功", Toast.LENGTH_SHORT).show();
+//
+//			} else if (result == TaskResult.FAILED) {
+//				Toast.makeText(mContext, "取消关注失败", Toast.LENGTH_SHORT).show();
+//			}
+//		}
+//
+//		@Override
+//		public String getName() {
+//			// TODO Auto-generated method stub
+//			return null;
+//		}
+//
+//	};
 
 	private GenericTask setFollowingTask;
 
@@ -256,7 +283,7 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter {
 	 * 
 	 * @param id
 	 */
-	private void addFriend(String id) {
+	private void addFriend(final String id,final View view) {
 		Builder diaBuilder = new AlertDialog.Builder(mContext).setTitle("关注提示")
 				.setMessage("确实要添加关注吗?");
 		diaBuilder.setPositiveButton("确定",
@@ -270,8 +297,39 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter {
 						} else {
 							setFollowingTask = new SetFollowingTask();
 							setFollowingTask
-									.setListener(setFollowingTaskLinstener);
+									.setListener(new TaskAdapter() {
+
+										@Override
+										public void onPostExecute(GenericTask task, TaskResult result) {
+											if (result == TaskResult.OK) {
+
+												//添加成功后动态改变按钮
+												TextView followBtn=(TextView)view.findViewById(R.id.follow_btn);
+												followBtn.setText("取消关注");
+												followBtn.setOnClickListener( new OnClickListener() {
+
+													@Override
+													public void onClick(View v) {
+														delFriend(id,v);
+													}
+												});
+												
+												Toast.makeText(mContext, "关注成功", Toast.LENGTH_SHORT).show();
+
+											} else if (result == TaskResult.FAILED) {
+												Toast.makeText(mContext, "关注失败", Toast.LENGTH_SHORT).show();
+											}
+										}
+
+										@Override
+										public String getName() {
+											// TODO Auto-generated method stub
+											return null;
+										}
+
+									});
 							TaskParams params = new TaskParams();
+							params.put(USER_ID, id);
 							setFollowingTask.execute(params);
 						}
 
@@ -307,6 +365,7 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter {
 
 			} catch (HttpException e) {
 				Log.w(TAG, "create friend ship error");
+				
 				return TaskResult.FAILED;
 			}
 
@@ -315,29 +374,26 @@ public class UserArrayAdapter extends BaseAdapter implements TweetAdapter {
 
 	}
 
-	private TaskListener setFollowingTaskLinstener = new TaskAdapter() {
-
-		@Override
-		public void onPostExecute(GenericTask task, TaskResult result) {
-			if (result == TaskResult.OK) {
-				// followingBtn.setText("取消关注");
-				// isFollowingText.setText(getResources().getString(
-				// R.string.profile_isfollowing));
-				// followingBtn.setOnClickListener(cancelFollowingListener);
-				Toast.makeText(mContext, "关注成功", Toast.LENGTH_SHORT).show();
-
-			} else if (result == TaskResult.FAILED) {
-				Toast.makeText(mContext, "关注失败", Toast.LENGTH_SHORT).show();
-			}
-		}
-
-		@Override
-		public String getName() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-	};
+//	private TaskListener setFollowingTaskLinstener = new TaskAdapter() {
+//
+//		@Override
+//		public void onPostExecute(GenericTask task, TaskResult result) {
+//			if (result == TaskResult.OK) {
+//
+//				Toast.makeText(mContext, "关注成功", Toast.LENGTH_SHORT).show();
+//
+//			} else if (result == TaskResult.FAILED) {
+//				Toast.makeText(mContext, "关注失败", Toast.LENGTH_SHORT).show();
+//			}
+//		}
+//
+//		@Override
+//		public String getName() {
+//			// TODO Auto-generated method stub
+//			return null;
+//		}
+//
+//	};
 
 	public Weibo getApi() {
 		return TwitterApplication.mApi;

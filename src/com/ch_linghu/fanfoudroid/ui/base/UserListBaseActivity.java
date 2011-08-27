@@ -300,10 +300,10 @@ public abstract class UserListBaseActivity extends BaseActivity implements
 		@Override
 		public void onPostExecute(GenericTask task, TaskResult result) {
 			if (result == TaskResult.OK) {
-				// followingBtn.setText("添加关注");
-				// isFollowingText.setText(getResources().getString(
-				// R.string.profile_notfollowing));
-				// followingBtn.setOnClickListener(setfollowingListener);
+//				 followingBtn.setText("添加关注");
+//				 isFollowingText.setText(getResources().getString(
+//				 R.string.profile_notfollowing));
+//				 followingBtn.setOnClickListener(setfollowingListener);
 				Toast.makeText(getBaseContext(), "取消关注成功", Toast.LENGTH_SHORT)
 						.show();
 
