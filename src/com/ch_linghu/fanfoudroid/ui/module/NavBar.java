@@ -169,9 +169,6 @@ public class NavBar implements Widget {
 			}
 
 		});
-
-		//TODO: 将RefreshButton隐藏，仅使用下拉刷新，简化界面
-		mRefreshButton.setVisibility(View.GONE);
 	}
 
 	/**
