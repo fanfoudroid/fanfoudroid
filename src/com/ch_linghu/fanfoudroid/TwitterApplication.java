@@ -127,10 +127,10 @@ public class TwitterApplication extends Application {
 
 		if (Weibo.isValidCredentials(username, password)) {
 			mApi.setCredentials(username, password); // Setup API and HttpClient
-		}
 
-		myselfId = getMyselfId();
-		myselfName = getMyselfName();
+			myselfId = getMyselfId();
+			myselfName = getMyselfName();
+		}
 		
 		// 为cmwap用户设置代理上网
 		String type = getNetworkType();
