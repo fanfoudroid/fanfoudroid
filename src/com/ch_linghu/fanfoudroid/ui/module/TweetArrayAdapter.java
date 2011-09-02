@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -20,6 +21,7 @@ import com.ch_linghu.fanfoudroid.R;
 import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.app.LazyImageLoader.ImageLoaderCallback;
 import com.ch_linghu.fanfoudroid.app.Preferences;
+import com.ch_linghu.fanfoudroid.app.SimpleImageLoader;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.util.TextHelper;
 
@@ -66,6 +68,7 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 		public LinearLayout tweetLayout;
 		public TextView tweetUserText;
 		public TextView tweetText;
+		public FrameLayout profileLayout;
 		public ImageView profileImage;
 		public TextView metaText;
 		public ImageView fav;
@@ -109,17 +112,33 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 		TextHelper.setSimpleTweetText(holder.tweetText, tweet.text);
 		// holder.tweetText.setText(tweet.text, BufferType.SPANNABLE);
 		
-		/** 试图更改timeline某行的代码，尚未添加条件判断等
-		holder.tweetLayout.setBackgroundColor(0xffb2dfee);
-		*/
+		/**
+		 * 添加特殊行的背景色
+		 */
+		boolean useHighlightBackground = pref.getBoolean(
+				Preferences.HIGHLIGHT_BACKGROUND, true);
+		if (useHighlightBackground){
+			if(holder.tweetUserText.getText().equals(TwitterApplication.getMyselfName())){
+				holder.tweetLayout.setBackgroundResource(R.drawable.list_selector_self);
+				holder.profileLayout.setBackgroundResource(R.color.self_background);
+			}else if(holder.tweetText.getText().toString().contains("@"+TwitterApplication.getMyselfName())){
+				holder.tweetLayout.setBackgroundResource(R.drawable.list_selector_mention);
+				holder.profileLayout.setBackgroundResource(R.color.mention_background);
+			}else{
+				holder.tweetLayout.setBackgroundResource(android.R.drawable.list_selector_background);
+				holder.profileLayout.setBackgroundResource(android.R.color.transparent);
+			}
+		}else{
+			holder.tweetLayout.setBackgroundResource(android.R.drawable.list_selector_background);
+			holder.profileLayout.setBackgroundResource(android.R.color.transparent);		
+		}
+		
 		
 		String profileImageUrl = tweet.profileImageUrl;
 
 		if (useProfileImage) {
 			if (!TextUtils.isEmpty(profileImageUrl)) {
-				holder.profileImage
-						.setImageBitmap(TwitterApplication.mImageLoader.get(
-								profileImageUrl, callback));
+				SimpleImageLoader.display(holder.profileImage, profileImageUrl);
 			}
 		} else {
 			holder.profileImage.setVisibility(View.GONE);

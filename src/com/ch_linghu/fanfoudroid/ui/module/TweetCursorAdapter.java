@@ -135,15 +135,22 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		/**
 		 * 添加特殊行的背景色
 		 */
-		if(holder.tweetUserText.getText().equals(TwitterApplication.getMyselfName())){
-			holder.tweetLayout.setBackgroundResource(R.drawable.list_selector_self);
-			holder.profileLayout.setBackgroundResource(R.color.self_background);
-		}else if(holder.tweetText.getText().toString().contains("@"+TwitterApplication.getMyselfName())){
-			holder.tweetLayout.setBackgroundResource(R.drawable.list_selector_mention);
-			holder.profileLayout.setBackgroundResource(R.color.mention_background);
+		boolean useHighlightBackground = pref.getBoolean(
+				Preferences.HIGHLIGHT_BACKGROUND, true);
+		if (useHighlightBackground){
+			if(holder.tweetUserText.getText().equals(TwitterApplication.getMyselfName())){
+				holder.tweetLayout.setBackgroundResource(R.drawable.list_selector_self);
+				holder.profileLayout.setBackgroundResource(R.color.self_background);
+			}else if(holder.tweetText.getText().toString().contains("@"+TwitterApplication.getMyselfName())){
+				holder.tweetLayout.setBackgroundResource(R.drawable.list_selector_mention);
+				holder.profileLayout.setBackgroundResource(R.color.mention_background);
+			}else{
+				holder.tweetLayout.setBackgroundResource(android.R.drawable.list_selector_background);
+				holder.profileLayout.setBackgroundResource(android.R.color.transparent);
+			}
 		}else{
 			holder.tweetLayout.setBackgroundResource(android.R.drawable.list_selector_background);
-			holder.profileLayout.setBackgroundResource(android.R.color.transparent);
+			holder.profileLayout.setBackgroundResource(android.R.color.transparent);		
 		}
 		
 

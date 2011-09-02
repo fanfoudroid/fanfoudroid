@@ -35,6 +35,7 @@ public class Preferences {
 
 	public static final String TWITTER_ACTIVITY_STATE_KEY = "twitter_activity_state";
 
+	public static final String HIGHLIGHT_BACKGROUND = "highlight_background";
 	public static final String USE_PROFILE_IMAGE = "use_profile_image";
 	public static final String PHOTO_PREVIEW = "photo_preview";
 	public static final String FORCE_SHOW_ALL_IMAGE = "force_show_all_image";

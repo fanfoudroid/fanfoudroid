@@ -62,11 +62,16 @@
 
   <!-- 外观 -->
   <PreferenceCategory android:title="@string/pref_title_apperance">
-	    <CheckBoxPreference
-	    android:key="use_profile_image"
-	    android:title="@string/pref_use_profile_image"
-	    android:summary="@string/pref_use_profile_image_summary"
-	    android:defaultValue="true" />
+        <CheckBoxPreference
+        android:key="use_profile_image"
+        android:title="@string/pref_use_profile_image"
+        android:summary="@string/pref_use_profile_image_summary"
+        android:defaultValue="true" />
+        <CheckBoxPreference
+        android:key="highlight_background"
+        android:title="@string/pref_highlight_background"
+        android:summary="@string/pref_highlight_background_summary"
+        android:defaultValue="true" />
 	    <ListPreference
 	    android:key="photo_preview"
 	    android:title="@string/pref_photo_preview"
@@ -104,12 +109,6 @@
 		  android:title="@string/pref_force_screen_orientation_portrait"
 		  android:summary="@string/pref_force_screen_orientation_portrait_summary"
 		  android:defaultValue="false" />
-		  		<CheckBoxPreference
-		  android:key="use_shake"
-		  android:title="@string/pref_use_shake_title"
-		  android:summary="@string/pref_use_shake_summary"
-		  android:defaultValue="false" />
-		
   </PreferenceCategory>
 
   <!-- 网络 -->
@@ -147,7 +146,11 @@
 		  android:title="@string/pref_use_gestrue_title"
 		  android:summary="@string/pref_use_gestrue_summary"
 		  android:defaultValue="false" />
-
+        <CheckBoxPreference
+          android:key="use_shake"
+          android:title="@string/pref_use_shake_title"
+          android:summary="@string/pref_use_shake_summary"
+          android:defaultValue="false" />
   </PreferenceCategory>
 
 

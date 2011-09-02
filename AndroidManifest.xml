@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<manifest android:versionCode="20110830" android:versionName="0.7.5.1"
+<manifest android:versionCode="20110902" android:versionName="0.7.5.1"
     xmlns:android="http://schemas.android.com/apk/res/android" package="com.ch_linghu.fanfoudroid">
     <uses-sdk android:minSdkVersion="4"/>
     <supports-screens android:anyDensity="true"/>

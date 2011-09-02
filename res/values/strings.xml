@@ -124,6 +124,8 @@
     <string name="pref_check_updates_ringtone_summary"/>
     <string name="pref_use_profile_image">用户头像</string>
     <string name="pref_use_profile_image_summary">是否显示用户头像</string>
+    <string name="pref_highlight_background">高亮背景</string>
+    <string name="pref_highlight_background_summary">是否对自己发出的和提到自己的消息使用高亮背景</string>
     <string name="pref_photo_preview">图片预览</string>
     <string name="pref_photo_preview_summary">指定预览图片的大小</string>
     <string name="pref_force_show_all_image">强制预览所有图片</string>

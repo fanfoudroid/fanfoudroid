@@ -26,8 +26,11 @@
 
 <string-array name="ui_font_size">
     <item>14</item>
+    <item>15</item>
     <item>16</item>
+    <item>17</item>
     <item>18</item>
+    <item>19</item>
     <item>20</item>
 </string-array>
   

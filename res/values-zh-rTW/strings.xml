@@ -122,6 +122,8 @@
     <string name="pref_check_updates_vibrate_summary">有新消息提示時手機振動</string>
     <string name="pref_check_updates_ringtone_title">選擇提示鈴音</string>
     <string name="pref_check_updates_ringtone_summary"/>
+    <string name="pref_highlight_background">高亮背景</string>
+    <string name="pref_highlight_background_summary">是否對自己發出及提到自己之消息使用高亮背景</string>
     <string name="pref_use_profile_image">用戶頭像</string>
     <string name="pref_use_profile_image_summary">是否顯示使用者頭像</string>
     <string name="pref_photo_preview">圖片預覽</string>
