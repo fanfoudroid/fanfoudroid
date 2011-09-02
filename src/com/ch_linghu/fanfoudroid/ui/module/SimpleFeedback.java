@@ -17,25 +17,25 @@ public class SimpleFeedback implements Feedback, Widget {
 	public static final int MAX = 100;
 
 	private ProgressBar mProgress = null;
-	private ProgressBar mLoadingProgress = null;
+	//private ProgressBar mLoadingProgress = null;
 
 	public SimpleFeedback(Context context) {
 		mProgress = (ProgressBar) ((Activity) context)
 				.findViewById(R.id.progress_bar);
-		mLoadingProgress = (ProgressBar) ((Activity) context)
-				.findViewById(R.id.top_refresh_progressBar);
+		//mLoadingProgress = (ProgressBar) ((Activity) context)
+		//		.findViewById(R.id.top_refresh_progressBar);
 	}
 
 	@Override
 	public void start(CharSequence text) {
 		mProgress.setProgress(20);
-		mLoadingProgress.setVisibility(View.VISIBLE);
+		//mLoadingProgress.setVisibility(View.VISIBLE);
 	}
 
 	@Override
 	public void success(CharSequence text) {
 		mProgress.setProgress(100);
-		mLoadingProgress.setVisibility(View.GONE);
+		//mLoadingProgress.setVisibility(View.GONE);
 		resetProgressBar();
 	}
 
@@ -69,9 +69,9 @@ public class SimpleFeedback implements Feedback, Widget {
 		if (mProgress != null) {
 			return mProgress.getContext();
 		}
-		if (mLoadingProgress != null) {
-			return mLoadingProgress.getContext();
-		}
+		//if (mLoadingProgress != null) {
+		//	return mLoadingProgress.getContext();
+		//}
 		return null;
 	}
 
@@ -81,10 +81,10 @@ public class SimpleFeedback implements Feedback, Widget {
 			Log.e(TAG, "R.id.progress_bar is missing");
 			return false;
 		}
-		if (null == mLoadingProgress) {
-			Log.e(TAG, "R.id.top_refresh_progressBar is missing");
-			return false;
-		}
+		//if (null == mLoadingProgress) {
+		//	Log.e(TAG, "R.id.top_refresh_progressBar is missing");
+		//	return false;
+		//}
 		return true;
 	}
 

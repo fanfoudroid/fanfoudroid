@@ -563,7 +563,7 @@ public class WriteActivity extends BaseActivity {
 
 		String prefix = mPreferences.getString(Preferences.RT_PREFIX_KEY,
 				content.getString(R.string.pref_rt_prefix_default));
-		String retweet = " " + prefix + " @" + screenName + " "
+		String retweet = " " + prefix + "@" + screenName + " "
 				+ TextHelper.getSimpleTweetText(tweetText);
 		Intent intent = new Intent(WriteActivity.REPOST_TWEET_ACTION);
 		intent.putExtra(Intent.EXTRA_SUBJECT, "");
@@ -791,8 +791,10 @@ public class WriteActivity extends BaseActivity {
 	}
 
 	private void onSendFailure() {
-		dialog.setMessage(getString(R.string.page_status_unable_to_update));
-		dialog.dismiss();
+		if (dialog != null){
+			dialog.setMessage(getString(R.string.page_status_unable_to_update));
+			dialog.dismiss();
+		}
 		updateProgress(getString(R.string.page_status_unable_to_update));
 		enableEntry();
 	}

@@ -48,9 +48,16 @@ public class AboutActivity extends Activity {
 		}
 
 		TextView version = (TextView) findViewById(R.id.version);
-		version.setText(String.format("v %s", pinfo.versionName));
 		
-		versionName = pinfo.versionName;
+		String versionString;
+		if (TwitterApplication.DEBUG){
+			version.setText(String.format("v %d(nightly)", pinfo.versionCode));
+			versionName = String.format("%d", pinfo.versionCode);
+		}else{
+			version.setText(String.format("v %s", pinfo.versionName));
+			versionName = pinfo.versionName;
+		}
+		
 
 		// bind button click event
 		Button okBtn = (Button) findViewById(R.id.ok_btn);
@@ -62,7 +69,7 @@ public class AboutActivity extends Activity {
 			}
 		});
 		
-		feedback = "@令狐虫 @三日坊主 @忽然兔 "+"#安能饭否#"+"版本"+versionName+",型号"+deviceModel+",系统"+versionRelease+" ";
+		feedback = "@令狐虫 @三日坊主 @内存地址 @PhoenixG @忽然兔 "+"#安能饭否#"+" "+versionName+"/"+deviceModel+"/"+versionRelease+" ";
 				
 		Button feedbackBtn = (Button) findViewById(R.id.feedback_btn);
 		feedbackBtn.setOnClickListener(new Button.OnClickListener() {
