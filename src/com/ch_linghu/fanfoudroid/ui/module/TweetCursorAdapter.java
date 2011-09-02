@@ -128,31 +128,12 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		SharedPreferences pref = TwitterApplication.mPref; // PreferenceManager.getDefaultSharedPreferences(mContext);;
 		boolean useProfileImage = pref.getBoolean(
 				Preferences.USE_PROFILE_IMAGE, true);
+		boolean useHighlightBackground = pref.getBoolean(
+				Preferences.HIGHLIGHT_BACKGROUND, true);
+		
 		holder.tweetUserText.setText(cursor.getString(mUserTextColumn));
 		TextHelper.setSimpleTweetText(holder.tweetText,
 				cursor.getString(mTextColumn));
-		
-		/**
-		 * 添加特殊行的背景色
-		 */
-		boolean useHighlightBackground = pref.getBoolean(
-				Preferences.HIGHLIGHT_BACKGROUND, true);
-		if (useHighlightBackground){
-			if(holder.tweetUserText.getText().equals(TwitterApplication.getMyselfName())){
-				holder.tweetLayout.setBackgroundResource(R.drawable.list_selector_self);
-				holder.profileLayout.setBackgroundResource(R.color.self_background);
-			}else if(holder.tweetText.getText().toString().contains("@"+TwitterApplication.getMyselfName())){
-				holder.tweetLayout.setBackgroundResource(R.drawable.list_selector_mention);
-				holder.profileLayout.setBackgroundResource(R.color.mention_background);
-			}else{
-				holder.tweetLayout.setBackgroundResource(android.R.drawable.list_selector_background);
-				holder.profileLayout.setBackgroundResource(android.R.color.transparent);
-			}
-		}else{
-			holder.tweetLayout.setBackgroundResource(android.R.drawable.list_selector_background);
-			holder.profileLayout.setBackgroundResource(android.R.color.transparent);		
-		}
-		
 
 		String profileImageUrl = cursor.getString(mProfileImageUrlColumn);
 		if (useProfileImage && !TextUtils.isEmpty(profileImageUrl)) {
@@ -184,8 +165,31 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 			Log.w(TAG, "Invalid created at data.");
 		}
 		
-		
-		
+		/**
+		 * 添加特殊行的背景色
+		 */
+		if (useHighlightBackground){
+			String myself = TwitterApplication.getMyselfName();
+			StringBuilder b = new StringBuilder();
+			b.append("@");
+			b.append(myself);
+			String to_myself = b.toString();
+			
+			//FIXME: contains操作影响效率，应该在获得时作判断，置标志，在这里对标志进行直接判断。
+			if(holder.tweetUserText.getText().equals(myself)){
+				holder.tweetLayout.setBackgroundResource(R.drawable.list_selector_self);
+				holder.profileLayout.setBackgroundResource(R.color.self_background);
+			}else if(holder.tweetText.getText().toString().contains(to_myself)){
+				holder.tweetLayout.setBackgroundResource(R.drawable.list_selector_mention);
+				holder.profileLayout.setBackgroundResource(R.color.mention_background);
+			}else{
+				holder.tweetLayout.setBackgroundResource(android.R.drawable.list_selector_background);
+				holder.profileLayout.setBackgroundResource(android.R.color.transparent);
+			}
+		}else{
+			holder.tweetLayout.setBackgroundResource(android.R.drawable.list_selector_background);
+			holder.profileLayout.setBackgroundResource(android.R.color.transparent);		
+		}
 	}
 
 	@Override

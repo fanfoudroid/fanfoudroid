@@ -33,15 +33,6 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 	protected LayoutInflater mInflater;
 	protected StringBuilder mMetaBuilder;
 
-	private ImageLoaderCallback callback = new ImageLoaderCallback() {
-
-		@Override
-		public void refresh(String url, Bitmap bitmap) {
-			TweetArrayAdapter.this.refresh();
-		}
-
-	};
-
 	public TweetArrayAdapter(Context context) {
 		mTweets = new ArrayList<Tweet>();
 		mContext = context;
@@ -82,7 +73,9 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 		SharedPreferences pref = TwitterApplication.mPref; // PreferenceManager.getDefaultSharedPreferences(mContext);
 		boolean useProfileImage = pref.getBoolean(
 				Preferences.USE_PROFILE_IMAGE, true);
-
+		boolean useHighlightBackground = pref.getBoolean(
+				Preferences.HIGHLIGHT_BACKGROUND, true);
+		
 		if (convertView == null) {
 			view = mInflater.inflate(R.layout.tweet, parent, false);
 
@@ -91,7 +84,8 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 			holder.tweetUserText = (TextView) view
 					.findViewById(R.id.tweet_user_text);
 			holder.tweetText = (TextView) view.findViewById(R.id.tweet_text);
-			holder.tweetText.setBackgroundColor(Color.BLUE);
+			holder.profileLayout = (FrameLayout) view
+					.findViewById(R.id.profile_layout);
 			holder.profileImage = (ImageView) view
 					.findViewById(R.id.profile_image);
 			holder.metaText = (TextView) view
@@ -112,36 +106,13 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 		TextHelper.setSimpleTweetText(holder.tweetText, tweet.text);
 		// holder.tweetText.setText(tweet.text, BufferType.SPANNABLE);
 		
-		/**
-		 * 添加特殊行的背景色
-		 */
-		boolean useHighlightBackground = pref.getBoolean(
-				Preferences.HIGHLIGHT_BACKGROUND, true);
-		if (useHighlightBackground){
-			if(holder.tweetUserText.getText().equals(TwitterApplication.getMyselfName())){
-				holder.tweetLayout.setBackgroundResource(R.drawable.list_selector_self);
-				holder.profileLayout.setBackgroundResource(R.color.self_background);
-			}else if(holder.tweetText.getText().toString().contains("@"+TwitterApplication.getMyselfName())){
-				holder.tweetLayout.setBackgroundResource(R.drawable.list_selector_mention);
-				holder.profileLayout.setBackgroundResource(R.color.mention_background);
-			}else{
-				holder.tweetLayout.setBackgroundResource(android.R.drawable.list_selector_background);
-				holder.profileLayout.setBackgroundResource(android.R.color.transparent);
-			}
-		}else{
-			holder.tweetLayout.setBackgroundResource(android.R.drawable.list_selector_background);
-			holder.profileLayout.setBackgroundResource(android.R.color.transparent);		
-		}
-		
-		
 		String profileImageUrl = tweet.profileImageUrl;
 
-		if (useProfileImage) {
-			if (!TextUtils.isEmpty(profileImageUrl)) {
-				SimpleImageLoader.display(holder.profileImage, profileImageUrl);
-			}
+		if (useProfileImage && !TextUtils.isEmpty(profileImageUrl)) {
+			holder.profileLayout.setVisibility(View.VISIBLE);
+			SimpleImageLoader.display(holder.profileImage, profileImageUrl);
 		} else {
-			holder.profileImage.setVisibility(View.GONE);
+			holder.profileLayout.setVisibility(View.GONE);
 		}
 
 		holder.metaText.setText(Tweet.buildMetaText(mMetaBuilder,
@@ -159,6 +130,31 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 			holder.has_image.setVisibility(View.GONE);
 		}
 		
+		/**
+		 * 添加特殊行的背景色
+		 */
+		if (useHighlightBackground){
+			String myself = TwitterApplication.myselfName;
+			StringBuilder b = new StringBuilder();
+			b.append("@");
+			b.append(myself);
+			String to_myself = b.toString();
+			
+			//FIXME: contains操作影响效率，应该在获得时作判断，置标志，在这里对标志进行直接判断。
+			if(holder.tweetUserText.getText().equals(myself)){
+				holder.tweetLayout.setBackgroundResource(R.drawable.list_selector_self);
+				holder.profileLayout.setBackgroundResource(R.color.self_background);
+			}else if(holder.tweetText.getText().toString().contains(to_myself)){
+				holder.tweetLayout.setBackgroundResource(R.drawable.list_selector_mention);
+				holder.profileLayout.setBackgroundResource(R.color.mention_background);
+			}else{
+				holder.tweetLayout.setBackgroundResource(android.R.drawable.list_selector_background);
+				holder.profileLayout.setBackgroundResource(android.R.color.transparent);
+			}
+		}else{
+			holder.tweetLayout.setBackgroundResource(android.R.drawable.list_selector_background);
+			holder.profileLayout.setBackgroundResource(android.R.color.transparent);		
+		}
 		
 	
 		

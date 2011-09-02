@@ -266,6 +266,9 @@ public class LoginActivity extends Activity {
 			e.printStackTrace();
 		}
 
+		TwitterApplication.myselfId = TwitterApplication.getMyselfId();
+		TwitterApplication.myselfName = TwitterApplication.getMyselfName();
+
 		startActivity(intent);
 		finish();
 	}

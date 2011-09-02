@@ -47,6 +47,9 @@ public class TwitterApplication extends Application {
 	public static Context mContext;
 	public static SharedPreferences mPref;
 
+	public static String myselfId;
+	public static String myselfName;
+
 	public static int networkType = 0;
 
 	public final static boolean DEBUG = Configuration.getDebug();
@@ -126,6 +129,9 @@ public class TwitterApplication extends Application {
 			mApi.setCredentials(username, password); // Setup API and HttpClient
 		}
 
+		myselfId = getMyselfId();
+		myselfName = getMyselfName();
+		
 		// 为cmwap用户设置代理上网
 		String type = getNetworkType();
 		if (null != type && type.equalsIgnoreCase("cmwap")) {
