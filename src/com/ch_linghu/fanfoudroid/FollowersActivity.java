@@ -85,7 +85,7 @@ public class FollowersActivity extends UserArrayBaseActivity {
 
 	@Override
 	public Paging getCurrentPage() {
-
+		currentPage = 1;
 		return new Paging(this.currentPage);
 	}
 
