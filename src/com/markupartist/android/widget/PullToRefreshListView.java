@@ -32,7 +32,7 @@ public class PullToRefreshListView extends ListView implements
 	private static final int PULL_TO_REFRESH = 2;
 	private static final int RELEASE_TO_REFRESH = 3;
 	private static final int REFRESHING = 4;
-	//private static final int RELEASING = 5;//释放过程做动画用
+	// private static final int RELEASING = 5;//释放过程做动画用
 
 	private static final String TAG = "PullToRefreshListView";
 
@@ -60,6 +60,7 @@ public class PullToRefreshListView extends ListView implements
 	private int mRefreshOriginalTopPadding;
 	private int mLastMotionY;
 	private GestureDetector mDetector;
+//	private int mPadding;
 
 	public PullToRefreshListView(Context context) {
 		super(context);
@@ -87,13 +88,13 @@ public class PullToRefreshListView extends ListView implements
 				RotateAnimation.RELATIVE_TO_SELF, 0.5f,
 				RotateAnimation.RELATIVE_TO_SELF, 0.5f);
 		mFlipAnimation.setInterpolator(new LinearInterpolator());
-		mFlipAnimation.setDuration(250);
+		mFlipAnimation.setDuration(200);
 		mFlipAnimation.setFillAfter(true);
 		mReverseFlipAnimation = new RotateAnimation(-180, 0,
 				RotateAnimation.RELATIVE_TO_SELF, 0.5f,
 				RotateAnimation.RELATIVE_TO_SELF, 0.5f);
 		mReverseFlipAnimation.setInterpolator(new LinearInterpolator());
-		mReverseFlipAnimation.setDuration(250);
+		mReverseFlipAnimation.setDuration(200);
 		mReverseFlipAnimation.setFillAfter(true);
 
 		mInflater = (LayoutInflater) context
@@ -175,15 +176,20 @@ public class PullToRefreshListView extends ListView implements
 	}
 
 	@Override
+	/**
+	 * TODO:此方法重写
+	 */
 	public boolean onTouchEvent(MotionEvent event) {
 
 		GestureDetector localGestureDetector = this.mDetector;
 		localGestureDetector.onTouchEvent(event);
 		final int y = (int) event.getY();
 
-		Log.d(TAG, String.format(
-				"[onTouchEvent]event.Action=%d, currState=%d, refreshState=%d",
-				event.getAction(), mCurrentScrollState, mRefreshState));
+		Log.d(TAG,
+				String.format(
+						"[onTouchEvent]event.Action=%d, currState=%d, refreshState=%d,y=%d",
+						event.getAction(), mCurrentScrollState, mRefreshState,
+						y));
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_UP:
 			if (!isVerticalScrollBarEnabled()) {
@@ -206,6 +212,7 @@ public class PullToRefreshListView extends ListView implements
 			}
 			break;
 		case MotionEvent.ACTION_DOWN:
+
 			mLastMotionY = y;
 			break;
 		case MotionEvent.ACTION_MOVE:
@@ -216,6 +223,10 @@ public class PullToRefreshListView extends ListView implements
 		return super.onTouchEvent(event);
 	}
 
+	/**
+	 * TODO:此方法重写
+	 * @param ev
+	 */
 	private void applyHeaderPadding(MotionEvent ev) {
 		final int historySize = ev.getHistorySize();
 
@@ -237,10 +248,12 @@ public class PullToRefreshListView extends ListView implements
 		} catch (InvocationTargetException e) {
 			System.err.println("unexpected " + e);
 		}
+		if (mRefreshState == RELEASE_TO_REFRESH) {
+//			this.offsetTopAndBottom(-mPadding);
 
-		for (int h = 0; h < historySize; h++) {
-			for (int p = 0; p < pointerCount; p++) {
-				if (mRefreshState == RELEASE_TO_REFRESH) {
+			for (int h = 0; h < historySize; h++) {
+				for (int p = 0; p < pointerCount; p++) {
+
 					if (isVerticalFadingEdgeEnabled()) {
 						setVerticalScrollBarEnabled(false);
 					}
@@ -266,7 +279,11 @@ public class PullToRefreshListView extends ListView implements
 					// Calculate the padding to apply, we divide by 1.7 to
 					// simulate a more resistant effect during pull.
 					int topPadding = (int) (((historicalY - mLastMotionY) - mRefreshViewHeight) / 1.7);
-
+//					Log.d(TAG,
+//							String.format(
+//									"[applyHeaderPadding]historicalY=%d,topPadding=%d,mRefreshViewHeight=%d,mLastMotionY=%d",
+//									historicalY, topPadding,
+//									mRefreshViewHeight, mLastMotionY));
 					mRefreshView.setPadding(mRefreshView.getPaddingLeft(),
 							topPadding, mRefreshView.getPaddingRight(),
 							mRefreshView.getPaddingBottom());
@@ -274,7 +291,6 @@ public class PullToRefreshListView extends ListView implements
 			}
 		}
 	}
-
 
 	/**
 	 * Sets the header padding back to original size.
@@ -285,6 +301,9 @@ public class PullToRefreshListView extends ListView implements
 				mCurrentScrollState, mRefreshState));
 		// invalidate();
 
+		//this.mPadding=0;
+		//this.offsetTopAndBottom(this.mPadding);
+		
 		mRefreshView.setPadding(mRefreshView.getPaddingLeft(),
 				mRefreshOriginalTopPadding, mRefreshView.getPaddingRight(),
 				mRefreshView.getPaddingBottom());
@@ -302,7 +321,8 @@ public class PullToRefreshListView extends ListView implements
 			resetHeaderPadding();
 
 			// Set refresh view text to the pull label
-			mRefreshViewText.setText(R.string.pull_to_refresh_tap_label);
+			// mRefreshViewText.setText(R.string.pull_to_refresh_tap_label);//点击刷新是否有用
+			mRefreshViewText.setText(R.string.pull_to_refresh_pull_label);
 			// Replace refresh drawable with arrow drawable
 			mRefreshViewImage
 					.setImageResource(R.drawable.ic_pulltorefresh_arrow);
@@ -466,14 +486,16 @@ public class PullToRefreshListView extends ListView implements
 				&& mRefreshState != REFRESHING) {
 			if (firstVisibleItem == 0) {
 				mRefreshViewImage.setVisibility(View.VISIBLE);
-				Log.d(TAG,
-						String.format(
-								"getBottom=%d,refreshViewHeight=%d,getTop=%d,mRefreshOriginalTopPadding=%d",
-								mRefreshView.getBottom(), mRefreshViewHeight
-										+ MAXHEIGHT, mRefreshView.getTop(),
-								mRefreshOriginalTopPadding));
+//				Log.d(TAG,
+//						String.format(
+//								"getBottom=%d,refreshViewHeight=%d,getTop=%d,mRefreshOriginalTopPadding=%d",
+//								mRefreshView.getBottom(), mRefreshViewHeight
+//										+ MAXHEIGHT,
+//								this.getTopPaddingOffset(),
+//								mRefreshOriginalTopPadding));
 				if ((mRefreshView.getBottom() >= mRefreshViewHeight + MAXHEIGHT || mRefreshView
 						.getTop() >= 0) && mRefreshState != RELEASE_TO_REFRESH) {
+					//this.mPadding+=distanceY;//备用
 					mRefreshViewText
 							.setText(R.string.pull_to_refresh_release_label);
 					mRefreshViewImage.clearAnimation();
