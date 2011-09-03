@@ -40,13 +40,13 @@ public class FollowingActivity extends UserArrayBaseActivity {
 			this.userName = extras.getString(USER_NAME);
 		} else {
 			// 获取登录用户id
-			userId = TwitterApplication.getMyselfId();
-			userName = TwitterApplication.getMyselfName();
+			userId = TwitterApplication.getMyselfId(false);
+			userName = TwitterApplication.getMyselfName(false);
 		}
 
 		if (super._onCreate(savedInstanceState)) {
 
-			myself = TwitterApplication.getMyselfId();
+			myself = TwitterApplication.getMyselfId(false);
 			if (getUserId() == myself) {
 				mNavbar.setHeaderTitle(MessageFormat.format(
 						getString(R.string.profile_friends_count_title), "我"));

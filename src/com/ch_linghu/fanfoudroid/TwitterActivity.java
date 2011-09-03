@@ -142,7 +142,7 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 		Tweet tweet = getContextItemTweet(info.position);
 		if (null != tweet) {// 当按钮为 刷新/更多的时候为空
 
-			if (tweet.userId.equals(TwitterApplication.getMyselfId())) {
+			if (tweet.userId.equals(TwitterApplication.getMyselfId(false))) {
 				menu.add(0, CONTEXT_DELETE_ID, 0, R.string.cmenu_delete);
 			}
 
@@ -253,6 +253,6 @@ public class TwitterActivity extends TwitterCursorBaseActivity {
 
 	@Override
 	public String getUserId() {
-		return TwitterApplication.getMyselfId();
+		return TwitterApplication.getMyselfId(false);
 	}
 }

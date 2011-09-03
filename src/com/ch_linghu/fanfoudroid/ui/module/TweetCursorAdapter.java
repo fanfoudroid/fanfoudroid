@@ -169,7 +169,7 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		 * 添加特殊行的背景色
 		 */
 		if (useHighlightBackground){
-			String myself = TwitterApplication.getMyselfName();
+			String myself = TwitterApplication.getMyselfName(false);
 			StringBuilder b = new StringBuilder();
 			b.append("@");
 			b.append(myself);

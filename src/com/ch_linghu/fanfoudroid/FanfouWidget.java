@@ -73,7 +73,7 @@ public class FanfouWidget extends AppWidgetProvider {
 	}
 
 	public String getUserId() {
-		return TwitterApplication.getMyselfId();
+		return TwitterApplication.getMyselfId(false);
 	}
 
 	private void fetchMessages() {

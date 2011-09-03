@@ -91,7 +91,7 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 		// TODO Auto-generated method stub
 		String template = getString(R.string.page_title_favorites);
 		String who;
-		if (getUserId().equals(TwitterApplication.getMyselfId())) {
+		if (getUserId().equals(TwitterApplication.getMyselfId(false))) {
 			who = "我";
 		} else {
 			who = getUserName();
@@ -150,7 +150,7 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 		if (extras != null) {
 			userId = extras.getString(USER_ID);
 		} else {
-			userId = TwitterApplication.getMyselfId();
+			userId = TwitterApplication.getMyselfId(false);
 		}
 
 		return userId;
@@ -162,7 +162,7 @@ public class FavoritesActivity extends TwitterCursorBaseActivity {
 		if (extras != null) {
 			userName = extras.getString(USER_NAME);
 		} else {
-			userName = TwitterApplication.getMyselfName();
+			userName = TwitterApplication.getMyselfName(false);
 		}
 
 		return userName;

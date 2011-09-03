@@ -116,13 +116,13 @@ public class ProfileActivity extends BaseActivity {
 			Intent intent = getIntent();
 			Bundle extras = intent.getExtras();
 
-			myself = TwitterApplication.getMyselfId();
+			myself = TwitterApplication.getMyselfId(false);
 			if (extras != null) {
 				this.userId = extras.getString(USER_ID);
 				this.userName = extras.getString(USER_NAME);
 			} else {
 				this.userId = myself;
-				this.userName = TwitterApplication.getMyselfName();
+				this.userName = TwitterApplication.getMyselfName(false);
 			}
 			Uri data = intent.getData();
 			if (data != null) {

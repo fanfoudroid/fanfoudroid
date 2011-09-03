@@ -266,9 +266,6 @@ public class LoginActivity extends Activity {
 			e.printStackTrace();
 		}
 
-		TwitterApplication.myselfId = TwitterApplication.getMyselfId();
-		TwitterApplication.myselfName = TwitterApplication.getMyselfName();
-
 		startActivity(intent);
 		finish();
 	}
@@ -296,6 +293,10 @@ public class LoginActivity extends Activity {
 				String username = param.getString("username");
 				String password = param.getString("password");
 				user = TwitterApplication.mApi.login(username, password);
+				
+				TwitterApplication.getMyselfId(true);
+				TwitterApplication.getMyselfName(true);
+				
 			} catch (HttpException e) {
 				Log.e(TAG, e.getMessage(), e);
 				// TODO:确切的应该从HttpException中返回的消息中获取错误信息

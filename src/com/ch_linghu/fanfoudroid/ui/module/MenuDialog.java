@@ -167,8 +167,8 @@ public class MenuDialog extends Dialog {
 					int position, long id) {
 				switch (position) {
 				case PAGE_MINE:
-					String user = TwitterApplication.getMyselfId();
-					String name = TwitterApplication.getMyselfName();
+					String user = TwitterApplication.getMyselfId(false);
+					String name = TwitterApplication.getMyselfName(false);
 					Intent intent = UserTimelineActivity.createIntent(user,
 							name);
 					goTo(UserTimelineActivity.class, intent);

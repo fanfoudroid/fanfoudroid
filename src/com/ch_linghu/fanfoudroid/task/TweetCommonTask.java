@@ -89,7 +89,7 @@ public class TweetCommonTask {
 
 				if (action.equals(TYPE_DEL)) {
 					activity.getDb().deleteTweet(tweet.id,
-							TwitterApplication.getMyselfId(),
+							TwitterApplication.getMyselfId(false),
 							StatusTable.TYPE_FAVORITE);
 				}
 			} catch (HttpException e) {

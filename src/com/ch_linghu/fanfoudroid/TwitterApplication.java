@@ -22,7 +22,10 @@ import com.ch_linghu.fanfoudroid.fanfou.Configuration;
 import com.ch_linghu.fanfoudroid.fanfou.User;
 import com.ch_linghu.fanfoudroid.fanfou.Weibo;
 import com.ch_linghu.fanfoudroid.http.HttpException;
-import com.ch_linghu.fanfoudroid.R;
+import com.ch_linghu.fanfoudroid.task.GenericTask;
+import com.ch_linghu.fanfoudroid.task.TaskAdapter;
+import com.ch_linghu.fanfoudroid.task.TaskParams;
+import com.ch_linghu.fanfoudroid.task.TaskResult;
 
 //@ReportsCrashes(formKey="dHowMk5LMXQweVJkWGthb1E1T1NUUHc6MQ",
 //    mode = ReportingInteractionMode.NOTIFICATION,
@@ -47,12 +50,11 @@ public class TwitterApplication extends Application {
 	public static Context mContext;
 	public static SharedPreferences mPref;
 
-	public static String myselfId;
-	public static String myselfName;
-
 	public static int networkType = 0;
 
 	public final static boolean DEBUG = Configuration.getDebug();
+	
+	public GenericTask mUserInfoTask = new GetUserInfoTask();
 
 	// FIXME:获取登录用户id, 据肉眼观察，刚注册的用户系统分配id都是~开头的，因为不知道
 	// 用户何时去修改这个ID，目前只有把所有以~开头的ID在每次需要UserId时都去服务器
@@ -77,21 +79,23 @@ public class TwitterApplication extends Application {
 		}
 	}
 
-	public static String getMyselfId() {
-		if (!mPref.contains(Preferences.CURRENT_USER_ID)
-				|| mPref.getString(Preferences.CURRENT_USER_ID, "~")
-						.startsWith("~")) {
-			fetchMyselfInfo();
+	public static String getMyselfId(boolean forceGet) {
+		if (!mPref.contains(Preferences.CURRENT_USER_ID)){
+			if (forceGet && mPref.getString(Preferences.CURRENT_USER_ID, "~")
+						.startsWith("~")){
+				fetchMyselfInfo();
+			}
 		}
 		return mPref.getString(Preferences.CURRENT_USER_ID, "~");
 	}
 
-	public static String getMyselfName() {
+	public static String getMyselfName(boolean forceGet) {
 		if (!mPref.contains(Preferences.CURRENT_USER_ID)
-				|| !mPref.contains(Preferences.CURRENT_USER_SCREEN_NAME)
-				|| mPref.getString(Preferences.CURRENT_USER_ID, "~")
-						.startsWith("~")) {
-			fetchMyselfInfo();
+				|| !mPref.contains(Preferences.CURRENT_USER_SCREEN_NAME)) {
+			if (forceGet && mPref.getString(Preferences.CURRENT_USER_ID, "~")
+						.startsWith("~")){
+				fetchMyselfInfo();
+			}
 		}
 		return mPref.getString(Preferences.CURRENT_USER_SCREEN_NAME, "");
 	}
@@ -127,9 +131,7 @@ public class TwitterApplication extends Application {
 
 		if (Weibo.isValidCredentials(username, password)) {
 			mApi.setCredentials(username, password); // Setup API and HttpClient
-
-			myselfId = getMyselfId();
-			myselfName = getMyselfName();
+			doGetUserInfo();
 		}
 		
 		// 为cmwap用户设置代理上网
@@ -194,4 +196,38 @@ public class TwitterApplication extends Application {
 
 		mImageLoader.getImageManager().cleanup(keepers);
 	}
+	
+	public void doGetUserInfo()
+	{
+        if (mUserInfoTask != null
+                && mUserInfoTask.getStatus() == GenericTask.Status.RUNNING) {
+            return;
+        } else {
+        	mUserInfoTask = new GetUserInfoTask();
+        	mUserInfoTask.setListener(new TaskAdapter(){
+
+				@Override
+				public String getName() {
+					return "GetUserInfo";
+				}
+        		
+        	});
+        	mUserInfoTask.execute();
+        }
+	
+	}
+	public class GetUserInfoTask extends GenericTask {
+		public static final String TAG = "DeleteTask";
+
+		@Override
+		protected TaskResult _doInBackground(TaskParams... params) {
+			getMyselfId(true);
+			getMyselfName(true);
+			
+			return TaskResult.OK;
+
+		}
+
+	}
+	
 }

@@ -808,7 +808,7 @@ public class StatusActivity extends BaseActivity {
 		menu.add(0, CONTEXT_REFRESH_ID, 0, R.string.omenu_refresh);
 		menu.add(0, CONTEXT_CLIPBOARD_ID, 0, R.string.cmenu_clipboard);
 
-		if (tweet.userId.equals(TwitterApplication.getMyselfId())) {
+		if (tweet.userId.equals(TwitterApplication.getMyselfId(false))) {
 			menu.add(0, CONTEXT_DELETE_ID, 0, R.string.cmenu_delete);
 		}
 

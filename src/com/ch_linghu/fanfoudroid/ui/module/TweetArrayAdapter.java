@@ -134,7 +134,7 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 		 * 添加特殊行的背景色
 		 */
 		if (useHighlightBackground){
-			String myself = TwitterApplication.myselfName;
+			String myself = TwitterApplication.getMyselfName(false);
 			StringBuilder b = new StringBuilder();
 			b.append("@");
 			b.append(myself);

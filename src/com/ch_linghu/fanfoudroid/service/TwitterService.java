@@ -74,7 +74,7 @@ public class TwitterService extends Service {
 	private GenericTask mRetrieveTask;
 
 	public String getUserId() {
-		return TwitterApplication.getMyselfId();
+		return TwitterApplication.getMyselfId(false);
 	}
 
 	@Override
@@ -407,7 +407,7 @@ public class TwitterService extends Service {
 			Log.d(TAG, "Widget Is Enabled? " + TwitterService.widgetIsEnabled);
 			if (timeline_only || TwitterService.widgetIsEnabled) {
 				String maxId = getDb()
-						.fetchMaxTweetId(TwitterApplication.getMyselfId(),
+						.fetchMaxTweetId(TwitterApplication.getMyselfId(false),
 								StatusTable.TYPE_HOME);
 				Log.d(TAG, "Max id is:" + maxId);
 
@@ -439,7 +439,7 @@ public class TwitterService extends Service {
 					Log.d(TAG, mNewTweets.size() + " new tweets.");
 
 					int count = getDb().addNewTweetsAndCountUnread(mNewTweets,
-							TwitterApplication.getMyselfId(),
+							TwitterApplication.getMyselfId(false),
 							StatusTable.TYPE_HOME);
 
 					if (count <= 0) {
@@ -454,7 +454,7 @@ public class TwitterService extends Service {
 
 			if (replies_only) {
 				String maxMentionId = getDb().fetchMaxTweetId(
-						TwitterApplication.getMyselfId(),
+						TwitterApplication.getMyselfId(false),
 						StatusTable.TYPE_MENTION);
 				Log.d(TAG, "Max mention id is:" + maxMentionId);
 
@@ -482,7 +482,7 @@ public class TwitterService extends Service {
 					mNewMentions.add(tweet);
 
 					unReadMentionsCount = getDb().addNewTweetsAndCountUnread(
-							mNewMentions, TwitterApplication.getMyselfId(),
+							mNewMentions, TwitterApplication.getMyselfId(false),
 							StatusTable.TYPE_MENTION);
 
 					if (unReadMentionsCount <= 0) {

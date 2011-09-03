@@ -125,6 +125,6 @@ public class MentionActivity extends TwitterCursorBaseActivity {
 
 	@Override
 	public String getUserId() {
-		return TwitterApplication.getMyselfId();
+		return TwitterApplication.getMyselfId(false);
 	}
 }

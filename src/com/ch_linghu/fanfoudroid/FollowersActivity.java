@@ -41,13 +41,13 @@ public class FollowersActivity extends UserArrayBaseActivity {
 			this.userName = extras.getString(USER_NAME);
 		} else {
 			// 获取登录用户id
-			userId = TwitterApplication.getMyselfId();
-			userName = TwitterApplication.getMyselfName();
+			userId = TwitterApplication.getMyselfId(false);
+			userName = TwitterApplication.getMyselfName(false);
 		}
 
 		if (super._onCreate(savedInstanceState)) {
 
-			String myself = TwitterApplication.getMyselfId();
+			String myself = TwitterApplication.getMyselfId(false);
 			if (getUserId() == myself) {
 				mNavbar.setHeaderTitle(MessageFormat.format(
 						getString(R.string.profile_followers_count_title), "我"));
