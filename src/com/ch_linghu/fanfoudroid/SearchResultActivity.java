@@ -319,7 +319,7 @@ public class SearchResultActivity extends TwitterListBaseActivity {
 
 	@Override
 	protected Tweet getContextItemTweet(int position) {
-		if (position > 0 && position < mAdapter.getCount()) {
+		if (position >= 1 && position <= mAdapter.getCount()) {
 			Tweet item = (Tweet) mAdapter.getItem(position - 1);
 			if (item == null) {
 				return null;
