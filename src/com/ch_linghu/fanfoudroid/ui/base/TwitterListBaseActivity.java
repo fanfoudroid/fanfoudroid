@@ -329,5 +329,25 @@ public abstract class TwitterListBaseActivity extends BaseActivity implements
 				&& mFavTask.getStatus() == GenericTask.Status.RUNNING) {
 			outState.putBoolean(SIS_RUNNING_KEY, true);
 		}
+		if(getTweetList() != null) {
+			int lastPosition = getTweetList().getFirstVisiblePosition();
+			outState.putInt("LAST_POSITION", lastPosition);
+		}
+	}
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		
+		if(getTweetList() != null) {
+			int lastPosition = savedInstanceState.getInt("LAST_POSITION");
+			getTweetList().setSelection(lastPosition);
+		}
+	}
+
+	@Override
+	public void doRetrieve() {
+		// TODO Auto-generated method stub
+		
 	}
 }

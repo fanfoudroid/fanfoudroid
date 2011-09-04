@@ -505,6 +505,26 @@ public abstract class UserListBaseActivity extends BaseActivity implements
 				&& mFavTask.getStatus() == GenericTask.Status.RUNNING) {
 			outState.putBoolean(SIS_RUNNING_KEY, true);
 		}
+		if(getUserList() != null) {
+			int lastPosition = getUserList().getFirstVisiblePosition();
+			outState.putInt("LAST_POSITION", lastPosition);
+		}
 	}
 
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		
+		if(getUserList() != null) {
+			int lastPosition = savedInstanceState.getInt("LAST_POSITION");
+			getUserList().setSelection(lastPosition);
+		}
+	}
+
+	@Override
+	public void doRetrieve() {
+		// TODO Auto-generated method stub
+		
+	}
 }

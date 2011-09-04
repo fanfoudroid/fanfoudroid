@@ -24,8 +24,6 @@ import com.ch_linghu.fanfoudroid.task.TaskResult;
 import com.ch_linghu.fanfoudroid.ui.module.SimpleFeedback;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 import com.ch_linghu.fanfoudroid.ui.module.UserArrayAdapter;
-import com.markupartist.android.widget.PullToRefreshListView;
-import com.markupartist.android.widget.PullToRefreshListView.OnRefreshListener;
 
 public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 	static final String TAG = "UserArrayBaseActivity";
@@ -39,13 +37,19 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 	protected TextView loadMoreBtnTop;
 	protected ProgressBar loadMoreGIFTop;
 
-	protected static int lastPosition = 0;
-
 	// Tasks.
 	protected TaskManager taskManager = new TaskManager();
 	private GenericTask mRetrieveTask;
 	private GenericTask mFollowersRetrieveTask;
 	private GenericTask mGetMoreTask;// 每次100用户
+
+	private static class State {
+		State(UserArrayBaseActivity activity) {
+			allUserList = activity.allUserList;
+		}
+
+		public ArrayList<com.ch_linghu.fanfoudroid.data.User> allUserList;
+	}
 
 	public abstract Paging getCurrentPage();// 加载
 
@@ -62,12 +66,24 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 		Log.d(TAG, "onCreate.");
 		if (super._onCreate(savedInstanceState)) {
 
-			doRetrieve();// 加载第一页
+			State state = (State) getLastNonConfigurationInstance();
+			if (state != null){
+				allUserList = state.allUserList;
+				draw();
+			}else{
+				doRetrieve();// 加载第一页
+			}
 
 			return true;
 		} else {
 			return false;
 		}
+	}
+
+	@Override
+	protected String getUserId() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
@@ -339,6 +355,15 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 
 	public void draw() {
 		mUserListAdapter.refresh(allUserList);
+	}
+
+	@Override
+	public Object onRetainNonConfigurationInstance() {
+		return createState();
+	}
+
+	private synchronized State createState() {
+		return new State(this);
 	}
 
 }

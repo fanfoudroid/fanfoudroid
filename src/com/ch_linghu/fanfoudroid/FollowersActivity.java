@@ -5,18 +5,14 @@ import java.util.List;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.ListView;
 
 import com.ch_linghu.fanfoudroid.fanfou.Paging;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.ui.base.UserArrayBaseActivity;
-import com.ch_linghu.fanfoudroid.ui.module.UserArrayAdapter;
 import com.ch_linghu.fanfoudroid.R;
 
 public class FollowersActivity extends UserArrayBaseActivity {
 
-	private ListView mUserList;
-	private UserArrayAdapter mAdapter;
 	private static final String TAG = "FollowersActivity";
 
 	private String userId;
@@ -25,27 +21,20 @@ public class FollowersActivity extends UserArrayBaseActivity {
 	private static final String USER_ID = "userId";
 	private static final String USER_NAME = "userName";
 	private int currentPage = 1;
-	private int followersCount = 0;
-	private static final double PRE_PAGE_COUNT = 100.0;// 官方分页为每页100
-	private int pageCount = 0;
-
-	private String[] ids;
 
 	@Override
 	protected boolean _onCreate(Bundle savedInstanceState) {
-
-		Intent intent = getIntent();
-		Bundle extras = intent.getExtras();
-		if (extras != null) {
-			this.userId = extras.getString(USER_ID);
-			this.userName = extras.getString(USER_NAME);
-		} else {
-			// 获取登录用户id
-			userId = TwitterApplication.getMyselfId(false);
-			userName = TwitterApplication.getMyselfName(false);
-		}
-
 		if (super._onCreate(savedInstanceState)) {
+			Intent intent = getIntent();
+			Bundle extras = intent.getExtras();
+			if (extras != null) {
+				this.userId = extras.getString(USER_ID);
+				this.userName = extras.getString(USER_NAME);
+			} else {
+				// 获取登录用户id
+				userId = TwitterApplication.getMyselfId(false);
+				userName = TwitterApplication.getMyselfName(false);
+			}
 
 			String myself = TwitterApplication.getMyselfId(false);
 			if (getUserId() == myself) {

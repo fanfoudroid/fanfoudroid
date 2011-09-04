@@ -127,11 +127,6 @@ public class PullToRefreshListView extends ListView implements
 	}
 
 	@Override
-	protected void onAttachedToWindow() {
-		setSelection(1);
-	}
-
-	@Override
 	public void setAdapter(ListAdapter adapter) {
 		super.setAdapter(adapter);
 
