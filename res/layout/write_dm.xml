@@ -10,6 +10,37 @@
    <!-- Header -->
    <include layout="@layout/header_write"/>
    
+    <!-- 工具栏 -->
+   <LinearLayout android:orientation="horizontal" 
+         android:gravity="center_vertical"
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content"
+         android:background="@drawable/send_message_block"
+         android:paddingRight="5dp"
+         android:paddingLeft="5dp"
+          >
+        <TextView
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_toLeftOf="@id/chars_text"
+         android:text="收信人"
+         android:textColor="@color/status_text"
+         
+         /> 
+       <AutoCompleteTextView
+           android:id="@+id/to_edit"
+           android:layout_width="fill_parent"
+           android:layout_height="wrap_content"
+           android:layout_weight="1"
+           android:layout_marginRight="5dp"
+           android:layout_marginLeft="5dp"
+           android:layout_marginTop="1dp"
+           android:singleLine="true"
+           android:dropDownSelector="@drawable/list_selector"
+           android:inputType="text"        
+           />           
+    </LinearLayout>
+
    <!-- 状态栏 -->
    <RelativeLayout android:gravity="center_vertical"
         android:layout_width="fill_parent"
@@ -17,7 +48,6 @@
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
         >   
-                           
          <!-- 字数统计 -->
          <TextView
             android:id="@+id/chars_word"
@@ -70,42 +100,4 @@
           android:gravity="top"
           />   
            
-   <!-- 底部工具栏 -->
-   <LinearLayout android:orientation="horizontal" 
-         android:gravity="center_vertical"
-         android:layout_width="fill_parent"
-         android:layout_height="wrap_content"
-         android:background="@drawable/send_message_block"
-         android:paddingRight="5dp"
-         android:paddingLeft="5dp"
-          >
-        <TextView
-         android:id="@+id/char_you_can"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_toLeftOf="@id/chars_text"
-         android:text="收信人"
-         android:textColor="@color/status_text"
-         
-         /> 
-       <AutoCompleteTextView
-           android:id="@+id/to_edit"
-           android:layout_width="fill_parent"
-           android:layout_height="wrap_content"
-           android:layout_weight="1"
-           android:layout_marginRight="5dp"
-           android:layout_marginLeft="5dp"
-           android:layout_marginTop="1dp"
-           android:singleLine="true"
-           android:dropDownSelector="@drawable/list_selector"
-           android:inputType="text"        
-           />           
-       <!-- 发送按钮 -->
-	   <Button android:id="@+id/send_button"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:text="@string/write_label_send"
-	    />
-    </LinearLayout>
-    
 </LinearLayout>

@@ -212,9 +212,6 @@ public class WriteDmActivity extends BaseActivity {
 				}
 			};
 
-			mSendButton = (Button) findViewById(R.id.send_button);
-			mSendButton.setOnClickListener(sendListenner);
-
 			Button mTopSendButton = (Button) findViewById(R.id.top_send_btn);
 			mTopSendButton.setOnClickListener(sendListenner);
 
