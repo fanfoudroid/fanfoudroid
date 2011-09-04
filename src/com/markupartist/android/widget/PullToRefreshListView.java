@@ -359,7 +359,20 @@ public class PullToRefreshListView extends ListView implements
 	@Override
 	public void onScroll(AbsListView view, int firstVisibleItem,
 			int visibleItemCount, int totalItemCount) {
-
+		Log.d(TAG, "List onScroll");
+		
+		
+		if (mCurrentScrollState == SCROLL_STATE_FLING
+				&& firstVisibleItem == 0 && mRefreshState != REFRESHING) {
+			setSelection(1);
+			mRefreshViewImage.setVisibility(View.INVISIBLE);
+		}
+		
+		
+		if (mOnScrollListener != null) {
+			mOnScrollListener.onScroll(this, firstVisibleItem,
+					visibleItemCount, totalItemCount);
+		}
 	}
 
 	@Override
@@ -517,15 +530,13 @@ public class PullToRefreshListView extends ListView implements
 				mRefreshViewImage.setVisibility(View.GONE);
 				resetHeader();
 			}
-		} else if (mCurrentScrollState == SCROLL_STATE_FLING
+		} /*not execute
+		else if (mCurrentScrollState == SCROLL_STATE_FLING
 				&& firstVisibleItem == 0 && mRefreshState != REFRESHING) {
 			setSelection(1);
-		}
+		}*/
 
-		// if (mOnScrollListener != null) {
-		// mOnScrollListener.onScroll(this, firstVisibleItem,
-		// visibleItemCount, totalItemCount);
-		// }
+	
 
 		return false;
 	}
