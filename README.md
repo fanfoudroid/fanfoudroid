@@ -59,4 +59,4 @@
 * 细节调整和bug修复
 
 ##联系开发者
-[@令狐虫](http://fanfou.com/ch_linghu) / [@PhoenixG](http://fanfou.com/phoenixg) / [@dodola](http://fanfou.com/%E8%90%BD%E5%A6%96) [Gmail](mailto:dinophp@gmail.com) / [@三日坊主](http://fanfou.com/lds2012)
+[@令狐虫](http://fanfou.com/ch_linghu) / [@PhoenixG](http://fanfou.com/phoenixg) / [@dodola](http://fanfou.com/%E8%90%BD%E5%A6%96) [Gmail](mailto:dinophp@gmail.com) / [@三日坊主](http://fanfou.com/lds2012) / [@忽然兔](http://fanfou.com/zm1103)
