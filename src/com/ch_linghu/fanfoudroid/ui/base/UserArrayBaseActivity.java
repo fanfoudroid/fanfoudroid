@@ -81,12 +81,6 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 	}
 
 	@Override
-	protected String getUserId() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public void doRetrieve() {
 		Log.d(TAG, "Attempting retrieve.");
 
