@@ -1,0 +1,5 @@
+bin/
+.svn/
+release/
+R.java
+*.swp

@@ -1,7 +1,0 @@
-syntax:glob
-
-bin/*
-.svn/*
-release/*
-R.java
-*.swp
