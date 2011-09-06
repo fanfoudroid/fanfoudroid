@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.fanfou.Paging;
 import com.ch_linghu.fanfoudroid.http.HttpException;
@@ -32,8 +33,9 @@ public class FollowersActivity extends UserArrayBaseActivity {
 				this.userName = extras.getString(USER_NAME);
 			} else {
 				// 获取登录用户id
-				userId = TwitterApplication.getMyselfId(false);
+				userId = TwitterApplication.getMyselfId(false);//TODO:有时会为null？
 				userName = TwitterApplication.getMyselfName(false);
+				
 			}
 
 			String myself = TwitterApplication.getMyselfId(false);

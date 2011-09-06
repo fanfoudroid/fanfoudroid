@@ -11,6 +11,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.R;
+import com.ch_linghu.fanfoudroid.TwitterApplication;
 import com.ch_linghu.fanfoudroid.data.Tweet;
 import com.ch_linghu.fanfoudroid.data.User;
 import com.ch_linghu.fanfoudroid.fanfou.Paging;
@@ -152,7 +153,9 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 
 			List<com.ch_linghu.fanfoudroid.fanfou.User> usersList = null;
 			try {
-				usersList = getUsers(getUserId(), getCurrentPage());
+				String userid=getUserId();
+				
+				usersList = getUsers(userid==null?TwitterApplication.getMyselfId(false):userid, getCurrentPage());
 			} catch (HttpException e) {
 				e.printStackTrace();
 				return TaskResult.IO_ERROR;
