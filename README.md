@@ -11,7 +11,7 @@
 ###特性：
 拍照/图片上传，后台自动提醒，桌面Widget
 
-[下载安能饭否](http://code.google.com/p/fanfoudroid/downloads/detail?name=fanfoudroid_0.7.5.2.apk&can=2&q=) / [Android Market安装](https://market.android.com/details?id=com.ch_linghu.fanfoudroid) / [报告BUG](http://code.google.com/p/fanfoudroid/issues/entry) / [提出建议](http://code.google.com/p/fanfoudroid/issues/entry?template=suggest)
+[下载安能饭否](http://code.google.com/p/fanfoudroid/downloads/detail?name=fanfoudroid_0.7.5.2.apk&can=2&q=) / [Android Market安装](https://market.android.com/details?id=com.ch_linghu.fanfoudroid) / [报告BUG](https://github.com/fanfoudroid/fanfoudroid/issues) / [提出建议](https://github.com/fanfoudroid/fanfoudroid/pulls)
 ##截图
 ![Screenshot](http://farm4.static.flickr.com/3292/5746245984_4d2edf87cb.jpg)
 ##News
