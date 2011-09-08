@@ -4,13 +4,14 @@ import java.util.Date;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 
 import com.ch_linghu.fanfoudroid.provider.FanContent.StatusColumns;
 
 public class StatusF extends FanContent implements StatusColumns {
     public static final String TABLE_NAME = "Status";
-    // public static final Uri CONTENT_URI = Uri.parse(EmailContent.CONTENT_URI
-    // + "/body");
+    public static final Uri CONTENT_URI = Uri.parse(FanContent.CONTENT_URI + "/status");
+    public static final String CONTENT_TYPE = "fan-status";
 
     // TODO: type, isUnRead...
     public static final int CONTENT_ID_COLUMN = 0;

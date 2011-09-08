@@ -12,10 +12,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.util.Log;
 
+import com.ch_linghu.fanfoudroid.db2.FanContent.StatusesTable.Columns;
 import com.ch_linghu.fanfoudroid.provider.FanContent.StatusColumns;
 
 /**
  * ContentProvider 
+ * 
+ * NOTE: 此文件有SQL内容，请勿使用自动格式化（CTRL+SHIFT+F)
  */
 public class FanProvider extends ContentProvider {
     private static final String TAG = "FanProvider";
@@ -45,6 +48,7 @@ public class FanProvider extends ContentProvider {
     // 12 bits to the base type: 0, 0x1000, 0x2000, etc.
     private static final int BASE_SHIFT = 12;
 
+    // Table names order by Base Type: STATUS_BASE, MESSAGE_BASE...
     private static final String[] TABLE_NAMES = { StatusF.TABLE_NAME, };
 
     private static final UriMatcher sURIMatcher = new UriMatcher(
@@ -101,9 +105,19 @@ public class FanProvider extends ContentProvider {
     // Create Tables
 
     static void createStatusTable(SQLiteDatabase db) {
-        String createString = " (" + FanContent.RECORD_ID
-                + " integer primary key autoincrement, "
-                + StatusColumns.STATUS_ID + " text, " + ");";
+        String createString = StatusF.TABLE_NAME +" (" 
+                + FanContent.RECORD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + StatusColumns.STATUS_ID + " TEXT UNIQUE NOT NULL, " 
+                + StatusColumns.AUTHOR_ID + " TEXT, "
+                + StatusColumns.TEXT + " TEXT, " 
+                + StatusColumns.SOURCE + " TEXT, "
+                + StatusColumns.CREATED_AT + " INT, " 
+                + StatusColumns.TRUNCATED + " INT DEFAULT 0, " 
+                + StatusColumns.FAVORITED + " INT DEFAULT 0, " 
+                + StatusColumns.PHOTO_URL + " TEXT, "
+                + StatusColumns.IN_REPLY_TO_STATUS_ID + " TEXT, "
+                + StatusColumns.IN_REPLY_TO_USER_ID + " TEXT, "
+                + StatusColumns.IN_REPLY_TO_SCREEN_NAME + " TEXT " + ");";
 
         db.execSQL("CREATE TABLE " + createString);
 
@@ -212,15 +226,18 @@ public class FanProvider extends ContentProvider {
         // TODO Auto-generated method stub
         return false;
     }
+    
+    public static final String CONTENT_TYPE_DIR = "vnd.android.cursor.dir/";
+    public static final String CONTENT_TYPE_ITEM = "vnd.android.cursor.item/";
 
     @Override
     public String getType(Uri uri) {
         int match = sURIMatcher.match(uri);
         switch (match) {
         case STATUS:
-            return "vnd.android.cursor.dir/fan-status";
+            return CONTENT_TYPE_DIR + StatusF.CONTENT_TYPE;
         case STATUS_ID:
-            return "vnd.android.cursor.item/fan-status";
+            return CONTENT_TYPE_ITEM + StatusF.CONTENT_TYPE;
         default:
             throw new IllegalArgumentException("UnKnown URI: " + uri);
         }
