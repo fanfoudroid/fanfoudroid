@@ -1,9 +1,11 @@
 package com.ch_linghu.fanfoudroid.test;
 
 import android.app.Instrumentation;
+import android.app.ProgressDialog;
 import android.test.ActivityInstrumentationTestCase2;
-import android.test.UiThreadTest;
+import android.test.TouchUtils;
 import android.view.KeyEvent;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -39,6 +41,7 @@ public class LoginActivityTest extends
         mPasswordEdit = (EditText) mActivity.findViewById(R.id.password_edit);
         mSigninButton = (Button) mActivity.findViewById(R.id.signin_button);
 
+        // Good to go
         assertNotNull(mUsernameEdit);
         assertNotNull(mPasswordEdit);
         assertNotNull(mSigninButton);
@@ -46,27 +49,26 @@ public class LoginActivityTest extends
 
     /**
      * TODO: 因为如果多次使用错误密码和帐号进行登录，会被封IP，所以这里需要真实帐号进行测试，
-     * 为避免隐私问题，真实帐号的密码需要存于独立的文本中，并且不要将该文件加入到代码库。
+     * 为避免隐私问题，真实帐号的密码需要存于独立的文本中，并且不要将该文件PUSH到代码库。
      */
+    //@UiThreadTest
     public void testLogin() {
-
         final String username = "username";
         final String password = "password";
 
-        // 任何对于UI元素进行操作的行为都需要在UI Thread中进行，因此需要加上 @UiThreadTest 或者使用
-        // mActivity.runOnUiThread()
         mActivity.runOnUiThread(new Runnable() {
             public void run() {
                 mUsernameEdit.setText(username);
                 mPasswordEdit.setText(password);
-                mSigninButton.requestFocus(); // click LOGIN button
             }
         });
+        
+        // click sign in button
+        TouchUtils.clickView(this, (View) mSigninButton);
 
         mInstrumentation.waitForIdleSync();
-
-        // or press ENTER
-        this.sendKeys(KeyEvent.KEYCODE_ENTER);
+        
+        
     }
 
 }
