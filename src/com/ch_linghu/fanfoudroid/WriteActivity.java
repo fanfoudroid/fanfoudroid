@@ -21,6 +21,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -145,11 +147,18 @@ public class WriteActivity extends BaseActivity {
 	private String _repost_id;
 	private String _reply_to_name;
 
+	private String _getPhotoFilename(Date date){
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddKms");
+		return dateFormat.format(date) + ".jpg";
+	}
+	
 	// sub menu
 	protected void openImageCaptureMenu() {
 		try {
 			// TODO: API < 1.6, images size too small
-			mImageFile = new File(FileHelper.getBasePath(), "upload.jpg");
+			String filename = _getPhotoFilename(new Date());
+			Log.d(TAG, "Photo filename=" + filename);
+			mImageFile = new File(FileHelper.getBasePath(), filename);
 			mImageUri = Uri.fromFile(mImageFile);
 			Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 			intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
