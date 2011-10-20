@@ -37,6 +37,15 @@ public class StatusDAO {
     public StatusDAO(Context context) {
         mDb = FanDatabase.getInstance(context);
     }
+    
+    /**
+     * only for unit test
+     * @return
+     */
+    public FanDatabase __getDb()
+    {
+    	return mDb;
+    }
 
     /**
      * 判断指定ID的消息是否存在于StatusTable
