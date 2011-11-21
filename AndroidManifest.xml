@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<manifest android:versionCode="20110904" android:versionName="0.7.5.2"
-    xmlns:android="http://schemas.android.com/apk/res/android" package="com.ch_linghu.fanfoudroid">
+<manifest android:versionName="0.7.5.3"
+    xmlns:android="http://schemas.android.com/apk/res/android" package="com.ch_linghu.fanfoudroid" android:versionCode="20110929">
     <uses-sdk android:minSdkVersion="4"/>
     <supports-screens android:anyDensity="true"/>
     <application android:icon="@drawable/icon"

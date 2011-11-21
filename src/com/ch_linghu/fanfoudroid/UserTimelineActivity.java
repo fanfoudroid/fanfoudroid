@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
@@ -300,7 +301,9 @@ public class UserTimelineActivity extends TwitterListBaseActivity {
 			List<com.ch_linghu.fanfoudroid.fanfou.Status> statusList;
 			try {
 				Paging paging = new Paging();
-				paging.setMaxId(mMaxId);
+				if (!TextUtils.isEmpty(mMaxId)) {
+					paging.setMaxId(mMaxId);
+				}
 				statusList = getApi().getUserTimeline(mUserID, paging);
 			} catch (HttpException e) {
 				Log.e(TAG, e.getMessage(), e);
