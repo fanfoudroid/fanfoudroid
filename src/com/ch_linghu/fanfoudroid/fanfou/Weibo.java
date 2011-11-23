@@ -49,8 +49,9 @@ import com.ch_linghu.fanfoudroid.http.Response;
 public class Weibo extends WeiboSupport implements java.io.Serializable {
 	public static final String TAG = "Weibo_API";
 
-	public static final String CONSUMER_KEY = Configuration.getSource();
-	public static final String CONSUMER_SECRET = "";
+	public static final String APP_SOURCE = Configuration.getSource();
+	public static final String CONSUMER_KEY = Configuration.getOAuthConsumerKey();
+	public static final String CONSUMER_SECRET = Configuration.getOAuthConsumerSecret();
 
 	private String baseURL = Configuration.getScheme() + "api.fanfou.com/";
 	private String searchBaseURL = Configuration.getScheme()
@@ -278,9 +279,9 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
 	protected Response get(String url, ArrayList<BasicNameValuePair> params,
 			boolean authenticated) throws HttpException {
 		if (url.indexOf("?") == -1) {
-			url += "?source=" + CONSUMER_KEY;
+			url += "?source=" + APP_SOURCE;
 		} else if (url.indexOf("source") == -1) {
-			url += "&source=" + CONSUMER_KEY;
+			url += "&source=" + APP_SOURCE;
 		}
 
 		// 以HTML格式获得数据，以便进一步处理
@@ -889,7 +890,7 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
 		return new Status(http.post(
 				getBaseURL() + "statuses/update.json",
 				createParams(new BasicNameValuePair("status", new_status),
-						new BasicNameValuePair("source", CONSUMER_KEY),
+						new BasicNameValuePair("source", APP_SOURCE),
 						new BasicNameValuePair("repost_status_id",
 								repost_status_id)), true));
 	}

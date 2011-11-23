@@ -67,6 +67,10 @@ import com.ch_linghu.fanfoudroid.fanfou.Configuration;
 import com.ch_linghu.fanfoudroid.fanfou.RefuseError;
 import com.ch_linghu.fanfoudroid.util.DebugTimer;
 
+import eriji.com.oauth.OAuthClient;
+import eriji.com.oauth.OAuthFileStore;
+import eriji.com.oauth.OAuthStore;
+
 /**
  * Wrap of org.apache.http.impl.client.DefaultHttpClient
  * 
@@ -133,11 +137,14 @@ public class HttpClient {
 
 	private String mUserId;
 	private String mPassword;
+	private OAuthClient mOAuthClient;
+	private String mOAuthBaseUrl = Configuration.getOAuthBaseUrl();;
 
 	private static boolean isAuthenticationEnabled = false;
 
 	public HttpClient() {
 		prepareHttpClient();
+		setOAuthConsumer(null, null, null);
 	}
 
 	/**
@@ -210,6 +217,27 @@ public class HttpClient {
 		 * log.tag.org.apache.http.headers VERBOSE
 		 */
 	}
+	
+	/**
+     * Sets the consumer key and consumer secret.<br>
+     * System property -Dsinat4j.oauth.consumerKey and -Dhttp.oauth.consumerSecret override this attribute.
+     * @param consumerKey Consumer Key
+     * @param consumerSecret Consumer Secret
+     * @since Weibo4J 2.0.0
+     */
+    public void setOAuthConsumer(String consumerKey, String consumerSecret, OAuthStore store) {
+        consumerKey = Configuration.getOAuthConsumerKey(consumerKey);
+        consumerSecret = Configuration.getOAuthConsumerSecret(consumerSecret);
+        store = (null != store) ? store : new OAuthFileStore("/sdcard/fanfoudroid/"); // TODO: not safe
+        if (null != consumerKey && null != consumerSecret
+            && 0 != consumerKey.length() && 0 != consumerSecret.length()) {
+            mOAuthClient = new OAuthClient(consumerKey, consumerSecret,
+                                           mOAuthBaseUrl, store);
+            isAuthenticationEnabled = true;
+        } else {
+            Log.e(TAG, "Cann't setup OAuth, consumer key or consumer secret is missing.");
+        }
+    }
 
 	/**
 	 * Setup DefaultHttpClient
@@ -762,5 +790,9 @@ public class HttpClient {
 			return false;
 		}
 	};
+
+	public OAuthClient getOAuthClient() {
+		return mOAuthClient;
+	}
 
 }
