@@ -316,8 +316,6 @@ public class LoginActivity extends Activity {
 			SharedPreferences.Editor editor = mPreferences.edit();
 			editor.putString(Preferences.USERNAME_KEY, mUsername);
 
-			editor.putString(Preferences.PASSWORD_KEY,
-					encryptPassword(mPassword));
 			// add 存储当前用户的id
 			editor.putString(Preferences.CURRENT_USER_ID, user.getId());
 			editor.commit();

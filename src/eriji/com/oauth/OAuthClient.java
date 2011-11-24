@@ -1,5 +1,6 @@
 package eriji.com.oauth;
 
+import oauth.signpost.OAuth;
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.OAuthProvider;
 import oauth.signpost.basic.DefaultOAuthProvider;
@@ -75,7 +76,7 @@ public class OAuthClient {
                 + mConsumer.getConsumerKey() + " " 
                 + mConsumer.getConsumerSecret() + " "
                 + mProvider.getRequestTokenEndpointUrl());
-        String authUrl = mProvider.retrieveRequestToken(mConsumer, "http://www.googlecode.com/fanfoudroid" );// OAuth.OUT_OF_BAND);
+        String authUrl = mProvider.retrieveRequestToken(mConsumer, OAuth.OUT_OF_BAND);
         mRequestToken = new OAuthRequestToken(mConsumer.getToken(), 
                                              mConsumer.getTokenSecret());
         storeRequestToken();
