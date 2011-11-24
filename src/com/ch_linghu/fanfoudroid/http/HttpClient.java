@@ -68,8 +68,11 @@ import com.ch_linghu.fanfoudroid.fanfou.RefuseError;
 import com.ch_linghu.fanfoudroid.util.DebugTimer;
 
 import eriji.com.oauth.OAuthClient;
+import eriji.com.oauth.OAuthClientException;
 import eriji.com.oauth.OAuthFileStore;
+import eriji.com.oauth.OAuthSharedPreferencesStore;
 import eriji.com.oauth.OAuthStore;
+import eriji.com.oauth.XAuthClient;
 
 /**
  * Wrap of org.apache.http.impl.client.DefaultHttpClient
@@ -155,6 +158,7 @@ public class HttpClient {
 	 */
 	public HttpClient(String user_id, String password) {
 		prepareHttpClient();
+		setOAuthConsumer(null, null, null);
 		setCredentials(user_id, password);
 	}
 
@@ -220,23 +224,10 @@ public class HttpClient {
 	
 	/**
      * Sets the consumer key and consumer secret.<br>
-     * System property -Dsinat4j.oauth.consumerKey and -Dhttp.oauth.consumerSecret override this attribute.
-     * @param consumerKey Consumer Key
-     * @param consumerSecret Consumer Secret
-     * @since Weibo4J 2.0.0
      */
     public void setOAuthConsumer(String consumerKey, String consumerSecret, OAuthStore store) {
-        consumerKey = Configuration.getOAuthConsumerKey(consumerKey);
-        consumerSecret = Configuration.getOAuthConsumerSecret(consumerSecret);
-        store = (null != store) ? store : new OAuthFileStore("/sdcard/fanfoudroid/"); // TODO: not safe
-        if (null != consumerKey && null != consumerSecret
-            && 0 != consumerKey.length() && 0 != consumerSecret.length()) {
-            mOAuthClient = new OAuthClient(consumerKey, consumerSecret,
-                                           mOAuthBaseUrl, store);
-            isAuthenticationEnabled = true;
-        } else {
-            Log.e(TAG, "Cann't setup OAuth, consumer key or consumer secret is missing.");
-        }
+    	mOAuthClient = XAuthClient.factory();
+       isAuthenticationEnabled = true;
     }
 
 	/**
@@ -267,20 +258,6 @@ public class HttpClient {
 				params, schemeRegistry);
 		mClient = new DefaultHttpClient(cm, params);
 
-		// Setup BasicAuth
-		BasicScheme basicScheme = new BasicScheme();
-		mAuthScope = new AuthScope(SERVER_HOST, AuthScope.ANY_PORT);
-
-		// mClient.setAuthSchemes(authRegistry);
-		mClient.setCredentialsProvider(new BasicCredentialsProvider());
-
-		// Generate BASIC scheme object and stick it to the local
-		// execution context
-		localcontext = new BasicHttpContext();
-		localcontext.setAttribute("preemptive-auth", basicScheme);
-
-		// first request interceptor
-		mClient.addRequestInterceptor(preemptiveAuth, 0);
 		// Support GZIP
 		mClient.addResponseInterceptor(gzipResponseIntercepter);
 
@@ -288,6 +265,23 @@ public class HttpClient {
 		// cm.releaseConnection(conn, validDuration, timeUnit);
 		// httpclient.getConnectionManager().shutdown();
 	}
+	
+	private void setBasicAuth() {
+        // Setup BasicAuth
+        BasicScheme basicScheme = new BasicScheme();
+        mAuthScope = new AuthScope(SERVER_HOST, AuthScope.ANY_PORT);
+
+        // mClient.setAuthSchemes(authRegistry);
+        mClient.setCredentialsProvider(new BasicCredentialsProvider());
+
+        // Generate BASIC scheme object and stick it to the local
+        // execution context
+        localcontext = new BasicHttpContext();
+        localcontext.setAttribute("preemptive-auth", basicScheme);
+
+        // first request interceptor
+        mClient.addRequestInterceptor(preemptiveAuth, 0);
+    }
 
 	/**
 	 * HttpRequestInterceptor for DefaultHttpClient
@@ -367,8 +361,9 @@ public class HttpClient {
 	public void setCredentials(String username, String password) {
 		mUserId = username;
 		mPassword = password;
-		mClient.getCredentialsProvider().setCredentials(mAuthScope,
-				new UsernamePasswordCredentials(username, password));
+		// FOR TEST: disable Basic auth
+		//mClient.getCredentialsProvider().setCredentials(mAuthScope,
+		//		new UsernamePasswordCredentials(username, password));
 		isAuthenticationEnabled = true;
 	}
 
@@ -382,7 +377,7 @@ public class HttpClient {
 
 	public Response post(String url, ArrayList<BasicNameValuePair> params)
 			throws HttpException {
-		return httpRequest(url, params, false, HttpPost.METHOD_NAME);
+		return httpRequest(url, params, true, HttpPost.METHOD_NAME);
 	}
 
 	public Response post(String url, boolean authenticated)
@@ -489,6 +484,10 @@ public class HttpClient {
 
 		// Execute Request
 		try {
+			// 加入OAuth认证信息
+			if (authenticated) {
+				mOAuthClient.signRequest(method);
+			}
 			response = mClient.execute(method, localcontext);
 			res = new Response(response);
 		} catch (ClientProtocolException e) {
@@ -496,6 +495,9 @@ public class HttpClient {
 			throw new HttpException(e.getMessage(), e);
 		} catch (IOException ioe) {
 			throw new HttpException(ioe.getMessage(), ioe);
+		} catch (OAuthClientException e) {
+			Log.e(TAG, e.getMessage(), e);
+			throw new HttpException(e.getMessage(), e);
 		}
 
 		if (response != null) {

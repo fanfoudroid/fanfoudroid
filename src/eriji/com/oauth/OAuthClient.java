@@ -1,6 +1,5 @@
 package eriji.com.oauth;
 
-import oauth.signpost.OAuth;
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.OAuthProvider;
 import oauth.signpost.basic.DefaultOAuthProvider;
@@ -16,13 +15,13 @@ import org.apache.http.HttpRequest;
 import android.util.Log;
 
 public class OAuthClient {
-    private Logger logger = Logger.getLogger(OAuthClient.class);
+    protected Logger logger = Logger.getLogger(OAuthClient.class);
     
-    private OAuthConsumer mConsumer = null;
-    private OAuthProvider mProvider = null;
+    protected OAuthConsumer mConsumer = null;
+    protected OAuthProvider mProvider = null;
     
-    private OAuthRequestToken mRequestToken = null;
-    private OAuthAccessToken mAccessToken = null;
+    protected OAuthRequestToken mRequestToken = null;
+    protected OAuthAccessToken mAccessToken = null;
     
     private OAuthStore mStore = null;
     
@@ -76,7 +75,7 @@ public class OAuthClient {
                 + mConsumer.getConsumerKey() + " " 
                 + mConsumer.getConsumerSecret() + " "
                 + mProvider.getRequestTokenEndpointUrl());
-        String authUrl = mProvider.retrieveRequestToken(mConsumer, OAuth.OUT_OF_BAND);
+        String authUrl = mProvider.retrieveRequestToken(mConsumer, "http://www.googlecode.com/fanfoudroid" );// OAuth.OUT_OF_BAND);
         mRequestToken = new OAuthRequestToken(mConsumer.getToken(), 
                                              mConsumer.getTokenSecret());
         storeRequestToken();
@@ -200,7 +199,7 @@ public class OAuthClient {
             OAuthToken accessToken = getAccessToken();
             
             if (null != accessToken) {
-                logger.debug("Find access token : " + accessToken);
+                logger.debug("Sign request with access token : " + accessToken);
             
                // OAuthConsumer consumer = new CommonsHttpOAuthConsumer(mConsumer.getConsumerKey(),
                //     mConsumer.getConsumerSecret());

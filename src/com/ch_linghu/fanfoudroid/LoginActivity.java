@@ -35,6 +35,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.ch_linghu.fanfoudroid.app.Preferences;
+import com.ch_linghu.fanfoudroid.fanfou.Configuration;
 import com.ch_linghu.fanfoudroid.fanfou.User;
 import com.ch_linghu.fanfoudroid.http.HttpAuthException;
 import com.ch_linghu.fanfoudroid.http.HttpException;

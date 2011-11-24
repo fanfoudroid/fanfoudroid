@@ -38,5 +38,32 @@ public class OAuthToken {
                 + mTokenSecret + "]";
     }
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		OAuthToken other = (OAuthToken) obj;
+		if (mToken == null) {
+			if (other.mToken != null)
+				return false;
+		} else if (!mToken.equals(other.mToken))
+			return false;
+		if (mTokenSecret == null) {
+			if (other.mTokenSecret != null)
+				return false;
+		} else if (!mTokenSecret.equals(other.mTokenSecret))
+			return false;
+		if (mTokenType == null) {
+			if (other.mTokenType != null)
+				return false;
+		} else if (!mTokenType.equals(other.mTokenType))
+			return false;
+		return true;
+	}
+
 
 }
