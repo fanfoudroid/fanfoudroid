@@ -68,8 +68,9 @@ public class Configuration {
 		defaultProperty.setProperty("fanfoudroid.http.readTimeout", "120000");
 		defaultProperty.setProperty("fanfoudroid.http.retryCount", "3");
 		defaultProperty.setProperty("fanfoudroid.http.retryIntervalSecs", "10");
-		// defaultProperty.setProperty("fanfoudroid.oauth.consumerKey","");
-		// defaultProperty.setProperty("fanfoudroid.oauth.consumerSecret","");
+		defaultProperty.setProperty("fanfoudroid.oauth.consumerKey",""); // your appKey
+		defaultProperty.setProperty("fanfoudroid.oauth.consumerSecret",""); // your secret
+		defaultProperty.setProperty("fanfoudroid.oauth.baseUrl","http://fanfou.com/oauth");
 		defaultProperty.setProperty("fanfoudroid.async.numThreads", "1");
 		defaultProperty.setProperty("fanfoudroid.clientVersion", "1.0");
 		try {
@@ -258,6 +259,10 @@ public class Configuration {
 	public static String getOAuthConsumerSecret(String consumerSecret) {
 		return getProperty("fanfoudroid.oauth.consumerSecret", consumerSecret);
 	}
+	
+	public static String getOAuthBaseUrl() {
+		return getProperty("fanfoudroid.oauth.baseUrl");
+	}
 
 	public static boolean getBoolean(String name) {
 		String value = getProperty(name);
@@ -349,4 +354,6 @@ public class Configuration {
 		return getBoolean("fanfoudroid.debug");
 
 	}
+
+
 }
