@@ -97,7 +97,8 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
 	 * @return
 	 */
 	public static boolean isValidCredentials(String username, String password) {
-		return !TextUtils.isEmpty(username) && !TextUtils.isEmpty(password);
+		//不再判断密码是否为空的情况
+		return !TextUtils.isEmpty(username);// && !TextUtils.isEmpty(password);
 	}
 
 	/**
