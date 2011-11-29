@@ -44,8 +44,8 @@ public class Configuration {
 
 	/* package */static void init() {
 		defaultProperty = new Properties();
-		//defaultProperty.setProperty("fanfoudroid.debug", "false");
-		defaultProperty.setProperty("fanfoudroid.debug", "true");
+		defaultProperty.setProperty("fanfoudroid.debug", "false");
+		//defaultProperty.setProperty("fanfoudroid.debug", "true");
 		defaultProperty.setProperty("fanfoudroid.source", "fanfoudroid");
 		// defaultProperty.setProperty("fanfoudroid.clientVersion","");
 		defaultProperty.setProperty("fanfoudroid.clientURL",
@@ -68,8 +68,8 @@ public class Configuration {
 		defaultProperty.setProperty("fanfoudroid.http.readTimeout", "120000");
 		defaultProperty.setProperty("fanfoudroid.http.retryCount", "3");
 		defaultProperty.setProperty("fanfoudroid.http.retryIntervalSecs", "10");
-		defaultProperty.setProperty("fanfoudroid.oauth.consumerKey",""); // your appKey
-		defaultProperty.setProperty("fanfoudroid.oauth.consumerSecret",""); // your secret
+		defaultProperty.setProperty("fanfoudroid.oauth.consumerKey","830126cc1c446ca7cbb115db56e41e5e"); // your appKey
+		defaultProperty.setProperty("fanfoudroid.oauth.consumerSecret","a587c2aaae8d63ab9f4e35f5ad670625"); // your secret
 		defaultProperty.setProperty("fanfoudroid.oauth.baseUrl","http://fanfou.com/oauth");
 		defaultProperty.setProperty("fanfoudroid.async.numThreads", "1");
 		defaultProperty.setProperty("fanfoudroid.clientVersion", "1.0");

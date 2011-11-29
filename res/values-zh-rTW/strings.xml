@@ -71,7 +71,7 @@
     <string name="user_query_status_success">查詢成功！</string>
     <!-- Write頁面 -->
     <string name="write_label_send">發送</string>
-    <string name="write_label_send_hint">有什麼要說的？</string>
+    <string name="write_label_send_hint">說點什麽唄</string>
     <string name="write_label_choose_images">插入圖片</string>
     <string name="write_label_send_in_background">後臺發送</string>
     <string name="write_label_take_a_picture">相機拍攝</string>
