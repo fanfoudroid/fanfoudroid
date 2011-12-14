@@ -71,7 +71,7 @@
     <string name="user_query_status_success">查询成功！</string>
     <!-- Write页面 -->
     <string name="write_label_send">发送</string>
-    <string name="write_label_send_hint">有什么要说的？</string>
+    <string name="write_label_send_hint">说点什么呗</string>
     <string name="write_label_choose_images">插入图片</string>
     <string name="write_label_send_in_background">后台发送</string>
     <string name="write_label_take_a_picture">相机拍摄</string>
