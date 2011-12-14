@@ -80,7 +80,7 @@ public class Response {
 	 */
 	public String asString() throws ResponseException {
 		try {
-			return entityToString(mResponse.getEntity());
+			return Response.entityToString(mResponse.getEntity());
 		} catch (IOException e) {
 			throw new ResponseException(e.getMessage(), e);
 		}
@@ -94,7 +94,7 @@ public class Response {
 	 * @throws IOException
 	 * @throws ResponseException
 	 */
-	private String entityToString(final HttpEntity entity) throws IOException,
+	public static String entityToString(final HttpEntity entity) throws IOException,
 			ResponseException {
 		DebugTimer.betweenStart("AS STRING");
 		if (null == entity) {

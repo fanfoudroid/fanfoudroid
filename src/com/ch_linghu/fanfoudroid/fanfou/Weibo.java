@@ -27,6 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package com.ch_linghu.fanfoudroid.fanfou;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
@@ -42,15 +44,20 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.ch_linghu.fanfoudroid.R;
+import com.ch_linghu.fanfoudroid.http.HttpAuthException;
 import com.ch_linghu.fanfoudroid.http.HttpClient;
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.Response;
 
+import eriji.com.oauth.OAuthStoreException;
+import eriji.com.oauth.XAuthClient;
+
 public class Weibo extends WeiboSupport implements java.io.Serializable {
 	public static final String TAG = "Weibo_API";
 
-	public static final String CONSUMER_KEY = Configuration.getSource();
-	public static final String CONSUMER_SECRET = "";
+	public static final String APP_SOURCE = Configuration.getSource();
+	public static final String CONSUMER_KEY = Configuration.getOAuthConsumerKey();
+	public static final String CONSUMER_SECRET = Configuration.getOAuthConsumerSecret();
 
 	private String baseURL = Configuration.getScheme() + "api.fanfou.com/";
 	private String searchBaseURL = Configuration.getScheme()
@@ -90,7 +97,8 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
 	 * @return
 	 */
 	public static boolean isValidCredentials(String username, String password) {
-		return !TextUtils.isEmpty(username) && !TextUtils.isEmpty(password);
+		//不再判断密码是否为空的情况
+		return !TextUtils.isEmpty(username);// && !TextUtils.isEmpty(password);
 	}
 
 	/**
@@ -101,16 +109,23 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
 	 * @return Verified User
 	 * @throws HttpException
 	 *             验证失败及其他非200响应均抛出异常
+	 * @throws OAuthStoreException
 	 */
 	public User login(String username, String password) throws HttpException {
 		Log.d(TAG, "Login attempt for " + username);
 		http.setCredentials(username, password);
 
-		// Verify userName and password on the server.
-		User user = verifyCredentials();
-
-		if (null != user && user.getId().length() > 0) {
+		try {
+			// 进行XAuth认证。
+			((XAuthClient) http.getOAuthClient()).retrieveAccessToken(username, password);
+		} catch (Exception e) {
+			// TODO: XAuth认证不管是userName/password错，还是appKey错都是返回401 unauthorized
+			// 但是会返回一个xml格式的error信息，格式如下：
+			// <hash><request></request><error></error></hash>
+			throw new HttpAuthException(e.getMessage(), e);
 		}
+		// FIXME: 这里重复进行了认证，为历史遗留原因, 留下的唯一原因时该方法需要返回一个User实例
+	   User user = verifyCredentials(); // Verify userName and password
 
 		return user;
 	}
@@ -278,9 +293,9 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
 	protected Response get(String url, ArrayList<BasicNameValuePair> params,
 			boolean authenticated) throws HttpException {
 		if (url.indexOf("?") == -1) {
-			url += "?source=" + CONSUMER_KEY;
+			url += "?source=" + APP_SOURCE;
 		} else if (url.indexOf("source") == -1) {
-			url += "&source=" + CONSUMER_KEY;
+			url += "&source=" + APP_SOURCE;
 		}
 
 		// 以HTML格式获得数据，以便进一步处理
@@ -889,7 +904,7 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
 		return new Status(http.post(
 				getBaseURL() + "statuses/update.json",
 				createParams(new BasicNameValuePair("status", new_status),
-						new BasicNameValuePair("source", CONSUMER_KEY),
+						new BasicNameValuePair("source", APP_SOURCE),
 						new BasicNameValuePair("repost_status_id",
 								repost_status_id)), true));
 	}

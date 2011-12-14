@@ -1,0 +1,11 @@
+本目录为 `fanfoudroid` 项目的子项目，专门用于针对主项目进行各种测试。本项目本身就是一个Android应用程序，有关Android testing相关内容可参考官方文档。
+
+.安装说明：
+在eclipse中:
+    1. File->import, 选中General->Existing Projects into Workspace.
+    2. Select root directory选择 `/PATH/TO/fanfoudroid/test/fanfoudroid-test` .
+
+.运行测试：
+在eclipse中选择 `fanfoudroid-test` 项目，右键选择 Run as->Android Junit Test.
+
+
