@@ -1613,13 +1613,13 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
 			String userId, Paging paging) throws HttpException {
 		return User.constructUsers(get(getBaseURL() + "users/followers.json",
 				createParams(new BasicNameValuePair("id", userId)), paging,
-				false));
+				true));
 	}
 
 	public List<com.ch_linghu.fanfoudroid.fanfou.User> getFollowersList(
 			String userId) throws HttpException {
 		return User.constructUsers(get(getBaseURL() + "users/followers.json",
-				createParams(new BasicNameValuePair("id", userId)), false));
+				createParams(new BasicNameValuePair("id", userId)), true));
 	}
 
 	/**
