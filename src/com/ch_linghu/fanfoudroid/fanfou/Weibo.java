@@ -1007,7 +1007,7 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
 	public List<User> getFriendsStatuses(String id, Paging paging)
 			throws HttpException {
 		return User.constructUsers(get(getBaseURL() + "users/friends.json",
-				createParams(new BasicNameValuePair("id", id)), paging, false));
+				createParams(new BasicNameValuePair("id", id)), paging, true));
 	}
 
 	/**
