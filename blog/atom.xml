@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <title>
+        BASIC blog full text feed    </title>
+        <link href="blog\atom.xml" rel="self" />
+    
+        <link href="/"/>
+    
+        
+    <updated>2012-02-06T12:35:13Z</updated>
+
+    <id>/blog/atom.xml/</id>
+
+            <entry>
+            <title type="html">A Happy Post</title>
+            <author><name>Lakshmi Vyasarajan</name></author>
+            <link href="/blog/happy-post.html"/>
+            <updated>2011-02-01T10:00:00Z</updated>
+            <published>2011-02-01T10:00:00Z</published>
+            <id>/blog/happy-post.html</id>
+                        <category   scheme="/blog/tags"
+                        term="happy"
+                        label="Happy" />
+                        <category   scheme="/blog/tags"
+                        term="thoughts"
+                        label="Thoughts" />
+            
+            <content type="html">
+                                &lt;p&gt;&lt;img alt=&#34;Airport&#34; src=&#34;/media/images/airport.png&#34; /&gt;
+Lady Malvern was a hearty, happy, healthy, overpowering sort of dashed female,
+not so very tall but making up for it by measuring about six feet from the
+&lt;span class=&#34;caps&#34;&gt;O.P.&lt;/span&gt; to the Prompt Side.
+She fitted into my biggest arm-chair as if it had
+been built round her by someone who knew they were wearing arm-chairs tight
+about the hips that season. She had bright, bulging eyes and a lot of yellow
+hair, and when she spoke she showed about fifty-seven front teeth. She was one
+of those women who kind of numb a fellow&amp;#8217;s faculties. She made me feel as if I
+were ten years old and had been brought into the drawing-room in my Sunday
+clothes to say how-d&amp;#8217;you-do. Altogether by no means the sort of thing a
+chappie would wish to find in his sitting-room before&amp;nbsp;breakfast.&lt;/p&gt;
+&lt;p&gt;Motty, the son, was about twenty-three, tall and thin and meek-looking. He had
+the same yellow hair as his mother, but he wore it plastered down and parted
+in the middle. His eyes bulged, too, but they weren&amp;#8217;t bright. They were a dull
+grey with pink rims. His chin gave up the struggle about half-way down, and he
+didn&amp;#8217;t appear to have any eyelashes. A mild, furtive, sheepish sort of
+blighter, in&amp;nbsp;short.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;Awfully glad to see you,&amp;#8221; I said. &amp;#8220;So you&amp;#8217;ve popped over, eh? Making a long
+stay in&amp;nbsp;America?&amp;#8221;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;About a month. Your aunt gave me your address and told me to be sure and call
+on&amp;nbsp;you.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;I was glad to hear this, as it showed that Aunt Agatha was beginning to come
+round a bit. There had been some unpleasantness a year before, when she had
+sent me over to New York to disentangle my Cousin Gussie from the clutches of
+a girl on the music-hall stage. When I tell you that by the time I had
+finished my operations, Gussie had not only married the girl but had gone on
+the stage himself, and was doing well, you&amp;#8217;ll understand that Aunt Agatha was
+upset to no small extent. I simply hadn&amp;#8217;t dared go back and face her, and it
+was a relief to find that time had healed the wound and all that sort of thing
+enough to make her tell her pals to look me up. What I mean is, much as I
+liked America, I didn&amp;#8217;t want to have England barred to me for the rest of my
+natural; and, believe me, England is a jolly sight too small for anyone to
+live in with Aunt Agatha, if she&amp;#8217;s really on the warpath. So I braced on
+hearing these kind words and smiled genially on the&amp;nbsp;assemblage.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;Your aunt said that you would do anything that was in your power to be of
+assistance to&amp;nbsp;us.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;Rather? Oh, rather!&amp;nbsp;Absolutely!&amp;#8221;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;Thank you so much. I want you to put dear Motty up for a little&amp;nbsp;while.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;I didn&amp;#8217;t get this for a&amp;nbsp;moment.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;Put him up? For my&amp;nbsp;clubs?&amp;#8221;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;No, no! Darling Motty is essentially a home bird. Aren&amp;#8217;t you, Motty&amp;nbsp;darling?&amp;#8221;&lt;/p&gt;
+&lt;p&gt;Motty, who was sucking the knob of his stick, uncorked&amp;nbsp;himself.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;Yes, mother,&amp;#8221; he said, and corked himself up&amp;nbsp;again.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;I should not like him to belong to clubs. I mean put him up here. Have him to
+live with you while I am&amp;nbsp;away.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;These frightful words trickled out of her like honey. The woman simply didn&amp;#8217;t
+seem to understand the ghastly nature of her proposal. I gave Motty the swift
+east-to-west. He was sitting with his mouth nuzzling the stick, blinking at
+the wall. The thought of having this planted on me for an indefinite period
+appalled me. Absolutely appalled me, don&amp;#8217;t you know. I was just starting to
+say that the shot wasn&amp;#8217;t on the board at any price, and that the first sign
+Motty gave of trying to nestle into my little home I would yell for the
+police, when she went on, rolling placidly over me, as it&amp;nbsp;were.&lt;/p&gt;
+&lt;p&gt;There was something about this woman that sapped a chappie&amp;#8217;s&amp;nbsp;will-power.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;I am leaving New York by the midday train, as I have to pay a visit to
+Sing-Sing prison. I am extremely interested in prison conditions in America.
+After that I work my way gradually across to the coast, visiting the points of
+interest on the journey. You see, Mr. Wooster, I am in America principally on
+business. No doubt you read my book, India and the Indians? My publishers are
+anxious for me to write a companion volume on the United States. I shall not
+be able to spend more than a month in the country, as I have to get back for
+the season, but a month should be ample. I was less than a month in India, and
+my dear friend Sir Roger Cremorne wrote his America from Within after a stay
+of only two weeks. I should love to take dear Motty with me, but the poor boy
+gets so sick when he travels by train. I shall have to pick him up on my&amp;nbsp;return.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;From where I sat I could see Jeeves in the dining-room, laying the
+breakfast-table. I wished I could have had a minute with him alone. I felt
+certain that he would have been able to think of some way of putting a stop to
+this&amp;nbsp;woman.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;It will be such a relief to know that Motty is safe with you, Mr. Wooster. I
+know what the temptations of a great city are. Hitherto dear Motty has been
+sheltered from them. He has lived quietly with me in the country. I know that
+you will look after him carefully, Mr. Wooster. He will give very little
+trouble.&amp;#8221; She talked about the poor blighter as if he wasn&amp;#8217;t there. Not that
+Motty seemed to mind. He had stopped chewing his walking-stick and was sitting
+there with his mouth open. &amp;#8220;He is a vegetarian and a teetotaller and is
+devoted to reading. Give him a nice book and he will be quite contented.&amp;#8221; She
+got up. &amp;#8220;Thank you so much, Mr. Wooster! I don&amp;#8217;t know what I should have done
+without your help. Come, Motty! We have just time to see a few of the sights
+before my train goes. But I shall have to rely on you for most of my
+information about New York, darling. Be sure to keep your eyes open and take
+notes of your impressions! It will be such a help. Good-bye, Mr. Wooster. I
+will send Motty back early in the&amp;nbsp;afternoon.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;They went out, and I howled for&amp;nbsp;Jeeves.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;Jeeves! What about&amp;nbsp;it?&amp;#8221;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;Sir?&amp;#8221;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;What&amp;#8217;s to be done? You heard it all, didn&amp;#8217;t you? You were in the dining-room
+most of the time. That pill is coming to stay&amp;nbsp;here.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;Pill,&amp;nbsp;sir?&amp;#8221;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;The&amp;nbsp;excrescence.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;I beg your pardon,&amp;nbsp;sir?&amp;#8221;&lt;/p&gt;
+&lt;p&gt;I looked at Jeeves sharply. This sort of thing wasn&amp;#8217;t like him. It was as if
+he were deliberately trying to give me the pip. Then I understood. The man was
+really upset about that tie. He was trying to get his own&amp;nbsp;back.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;Lord Pershore will be staying here from to-night, Jeeves,&amp;#8221; I said&amp;nbsp;coldly.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;Very good, sir. Breakfast is ready,&amp;nbsp;sir.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://www.gutenberg.org/cache/epub/8164/pg8164.html&#34;&gt;My Man Jeeves by &lt;span class=&#34;caps&#34;&gt;PG&lt;/span&gt;&amp;nbsp;Wodehouse&lt;/a&gt;&lt;/p&gt;            </content>
+        </entry>
+            <entry>
+            <title type="html">An Angry Post</title>
+            <author><name>Lakshmi Vyasarajan</name></author>
+            <link href="/blog/angry-post.html"/>
+            <updated>2011-01-01T10:00:00Z</updated>
+            <published>2011-01-01T10:00:00Z</published>
+            <id>/blog/angry-post.html</id>
+                        <category   scheme="/blog/tags"
+                        term="angry"
+                        label="Angry" />
+                        <category   scheme="/blog/tags"
+                        term="thoughts"
+                        label="Thoughts" />
+            
+            <content type="html">
+                                &lt;p&gt;&lt;img alt=&#34;Airport&#34; src=&#34;/media/images/airport.png&#34; /&gt;
+To complete the character-study of Mr. Worple, he was a man of extremely
+uncertain temper, and his general tendency was to think that Corky was a poor
+chump and that whatever step he took in any direction on his own account, was
+just another proof of his innate idiocy. I should imagine Jeeves feels very
+much the same about me.
+So when Corky trickled into my apartment one afternoon, shooing a girl in
+front of him, and said, &amp;#8220;Bertie, I want you to meet my fiancée, Miss Singer,&amp;#8221;
+the aspect of the matter which hit me first was precisely the one which he had
+come to consult me about. The very first words I spoke were, &amp;#8220;Corky, how about
+your&amp;nbsp;uncle?&amp;#8221;&lt;/p&gt;
+&lt;p&gt;The poor chap gave one of those mirthless laughs. He was looking anxious and
+worried, like a man who has done the murder all right but can&amp;#8217;t think what the
+deuce to do with the&amp;nbsp;body.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;We&amp;#8217;re so scared, Mr. Wooster,&amp;#8221; said the girl. &amp;#8220;We were hoping that you might
+suggest a way of breaking it to&amp;nbsp;him.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;Muriel Singer was one of those very quiet, appealing girls who have a way of
+looking at you with their big eyes as if they thought you were the greatest
+thing on earth and wondered that you hadn&amp;#8217;t got on to it yet yourself. She sat
+there in a sort of shrinking way, looking at me as if she were saying to
+herself, &amp;#8220;Oh, I do hope this great strong man isn&amp;#8217;t going to hurt me.&amp;#8221; She
+gave a fellow a protective kind of feeling, made him want to stroke her hand
+and say, &amp;#8220;There, there, little one!&amp;#8221; or words to that effect. She made me feel
+that there was nothing I wouldn&amp;#8217;t do for her. She was rather like one of those
+innocent-tasting American drinks which creep imperceptibly into your system so
+that, before you know what you&amp;#8217;re doing, you&amp;#8217;re starting out to reform the
+world by force if necessary and pausing on your way to tell the large man in
+the corner that, if he looks at you like that, you will knock his head off.
+What I mean is, she made me feel alert and dashing, like a jolly old
+knight-errant or something of that kind. I felt that I was with her in this
+thing to the&amp;nbsp;limit.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;I don&amp;#8217;t see why your uncle shouldn&amp;#8217;t be most awfully bucked,&amp;#8221; I said to
+Corky. &amp;#8220;He will think Miss Singer the ideal wife for&amp;nbsp;you.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;Corky declined to cheer&amp;nbsp;up.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;You don&amp;#8217;t know him. Even if he did like Muriel he wouldn&amp;#8217;t admit it. That&amp;#8217;s
+the sort of pig-headed guy he is. It would be a matter of principle with him
+to kick. All he would consider would be that I had gone and taken an important
+step without asking his advice, and he would raise Cain automatically. He&amp;#8217;s
+always done&amp;nbsp;it.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;I strained the old bean to meet this&amp;nbsp;emergency.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;You want to work it so that he makes Miss Singer&amp;#8217;s acquaintance without
+knowing that you know her. Then you come&amp;nbsp;along&amp;#8221;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;But how can I work it that&amp;nbsp;way?&amp;#8221;&lt;/p&gt;
+&lt;p&gt;I saw his point. That was the&amp;nbsp;catch.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;There&amp;#8217;s only one thing to do,&amp;#8221; I&amp;nbsp;said.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;What&amp;#8217;s&amp;nbsp;that?&amp;#8221;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;Leave it to&amp;nbsp;Jeeves.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;And I rang the&amp;nbsp;bell.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;Sir?&amp;#8221; said Jeeves, kind of manifesting himself. One of the rummy things about
+Jeeves is that, unless you watch like a hawk, you very seldom see him come
+into a room. He&amp;#8217;s like one of those weird chappies in India who dissolve
+themselves into thin air and nip through space in a sort of disembodied way
+and assemble the parts again just where they want them. I&amp;#8217;ve got a cousin
+who&amp;#8217;s what they call a Theosophist, and he says he&amp;#8217;s often nearly worked the
+thing himself, but couldn&amp;#8217;t quite bring it off, probably owing to having fed
+in his boyhood on the flesh of animals slain in anger and&amp;nbsp;pie.&lt;/p&gt;
+&lt;p&gt;The moment I saw the man standing there, registering respectful attention, a
+weight seemed to roll off my mind. I felt like a lost child who spots his
+father in the offing. There was something about him that gave me&amp;nbsp;confidence.&lt;/p&gt;
+&lt;p&gt;Jeeves is a tallish man, with one of those dark, shrewd faces. His eye gleams
+with the light of pure&amp;nbsp;intelligence.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;Jeeves, we want your&amp;nbsp;advice.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;Very good,&amp;nbsp;sir.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;I boiled down Corky&amp;#8217;s painful case into a few well-chosen&amp;nbsp;words.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;So you see what it amount to, Jeeves. We want you to suggest some way by
+which Mr. Worple can make Miss Singer&amp;#8217;s acquaintance without getting on to the
+fact that Mr. Corcoran already knows her.&amp;nbsp;Understand?&amp;#8221;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;Perfectly,&amp;nbsp;sir.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;Well, try to think of&amp;nbsp;something.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;I have thought of something already,&amp;nbsp;sir.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;You&amp;nbsp;have!&amp;#8221;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;The scheme I would suggest cannot fail of success, but it has what may seem
+to you a drawback, sir, in that it requires a certain financial&amp;nbsp;outlay.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;He means,&amp;#8221; I translated to Corky, &amp;#8220;that he has got a pippin of an idea, but
+it&amp;#8217;s going to cost a&amp;nbsp;bit.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;Naturally the poor chap&amp;#8217;s face dropped, for this seemed to dish the whole
+thing. But I was still under the influence of the girl&amp;#8217;s melting gaze, and I
+saw that this was where I started in as a&amp;nbsp;knight-errant.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;You can count on me for all that sort of thing, Corky,&amp;#8221; I said. &amp;#8220;Only too
+glad. Carry on,&amp;nbsp;Jeeves.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;I would suggest, sir, that Mr. Corcoran take advantage of Mr. Worple&amp;#8217;s
+attachment to&amp;nbsp;ornithology.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;How on earth did you know that he was fond of&amp;nbsp;birds?&amp;#8221;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://www.gutenberg.org/cache/epub/8164/pg8164.html&#34;&gt;My Man Jeeves by &lt;span class=&#34;caps&#34;&gt;PG&lt;/span&gt;&amp;nbsp;Wodehouse&lt;/a&gt;&lt;/p&gt;            </content>
+        </entry>
+            <entry>
+            <title type="html">A Sad Post</title>
+            <author><name>Lakshmi Vyasarajan</name></author>
+            <link href="/blog/sad-post.html"/>
+            <updated>2010-12-01T10:00:00Z</updated>
+            <published>2010-12-01T10:00:00Z</published>
+            <id>/blog/sad-post.html</id>
+                        <category   scheme="/blog/tags"
+                        term="sad"
+                        label="Sad" />
+                        <category   scheme="/blog/tags"
+                        term="thoughts"
+                        label="Thoughts" />
+            
+            <content type="html">
+                                &lt;p&gt;&lt;img alt=&#34;A Dark Image&#34; src=&#34;/media/images/dark.png&#34; /&gt;
+I went and dressed sadly. It will show you pretty well how pipped I was when I
+tell you that I near as a toucher put on a white tie with a dinner-jacket. I
+sallied out for a bit of food more to pass the time than because I wanted it.
+It seemed brutal to be wading into the bill of fare with poor old Bicky headed
+for the breadline.
+When I got back old Chiswick had gone to bed, but Bicky was there, hunched up
+in an arm-chair, brooding pretty tensely, with a cigarette hanging out of the
+corner of his mouth and a more or less glassy stare in his eyes. He had the
+aspect of one who had been soaked with what the newspaper chappies call &amp;#8220;some
+blunt&amp;nbsp;instrument.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;This is a bit thick, old thing—what!&amp;#8221; I&amp;nbsp;said.&lt;/p&gt;
+&lt;p&gt;He picked up his glass and drained it feverishly, overlooking the fact that it
+hadn&amp;#8217;t anything in&amp;nbsp;it.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;I&amp;#8217;m done, Bertie!&amp;#8221; he&amp;nbsp;said.&lt;/p&gt;
+&lt;p&gt;He had another go at the glass. It didn&amp;#8217;t seem to do him any&amp;nbsp;good.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;If only this had happened a week later, Bertie! My next month&amp;#8217;s money was due
+to roll in on Saturday. I could have worked a wheeze I&amp;#8217;ve been reading about
+in the magazine advertisements. It seems that you can make a dashed amount of
+money if you can only collect a few dollars and start a chicken-farm. Jolly
+sound scheme, Bertie! Say you buy a hen—call it one hen for the sake of
+argument. It lays an egg every day of the week. You sell the eggs seven for
+twenty-five cents. Keep of hen costs nothing. Profit practically twenty-five
+cents on every seven eggs. Or look at it another way: Suppose you have a dozen
+eggs. Each of the hens has a dozen chickens. The chickens grow up and have
+more chickens. Why, in no time you&amp;#8217;d have the place covered knee-deep in hens,
+all laying eggs, at twenty-five cents for every seven. You&amp;#8217;d make a fortune.
+Jolly life, too, keeping hens!&amp;#8221; He had begun to get quite worked up at the
+thought of it, but he slopped back in his chair at this juncture with a good
+deal of gloom. &amp;#8220;But, of course, it&amp;#8217;s no good,&amp;#8221; he said, &amp;#8220;because I haven&amp;#8217;t the&amp;nbsp;cash.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;You&amp;#8217;ve only to say the word, you know, Bicky, old&amp;nbsp;top.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;Thanks awfully, Bertie, but I&amp;#8217;m not going to sponge on&amp;nbsp;you.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;That&amp;#8217;s always the way in this world. The chappies you&amp;#8217;d like to lend money to
+won&amp;#8217;t let you, whereas the chappies you don&amp;#8217;t want to lend it to will do
+everything except actually stand you on your head and lift the specie out of
+your pockets. As a lad who has always rolled tolerably free in the right
+stuff, I&amp;#8217;ve had lots of experience of the second class. Many&amp;#8217;s the time, back
+in London, I&amp;#8217;ve hurried along Piccadilly and felt the hot breath of the
+toucher on the back of my neck and heard his sharp, excited yapping as he
+closed in on me. I&amp;#8217;ve simply spent my life scattering largesse to blighters I
+didn&amp;#8217;t care a hang for; yet here was I now, dripping doubloons and pieces of
+eight and longing to hand them over, and Bicky, poor fish, absolutely on his
+uppers, not taking any at any&amp;nbsp;price.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;Well, there&amp;#8217;s only one hope,&amp;nbsp;then.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;What&amp;#8217;s&amp;nbsp;that?&amp;#8221;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;Jeeves.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;dquo&#34;&gt;&amp;#8220;&lt;/span&gt;Sir?&amp;#8221;&lt;/p&gt;
+&lt;p&gt;There was Jeeves, standing behind me, full of zeal. In this matter of
+shimmering into rooms the chappie is rummy to a degree. You&amp;#8217;re sitting in the
+old armchair, thinking of this and that, and then suddenly you look up, and
+there he is. He moves from point to point with as little uproar as a jelly
+fish. The thing startled poor old Bicky considerably. He rose from his seat
+like a rocketing pheasant. I&amp;#8217;m used to Jeeves now, but often in the days when
+he first came to me I&amp;#8217;ve bitten my tongue freely on finding him unexpectedly
+in my&amp;nbsp;midst.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://www.gutenberg.org/cache/epub/8164/pg8164.html&#34;&gt;My Man Jeeves by &lt;span class=&#34;caps&#34;&gt;PG&lt;/span&gt;&amp;nbsp;Wodehouse&lt;/a&gt;&lt;/p&gt;            </content>
+        </entry>
+    </feed>
