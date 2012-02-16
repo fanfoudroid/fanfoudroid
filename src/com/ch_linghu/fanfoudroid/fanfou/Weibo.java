@@ -389,7 +389,7 @@ public class Weibo extends WeiboSupport implements java.io.Serializable {
 		try {
 			return new QueryResult(get(searchBaseURL
 					+ "search/public_timeline.json", query.asPostParameters(),
-					false), this);
+					true), this);
 		} catch (HttpException te) {
 			if (404 == te.getStatusCode()) {
 				return new QueryResult(query);
