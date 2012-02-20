@@ -436,6 +436,8 @@ public class WriteActivity extends BaseActivity {
 				}
 
 			} else if (REPOST_TWEET_ACTION.equals(action)) {
+				_repost_id = intent.getStringExtra(EXTRA_REPOST_ID);
+				
 				if (!TextUtils.isEmpty(text)) {
 					// 如果是转发消息，则根据用户习惯，将光标放置在转发消息的头部或尾部
 					SharedPreferences prefereces = getPreferences();

@@ -37,6 +37,16 @@ android:id="@+id/tweet_layout"
 				android:layout_gravity="right" android:layout_width="16dp"
 				android:layout_height="16dp" android:visibility="gone"
 				android:src="@android:drawable/star_off" />
+			<!-- retweet icon -->
+			<ImageView android:id="@+id/tweet_retweet"
+				android:layout_gravity="right" android:layout_width="16dp"
+				android:layout_height="16dp" android:visibility="gone"
+				android:src="@drawable/retweet" />
+			<!-- reply icon -->
+			<ImageView android:id="@+id/tweet_reply"
+				android:layout_gravity="right" android:layout_width="16dp"
+				android:layout_height="16dp" android:visibility="gone"
+				android:src="@drawable/reply" />
 		</LinearLayout>
 
 		<!-- Tweet context -->

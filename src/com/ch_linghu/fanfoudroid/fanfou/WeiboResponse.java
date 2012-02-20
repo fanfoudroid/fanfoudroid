@@ -231,6 +231,9 @@ public class WeiboResponse implements java.io.Serializable {
 
 	protected static String getString(String key, JSONObject json)
 			throws JSONException {
+		if (!json.has(key)) {
+			return "";
+		}
 		String str = json.getString(key);
 		if (null == str || "".equals(str) || "null".equals(str)) {
 			return "";

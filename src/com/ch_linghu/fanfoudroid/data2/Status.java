@@ -11,6 +11,8 @@ public class Status {
 	private boolean truncated;
 	private String in_reply_to_status_id;
 	private String in_reply_to_user_id;
+	private String repost_status_id;
+	private String repost_user_id;
 	private boolean favorited;
 	private String in_reply_to_screen_name;
 	private Photo photo_url;
@@ -77,6 +79,22 @@ public class Status {
 
 	public void setInReplyToUserId(String in_reply_to_user_id) {
 		this.in_reply_to_user_id = in_reply_to_user_id;
+	}
+
+	public String getRepostStatusId() {
+		return repost_status_id;
+	}
+
+	public void setRepostStatusId(String repost_status_id) {
+		this.repost_status_id = repost_status_id;
+	}
+
+	public String getRepostUserId() {
+		return repost_user_id;
+	}
+
+	public void setRepostUserId(String repost_user_id) {
+		this.repost_user_id = repost_user_id;
 	}
 
 	public boolean isFavorited() {

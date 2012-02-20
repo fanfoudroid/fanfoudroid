@@ -56,6 +56,8 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 			mSourceColumn = cursor.getColumnIndexOrThrow(StatusTable.SOURCE);
 			mInReplyToScreenName = cursor
 					.getColumnIndexOrThrow(StatusTable.IN_REPLY_TO_SCREEN_NAME);
+			mRepostUserId = cursor
+					.getColumnIndexOrThrow(StatusTable.REPOST_USER_ID);
 			mFavorited = cursor.getColumnIndexOrThrow(StatusTable.FAVORITED);
 			mThumbnailPic = cursor.getColumnIndexOrThrow(StatusTable.PIC_THUMB);
 			mMiddlePic = cursor.getColumnIndexOrThrow(StatusTable.PIC_MID);
@@ -72,6 +74,7 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 	private int mCreatedAtColumn;
 	private int mSourceColumn;
 	private int mInReplyToScreenName;
+	private int mRepostUserId;
 	private int mFavorited;
 	private int mThumbnailPic;
 	private int mMiddlePic;
@@ -102,6 +105,8 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		holder.metaText = (TextView) view.findViewById(R.id.tweet_meta_text);
 		holder.fav = (ImageView) view.findViewById(R.id.tweet_fav);
 		holder.has_image = (ImageView) view.findViewById(R.id.tweet_has_image);
+		holder.retweet = (ImageView) view.findViewById(R.id.tweet_retweet);
+		holder.reply = (ImageView) view.findViewById(R.id.tweet_reply);
 		holder.tweetLayout=(LinearLayout)view.findViewById(R.id.tweet_layout);
 		
 		view.setTag(holder);
@@ -118,6 +123,8 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		public TextView metaText;
 		public ImageView fav;
 		public ImageView has_image;
+		public ImageView retweet;
+		public ImageView reply;
 	}
 
 	@Override
@@ -155,12 +162,25 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 			holder.has_image.setVisibility(View.GONE);
 		}
 
+		if (!TextUtils.isEmpty(cursor.getString(this.mInReplyToScreenName))) {
+			holder.reply.setVisibility(View.VISIBLE);
+		} else {
+			holder.reply.setVisibility(View.GONE);
+		}
+
+		if (!TextUtils.isEmpty(cursor.getString(mRepostUserId))) {
+			holder.retweet.setVisibility(View.VISIBLE);
+		} else {
+			holder.retweet.setVisibility(View.GONE);
+		}
+
 		try {
 			Date createdAt = TwitterDatabase.DB_DATE_FORMATTER.parse(cursor
 					.getString(mCreatedAtColumn));
 			holder.metaText.setText(Tweet.buildMetaText(mMetaBuilder,
 					createdAt, cursor.getString(mSourceColumn),
-					cursor.getString(mInReplyToScreenName)));
+					cursor.getString(mInReplyToScreenName)
+					));
 		} catch (ParseException e) {
 			Log.w(TAG, "Invalid created at data.");
 		}

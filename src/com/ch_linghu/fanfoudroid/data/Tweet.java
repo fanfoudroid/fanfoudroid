@@ -62,6 +62,8 @@ public class Tweet extends Message implements Parcelable {
 		tweet.inReplyToStatusId = status.getInReplyToStatusId();
 		tweet.inReplyToUserId = status.getInReplyToUserId();
 		tweet.inReplyToScreenName = status.getInReplyToScreenName();
+		tweet.repostStatusId = status.getRepostStatusId();
+		tweet.repostUserId = status.getRepostUserId();
 
 		tweet.screenName = TextHelper.getSimpleTweetText(status.getUser()
 				.getScreenName());
@@ -124,7 +126,7 @@ public class Tweet extends Message implements Parcelable {
 			builder.append(TwitterApplication.mContext
 					.getString(R.string.tweet_reply_to_suffix));
 		}
-
+		
 		return builder.toString();
 	}
 
@@ -143,6 +145,8 @@ public class Tweet extends Message implements Parcelable {
 		out.writeString(inReplyToStatusId);
 		out.writeString(inReplyToUserId);
 		out.writeString(inReplyToScreenName);
+		out.writeString(repostStatusId);
+		out.writeString(repostUserId);
 		out.writeString(screenName);
 		out.writeString(profileImageUrl);
 		out.writeString(thumbnail_pic);
@@ -172,6 +176,8 @@ public class Tweet extends Message implements Parcelable {
 		inReplyToStatusId = in.readString();
 		inReplyToUserId = in.readString();
 		inReplyToScreenName = in.readString();
+		repostStatusId = in.readString();
+		repostUserId = in.readString();
 		screenName = in.readString();
 		profileImageUrl = in.readString();
 		thumbnail_pic = in.readString();

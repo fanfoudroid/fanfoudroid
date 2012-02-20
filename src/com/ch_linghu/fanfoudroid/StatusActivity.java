@@ -76,7 +76,7 @@ public class StatusActivity extends BaseActivity {
 	static final private int CONTEXT_DELETE_ID = 0x0003;
 
 	// Task TODO: tasks
-	private GenericTask mReplyTask;
+	private GenericTask mRelativeTweetTask;
 	private GenericTask mStatusTask;
 	private GenericTask mPhotoTask; // TODO: 压缩图片，提供获取图片的过程中可取消获取
 	private GenericTask mFavTask;
@@ -85,10 +85,10 @@ public class StatusActivity extends BaseActivity {
 	private NavBar mNavbar;
 	private Feedback mFeedback;
 
-	private TaskListener mReplyTaskListener = new TaskAdapter() {
+	private TaskListener mRelativeTaskListener = new TaskAdapter() {
 		@Override
 		public void onPostExecute(GenericTask task, TaskResult result) {
-			showReplyStatus(replyTweet);
+			showRelativeStatus(relativeTweet);
 			StatusActivity.this.mFeedback.success("");
 		}
 
@@ -187,7 +187,7 @@ public class StatusActivity extends BaseActivity {
 	private ImageButton tweet_fav;
 
 	private Tweet tweet = null;
-	private Tweet replyTweet = null; // if exists
+	private Tweet relativeTweet = null; // if exists
 
 	private HttpClient mClient;
 	private Bitmap mPhotoBitmap = ImageCache.mDefaultBitmap; // if exists
@@ -206,8 +206,8 @@ public class StatusActivity extends BaseActivity {
 	/**
 	 * 获得消息中的照片页面链接
 	 * 
-	 * @param text
-	 *            消息文本
+	 * @param tweet
+	 *            消息
 	 * @param size
 	 *            照片尺寸
 	 * @return 照片页面的链接，若不存在，则返回null
@@ -395,12 +395,10 @@ public class StatusActivity extends BaseActivity {
 
 			@Override
 			public void onClick(View v) {
-				if (!TextUtils.isEmpty(tweet.inReplyToStatusId)) {
-					if (replyTweet == null) {
-						Log.w(TAG, "Selected item not available.");
-					} else {
-						launchActivity(StatusActivity.createIntent(replyTweet));
-					}
+				if (relativeTweet == null) {
+					Log.w(TAG, "Selected item not available.");
+				} else {
+					launchActivity(StatusActivity.createIntent(relativeTweet));
 				}
 			}
 		};
@@ -441,9 +439,9 @@ public class StatusActivity extends BaseActivity {
 	protected void onDestroy() {
 		Log.d(TAG, "onDestroy.");
 
-		if (mReplyTask != null
-				&& mReplyTask.getStatus() == GenericTask.Status.RUNNING) {
-			mReplyTask.cancel(true);
+		if (mRelativeTweetTask != null
+				&& mRelativeTweetTask.getStatus() == GenericTask.Status.RUNNING) {
+			mRelativeTweetTask.cancel(true);
 		}
 		if (mPhotoTask != null
 				&& mPhotoTask.getStatus() == GenericTask.Status.RUNNING) {
@@ -525,7 +523,7 @@ public class StatusActivity extends BaseActivity {
 			}
 
 			// 如果选用了强制显示则再尝试分析图片链接
-			if (forceShowAllImage) {
+			if (TextUtils.isEmpty(photoLink) && forceShowAllImage) {
 				photoLink = getPhotoPageLink(tweet.text, photoPreviewSize);
 				isPageLink = true;
 			}
@@ -544,7 +542,15 @@ public class StatusActivity extends BaseActivity {
 			reply_wrap.setVisibility(View.VISIBLE);
 			reply_status_text = (TextView) findViewById(R.id.reply_status_text);
 			reply_status_date = (TextView) findViewById(R.id.reply_tweet_created_at);
-			doGetReply(tweet.inReplyToStatusId);
+			doGetRelativeTweet(tweet.inReplyToStatusId);
+		}
+		// has repost
+		if (!TextUtils.isEmpty(tweet.repostStatusId)) {
+			ViewGroup reply_wrap = (ViewGroup) findViewById(R.id.reply_wrap);
+			reply_wrap.setVisibility(View.VISIBLE);
+			reply_status_text = (TextView) findViewById(R.id.reply_status_text);
+			reply_status_date = (TextView) findViewById(R.id.reply_tweet_created_at);
+			doGetRelativeTweet(tweet.repostStatusId);
 		}
 	}
 
@@ -552,8 +558,8 @@ public class StatusActivity extends BaseActivity {
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 
-		if (mReplyTask != null
-				&& mReplyTask.getStatus() == GenericTask.Status.RUNNING) {
+		if (mRelativeTweetTask != null
+				&& mRelativeTweetTask.getStatus() == GenericTask.Status.RUNNING) {
 			outState.putBoolean(SIS_RUNNING_KEY, true);
 		}
 	}
@@ -578,40 +584,40 @@ public class StatusActivity extends BaseActivity {
 		return bitmap;
 	}
 
-	private void doGetReply(String status_id) {
+	private void doGetRelativeTweet(String status_id) {
 		Log.d(TAG, "Attempting get status task.");
 		mFeedback.start("");
 
-		if (mReplyTask != null
-				&& mReplyTask.getStatus() == GenericTask.Status.RUNNING) {
+		if (mRelativeTweetTask != null
+				&& mRelativeTweetTask.getStatus() == GenericTask.Status.RUNNING) {
 			return;
 		} else {
-			mReplyTask = new GetReplyTask();
-			mReplyTask.setListener(mReplyTaskListener);
+			mRelativeTweetTask = new GetRelativeTweetTask();
+			mRelativeTweetTask.setListener(mRelativeTaskListener);
 
 			TaskParams params = new TaskParams();
-			params.put("reply_id", status_id);
-			mReplyTask.execute(params);
+			params.put("relative_id", status_id);
+			mRelativeTweetTask.execute(params);
 		}
 	}
 
-	private class GetReplyTask extends GenericTask {
+	private class GetRelativeTweetTask extends GenericTask {
 
 		@Override
 		protected TaskResult _doInBackground(TaskParams... params) {
 			TaskParams param = params[0];
 			com.ch_linghu.fanfoudroid.fanfou.Status status;
 			try {
-				String reply_id = param.getString("reply_id");
+				String relative_id = param.getString("relative_id");
 
-				if (!TextUtils.isEmpty(reply_id)) {
+				if (!TextUtils.isEmpty(relative_id)) {
 					// 首先查看是否在数据库中，如不在再去获取
-					replyTweet = getDb().queryTweet(reply_id, -1);
-					if (replyTweet == null) {
-						status = getApi().showStatus(reply_id);
-						replyTweet = Tweet.create(status);
+					relativeTweet = getDb().queryTweet(relative_id, -1);
+					if (relativeTweet == null) {
+						status = getApi().showStatus(relative_id);
+						relativeTweet = Tweet.create(status);
 					}
-				}
+				} 		
 			} catch (HttpException e) {
 				Log.e(TAG, e.getMessage(), e);
 				return TaskResult.IO_ERROR;
@@ -709,7 +715,7 @@ public class StatusActivity extends BaseActivity {
 		}
 	}
 
-	private void showReplyStatus(Tweet tweet) {
+	private void showRelativeStatus(Tweet tweet) {
 		if (tweet != null) {
 			String text = tweet.screenName + " : " + tweet.text;
 			TextHelper.setSimpleTweetText(reply_status_text, text);

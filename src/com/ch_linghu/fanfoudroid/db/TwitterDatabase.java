@@ -34,7 +34,7 @@ public class TwitterDatabase {
 	private static final String TAG = "TwitterDatabase";
 
 	private static final String DATABASE_NAME = "status_db";
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 3;
 
 	private static TwitterDatabase instance = null;
 	private static DatabaseHelper mOpenHelper = null;
@@ -373,6 +373,8 @@ public class TwitterDatabase {
 				tweet.inReplyToUserId);
 		initialValues.put(StatusTable.IN_REPLY_TO_SCREEN_NAME,
 				tweet.inReplyToScreenName);
+		initialValues.put(StatusTable.REPOST_STATUS_ID, tweet.repostStatusId);
+		initialValues.put(StatusTable.REPOST_USER_ID, tweet.repostUserId);
 		// initialValues.put(FIELD_IS_REPLY, tweet.isReply());
 		initialValues.put(StatusTable.CREATED_AT,
 				DB_DATE_FORMATTER.format(tweet.createdAt));

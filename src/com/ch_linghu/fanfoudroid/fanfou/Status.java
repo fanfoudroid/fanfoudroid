@@ -37,6 +37,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import android.text.TextUtils;
+
 import com.ch_linghu.fanfoudroid.http.HttpException;
 import com.ch_linghu.fanfoudroid.http.Response;
 
@@ -57,6 +59,8 @@ public class Status extends WeiboResponse implements java.io.Serializable {
 	private String inReplyToUserId;
 	private boolean isFavorited;
 	private String inReplyToScreenName;
+	private String repostStatusId;
+	private String repostUserId;
 	private double latitude = -1;
 	private double longitude = -1;
 	private String thumbnail_pic;
@@ -90,8 +94,13 @@ public class Status extends WeiboResponse implements java.io.Serializable {
 
 			inReplyToStatusId = getString("in_reply_to_status_id", json);
 			inReplyToUserId = getString("in_reply_to_user_id", json);
+
+			repostStatusId = getString("repost_status_id", json);
+			repostUserId = getString("repost_user_id", json);
+			
 			isFavorited = getBoolean("favorited", json);
 			// System.out.println("json photo" + json.getJSONObject("photo"));
+			
 			if (!json.isNull("photo")) {
 				// System.out.println("not null" + json.getJSONObject("photo"));
 				Photo photo = new Photo(json.getJSONObject("photo"));
@@ -130,7 +139,12 @@ public class Status extends WeiboResponse implements java.io.Serializable {
 
 		inReplyToStatusId = getString("in_reply_to_status_id", json);
 		inReplyToUserId = getString("in_reply_to_user_id", json);
-		inReplyToScreenName = json.getString("in_reply_to_screen_name");
+		inReplyToScreenName = getString("in_reply_to_screen_name", json);
+		
+		repostStatusId = getString("repost_status_id", json);
+		repostUserId = getString("repost_user_id", json);
+		
+		
 		if (!json.isNull("photo")) {
 			Photo photo = new Photo(json.getJSONObject("photo"));
 			thumbnail_pic = photo.getThumbnail_pic();
@@ -156,6 +170,11 @@ public class Status extends WeiboResponse implements java.io.Serializable {
 
 		inReplyToStatusId = getString("in_reply_to_status_id", json);
 		inReplyToUserId = getString("in_reply_to_user_id", json);
+		
+		repostStatusId = getString("repost_status_id", json);
+		repostUserId = getString("repost_user_id", json);
+		
+		
 		isFavorited = getBoolean("favorited", json);
 		if (!json.isNull("photo")) {
 			Photo photo = new Photo(json.getJSONObject("photo"));
@@ -182,6 +201,9 @@ public class Status extends WeiboResponse implements java.io.Serializable {
 		isTruncated = getChildBoolean("truncated", elem);
 		inReplyToStatusId = getChildString("in_reply_to_status_id", elem);
 		inReplyToUserId = getChildString("in_reply_to_user_id", elem);
+		repostStatusId = getChildString("repost_status_id", elem);
+		repostUserId = getChildString("repost_user_id", elem);
+		
 		isFavorited = getChildBoolean("favorited", elem);
 		inReplyToScreenName = getChildText("in_reply_to_screen_name", elem);
 		NodeList georssPoint = elem.getElementsByTagName("georss:point");
@@ -269,6 +291,26 @@ public class Status extends WeiboResponse implements java.io.Serializable {
 	 */
 	public String getInReplyToUserId() {
 		return inReplyToUserId;
+	}
+
+	/**
+	 * Returns the repost_status_id
+	 * 
+	 * @return the repost_status_id
+	 * @since Weibo4J 1.0.4
+	 */
+	public String getRepostStatusId() {
+		return repostStatusId;
+	}
+
+	/**
+	 * Returns the repost_user_id
+	 * 
+	 * @return the in_reply_tostatus_id
+	 * @since Weibo4J 1.0.4
+	 */
+	public String getRepostUserId() {
+		return repostUserId;
 	}
 
 	/**

@@ -52,6 +52,9 @@ public final class StatusTable implements BaseColumns {
 	public static final String IN_REPLY_TO_STATUS_ID = "in_reply_to_status_id";
 	public static final String IN_REPLY_TO_USER_ID = "in_reply_to_user_id";
 	public static final String IN_REPLY_TO_SCREEN_NAME = "in_reply_to_screen_name";
+	public static final String REPOST_STATUS_ID = "repost_status_id";
+	public static final String REPOST_USER_ID = "repost_user_id";
+	public static final String REPOST_USER_SCREEN_NAME = "repost_user_screen_name";
 	public static final String FAVORITED = "favorited";
 	public static final String IS_UNREAD = "is_unread";
 	public static final String STATUS_TYPE = "status_type";
@@ -69,6 +72,7 @@ public final class StatusTable implements BaseColumns {
 	public static final String[] TABLE_COLUMNS = new String[] { _ID,
 			USER_SCREEN_NAME, TEXT, PROFILE_IMAGE_URL, IS_UNREAD, CREATED_AT,
 			FAVORITED, IN_REPLY_TO_STATUS_ID, IN_REPLY_TO_USER_ID,
+			REPOST_STATUS_ID, REPOST_USER_ID, REPOST_USER_SCREEN_NAME,
 			IN_REPLY_TO_SCREEN_NAME, TRUNCATED, PIC_THUMB, PIC_MID, PIC_ORIG,
 			SOURCE, USER_ID, STATUS_TYPE, OWNER_ID };
 
@@ -83,8 +87,10 @@ public final class StatusTable implements BaseColumns {
 			+ " text not null, "
 			+ FAVORITED
 			+ " text, " // TODO : text -> boolean
-			+ IN_REPLY_TO_STATUS_ID + " text, " + IN_REPLY_TO_USER_ID
-			+ " text, " + IN_REPLY_TO_SCREEN_NAME + " text, " + PIC_THUMB
+			+ IN_REPLY_TO_STATUS_ID + " text, " + IN_REPLY_TO_USER_ID + " text, "
+			+ REPOST_STATUS_ID + " text, " + REPOST_USER_ID + " text, "
+			+ REPOST_USER_SCREEN_NAME + " text, " 
+			+ IN_REPLY_TO_SCREEN_NAME + " text, " + PIC_THUMB
 			+ " text, " + PIC_MID + " text, " + PIC_ORIG + " text, "
 			+ TRUNCATED + " boolean ," + "PRIMARY KEY (" + _ID + "," + OWNER_ID
 			+ "," + STATUS_TYPE + "))";
@@ -124,6 +130,10 @@ public final class StatusTable implements BaseColumns {
 				.getColumnIndex(IN_REPLY_TO_STATUS_ID));
 		tweet.inReplyToUserId = cursor.getString(cursor
 				.getColumnIndex(IN_REPLY_TO_USER_ID));
+		tweet.repostStatusId = cursor.getString(cursor
+				.getColumnIndex(REPOST_STATUS_ID));
+		tweet.repostUserId = cursor.getString(cursor
+				.getColumnIndex(REPOST_USER_ID));
 		tweet.truncated = cursor.getString(cursor.getColumnIndex(TRUNCATED));
 		tweet.thumbnail_pic = cursor
 				.getString(cursor.getColumnIndex(PIC_THUMB));
