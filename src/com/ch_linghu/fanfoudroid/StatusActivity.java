@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2009 Google Inc.
+']0 * Copyright (C) 2009 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -722,9 +722,16 @@ public class StatusActivity extends BaseActivity {
 			reply_status_date.setText(DateTimeHelper
 					.getRelativeDate(tweet.createdAt));
 		} else {
+			String id = "";
+			if (!TextUtils.isEmpty(tweet.inReplyToScreenName)){
+				id = tweet.inReplyToScreenName;
+			}
+			if (!TextUtils.isEmpty(tweet.repostUserId)) {
+				id = tweet.repostUserId;
+			}
 			String msg = MessageFormat.format(
 					getString(R.string.status_status_reply_cannot_display),
-					this.tweet.inReplyToScreenName);
+					id);
 			reply_status_text.setText(msg);
 		}
 	}

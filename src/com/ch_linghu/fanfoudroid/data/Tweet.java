@@ -108,7 +108,7 @@ public class Tweet extends Message implements Parcelable {
 	}
 
 	public static String buildMetaText(StringBuilder builder, Date createdAt,
-			String source, String replyTo) {
+			String source, String replyTo, String repostUserId) {
 		builder.setLength(0);
 
 		builder.append(DateTimeHelper.getRelativeDate(createdAt));
@@ -125,6 +125,15 @@ public class Tweet extends Message implements Parcelable {
 			builder.append(replyTo);
 			builder.append(TwitterApplication.mContext
 					.getString(R.string.tweet_reply_to_suffix));
+		}
+		
+		if (!TextUtils.isEmpty(repostUserId)) {
+			builder.append(" "
+					+ TwitterApplication.mContext
+							.getString(R.string.tweet_repost_prefix));
+			builder.append(repostUserId);
+			builder.append(TwitterApplication.mContext
+					.getString(R.string.tweet_repost_suffix));
 		}
 		
 		return builder.toString();

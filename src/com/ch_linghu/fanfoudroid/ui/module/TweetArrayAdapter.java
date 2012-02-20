@@ -122,7 +122,7 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 		}
 
 		holder.metaText.setText(Tweet.buildMetaText(mMetaBuilder,
-				tweet.createdAt, tweet.source, tweet.inReplyToScreenName));
+				tweet.createdAt, tweet.source, tweet.inReplyToScreenName, tweet.repostUserId));
 
 		if (tweet.favorited.equals("true")) {
 			holder.fav.setVisibility(View.VISIBLE);

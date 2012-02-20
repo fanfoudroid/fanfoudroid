@@ -179,7 +179,8 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 					.getString(mCreatedAtColumn));
 			holder.metaText.setText(Tweet.buildMetaText(mMetaBuilder,
 					createdAt, cursor.getString(mSourceColumn),
-					cursor.getString(mInReplyToScreenName)
+					cursor.getString(mInReplyToScreenName),
+					cursor.getString(mRepostUserId)
 					));
 		} catch (ParseException e) {
 			Log.w(TAG, "Invalid created at data.");
