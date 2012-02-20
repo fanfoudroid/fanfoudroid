@@ -723,11 +723,11 @@ public class StatusActivity extends BaseActivity {
 					.getRelativeDate(tweet.createdAt));
 		} else {
 			String id = "";
-			if (!TextUtils.isEmpty(tweet.inReplyToScreenName)){
-				id = tweet.inReplyToScreenName;
+			if (!TextUtils.isEmpty(this.tweet.inReplyToScreenName)){
+				id = this.tweet.inReplyToScreenName;
 			}
-			if (!TextUtils.isEmpty(tweet.repostUserId)) {
-				id = tweet.repostUserId;
+			if (!TextUtils.isEmpty(this.tweet.repostUserId)) {
+				id = this.tweet.repostUserId;
 			}
 			String msg = MessageFormat.format(
 					getString(R.string.status_status_reply_cannot_display),
