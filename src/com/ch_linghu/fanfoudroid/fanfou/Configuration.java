@@ -68,8 +68,8 @@ public class Configuration {
 		defaultProperty.setProperty("fanfoudroid.http.readTimeout", "120000");
 		defaultProperty.setProperty("fanfoudroid.http.retryCount", "3");
 		defaultProperty.setProperty("fanfoudroid.http.retryIntervalSecs", "10");
-		defaultProperty.setProperty("fanfoudroid.oauth.consumerKey",""); // your appKey
-		defaultProperty.setProperty("fanfoudroid.oauth.consumerSecret",""); // your secret
+		defaultProperty.setProperty("fanfoudroid.oauth.consumerKey","b2b99948cc25620ac8a3fb57e869ed8c"); // your appKey
+		defaultProperty.setProperty("fanfoudroid.oauth.consumerSecret","8b2c915a90ceb1626b0c51c97cbb123c"); // your secret
 		defaultProperty.setProperty("fanfoudroid.oauth.baseUrl","http://fanfou.com/oauth");
 		defaultProperty.setProperty("fanfoudroid.async.numThreads", "1");
 		defaultProperty.setProperty("fanfoudroid.clientVersion", "1.0");

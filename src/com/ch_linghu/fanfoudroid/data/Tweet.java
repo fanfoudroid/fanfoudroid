@@ -114,9 +114,12 @@ public class Tweet extends Message implements Parcelable {
 		builder.append(DateTimeHelper.getRelativeDate(createdAt));
 		builder.append(" ");
 
-		builder.append(TwitterApplication.mContext
-				.getString(R.string.tweet_source_prefix));
-		builder.append(source);
+		//modify by @忽然兔 
+		if (!TextUtils.isEmpty(source)){
+			builder.append(TwitterApplication.mContext
+					.getString(R.string.tweet_source_prefix));
+			builder.append(source);
+		}
 
 		if (!TextUtils.isEmpty(replyTo)) {
 			builder.append(" "

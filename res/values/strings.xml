@@ -53,8 +53,8 @@
     <string name="cmenu_user_senddm_suffix">发私信</string>
     <string name="cmenu_user_sendmention_suffix">留言</string>
     <!-- Login页面 -->
-    <string name="login_label_username">Email或手机号:</string>
-    <string name="login_label_password">饭否密码:</string>
+    <string name="login_label_username">饭否ID/Email/手机号:</string>
+    <string name="login_label_password">密码:</string>
     <string name="login_label_signin">登 录</string>
     <string name="login_status_logging_in">登录中...</string>
     <string name="login_status_null_username_or_password">帐号和密码不能为空。</string>

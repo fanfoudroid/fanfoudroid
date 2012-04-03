@@ -89,6 +89,7 @@ public class WriteActivity extends BaseActivity {
 	private static final String SIS_RUNNING_KEY = "running";
 	private static final String PREFS_NAME = "com.ch_linghu.fanfoudroid";
 
+	private static final int REQUEST_ADD_USER = 1;
 	private static final int REQUEST_IMAGE_CAPTURE = 2;
 	private static final int REQUEST_PHOTO_LIBRARY = 3;
 
@@ -112,6 +113,9 @@ public class WriteActivity extends BaseActivity {
 
 	private File mImageFile;
 	private Uri mImageUri;
+	
+	// Added Username
+	private String mAddedUsername;
 
 	// Task
 	private GenericTask mSendTask;
@@ -353,11 +357,8 @@ public class WriteActivity extends BaseActivity {
 			ImageButton mAddUserButton = (ImageButton) findViewById(R.id.add_user);
 			mAddUserButton.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
-
-					int start = mTweetEditText.getSelectionStart();
-					int end = mTweetEditText.getSelectionEnd();
-					mTweetEditText.getText().replace(Math.min(start, end),
-							Math.max(start, end), "@");
+					Log.d(TAG,"addUser onClick");
+					addUserOnclick();
 				}
 			});
 
@@ -534,6 +535,7 @@ public class WriteActivity extends BaseActivity {
 		if (dialog != null) {
 			dialog.dismiss();
 		}
+		
 		super.onDestroy();
 	}
 
@@ -859,7 +861,44 @@ public class WriteActivity extends BaseActivity {
 			 * 
 			 * // 打开发送图片界面后将自身关闭 finish();
 			 */
+		} else if (requestCode == REQUEST_ADD_USER && resultCode == RESULT_OK){
+			mAddedUsername = data.getStringExtra("addedUserName");
+			
+			Intent intent = WriteActivity.addUserIntent(this,mAddedUsername);
+			
+			addUser(intent, mAddedUsername);
 		}
 	}
+	
+	protected void addUserOnclick(){
+		Intent addUserIntent = new Intent("com.ch_linghu.fanfoudroid.ADDUSER");
+		startActivityForResult(addUserIntent, REQUEST_ADD_USER);
+	
+	}
 
+	public static Intent addUserIntent(Activity activity, String addedUserName){
+		Intent intent = new Intent(Intent.ACTION_SEND);
+		intent.putExtra(Intent.EXTRA_STREAM, addedUserName);
+		try {
+			WriteActivity writeActivity = (WriteActivity) activity;
+			intent.putExtra(Intent.EXTRA_TEXT,
+					writeActivity.mTweetEdit.getText());
+			intent.putExtra(WriteActivity.EXTRA_REPLY_TO_NAME,
+					writeActivity._reply_to_name);
+			intent.putExtra(WriteActivity.EXTRA_REPLY_ID,
+					writeActivity._reply_id);
+			intent.putExtra(WriteActivity.EXTRA_REPOST_ID,
+					writeActivity._repost_id);
+		} catch (ClassCastException e) {
+			// do nothing
+		}
+		return intent;
+	}
+	
+	private void addUser(Intent intent, String addedUserName){
+		int start = mTweetEditText.getSelectionStart();
+		int end = mTweetEditText.getSelectionEnd();
+		mTweetEditText.getText().replace(Math.min(start, end),
+				Math.max(start, end), "@"+addedUserName+" ");
+	}
 }

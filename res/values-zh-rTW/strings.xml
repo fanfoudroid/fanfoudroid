@@ -53,8 +53,8 @@
     <string name="cmenu_user_senddm_suffix">發私信</string>
     <string name="cmenu_user_sendmention_suffix">留言</string>
     <!-- Login頁面 -->
-    <string name="login_label_username">Email或手機號:</string>
-    <string name="login_label_password">飯否密碼:</string>
+    <string name="login_label_username">飯否ID/Email/手機號:</string>
+    <string name="login_label_password">密碼:</string>
     <string name="login_label_signin">登 錄</string>
     <string name="login_status_logging_in">登錄中...</string>
     <string name="login_status_null_username_or_password">帳號和密碼不能為空。</string>
@@ -232,5 +232,10 @@
     <string name="crash_dialog_text">安能飯否出現了我們未曾捕獲到的錯誤，你點擊\'OK\'之後，錯誤報告會發送給開發者.</string>
     <string name="crash_dialog_comment_prompt">如果你能多花點時間填寫一下錯誤發生時你做了什麼，我們將不勝感激:</string>
     <string name="crash_dialog_ok_toast">感謝你的配合！</string>
+    <!-- 下拉刷新 -->
+	<string name="pull_to_refresh_pull_label">下拉刷新...</string>
+	<string name="pull_to_refresh_release_label">鬆開刷新...</string>
+	<string name="pull_to_refresh_refreshing_label">讀取中...</string>
+	<string name="pull_to_refresh_tap_label">點擊刷新...</string>
 </resources>
 

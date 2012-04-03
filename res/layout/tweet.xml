@@ -3,7 +3,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 android:id="@+id/tweet_layout" 
 	android:orientation="horizontal" android:layout_width="fill_parent"
-	android:layout_height="wrap_content" android:padding="5dp">
+	android:layout_height="wrap_content" android:padding="8dp">
 
 	<!-- profile image -->
 	<FrameLayout android:id="@+id/profile_layout"
@@ -44,7 +44,7 @@ android:id="@+id/tweet_layout"
 				android:src="@drawable/retweet" />
 			<!-- reply icon -->
 			<ImageView android:id="@+id/tweet_reply"
-				android:layout_gravity="right" android:layout_width="16dp"
+				android:layout_gravity="right" android:layout_width="21dp"
 				android:layout_height="16dp" android:visibility="gone"
 				android:src="@drawable/reply" />
 		</LinearLayout>
@@ -59,7 +59,7 @@ android:id="@+id/tweet_layout"
 		<TextView android:id="@+id/tweet_meta_text"
 			android:layout_width="fill_parent" android:layout_height="wrap_content"
 			android:paddingTop="2dp" android:textColor="@drawable/tweet_meta_color"
-			android:textSize="12sp" />
+			android:textSize="12sp" android:gravity="right"/>
 
 	</LinearLayout>
 

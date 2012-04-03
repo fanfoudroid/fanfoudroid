@@ -33,7 +33,7 @@
 	    android:layout_height="wrap_content"
 	    android:layout_below="@id/login_user_input"
 	    android:singleLine="true"
-	    android:inputType="text"
+	    android:inputType="textEmailAddress"
 	    />
 	    <!-- 密码 text -->
 	    <TextView
@@ -83,7 +83,7 @@
 	
 	<RelativeLayout 
       android:layout_width="fill_parent"
-      android:layout_height="wrap_content"
+      android:layout_height="0dip"
       android:layout_weight="1"
       >
         <TextView  android:id="@+id/register_link"

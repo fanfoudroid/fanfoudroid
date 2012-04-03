@@ -331,4 +331,38 @@ public abstract class FanContent {
 					Columns.NAME, Columns.CREATED_AT, Columns.LOAD_TIME };
 		}
 	}
+	
+	/**
+	 * 已关注用户列表
+	 * @author 忽然兔
+	 * 
+	 * 每次查询已关注时更新该表，在at自动提示的时候直接从此表获取
+	 */
+	public static class FollowingTable{
+		public static String TABLE_NAME = "t_following";
+		
+		public static class Columns {
+			public static final String USER_ID = "user_id";
+			public static final String SCREEN_NAME = "screen_name";
+			public static final String IMAGE = "profile_image";
+		}
+		
+		public static String getCreateSQL() {
+			String createString = TABLE_NAME + "( " + Columns.USER_ID
+					+ " TEXT, " + Columns.SCREEN_NAME + " TEXT, " + Columns.IMAGE
+					+ " TEXT);";
+
+			return "CREATE TABLE " + createString;
+		}
+
+		public static String getDropSQL() {
+			return "DROP TABLE " + TABLE_NAME;
+		}
+
+		public static String[] getIndexColumns() {
+			return new String[] { Columns.USER_ID, Columns.SCREEN_NAME,
+					Columns.IMAGE };
+		}
+	}
 }
+

@@ -122,6 +122,7 @@ public class FanDatabase {
 		db.execSQL(FollowRelationshipTable.getCreateSQL());
 		db.execSQL(TrendTable.getCreateSQL());
 		db.execSQL(SavedSearchTable.getCreateSQL());
+		db.execSQL(FollowingTable.getCreateSQL());
 	}
 
 	private static void dropAllTables(SQLiteDatabase db) {
@@ -132,6 +133,7 @@ public class FanDatabase {
 		db.execSQL(FollowRelationshipTable.getDropSQL());
 		db.execSQL(TrendTable.getDropSQL());
 		db.execSQL(SavedSearchTable.getDropSQL());
+		db.execSQL(FollowingTable.getDropSQL());
 	}
 
 	private static void resetAllTables(SQLiteDatabase db, int oldVersion,

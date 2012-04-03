@@ -22,6 +22,7 @@ import com.ch_linghu.fanfoudroid.task.TaskListener;
 import com.ch_linghu.fanfoudroid.task.TaskManager;
 import com.ch_linghu.fanfoudroid.task.TaskParams;
 import com.ch_linghu.fanfoudroid.task.TaskResult;
+import com.ch_linghu.fanfoudroid.ui.module.AddUserArrayAdapter;
 import com.ch_linghu.fanfoudroid.ui.module.SimpleFeedback;
 import com.ch_linghu.fanfoudroid.ui.module.TweetAdapter;
 import com.ch_linghu.fanfoudroid.ui.module.UserArrayAdapter;
@@ -60,7 +61,7 @@ public abstract class UserArrayBaseActivity extends UserListBaseActivity {
 	protected abstract List<com.ch_linghu.fanfoudroid.fanfou.User> getUsers(
 			String userId, Paging page) throws HttpException;
 
-	private ArrayList<com.ch_linghu.fanfoudroid.data.User> allUserList;
+	public ArrayList<com.ch_linghu.fanfoudroid.data.User> allUserList;
 
 	@Override
 	protected boolean _onCreate(Bundle savedInstanceState) {

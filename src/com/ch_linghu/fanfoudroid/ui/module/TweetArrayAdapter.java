@@ -121,8 +121,11 @@ public class TweetArrayAdapter extends BaseAdapter implements TweetAdapter {
 			holder.profileLayout.setVisibility(View.GONE);
 		}
 
-		holder.metaText.setText(Tweet.buildMetaText(mMetaBuilder,
-				tweet.createdAt, tweet.source, tweet.inReplyToScreenName, tweet.repostUserId));
+//		holder.metaText.setText(Tweet.buildMetaText(mMetaBuilder,
+//				tweet.createdAt, tweet.source, tweet.inReplyToScreenName, tweet.repostUserId));
+		
+		//建议：保持timeline更加清爽，只显示创建时间   by @忽然兔
+		holder.metaText.setText(Tweet.buildMetaText(mMetaBuilder,tweet.createdAt,"","",""));
 
 		if (tweet.favorited.equals("true")) {
 			holder.fav.setVisibility(View.VISIBLE);

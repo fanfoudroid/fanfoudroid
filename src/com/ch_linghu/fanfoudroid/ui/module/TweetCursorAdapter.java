@@ -177,11 +177,15 @@ public class TweetCursorAdapter extends CursorAdapter implements TweetAdapter {
 		try {
 			Date createdAt = TwitterDatabase.DB_DATE_FORMATTER.parse(cursor
 					.getString(mCreatedAtColumn));
+//			holder.metaText.setText(Tweet.buildMetaText(mMetaBuilder,
+//					createdAt, cursor.getString(mSourceColumn),
+//					cursor.getString(mInReplyToScreenName),
+//					cursor.getString(mRepostUserId)
+//					));
+			
+			//建议：保持timeline更加清爽，只显示创建时间   by @忽然兔
 			holder.metaText.setText(Tweet.buildMetaText(mMetaBuilder,
-					createdAt, cursor.getString(mSourceColumn),
-					cursor.getString(mInReplyToScreenName),
-					cursor.getString(mRepostUserId)
-					));
+					createdAt, "","",""	));
 		} catch (ParseException e) {
 			Log.w(TAG, "Invalid created at data.");
 		}
