@@ -11,10 +11,15 @@
 ###特性：
 拍照/图片上传，后台自动提醒，桌面Widget
 
-[下载安能饭否](http://code.google.com/p/fanfoudroid/downloads/detail?name=fanfoudroid_0.7.5.2.apk&can=2&q=) / [Android Market安装](https://market.android.com/details?id=com.ch_linghu.fanfoudroid) / [报告BUG](https://github.com/fanfoudroid/fanfoudroid/issues) / [提出建议](https://github.com/fanfoudroid/fanfoudroid/pulls)
+[下载安能饭否](http://code.google.com/p/fanfoudroid/downloads/detail?name=fanfoudroid_0.7.5.5.apk&can=2&q=) / [Android Market安装](https://market.android.com/details?id=com.ch_linghu.fanfoudroid) / [报告BUG](https://github.com/fanfoudroid/fanfoudroid/issues) / [提出建议](https://github.com/fanfoudroid/fanfoudroid/pulls)
 ##截图
 ![Screenshot](http://farm4.static.flickr.com/3292/5746245984_4d2edf87cb.jpg)
 ##News
+`2012-02-20` : 安能饭否 v0.7.5.5 发布，增加转发支持。注意，本版本修改了数据模型，如遇FC错误，请卸载后重装。
+
+`2011-11-29` : 安能饭否 v0.7.5.4 发布，换用oauth认证。 
+
+`2011-09-06` : 安能饭否 v0.7.5.3 发布，修复一些FC的问题
 
 `2011-09-02` : 安能饭否 v0.7.5.2 发布，修复自0.7.5开始的部分用户执行效率极低的问题（非常抱歉）修改历史 
 
@@ -34,6 +39,14 @@
     * 拍照上传, 可使用手机拍照上传图片, 分享身边动态.
     
 ##版本更新
+###v0.7.5.5 `2012-02-20`
+增加转发支持（显示转自**内容）
+
+
+###v0.7.5.3, `2011-09-06`
+
+修复一些FC的问题
+
 
 ###0.7.5.2 `2011-09-04`
 * 修复部分用户自0.7.5更新后执行效率极低的问题（非常抱歉！）
