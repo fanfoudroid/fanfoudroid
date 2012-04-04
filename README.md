@@ -2,16 +2,13 @@
 ========
 `安能饭否` 是一款开源的 饭否Android客户端 。
 
-###页面：
-首页，我的空间，私信，随便看看，搜索，@提到我的，收藏，我关注的人，关注我的人
-
 ###功能：
 发送/删除消息，发送/回复私信，回复/转发/收藏消息，关注用户，查看用户资料
 
 ###特性：
 拍照/图片上传，后台自动提醒，桌面Widget
 
-[下载安能饭否](http://code.google.com/p/fanfoudroid/downloads/detail?name=fanfoudroid_0.7.5.5.apk&can=2&q=) / [Android Market安装](https://market.android.com/details?id=com.ch_linghu.fanfoudroid) / [报告BUG](https://github.com/fanfoudroid/fanfoudroid/issues) / [提出建议](https://github.com/fanfoudroid/fanfoudroid/pulls)
+[下载安能饭否](https://github.com/fanfoudroid/fanfoudroid/fanfoudroid_0.7.5.5.apk/qr_code) / [Android Market安装](https://market.android.com/details?id=com.ch_linghu.fanfoudroid) / [报告BUG](https://github.com/fanfoudroid/fanfoudroid/issues) / [提出建议](https://github.com/fanfoudroid/fanfoudroid/pulls)
 ##截图
 ![Screenshot](http://farm4.static.flickr.com/3292/5746245984_4d2edf87cb.jpg)
 ##News
@@ -30,14 +27,7 @@
 `2011-05-24` : 安能饭否 v0.7.3 发布, 大幅优化性能。
 
 `2011-04-28` : 安能饭否 v0.7.2 发布, 增加Widget功能。 
-
-##FAQ
-1. 使用客户端刷饭否的好处是什么?
-
-    * 节省流量, 客户端会缓存已看过的消息, 使得每次刷新时只会下载最新消息.
-    * 自动提醒, 客户端可后台运行, 自动提醒你有新消息或提到你的消息, 免去手动刷新的麻烦.
-    * 拍照上传, 可使用手机拍照上传图片, 分享身边动态.
-    
+ 
 ##版本更新
 ###v0.7.5.5 `2012-02-20`
 增加转发支持（显示转自**内容）
