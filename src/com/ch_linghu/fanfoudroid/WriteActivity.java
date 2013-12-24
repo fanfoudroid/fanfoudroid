@@ -169,7 +169,7 @@ public class WriteActivity extends BaseActivity {
 	}
 
 	protected void openPhotoLibraryMenu() {
-		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+		Intent intent = new Intent(Intent.ACTION_PICK);
 		intent.setType("image/*");
 		startActivityForResult(intent, REQUEST_PHOTO_LIBRARY);
 	}
@@ -200,11 +200,15 @@ public class WriteActivity extends BaseActivity {
 	}
 
 	private String getRealPathFromURI(Uri contentUri) {
-		String[] proj = { MediaColumns.DATA };
-		Cursor cursor = managedQuery(contentUri, proj, null, null, null);
-		int column_index = cursor.getColumnIndexOrThrow(MediaColumns.DATA);
-		cursor.moveToFirst();
-		return cursor.getString(column_index);
+        String result = null;
+        String[] proj = {MediaColumns.DATA};
+        Cursor cursor = getContentResolver().query(contentUri, proj, null, null, null);
+        if (cursor.moveToFirst()) {
+            int column_index = cursor.getColumnIndexOrThrow(MediaColumns.DATA);
+            result = cursor.getString(column_index);
+        }
+        cursor.close();
+        return result;
 	}
 
 	private void getPic(Intent intent, Uri uri) {
