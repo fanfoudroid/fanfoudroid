@@ -4,7 +4,7 @@
 
 【特别提醒】
 
-1.安能饭否 **不是** 饭否官方客户端。官方客户端开源项目地址：https://github.com/mcxiaoke/fanfouapp-opensource。
+1.安能饭否 **不是** 饭否官方客户端。官方客户端开源项目地址：https://github.com/mcxiaoke/fanfouapp-opensource
 
 2.安能饭否源码中 **不包含** oauth key信息，因此直接编译后无法访问饭否。用户需要自行去申请oauth key，并填入 Configuration.java 中。
 
